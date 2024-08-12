@@ -139,7 +139,7 @@ Fixpoint weak_leftward (p : point) (T : list point) : Prop :=
   | [] => False
   end.
 
-(* verify last edge *)
+(* verify if p left of the last edge *)
 Definition weak_interior (p : point) (T : list point) : Prop :=
   weak_leftward p T /\
   match rev T with
@@ -280,3 +280,12 @@ Proof.
   destruct (ccw_dec p q r); try contradiction;
   left; simpl; auto.
 Qed.
+
+Theorem ch_1: forall (P P' : list point) (p q r : point),
+  P = p :: q :: r :: P' -> pre_sorted_set P ->
+  is_convex_hull P (convex_hull P).
+Proof.
+  intros; subst; simpl.
+  induction P'; repeat split;
+  try (simpl; left; auto).
+  Abort.

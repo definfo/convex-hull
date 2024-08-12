@@ -47,7 +47,6 @@ Notation "[ ]" := nil.
 Notation "[ x ; .. ; y ]" := (cons x .. (cons y nil) ..).
 
 (** Algorithm *)
-
 (* p : current point *)
 (* T : stack *)
 (* Fixpoint succ (p : point) (T : list point) : list point :=
@@ -91,75 +90,100 @@ Fixpoint succ (p : point) (T : list point) : list point :=
       | right _ => succ p T'
       end
     (* T = [t], push stack *)
-    | [] => [p ; t]
+    | _ => p :: T
     end
   (* untouched *)
-  | [] => []
+  | _ => p :: T
   end.
 
-(* TODO : refactor to maintain stack order after each iter *)
 Fixpoint convex_hull_assist (P T : list point) : list point :=
   match P with
   | p :: P' => convex_hull_assist P' (succ p T)
   | [] => T
   end.
 
-(** assume that `pre_sorted_set P` holds *)
+(** assume that `sort p P'` holds *)
 Definition convex_hull (P : list point) : list point :=
   match P with
-  | p :: P' =>
-    match P' with
-    | q :: P'' =>
-      match P'' with
-      | r :: P''' => convex_hull_assist P''' [r ; q ; p]
-      | [] => [q ; p]
-      end
-    | [] => [p]
-    end
-  | [] => []
+  | cons p P' => convex_hull_assist P' [p]
+  | nil => P
   end.
 
-(** Verification *)
 
-(* leftmost point *)
-(*
-  P = s :: t :: P' ->
-  forall (p : point), In p P' -> ccw s t p.
-*)
 
-Fixpoint weak_leftward (p : point) (T : list point) : Prop :=
-  match T with
-  | t :: T' =>
-    match T' with
-    (* T = t :: s :: T'' *)
-    | s :: T'' => (ccw s t p \/ colinear s t p) /\ weak_leftward p T'
-    | [] => True
-    end
-  (* untouched *)
-  | [] => False
-  end.
-
-(* verify if p left of the last edge *)
-Definition weak_interior (p : point) (T : list point) : Prop :=
-  weak_leftward p T /\
-  match rev T with
-  | t :: T' =>
-    match T with
-    | s :: T'' => ccw s t p \/ colinear s t p
-    | [] => False
-    end
-  | [] => False
-  end.
-
-Fixpoint is_convex_hull (P T : list point) : Prop :=
+Fixpoint _sort (p : point) (P : list point) : Prop :=
   match P with
-  | p :: P' => (In p T \/ weak_interior p T) /\ is_convex_hull P' T
-  | [] => True
+  | cons q P' =>
+    match P' with
+    | cons r _ => ccw p r q /\ _sort p P'
+    | nil => True
+    end
+  | nil => False
   end.
 
-(** (ccw p0 p1 p \/ ...) \/ (p = t \/ In p T') *)
+(* all point in P is left to p->q *)
+Fixpoint leftward (p q : point) (P : list point) : Prop :=
+  match P with
+  | cons r P' => ccw p q r /\ leftward p q P'
+  | nil => True
+  end.
 
-(* Next point satisfies [ccw ? ? ?] *)
+(* Set (P) : [ q ; r ; ... ] *)
+Fixpoint sort (p : point) (P : list point) : Prop :=
+  match P with
+  | cons q P' => leftward p q P' /\ sort p P'
+  | nil => False
+  end.
+
+(* all point in P is right to p->q *)
+Fixpoint rightward (p q : point) (P : list point) : Prop :=
+  match P with
+  | cons r P' => ccw p r q /\ rightward p q P'
+  | nil => True
+  end.
+
+(* ? for recursion *)
+Fixpoint sort' (p : point) (P : list point) : Prop :=
+  match P with
+  | cons q P' => rightward p q P' /\ sort' p P'
+  | nil => False
+  end.
+
+(* Stack (T) : [ s ; r ; q ; ... ; p ], check recursively from s. *)
+(* ccw q r s /\ ccw r s p *)
+(* p = last T *)
+Fixpoint convex (p : point) (T : list point) : Prop :=
+  match T with
+  | cons s (cons r (cons q T')) => ccw q r s /\ ccw r s p /\ convex p T'
+  | _ => True
+  end.
+
+Theorem succ_in : forall (p : point) (T : list point),
+  In p (succ p T).
+Proof.
+  induction T; simpl; intros.
+  - left. auto.
+  - destruct T.
+    + left. auto.
+    + destruct (ccw_dec p0 a p).
+      * left. auto.
+      * auto.
+Qed.
+
+Theorem convex_0 : forall (p q : point) (T : list point),
+  sort' p (q :: T) -> convex p T -> succ q T = q :: T ->
+  convex p (q :: T).
+Proof.
+  simpl; intros.
+  destruct T; auto.
+  destruct T; auto.
+  simpl in *. Abort.
+
+
+(*
+  sort p P' -> convex p (convex_hull_assist P' [p])
+*)
+(* Indprinciple ? *)
 
 Example pa := {| x := 3; y := 2|}.
 Example pb := {| x := 5; y := 3|}.
@@ -168,124 +192,3 @@ Example pd := {| x := 2; y := 3|}.
 
 Compute convex_hull [pa ; pb ; pc].
 Compute convex_hull [pa ; pb ; pc ; pd].
-
-Theorem is_convex_hull_2 : forall (p q : point),
-  is_convex_hull [p ; q] (convex_hull [p ; q]).
-Proof.
-  simpl; intros.
-  repeat split; simpl;
-  left; auto.
-Qed.
-
-Theorem is_convex_hull_2r : forall (p q : point),
-  is_convex_hull [p ; q] (convex_hull [q ; p]).
-Proof.
-  simpl; intros.
-  repeat split; simpl;
-  left; auto.
-Qed.
-
-Theorem is_convex_hull_jarvis_march_3 : forall (p q r : point),
-  ccw p q r -> is_convex_hull [p ; q ; r] (convex_hull [p ; q ; r]).
-Proof.
-  simpl; intros.
-  repeat split; unfold convex_hull, convex_hull_assist, succ;
-  destruct (ccw_dec p q r); simpl; repeat split;
-  left; auto.
-Qed.
-
-Theorem is_convex_hull_interior : forall (P T : list point) (p : point),
-  is_convex_hull P T -> weak_interior p T -> is_convex_hull (p :: P) T.
-Proof.
-  simpl; intros; split; auto. Qed.
-
-Lemma succ_ccw : forall (T : list point) (p q r : point),
-  ccw r q p -> succ p (q :: r :: T) = p :: q :: r :: T.
-Proof.
-  simpl; intros.
-  destruct (ccw_dec r q p); auto.
-  unfold not, ccw, det in *. nia.
-Qed.
-
-Lemma succ_non_ccw : forall (T : list point) (p q r : point),
-  ~ ccw r q p -> succ p (q :: r :: T) = succ p (r :: T).
-Proof.
-  simpl; intros.
-  destruct (ccw_dec r q p).
-  - unfold not, ccw, det in *. nia.
-  - auto.
-Qed.
-
-Check ccw_dec.
-(* ccw_dec
-: forall p q r : point, {ccw p q r} + {~ ccw p q r} *)
-
-Compute convex_hull [].
-Compute convex_hull [pa].
-Compute convex_hull [pa ; pb ; pc].
-
-(* TODO *)
-
-Compute convex_hull_assist [] [].
-Compute convex_hull_assist [pa] [].
-Compute convex_hull_assist [pa ; pb] [].
-Compute convex_hull_assist [pa ; pb ; pc ; pd] [].
-
-(* will fail without `ccw p q r` *)
-Theorem ch_0_fail : forall (P : list point) (p q r : point),
-  is_convex_hull [p ; q ; r] (convex_hull [p ; q ; r]).
-Proof.
-  intros; repeat split;
-  unfold convex_hull, convex_hull_assist, succ;
-  destruct (ccw_dec p q r); simpl; repeat split;
-  try (left; apply ccw_cyclicity; apply ccw_cyclicity; assumption);
-  try (left; apply ccw_cyclicity; assumption);
-  try (left; assumption);
-  try (right; unfold colinear, det; nia);
-  try (unfold not, ccw, colinear, det in *; nia).
-  Abort.
-
-
-Compute convex_hull [pa ; pb].
-Compute convex_hull_assist [pb] [pa].
-Compute convex_hull_assist [] [pb ; pa].
-
-Compute convex_hull [pa ; pb ; pc].
-
-(* The point set should be sorted
-   so that the first two points
-   constitutes the starting edge of convex hull *)
-Definition pre_sorted_set (P : list point) :=
-  match P with
-  | p :: P' =>
-    match P' with
-    (* P = p :: q :: P'' *)
-    (* ? `In` *)
-    | q :: P'' => forall (r : point), In r P'' -> ccw p q r
-    | [] => True
-    end
-  | [] => True
-  end.
-
-(* Theorem ch_interior : forall (P : list point) (p : point),
-  weak_interior p (convex_hull P) -> convex_hull P = convex_hull (p :: P) *)
-
-Theorem ch_0: forall (P : list point) (p q r : point),
-  P = [p ; q ; r] -> pre_sorted_set P ->
-  is_convex_hull P (convex_hull P).
-Proof.
-  intros; subst; simpl.
-  assert (ccw p q r) as H. { simpl in H0. specialize (H0 r). apply H0. auto. }
-  repeat split;
-  destruct (ccw_dec p q r); try contradiction;
-  left; simpl; auto.
-Qed.
-
-Theorem ch_1: forall (P P' : list point) (p q r : point),
-  P = p :: q :: r :: P' -> pre_sorted_set P ->
-  is_convex_hull P (convex_hull P).
-Proof.
-  intros; subst; simpl.
-  induction P'; repeat split;
-  try (simpl; left; auto).
-  Abort.

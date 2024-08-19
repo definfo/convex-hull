@@ -79,34 +79,35 @@ Notation "[ x ; .. ; y ]" := (cons x .. (cons y nil) ..).
 
 Fixpoint succ (p : point) (T : list point) : list point :=
   match T with
-  | t :: T' =>
+  | cons t T' =>
     match T' with
     (* T = t :: s :: T'' *)
-    | s :: T'' =>
+    | cons s T'' =>
       match (ccw_dec s t p) with
       (* ccw s t p, push stack *)
-      | left _ => p :: T
+      | left _ => cons p T
       (* ~ ccw s t p, pop stack & recursion *)
       | right _ => succ p T'
       end
     (* T = [t], push stack *)
-    | _ => p :: T
+    | _ => cons p T
     end
-  (* untouched *)
-  | _ => p :: T
+  (* T = [], untouched *)
+  | _ => cons p T
   end.
 
 Fixpoint convex_hull_assist (P T : list point) : list point :=
   match P with
-  | p :: P' => convex_hull_assist P' (succ p T)
-  | [] => T
+  (* call `succ` for each point *)
+  | cons p P' => convex_hull_assist P' (succ p T)
+  | _ => T
   end.
 
 (** assume that `sort p P'` holds *)
 Definition convex_hull (P : list point) : list point :=
   match P with
   | cons p P' => convex_hull_assist P' [p]
-  | nil => P
+  | _ => P
   end.
 
 
@@ -132,7 +133,7 @@ Fixpoint leftward (p q : point) (P : list point) : Prop :=
 Fixpoint sort (p : point) (P : list point) : Prop :=
   match P with
   | cons q P' => leftward p q P' /\ sort p P'
-  | nil => False
+  | nil => True
   end.
 
 (* all point in P is right to p->q *)
@@ -146,7 +147,7 @@ Fixpoint rightward (p q : point) (P : list point) : Prop :=
 Fixpoint sort' (p : point) (P : list point) : Prop :=
   match P with
   | cons q P' => rightward p q P' /\ sort' p P'
-  | nil => False
+  | nil => True
   end.
 
 (* Stack (T) : [ s ; r ; q ; ... ; p ], check recursively from s. *)
@@ -170,15 +171,23 @@ Proof.
       * auto.
 Qed.
 
-Theorem convex_0 : forall (p q : point) (T : list point),
-  sort' p (q :: T) -> convex p T -> succ q T = q :: T ->
-  convex p (q :: T).
+(* After ___,
+the vertices on T are the vertices of C2
+in clockwise order. *)
+Theorem convex_0 : forall (p q r : point),
+  sort' p [r ; q ; p] -> convex p [q ; p] ->
+  convex p [r ; q ; p].
 Proof.
   simpl; intros.
-  destruct T; auto.
-  destruct T; auto.
-  simpl in *. Abort.
+  destruct H. destruct H.
+  repeat split; try assumption.
+  apply ccw_cyclicity. assumption.
+Qed.
 
+(** Proof: *)
+(* After the i’th iteration,
+the vertices on T are the vertices of Ci
+in clockwise order.  *)
 
 (*
   sort p P' -> convex p (convex_hull_assist P' [p])

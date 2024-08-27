@@ -5,15 +5,6 @@ Require Import Coq.Lists.ListDec.
 From ConvexHull Require Import ZPoints.
 Local Open Scope Z.
 
-Check ccw_dec.
-Check ccw_cyclicity.
-Check ccw_anti_symmetry.
-Check ccw_non_degeneracy.
-Check ccw_interiority.
-Check ccw_transitivity.
-Check ccw_dual_transitivity.
-Check ccw_trichotomy.
-
 (* Gift-wrapping / Jarvis' march *)
 (* 每步查找最外侧点
    leftmost point, -y orientation =>
@@ -138,26 +129,49 @@ Fixpoint sort (p : point) (P : list point) : Prop :=
   | nil => True
   end. *)
 
-Lemma sort_rec : forall (p q : point) (P : list point),
-  sort p (q :: P) -> sort p P.
+Lemma rightward_ind : forall (p q r : point) (P P' : list point),
+  rightward p q (P ++ r :: P') -> rightward p q (P ++ P').
 Proof.
-  simpl; intros. destruct H. assumption. Qed.
+  induction P; simpl; intros.
+  - destruct H. assumption.
+  - destruct H as [H IH]. specialize (IHP P' IH).
+    split; assumption.
+Qed.
+
+Lemma sort_ind : forall (p q : point) (P P' : list point),
+  sort p (P ++ q :: P') -> sort p (P ++ P').
+Proof.
+  induction P; simpl; intros.
+  - destruct H. assumption.
+  - split; destruct H as [Hr H];
+    pose proof rightward_ind as IHr;
+    specialize (IHr p a q P P' Hr);
+    specialize (IHP P' H);
+    assumption.
+Qed.
 
 (* Stack (T) : [ s ; r ; q ; ... ; p ], check recursively from s. *)
 (* ccw q r s /\ ccw r s p *)
 (* p := last T *)
 Fixpoint convex (p : point) (T : list point) : Prop :=
   match T with
-  | cons s (cons r (cons q T')) => ccw q r s /\ ccw r s p /\ convex p T'
+  | cons s T' =>
+    match T' with
+    | cons r (cons q _) => ccw q r s /\ ccw r s p /\ convex p T'
+    | _ => True
+    end
   | _ => True
   end.
 
-(* ? *)
-(* Definition convex' (T : list point) : Prop :=
-  match rev T with
-  | cons p _ => convex p T
-  | nil => True
-  end. *)
+Lemma convex_ind : forall (p q : point) (T : list point),
+  convex p (q :: T) -> convex p T.
+Proof.
+  destruct T; intros; try eauto.
+  destruct T; intros; try eauto.
+  destruct H as [_ [_ H]]. assumption.
+Qed.
+
+
 
 (** Verification *)
 Definition point_In_dec := In_dec point_dec.
@@ -204,55 +218,115 @@ Qed.
 the vertices on the stack are the vertices of C_i
 in clockwise order.  *)
 
-(*  Prove several properties of [convex_hull']. *)
-(*? partial_ord *)
-Lemma ch'_partial_ord : forall (T : list point),
-  True.
+(* Prove that [convex_hull' T] is subset of T retaining order *)
+(* start from succ ? *)
+Lemma succ_stack : forall (a : point) (T : list point),
+  exists T0 T', T = T0 ++ T' /\ succ a T = a :: T'.
+Proof.
+  intros; destruct T.
+  - exists [], []. split; reflexivity.
+  - destruct T.
+    + exists [], [p]. split; reflexivity.
+    + revert a p p0.
+      induction T; intros.
+      * simpl; destruct (ccw_dec p0 p a).
+        exists [], [p ; p0]. split; reflexivity.
+        exists [p], [p0]. split; reflexivity.
+      * pose proof IHT a0 p0 a. 
+        pose proof IHT a0 p p0.
+        destruct H as [T0 [T' [H1 H2]]].
+        destruct H0 as [T1 [T'' [H3 H4]]].
+        simpl in H4. simpl. destruct (ccw_dec p0 p a0).
+        exists [], (p :: p0 :: a :: T). split; reflexivity.
+        simpl in H2. destruct (ccw_dec a p0 a0).
+        exists [p], (p0 :: a :: T). split; reflexivity.
+        exists (p :: T0), T'.
+        split.
+        rewrite H1. reflexivity.
+        assumption.
+Qed.
+
+Lemma rightward_ind' : forall (p q : point) (T0 T : list point),
+  rightward p q (T0 ++ T) -> rightward p q T.
+Proof.
+  induction T0; intros; try assumption.
+  destruct H. apply (IHT0 T H0).
+Qed.
 
 Theorem rightward_conv : forall (p q : point) (T : list point),
   rightward p q T -> rightward p q (convex_hull' T).
 Proof.
-  induction T; simpl; intros; try eauto.
-  destruct H. specialize (IHT H0).
-  Abort.
-  
+  intros.
+  induction T; simpl; try eauto.
+  pose proof rightward_ind p q a [] T H.
+  specialize (IHT H0).
+  pose proof succ_stack a (convex_hull' T).
+  destruct H1 as [T0 [T' [H1 H2]]].
+  induction T0; rewrite H1 in *; rewrite H2.
+  - destruct H; split; assumption. 
+  - destruct H. split; try assumption.
+    destruct IHT.
+    pose proof rightward_ind' p q T0 T'.
+    apply (H6 H5).
+Qed.
+
+Lemma sort_ind' : forall (p : point) (T0 T : list point),
+  sort p (T0 ++ T) -> sort p T.
+Proof.
+  induction T0; intros; try assumption.
+  specialize (IHT0 T). destruct H. apply (IHT0 H0).
+Qed.
+
+Theorem sort_conv : forall (p : point) (T : list point),
+  sort p T -> sort p (convex_hull' T).
+Proof.
+  intros.
+  induction T; simpl; try eauto.
+  pose proof sort_ind p a [] T H.
+  specialize (IHT H0).
+  pose proof succ_stack a (convex_hull' T).
+  destruct H1 as [T0 [T' [H1 H2]]].
+  induction T0; simpl in H1; rewrite H1 in *; rewrite H2;
+  destruct H; split.
+  - pose proof rightward_conv p a T H.
+    rewrite <- H1. assumption.
+  - assumption.
+  - pose proof rightward_conv p a T H.
+    rewrite H1 in H4.
+    pose proof rightward_ind' p a (a0 :: T0) T'.
+    apply (H5 H4).
+  - destruct IHT.
+    pose proof sort_ind' p T0 T'.
+    apply (H6 H5).
+Qed.
 
 Theorem convex_1 : forall (p q : point) (T : list point),
   sort p (q :: T) -> convex p T -> convex p (succ q T).
 Proof.
   intros. destruct H.
   destruct T; try eauto.
-  destruct T; try eauto.
-  revert p0 p1 H H0 H1.
-  induction T; simpl; intros; destruct (ccw_dec p1 p0 q);
-  try (simpl; eauto);
-  try (destruct H;
-    repeat split; simpl; try assumption;
-    try (apply ccw_cyclicity; assumption)).
-  
-
-  Admitted.
+  generalize dependent p0.
+  induction T; intros; simpl; try eauto.
+  destruct (ccw_dec a p0 q).
+  - destruct H as [H _].
+    repeat split; try assumption;
+    try (apply ccw_cyclicity; assumption).
+  - pose proof IHT a.
+    pose proof rightward_ind p q p0 [] (a :: T) H.
+    pose proof sort_ind p p0 [] (a :: T) H1.
+    pose proof convex_ind p p0 (a :: T) H0.
+    specialize (H2 H3 H4 H5). assumption.
+Qed.
 
 Theorem graham_convex_1 : forall (p : point) (T : list point),
   sort p T -> convex p (convex_hull' T).
 Proof.
   intros.
   induction T; simpl; try eauto.
-  pose proof sort_rec p a T H. specialize (IHT H0).
+  pose proof sort_ind p a [] T H. specialize (IHT H0).
   pose proof convex_1 p a (convex_hull' T).
   apply H1; try assumption. clear H0 H1.
-  simpl in *. Abort.
-
-(*
-  sort p P' -> convex p (convex_hull_assist P' [p])
-*)
-(* Indprinciple ? *)
-
-Example pa := {| x := 3; y := 2|}.
-Example pb := {| x := 5; y := 3|}.
-Example pc := {| x := 6; y := 7|}.
-Example pd := {| x := 2; y := 3|}.
-
-Compute convex_hull' [pa ; pb ; pc].
-Compute convex_hull' [pa ; pb ; pc ; pd].
-Check convex pa [pa ; pb ; pc ; pd].
+  simpl in *. destruct H. split.
+  - apply rightward_conv. assumption.
+  - apply sort_conv. assumption.
+Qed.

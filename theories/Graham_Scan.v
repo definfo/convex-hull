@@ -1,7 +1,6 @@
 Require Import Coq.ZArith.ZArith.
 Require Import Coq.micromega.Psatz.
 Require Import Coq.Lists.List.
-Require Import Coq.Lists.ListDec.
 From ConvexHull Require Import ZPoints.
 Local Open Scope Z.
 
@@ -38,36 +37,6 @@ Notation "[ ]" := nil.
 Notation "[ x ; .. ; y ]" := (cons x .. (cons y nil) ..).
 
 (** Algorithm *)
-(* p : current point *)
-(* T : stack *)
-(* Fixpoint succ (p : point) (T : list point) : list point :=
-  match T with
-  | t :: T' =>
-    match T' with
-    (* T = t :: s :: T'' *)
-    | s :: T'' =>
-      match (ccw_dec s t p) with
-      (* ccw s t p, push stack *)
-      | left _ => p :: T
-      (* ~ ccw s t p, pop stack & recursion *)
-      | right _ => succ p T'
-      end
-    (* T = [s], push stack *)
-    | [] => [p ; t]
-    end
-  (* T = [], push stack *)
-  (* assume that the first point in P is leftmost *)
-  | [] => [p]
-  end. *)
-
-(* Fixpoint convex_hull_assist (P T : list point) : list point :=
-  match P with
-  | p :: P' => convex_hull_assist P' (succ p T)
-  | [] => T
-  end. *)
-
-(* Definition convex_hull (P : list point) : list point := convex_hull_assist P []. *)
-
 Fixpoint succ (p : point) (T : list point) : list point :=
   match T with
   | cons t T' =>
@@ -87,27 +56,14 @@ Fixpoint succ (p : point) (T : list point) : list point :=
   | _ => cons p T
   end.
 
-(* Fixpoint convex_hull_assist (P T : list point) : list point :=
-  match P with
-  (* call `succ` for each point *)
-  | cons p P' => convex_hull_assist P' (succ p T)
-  | _ => T
-  end.
-
-(** assume that `sort p P'` holds *)
-Definition convex_hull (P : list point) : list point :=
-  match P with
-  | cons p P' => convex_hull_assist P' [p]
-  | _ => P
-  end. *)
-
 (* Stack (T): [q ; ... ; p] *)
-Fixpoint convex_hull' (T : list point) : list point :=
+Fixpoint convex_hull (T : list point) : list point :=
   match T with
-  | cons q T' => succ q (convex_hull' T')
+  | cons q T' => succ q (convex_hull T')
   | _ => T
   end.
 
+(** Properties *)
 (* all point in P are right to p->q *)
 Fixpoint rightward (p q : point) (P : list point) : Prop :=
   match P with
@@ -121,13 +77,6 @@ Fixpoint sort (p : point) (P : list point) : Prop :=
   | cons q P' => rightward p q P' /\ sort p P'
   | nil => True
   end.
-
-(* ? *)
-(* Definition sort' (P : list point) : Prop :=
-  match P with
-  | cons p P' => sort p P'
-  | nil => True
-  end. *)
 
 Lemma rightward_ind : forall (p q r : point) (P P' : list point),
   rightward p q (P ++ r :: P') -> rightward p q (P ++ P').
@@ -150,7 +99,7 @@ Proof.
     assumption.
 Qed.
 
-(* Stack (T) : [ s ; r ; q ; ... ; p ], check recursively from s. *)
+(* Stack (T) : [ s ; r ; q ; ... ; p ] *)
 (* ccw q r s /\ ccw r s p *)
 (* p := last T *)
 Fixpoint convex (p : point) (T : list point) : Prop :=
@@ -171,24 +120,7 @@ Proof.
   destruct H as [_ [_ H]]. assumption.
 Qed.
 
-
-
-(** Verification *)
-Definition point_In_dec := In_dec point_dec.
-Check point_In_dec.
-
-Theorem succ_in : forall (p : point) (T : list point),
-  In p (succ p T).
-Proof.
-  induction T; simpl; intros.
-  - left. auto.
-  - destruct T.
-    + left. auto.
-    + destruct (ccw_dec p0 a p).
-      * left. auto.
-      * auto.
-Qed.
-
+(** Simple case *)
 (*  After init,
 the vertices on T are the vertices of C_2
 in clockwise order. *)
@@ -203,7 +135,7 @@ Proof.
 Qed.
 
 Theorem graham_convex_0 : forall (p q r : point),
-  sort p [r ; q ; p] -> convex p (convex_hull' [r ; q ; p]).
+  sort p [r ; q ; p] -> convex p (convex_hull [r ; q ; p]).
 Proof.
   simpl; intros.
   destruct H as [[H _] [_ _]].
@@ -213,13 +145,11 @@ Proof.
   apply ccw_cyclicity; assumption.
 Qed.
 
-(** Proof: *)
+(** Proof *)
 (*  After the i’th iteration,
 the vertices on the stack are the vertices of C_i
 in clockwise order.  *)
-
-(* Prove that [convex_hull' T] is subset of T retaining order *)
-(* start from succ ? *)
+(* Prove that [convex_hull T] is subset of T retaining order *)
 Lemma succ_stack : forall (a : point) (T : list point),
   exists T0 T', T = T0 ++ T' /\ succ a T = a :: T'.
 Proof.
@@ -254,13 +184,13 @@ Proof.
 Qed.
 
 Theorem rightward_conv : forall (p q : point) (T : list point),
-  rightward p q T -> rightward p q (convex_hull' T).
+  rightward p q T -> rightward p q (convex_hull T).
 Proof.
   intros.
   induction T; simpl; try eauto.
   pose proof rightward_ind p q a [] T H.
   specialize (IHT H0).
-  pose proof succ_stack a (convex_hull' T).
+  pose proof succ_stack a (convex_hull T).
   destruct H1 as [T0 [T' [H1 H2]]].
   induction T0; rewrite H1 in *; rewrite H2.
   - destruct H; split; assumption. 
@@ -278,13 +208,13 @@ Proof.
 Qed.
 
 Theorem sort_conv : forall (p : point) (T : list point),
-  sort p T -> sort p (convex_hull' T).
+  sort p T -> sort p (convex_hull T).
 Proof.
   intros.
   induction T; simpl; try eauto.
   pose proof sort_ind p a [] T H.
   specialize (IHT H0).
-  pose proof succ_stack a (convex_hull' T).
+  pose proof succ_stack a (convex_hull T).
   destruct H1 as [T0 [T' [H1 H2]]].
   induction T0; simpl in H1; rewrite H1 in *; rewrite H2;
   destruct H; split.
@@ -300,7 +230,7 @@ Proof.
     apply (H6 H5).
 Qed.
 
-Theorem convex_1 : forall (p q : point) (T : list point),
+Theorem sort_convex_ind : forall (p q : point) (T : list point),
   sort p (q :: T) -> convex p T -> convex p (succ q T).
 Proof.
   intros. destruct H.
@@ -319,12 +249,12 @@ Proof.
 Qed.
 
 Theorem graham_convex_1 : forall (p : point) (T : list point),
-  sort p T -> convex p (convex_hull' T).
+  sort p T -> convex p (convex_hull T).
 Proof.
   intros.
   induction T; simpl; try eauto.
   pose proof sort_ind p a [] T H. specialize (IHT H0).
-  pose proof convex_1 p a (convex_hull' T).
+  pose proof sort_convex_ind p a (convex_hull T).
   apply H1; try assumption. clear H0 H1.
   simpl in *. destruct H. split.
   - apply rightward_conv. assumption.

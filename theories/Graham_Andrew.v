@@ -46,6 +46,8 @@ Fixpoint sort_mono (l: list point) :=
     end
   end.
 
+(* TODO: Lemma sort_mono_totalOrder *)
+
 Fixpoint l_hall_inc (p: point) (T: list point) :=
   match T with
   | q :: T' =>
@@ -60,7 +62,7 @@ Fixpoint l_hall_inc (p: point) (T: list point) :=
   | _ => p :: T
   end.
 
-(* l should ensure [sort_mono l] *)
+(* l should ensure [sort_mono_l l] *)
 Definition l_hall (l: list point) :=
   fold_right l_hall_inc nil l.
 
@@ -82,11 +84,37 @@ Fixpoint u_hall_inc (p: point) (T: list point) :=
 Definition u_hall (l: list point) :=
   fold_right u_hall_inc nil (rev l).
 
-(* Definition point_in_list_b (p: point) (l: list point) : bool := . *)
-Parameter point_in_list_b : point -> list point -> bool.
+(** Proof **)
+(** Final := forall l, is_semi_hall u_hall l /\ is_semi_hall l_hall l *)
 
-(* l should ensure [sort_mono l] *)
-(* ! extensionality on point for `In p ...` to work *)
-Definition graham_andrew (l: list point) :=
-  filter (fun p => orb (point_in_list_b p (l_hall l)) (point_in_list_b p (u_hall l))) l.
+Fixpoint in_semi_hall (p: point) (l: list point) :=
+  match l with
+  | nil => True
+  | p0 :: l' =>
+    match l' with
+    | nil => True
+    | p1 :: _ => g_ccw p0 p1 p /\ in_semi_hall p l'
+    end
+  end.
 
+Definition is_semi_hall (CH: list point) (l: list point) :=
+  Forall (fun p => in_semi_hall p CH) l.
+
+Lemma l_hall_pre: forall l,
+  sort_mono l -> is_semi_hall (l_hall l) l.
+Proof.
+  destruct l; intros;
+  try unfold is_semi_hall; eauto.
+  induction l; intros;
+  try unfold is_semi_hall; eauto.
+  
+Abort.
+
+Theorem graham_andrew_1: forall l,
+  sort_mono l ->
+  is_semi_hall (l_hall l) l /\ is_semi_hall (u_hall l) l.
+  (** l := [a ; ... ; b] ->
+    l_hall l = [a ; ... ; b] /\ u_hall l = [b ; ... ; a] *)
+Proof.
+  
+Abort.

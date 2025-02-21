@@ -997,6 +997,24 @@ Proof.
       tauto.
 Qed.
 
+Theorem g_ccw_rep : forall p q ,
+  g_ccw p p q /\ g_ccw q p p.
+Proof.
+  intros; repeat split.
+  - unfold g_ccw; right.
+    split.
+    + unfold colinear, parallel, build_vec, cross_prod. simpl.
+      lia.
+    + unfold at_mid, backward_or_perp, build_vec, dot_prod. simpl.
+      nia.
+  - unfold g_ccw; right.
+    split.
+    + unfold colinear, parallel, build_vec, cross_prod. simpl.
+      lia.
+    + unfold at_mid, backward_or_perp, build_vec, dot_prod. simpl.
+      nia.
+Qed.
+
 (* ========================== *)
 (*      Sort Definition       *)
 (* ========================== *)
@@ -1007,10 +1025,11 @@ Definition leftmost (p: point) (P: list point) : Prop :=
 Fixpoint sort_aux (p : point) (P : list point) : Prop :=
   match P with
   (* All points in P' are or left to q->p *)
-  | cons q P' => Forall_ccw q p P' /\ sort_aux p P'
+  | q :: P' => Forall_ccw q p P' /\ sort_aux p P'
   | nil => True
   end.
 
+(* split the first point p with P *)
 Definition sort (p: point) (P: list point) : Prop :=
   leftmost p P /\ sort_aux p P.
 
@@ -1043,12 +1062,13 @@ Jarvis(x[1..n], y[1..n]):
   until p = l *)
 
 
-(*! This function does not check the last edge of convex hull. *)
+(* split first point p with tail T *)
 Fixpoint is_convex (p : point) (T : list point) : Prop :=
   match T with
-  | cons s T' =>
+  (* p3 := last point in stack *)
+  | p3 :: T' =>
     match T' with
-    | cons r (cons q _) => ccw q r s /\ ccw r s p /\ is_convex p T'
+    | p2 :: p1 :: _ => ccw p1 p2 p3 /\ ccw p2 p3 p /\ is_convex p T'
     | _ => True
     end
   | _ => True
@@ -1117,11 +1137,30 @@ Fixpoint point_in_or_on (p : point) (CH : list point) : Prop :=
   | cons r CH' =>
     match CH' with
     | nil => True
-    | cons s _ => g_ccw r s p /\ point_in_or_on p CH'
+    | cons s _ => ccw r p s /\ point_in_or_on p CH'
     end
   end.
 
-(* we admit that CH is subset of l which any algorithm satisfies. *)
+(* Admit that CH is subset of l which any algorithm satisfies. *)
 Definition is_max_hull (CH l: list point) :=
   (* ? In p T \/ *)
   Forall (fun p => point_in_or_on p CH) l.
+
+(* Check if p is in triangle p1-p2-p3 *)
+Definition point_in_triangle (p p1 p2 p3: point) : Prop :=
+  (g_ccw p1 p2 p /\ g_ccw p2 p3 p /\ g_ccw p3 p1 p) \/
+  (g_ccw p1 p p2 /\ g_ccw p2 p p3 /\ g_ccw p3 p p1).
+
+(* split first point p0 with convex hull CH *)
+Fixpoint point_in_hull (p p0: point) (CH: list point) :=
+  match CH with
+  | nil => True
+  | p1 :: l' =>
+    match l' with
+    | nil => True
+    | p2 :: _ => point_in_triangle p p0 p1 p2 \/ point_in_hull p p0 l'
+    end
+  end.
+
+Definition is_max_hull' (p: point) (CH l: list point) :=
+  Forall (fun q => point_in_hull q p CH) l.

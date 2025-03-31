@@ -1015,23 +1015,109 @@ Proof.
       nia.
 Qed.
 
+Lemma forall_inr_true : forall (A: Type) (P: Prop) (l: list A),
+  Forall (fun q => P \/ True) l.
+Proof.
+  intros.
+  induction l as [ | x l' IHl'].
+  - apply Forall_nil.
+  - apply Forall_cons.
+    + tauto.
+    + apply IHl'.
+Qed.
+
+(** ccw_list with reverse order *)
+Fixpoint rev_ccw_list (p: point) (l: list point): Prop :=
+  match l with
+  | cons q l0 => Forall_ccw q p l0 /\ rev_ccw_list p l0
+  | nil => True
+  end.
+
+Lemma rev_ccw_list_app_iff: forall p l1 l2,
+  rev_ccw_list p (l1 ++ l2) <->
+    rev_ccw_list p l1 /\
+    rev_ccw_list p l2 /\
+    (forall q r, In q l1 -> In r l2 -> ccw q p r).
+Proof.
+  intros.
+  split; induction l1; simpl.
+  + tauto.
+  + intros.
+    specialize (IHl1 ltac:(tauto)).
+    rewrite Forall_ccw_app in H.
+    destruct IHl1 as [? [? ?]], H as [[? ?] ?].
+    repeat split; try tauto.
+    intros.
+    destruct H5; [| apply H2; tauto].
+    subst q.
+    rewrite Forall_ccw_forall in H3.
+    apply H3; tauto.
+  + tauto.
+  + intros [[? ?] [? ?]].
+    assert (forall q r, In q l1 -> In r l2 -> ccw q p r)
+      by (intros; apply H2; tauto).
+    specialize (IHl1 ltac:(tauto)).
+    rewrite Forall_ccw_app.
+    repeat split; try tauto.
+    rewrite Forall_ccw_forall.
+    intros; apply H2; tauto.
+Qed.
+
+Lemma rev_ccw_list_remove_middle: forall p l1 l2 l3,
+  rev_ccw_list p (l1 ++ l2 ++ l3) ->
+  rev_ccw_list p (l1 ++ l3).
+Proof.
+  intros.
+  rewrite rev_ccw_list_app_iff.
+  rewrite !rev_ccw_list_app_iff in H.
+  destruct H as [? [? ?]].
+  destruct H0 as [? [? ?]].
+  split; [| split]; try tauto.
+  intros.
+  apply H1; try tauto.
+  rewrite in_app_iff.
+  tauto.
+Qed.
+
+Fixpoint rev_consec_ccw (l: list point) : Prop :=
+  match l with
+  | p :: _l =>
+    match _l with
+    | q :: r :: _ => ccw q p r
+    | _ => True
+    end /\ rev_consec_ccw _l
+  | _ => True
+  end.
+
+Lemma rev_consec_ccw_cons_iff: forall a l,
+  rev_consec_ccw (a :: l) <->
+  rev_consec_ccw l /\ (forall b c l0, l = b :: c :: l0 -> ccw b a c).
+Proof.
+  intros.
+  split; intros.
+  + destruct H.
+    split; [tauto |].
+    intros.
+    subst l.
+    tauto.
+  + destruct H.
+    split; [| tauto].
+    destruct l as [| ? [|]]; try tauto.
+    specialize (H0 _ _ _ ltac:(reflexivity)).
+    tauto.
+Qed.
+
+
 (* ========================== *)
 (*      Sort Definition       *)
 (* ========================== *)
 
 Definition leftmost (p: point) (P: list point) : Prop :=
-  Forall (fun q => point_x p <= point_x q /\ point_y p <= point_y q) P.
-
-Fixpoint sort_aux (p : point) (P : list point) : Prop :=
-  match P with
-  (* All points in P' are or left to q->p *)
-  | q :: P' => Forall_ccw q p P' /\ sort_aux p P'
-  | nil => True
-  end.
+  Forall (fun (q: point) => p.(x) < q.(x) \/ (p.(x) = q.(x) /\ p.(y) < q.(y))) P.
 
 (* split the first point p with P *)
 Definition sort (p: point) (P: list point) : Prop :=
-  leftmost p P /\ sort_aux p P.
+  leftmost p P /\ rev_ccw_list p P.
 
 (* Gift-wrapping / Jarvis' march *)
 (* 每步查找最外侧点
@@ -1083,8 +1169,8 @@ Proof.
 Qed.
 
 (** Lemma for assistance **)
-Lemma sort_aux_ind : forall (p q : point) (P P' : list point),
-  sort_aux p (P ++ q :: P') -> sort_aux p (P ++ P').
+Lemma rev_ccw_list_ind : forall (p q : point) (P P' : list point),
+  rev_ccw_list p (P ++ q :: P') -> rev_ccw_list p (P ++ P').
 Proof.
   induction P; simpl; intros.
   - destruct H. assumption.
@@ -1095,8 +1181,8 @@ Proof.
     tauto.
 Qed.
 
-Lemma sort_aux_ind' : forall (p : point) (T0 T : list point),
-  sort_aux p (T0 ++ T) -> sort_aux p T.
+Lemma rev_ccw_list_ind' : forall (p : point) (T0 T : list point),
+  rev_ccw_list p (T0 ++ T) -> rev_ccw_list p T.
 Proof.
   induction T0; intros; try assumption.
   specialize (IHT0 T). destruct H. apply (IHT0 H0).
@@ -1108,16 +1194,11 @@ Proof.
   induction T0; intros; try assumption.
   specialize (IHT0 T).
   simpl in H. unfold leftmost in *.
-  pose proof Forall_app (fun q : point => p.(x) <= q.(x) /\ p.(y) <= q.(y)) [a] (T0 ++ T).
+  pose proof Forall_app (fun (q : point) => p.(x) < q.(x) \/ (p.(x) = q.(x) /\ p.(y) < q.(y))) [a] (T0 ++ T).
   destruct H0 as [H0 _]. specialize (H0 H).
   destruct H0 as [_ H0]. specialize (IHT0 H0).
   tauto.
 Qed.
-
-Lemma leftmost_ind' : forall p q T0 T,
-  leftmost p (T0 ++ q :: T) -> leftmost p (T0 ++ T).
-Proof.
-Admitted.
 
 Lemma sort_ind : forall p T0 T,
   sort p (T0 ++ T) -> sort p T.
@@ -1125,7 +1206,7 @@ Proof.
   induction T0; intros; try assumption.
   specialize (IHT0 T). destruct H.
   pose proof leftmost_ind p [a] (T0 ++ T) H.
-  pose proof sort_aux_ind' p [a] (T0 ++ T) H0.
+  pose proof rev_ccw_list_ind' p [a] (T0 ++ T) H0.
   assert (sort p (T0 ++ T)). { split; tauto.  }
   tauto.
 Qed.
@@ -1146,21 +1227,288 @@ Definition is_max_hull (CH l: list point) :=
   (* ? In p T \/ *)
   Forall (fun p => point_in_or_on p CH) l.
 
+Print left_equal.
+
 (* Check if p is in triangle p1-p2-p3 *)
+(** requires `~ ccw p1 p2 p3` *)
 Definition point_in_triangle (p p1 p2 p3: point) : Prop :=
-  (g_ccw p1 p2 p /\ g_ccw p2 p3 p /\ g_ccw p3 p1 p) \/
-  (g_ccw p1 p p2 /\ g_ccw p2 p p3 /\ g_ccw p3 p p1).
+    left_equal (build_vec p1 p2) (build_vec p1 p) /\
+    left_equal (build_vec p2 p3) (build_vec p2 p) /\
+    left_equal (build_vec p3 p1) (build_vec p3 p).
+
+Lemma point_in_tri_1 : forall p1 p2 p3,
+  ~ ccw p1 p2 p3 -> point_in_triangle p1 p1 p2 p3.
+Proof.
+  intros.
+  unfold point_in_triangle, ccw, left_equal, left_than, cross_prod, build_vec in *.
+  simpl in *.
+  split; nia.
+Qed.
+
+Lemma point_in_tri_2 : forall p1 p2 p3,
+  ~ ccw p1 p2 p3 -> point_in_triangle p2 p1 p2 p3.
+Proof.
+  intros.
+  unfold point_in_triangle, ccw, left_equal, left_than, cross_prod, build_vec in *.
+  simpl in *.
+  split; nia.
+Qed.
+
+Lemma point_in_tri_3 : forall p1 p2 p3,
+  ~ ccw p1 p2 p3 -> point_in_triangle p3 p1 p2 p3.
+Proof.
+  intros.
+  unfold point_in_triangle, ccw, left_equal, left_than, cross_prod, build_vec in *.
+  simpl in *.
+  split; nia.
+Qed.
+
+Lemma point_in_tri_general : forall p a b c,
+  ccw c p b ->
+  ccw b p a ->
+  ccw c p a ->
+  ~ ccw a b c ->
+  point_in_triangle b p c a.
+Proof.
+  unfold point_in_triangle, ccw, left_equal, left_than, cross_prod, build_vec;
+  simpl in *. intros.
+  nia.
+Qed.
+
+Lemma point_in_tri_cyclicity : forall p a b c,
+  point_in_triangle p a b c <-> point_in_triangle p b c a.
+Proof.
+  unfold point_in_triangle, ccw, left_equal, left_than, cross_prod, build_vec;
+  simpl in *. intros.
+  nia.
+Qed.
+
+Lemma point_in_tri_at_mid : forall p q r a b c,
+  ~ ccw a b c ->
+  at_mid r p q ->
+  point_in_triangle p a b c ->
+  point_in_triangle q a b c ->
+  point_in_triangle r a b c.
+Proof.
+  intros.
+Abort.
+
+Definition strict_point_in_triangle (p a b c : point) :=
+  ccw c p a /\ ccw b p c /\ ccw a p b.
+
+(** Construct a method to seperate situation on the edges of triangle. *)
+Lemma point_in_tri_split_border : forall p a b c,
+  ~ ccw a b c ->
+  point_in_triangle p a b c ->
+  strict_point_in_triangle p a b c \/
+  colinear c a p \/ colinear b c p \/ colinear a b p.
+Proof.
+  unfold point_in_triangle, strict_point_in_triangle.
+  intros; rewrite !left_equal_iff in *.
+  destruct H0 as [H1 [H2 H3]].
+  destruct H1; destruct H2; destruct H3;
+  try (left; tauto);
+  try (right; left;
+  unfold colinear; tauto);
+  try (right; right; left;
+  unfold colinear; tauto);
+  try (right; right; right;
+  unfold colinear; tauto).
+Qed.
+
+Lemma point_in_tri_col : forall p a b c,
+  colinear a b c ->
+  point_in_triangle p a b c ->
+  at_mid p c a \/ at_mid p b c \/ at_mid p a b.
+Proof.
+  unfold point_in_triangle, colinear, at_mid, parallel, left_equal, backward_or_perp.
+  intros.
+  destruct H0 as [? [? ?]].
+Abort.
+
+Lemma point_in_tri_split_border_2 : forall p a b c,
+  ~ ccw a b c ->
+  point_in_triangle p a b c ->
+  strict_point_in_triangle p a b c \/
+  at_mid p c a \/ at_mid p b c \/ at_mid p a b.
+Proof.
+  intros.
+  pose proof point_in_tri_split_border p a b c H H0 as [? | ?]; [tauto|right].
+  destruct H1 as [? | [? | ?]].
+  - left.
+    unfold colinear, at_mid, parallel, backward_or_perp in *.
+    assert (cross_prod (build_vec p c) (build_vec p a) = 0). {
+      rewrite cross_prod_comm.
+      unfold cross_prod in *; simpl in *.
+      lia.
+    }
+    assert (cross_prod (build_vec b p) (build_vec b a) * (cross_prod (build_vec b p) (build_vec b c)) <= 0).
+    {
+      destruct H0 as [? [? ?]].
+      unfold left_equal in *.
+      assert (cross_prod (build_vec b p) (build_vec b a) <= 0).
+      {
+        unfold cross_prod in *. simpl in *.
+        replace (p.(x) - b.(x)) with ((p.(x) - a.(x)) + (a.(x) - b.(x))). 2: { lia. }
+        replace (p.(y) - b.(y)) with ((p.(y) - a.(y)) + (a.(y) - b.(y))). 2: { lia. }
+        rewrite !Z.mul_add_distr_l.
+        rewrite !Z.mul_add_distr_r.
+        replace ((p.(x) - a.(x)) * (a.(y) - b.(y)) +
+        (a.(x) - b.(x)) * (a.(y) - b.(y)) -
+        ((a.(x) - b.(x)) * (p.(y) - a.(y)) +
+         (a.(x) - b.(x)) * (a.(y) - b.(y))))
+        with ((p.(x) - a.(x)) * (a.(y) - b.(y)) - (a.(x) - b.(x)) * (p.(y) - a.(y))).
+        2: {
+          remember ((p.(x) - a.(x)) * (a.(y) - b.(y))).
+          remember ((a.(x) - b.(x)) * (a.(y) - b.(y))).
+          remember ((a.(x) - b.(x)) * (p.(y) - a.(y))).
+          replace (z + z0 - (z1 + z0)) with (z - z1). 2: { lia. }
+          lia.
+        }
+        nia.
+      }
+      rewrite cross_prod_comm in H3. nia.
+    }
+    assert (cross_prod (build_vec p c) (build_vec p b) * cross_prod (build_vec p a) (build_vec p b) <= 0). { unfold cross_prod in *. simpl in *. nia. }
+    clear H H0 H1 H3.
+    assert
+    (
+      cross_prod (build_vec p c) (build_vec p b) = 0 \/
+      cross_prod (build_vec p a) (build_vec p b) = 0 \/
+      cross_prod (build_vec p c) (build_vec p b) *
+      cross_prod (build_vec p a) (build_vec p b) < 0) as [? | [? | ?]]. { nia. }
+Admitted.
+
+
+Lemma point_in_tri_split_weak : forall p a b c,
+  ~ ccw c a p ->
+  strict_point_in_triangle b c a p ->
+  forall q,
+  strict_point_in_triangle q b a p ->
+  point_in_triangle q c a p.
+Proof.
+  unfold strict_point_in_triangle, point_in_triangle, ccw, left_equal, left_than, cross_prod, build_vec;
+  simpl in *. intros.
+  nia.
+Qed.
+
+(** Remove strict is non-trivial ... *)
+(*! unprovable due to inconsistent definition of point_in_triangle *)
+Lemma point_in_tri_incl : forall p a b c,
+  ~ ccw c a p ->
+  point_in_triangle b c a p ->
+  forall q,
+  point_in_triangle q b a p ->
+  point_in_triangle q c a p.
+Proof.
+  intros.
+  pose proof point_in_tri_split_border b c a p H H0 as [? | [? | [? | ?]]].
+Admitted.
 
 (* split first point p0 with convex hull CH *)
 Fixpoint point_in_hull (p p0: point) (CH: list point) :=
   match CH with
-  | nil => True
   | p1 :: l' =>
     match l' with
-    | nil => True
-    | p2 :: _ => point_in_triangle p p0 p1 p2 \/ point_in_hull p p0 l'
+    | p2 :: _ => point_in_triangle p p1 p2 p0 \/ point_in_hull p p0 l'
+    | _ => False (*? at_mid p p0 p1 *)
     end
+  | _ => False
   end.
 
 Definition is_max_hull' (p: point) (CH l: list point) :=
   Forall (fun q => point_in_hull q p CH) l.
+
+Lemma point_in_hull_last_tri : forall p p0 p1 p2,
+  point_in_triangle p p1 p2 p0 ->
+  forall CH,
+  point_in_hull p p0 (p1 :: p2 :: CH).
+Proof.
+  induction CH; simpl; left; tauto.
+Qed.
+
+Lemma point_in_hull_cons : forall p q p0 T,
+  point_in_hull q p T ->
+  point_in_hull q p (p0 :: T).
+Proof.
+  simpl; intros.
+  destruct T; eauto.
+Qed.
+
+Lemma is_max_hull'_cons : forall p q T l,
+  is_max_hull' p T l ->
+  is_max_hull' p (q :: T) l.
+Proof.
+  unfold is_max_hull' in *. intros p q T l.
+  apply Forall_impl. intros.
+  apply point_in_hull_cons.
+  eauto.
+Qed.
+
+Lemma forall_false_elim : forall a l,
+  Forall (fun _ : point => False) (a :: l) -> False.
+Proof.
+  intros.
+  pose proof Forall_inv as H0.
+  specialize (H0 _ (fun _ : point => False) a l H).
+  tauto.
+Qed.
+
+Lemma is_max_hull'_cons_iff : forall p a b l T,
+  is_max_hull' p (b :: a :: l) T <->
+  Forall (fun q : point => point_in_hull q p (a :: l) \/
+                           point_in_triangle q b a p) T.
+Proof.
+  induction T; intros.
+  - unfold is_max_hull';
+    split; intros; apply Forall_nil.
+  - split; unfold is_max_hull'; intros;
+    rewrite !Forall_cons_iff in H.
+    + destruct H.
+      rewrite !Forall_cons_iff. split; [destruct H; tauto|].
+      apply IHT. tauto.
+    + destruct H as [[? | ?] ?];
+      rewrite !Forall_cons_iff.
+      * split; [right; tauto|].
+        apply IHT. tauto.
+      * split; [left; tauto|].
+        apply IHT. tauto.
+Qed.
+
+(* split first point p0 with convex hull CH *)
+(* TODO: definition *)
+Fixpoint point_in_hull'_aux (p p0 p1 : point) (CH: list point) :=
+  match CH with
+  | p2 :: l => left_equal (build_vec p0 p1) (build_vec p0 p) /\ point_in_hull'_aux p p1 p2 l
+  | _ => False
+  end.
+
+(*? Check the last edge *)
+Definition point_in_hull' (p: point) (CH: list point) :=
+  match CH with
+  | p0 :: p1 :: l => point_in_hull'_aux p p0 p1 l
+  | _ => False
+  end.
+
+Lemma left_equal_dec : forall p q r,
+  {left_equal (build_vec p q) (build_vec p r)} +
+  {left_equal (build_vec p r) (build_vec p q)}.
+Proof.
+  unfold left_equal. intros.
+  pose proof Ztrichotomy_inf (cross_prod (build_vec p q) (build_vec p r)) 0.
+  destruct H.
+  - left. destruct s; nia.
+  - right. rewrite cross_prod_comm. nia.
+Qed.
+
+(** Prove that splitting into triangles implies convex hull *)
+Lemma point_in_hull_equiv : forall p p0 CH,
+  point_in_hull p p0 CH -> point_in_hull' p (p0 :: CH).
+Proof.
+  destruct CH; [simpl; tauto|].
+  simpl point_in_hull'.
+  induction CH; [simpl; tauto|].
+  intros. destruct H.
+  - unfold point_in_triangle in H.
+
+Abort.

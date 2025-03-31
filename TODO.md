@@ -1,12 +1,23 @@
 # TODO
 
-1. Jarvis_March 凸包实现在末尾加入初始点？
-   当前实现未加入，导致对凸包递归时没有考虑最后一条边
+## Graham's Scan (扫描线)
 
-2. Jarvis_March 补充凸包证明 (theories/Jarvis_March.v:190)
-   思路：由 sort 导出 g_ccw_list & consec_ccw，
-        证明 jarvis_march_aux 凸包扩张的归纳性质
+证明目标
 
-3. Graham_Andrew 算法实现仍使用 ccw_dec，共线处理有误
+1. 算法得到凸多边形 x
 
-4. 后续证明
+2. 算法得到的三角形分割构成凸包 [x]
+
+point_in_triangle 当前定义处理共线情况有误
+
+- 修改 point_in_tri 引理
+  at_mid: 
+
+3. 算法得到的凸多边形包含所有点 [TODO]
+
+3.1. 凸包定义等价 (triangle <-> edge)
+
+point_in_hull  : ⋃ 起始点与各边构成的三角形内部
+point_in_hull' : ⋂ 每条边左侧
+
+point_in_hull' p p0 [p1 .. pn] := (recur) leftequal p0->pi p0->p /\ leftequal pn->p0 pn->p

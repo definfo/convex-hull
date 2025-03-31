@@ -39,14 +39,17 @@ AndrewMono(x[1..n], y[1..n]):
 Fixpoint sort_mono (l: list point) :=
   match l with
   | nil => True
-  | p :: l' =>
-    match l' with
-    | nil => True
-    | q :: _ => p.(x) < q.(x) \/ (p.(x) = q.(x) \/ p.(y) <= q.(y)) /\ sort_mono l'
-    end
+  | p :: l' => (Forall (fun (q: point) => p.(x) < q.(x) \/ (p.(x) = q.(x) /\ p.(y) < q.(y)))
+                       l)
+               /\ sort_mono l'
   end.
 
-(* TODO: Lemma sort_mono_totalOrder *)
+Lemma sort_mono_ind : forall p l,
+  sort_mono (p :: l) ->
+  sort_mono l.
+Proof.
+  intros. destruct H; eauto.
+Qed.
 
 Fixpoint l_hall_inc (p: point) (T: list point) :=
   match T with
@@ -93,7 +96,7 @@ Fixpoint in_semi_hall (p: point) (l: list point) :=
   | p0 :: l' =>
     match l' with
     | nil => True
-    | p1 :: _ => g_ccw p0 p1 p /\ in_semi_hall p l'
+    | p1 :: _ => g_ccw p0 p1 p /\ in_semi_hall p l' (* TODO *)
     end
   end.
 
@@ -103,11 +106,22 @@ Definition is_semi_hall (CH: list point) (l: list point) :=
 Lemma l_hall_pre: forall l,
   sort_mono l -> is_semi_hall (l_hall l) l.
 Proof.
-  destruct l; intros;
-  try unfold is_semi_hall; eauto.
-  induction l; intros;
-  try unfold is_semi_hall; eauto.
-  
+  induction l; intros.
+  - unfold is_semi_hall; eauto.
+  - pose proof sort_mono_ind a l H as _Hl.
+    specialize (IHl _Hl); clear _Hl.
+Abort.
+
+Lemma is_semi_hall_l_hall : forall a l,
+  sort_mono (a :: l) ->
+  is_semi_hall (l_hall l) l ->
+  is_semi_hall (l_hall (a :: l)) (a :: l).
+Proof.
+  intros; simpl.
+  remember (l_hall l) as T. clear HeqT.
+  induction T.
+  - unfold is_semi_hall. simpl; eauto.
+  - destruct T.
 Abort.
 
 Theorem graham_andrew_1: forall l,
@@ -116,5 +130,9 @@ Theorem graham_andrew_1: forall l,
   (** l := [a ; ... ; b] ->
     l_hall l = [a ; ... ; b] /\ u_hall l = [b ; ... ; a] *)
 Proof.
-  
+  induction l; intros.
+  - unfold is_semi_hall; simpl in *.
+    split; apply Forall_nil.
+  - pose proof sort_mono_ind a l H as _Hl.
+    specialize (IHl _Hl) as [? ?]; clear _Hl.
 Abort.

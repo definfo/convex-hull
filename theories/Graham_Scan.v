@@ -43,8 +43,7 @@ Fixpoint graham_scan_inc (p : point) (T : list point) : list point :=
   match T with
   | t :: T' =>
     match T' with
-    (* T = t :: s :: T'' *)
-    | s :: T'' =>
+    | s :: _ =>
       match (ccw_dec s t p) with
       (* ccw s t p, push stack *)
       | left _ => p :: T
@@ -58,10 +57,32 @@ Fixpoint graham_scan_inc (p : point) (T : list point) : list point :=
   | _ => p :: T
   end.
 
+(** append point AFTER pop several points *)
+
 Fixpoint graham_scan (l: list point) : list point :=
   (* fold_right graham_scan_inc nil l *)
   match l with
   | p :: l' => graham_scan_inc p (graham_scan l')
+  | _ => nil
+  end.
+
+Fixpoint graham_scan_inc' (p : point) (T : list point) : list point :=
+  match T with
+  | p1 :: T' =>
+    match T' with
+    | p0 :: _ =>
+      match (ccw_dec p0 p1 p) with
+      | left _ => T
+      | right _ => graham_scan_inc' p T'
+      end
+    | _ => T
+    end
+  | _ => T
+  end.
+
+Definition graham_scan' (l : list point) : list point :=
+  match l with
+  | p :: l' => p :: (graham_scan_inc' p l')
   | _ => nil
   end.
 
@@ -70,7 +91,7 @@ Fixpoint graham_scan (l: list point) : list point :=
 the vertices on T are the vertices of C_2
 in clockwise order. *)
 Theorem graham_convex_0 : forall (p q r : point),
-  sort_aux p [p ; q ; r] -> is_convex p (graham_scan [p ; q ; r]).
+  rev_ccw_list p [p ; q ; r] -> is_convex p (graham_scan [p ; q ; r]).
 Proof.
   simpl; intros.
   rewrite !Forall_ccw_cons_iff in H.
@@ -111,6 +132,23 @@ Proof.
         assumption.
 Qed.
 
+Lemma graham_scan_subset : forall p T,
+  sort p T ->
+  (forall x,
+  In x (graham_scan T) ->
+  In x T).
+Proof.
+  induction T; [tauto| ].
+  intros. simpl in H0.
+  pose proof succ_stack a (graham_scan T) as [? [? [? ?]]].
+  rewrite H1, H2 in *.
+  destruct H0; [ left; tauto| ].
+  right. apply IHT.
+  - pose proof sort_ind p [a] T H. tauto.
+  - pose proof in_or_app x0 x1 x as H3.
+    apply H3. tauto.
+Qed.
+
 Theorem Forall_ccw_conv : forall (p q : point) (T : list point),
   Forall_ccw p q T -> Forall_ccw p q (graham_scan T).
 Proof.
@@ -129,12 +167,12 @@ Proof.
     tauto.
 Qed.
 
-Theorem sort_aux_conv : forall (p : point) (T : list point),
-  sort_aux p T -> sort_aux p (graham_scan T).
+Theorem rev_ccw_list_conv : forall (p : point) (T : list point),
+  rev_ccw_list p T -> rev_ccw_list p (graham_scan T).
 Proof.
   intros.
   induction T; simpl; try eauto.
-  pose proof sort_aux_ind p a [] T H.
+  pose proof rev_ccw_list_ind p a [] T H.
   specialize (IHT H0).
   pose proof succ_stack a (graham_scan T).
   destruct H1 as [T0 [T' [H1 H2]]].
@@ -148,12 +186,12 @@ Proof.
     pose proof Forall_ccw_ind' a p (a0 :: T0) T'.
     apply (H5 H4).
   - destruct IHT.
-    pose proof sort_aux_ind' p T0 T'.
+    pose proof rev_ccw_list_ind' p T0 T'.
     apply (H6 H5).
 Qed.
 
-Theorem sort_aux_convex_ind : forall (p q : point) (T : list point),
-  sort_aux p (q :: T) -> is_convex p T -> is_convex p (graham_scan_inc q T).
+Theorem rev_ccw_list_convex_ind : forall (p q : point) (T : list point),
+  rev_ccw_list p (q :: T) -> is_convex p T -> is_convex p (graham_scan_inc q T).
 Proof.
   intros. destruct H.
   destruct T; try eauto.
@@ -167,7 +205,7 @@ Proof.
     try (apply ccw_cyclicity_2; assumption).
   - pose proof IHT a.
     pose proof Forall_ccw_ind q p p0 [] (a :: T) H.
-    pose proof sort_aux_ind p p0 [] (a :: T) H1.
+    pose proof rev_ccw_list_ind p p0 [] (a :: T) H1.
     pose proof convex_ind p p0 (a :: T) H0.
     specialize (H2 H3 H4 H5). assumption.
 Qed.
@@ -177,114 +215,172 @@ Qed.
 Theorem graham_convex_1 : forall (p : point) (T : list point),
   sort p T -> is_convex p (graham_scan T).
 Proof.
-  unfold sort, sort_aux; intros. destruct H as [_ H].
+  unfold sort, rev_ccw_list; intros. destruct H as [_ H].
   induction T; simpl; try eauto.
-  pose proof sort_aux_ind p a [] T H. specialize (IHT H0).
-  pose proof sort_aux_convex_ind p a (graham_scan T).
+  pose proof rev_ccw_list_ind p a [] T H. specialize (IHT H0).
+  pose proof rev_ccw_list_convex_ind p a (graham_scan T).
   apply H1; try assumption. clear H0 H1.
   simpl in *. destruct H. split.
   - apply Forall_ccw_conv. assumption.
-  - apply sort_aux_conv. assumption.
+  - apply rev_ccw_list_conv. assumption.
 Qed.
 
 (* ===================== *)
 
-(* (* TODO: check predicate *)
-(** sort -> g_ccw_list /\ consec_ccw ? *)
-Lemma sort_pred : forall p T,
-  sort p T -> g_ccw_list p T /\ consec_ccw (p :: T).
+Lemma sort_rev_ccw_list : forall p T,
+  sort p T ->
+  rev_ccw_list p T.
 Proof.
-  destruct T; intros.
-  - unfold g_ccw_list, consec_ccw. tauto.
-  - split.
-    + induction T; simpl; split; try tauto.
-      * rewrite Forall_nil_iff. tauto.
-      * pose proof sort_aux_ind p a nil (p0 :: T).
-        pose proof sort_ind p [a] (p0 :: T).
-(*       * rewrite consec_ccw_cons_iff in H. *)
-Abort. *)
-
-Lemma in_hull_0 : forall p T a0,
-  sort_aux p (a0 :: T) -> point_in_hull a0 p (a0 :: T).
-Proof.
-  intros.
-  destruct T; simpl; try eauto.
-  left.
-  unfold point_in_triangle. right.
-  repeat split; try apply g_ccw_rep.
-  destruct H as [? [_]]. unfold Forall_ccw in H.
-  apply Forall_cons_iff in H. destruct H as [? _].
-  apply ccw_g_ccw. apply ccw_cyclicity_2. eauto.
+  intros. destruct H as [_ ?]. revert p H.
+  induction T; intros.
+  - simpl; eauto.
+  - pose proof rev_ccw_list_ind p a nil T H as H_.
+    specialize (IHT p H_); clear H_.
+    split; destruct H; eauto.
 Qed.
 
-(** False *)
-(* Lemma in_hull_rec : forall p T a0 q,
-  sort_aux p (a0 :: T) ->
-  point_in_hull q p (graham_scan T) ->
-  point_in_hull q p (graham_scan (a0 :: T)).
+Lemma sort_gs_ccw_list : forall p T,
+  sort p T ->
+  rev_ccw_list p (graham_scan T).
 Proof.
-  intros; simpl.
-  induction T; simpl; try eauto.
-  destruct H as [? [? ?]].
-  simpl in IHT.
-  assert (Forall_ccw a0 p T /\ sort_aux p T).
-  {
-    split; try assumption.
-    pose proof Forall_ccw_app a0 p [a] T as [? _].
-    specialize (H3 H). destruct H3 as [_ ?]; eauto.
-  }
-  specialize (IHT H3).
-  pose proof succ_stack a (graham_scan T) as [T0 [T1 [Hsp Hs]]].
-Abort. *)
+  intros.
+  pose proof sort_rev_ccw_list _ _ H as H0.
+  induction T; intros.
+  - tauto.
+  - simpl.
+    pose proof rev_ccw_list_app_iff p [a] T as [Hs1 _]. 
+    pose proof sort_ind p [a] T H as Hs0.
+    specialize (Hs1 H0) as [_ [Hs1 _]].
+    specialize (IHT Hs0 Hs1). clear Hs0 Hs1.
+    pose proof rev_ccw_list_app_iff p [a] (graham_scan T) as [_ ?].
+    assert (rev_ccw_list p (a :: (graham_scan T))).
+    {
+      apply H1. split.
+      - simpl; split; [apply Forall_nil | tauto].
+      - split; [tauto| ].
+        simpl; intros.
+        destruct H2; [| tauto].
+        subst. clear H1.
+        pose proof graham_scan_subset p T (sort_ind p [q] T H).
+        assert (In r T). { apply H1. eauto. }
+        destruct H0 as [? _].
+        unfold Forall_ccw in H0.
+        rewrite Forall_forall in H0. apply H0. eauto.
+    }
+    pose proof succ_stack a (graham_scan T) as [? [? [? ?]]].
+    rewrite H4. rewrite H3 in IHT, H2.
+    pose proof rev_ccw_list_remove_middle p [a] x x0 H2.
+    eauto.
+Qed.
 
-Lemma hull_inc : forall p a T,
-  sort_aux p (a :: T) ->
-  is_max_hull' p (graham_scan T) T ->
-  is_max_hull' p (graham_scan (a :: T)) (a :: T).
+(* Print graham_convex_1. *)
+(* forall (p : point) (T : list point),
+   sort p T -> is_convex p (graham_scan T) *)
+
+Lemma sort_gs_consec_ccw : forall p T,
+  sort p T ->
+  rev_consec_ccw (graham_scan T).
+Proof.
+  intros.
+  pose proof graham_convex_1 p T H.
+  remember (graham_scan T) as l.
+  clear Heql.
+  induction l; eauto.
+  destruct l; [ simpl; tauto |].
+  destruct l; [ simpl; tauto |].
+  destruct H0 as [? [? ?]].
+  specialize (IHl H2).
+  split.
+  - apply ccw_cyclicity. tauto.
+  - tauto.
+Qed.
+
+(* TODO *)
+Lemma is_max_hull'_pop : forall p a b c l T,
+  rev_ccw_list p (c :: b :: a :: l) ->
+  rev_consec_ccw (b :: a :: l) ->
+  ~ ccw a b c ->
+  is_max_hull' p (b :: a :: l) T ->
+  is_max_hull' p (c :: a :: l) T.
 Proof.
   unfold is_max_hull'; intros.
-  induction T. 1: { simpl. eauto. }
-  destruct H as [? [? ?]].
-  - (* ccw a0 p0 a *)
+  simpl; simpl in H2.
+  assert (point_in_triangle b c a p).
+  {
+    pose proof rev_ccw_list_remove_middle p [c] [b] (a :: l) H as [Hac _].
+    destruct H as [Hbc [Hab _]]. unfold Forall_ccw in Hbc, Hab, Hac. simpl in Hac.
+    rewrite !Forall_cons_iff in Hbc, Hab, Hac. destruct Hbc, Hab, Hac.
+    clear H3 H5.
+    assert (point_in_triangle b p c a). { apply point_in_tri_general; tauto. }
+    do 2 apply point_in_tri_cyclicity in H3. tauto.
+  }
+  assert (forall q, point_in_triangle q b a p ->
+                    point_in_triangle q c a p).
+  {
+    intros.
+    pose proof rev_ccw_list_remove_middle p [c] [b] (a :: l) H as [Hac _].
+    destruct H as [Hbc [Hab _]]. unfold Forall_ccw in Hbc, Hab, Hac. simpl in Hac.
+    rewrite !Forall_cons_iff in Hbc, Hab, Hac. destruct Hbc, Hab, Hac.
+    assert (~ ccw c a p). { apply ccw_anti_symmetry in H8. tauto. }
+    pose proof point_in_tri_incl _ _ _ _ H10 H3 _ H4.
+    tauto.
+  }
+  rewrite Forall_forall in H2. rewrite Forall_forall.
+  intros. specialize (H2 x H5).
+  destruct H2.
+  - left. apply (H4 x). tauto.
+  - right. tauto.
+Qed.
 
-(*   (*
-  IHT: Forall
-        (fun q : point =>
-         point_in_hull q p (graham_scan T)) T ->
-      Forall
-        (fun q : point =>
-         point_in_hull q p
-           (graham_scan_inc a (graham_scan T)))
-        (a :: T)
-  H3: Forall_ccw a p T
-  H4: sort_aux p (a :: T)
-  1/1
-  Forall
-    (fun q : point =>
-    point_in_hull q p
-      (graham_scan_inc a
-          (graham_scan_inc a0 (graham_scan T))))
-    (a :: a0 :: T) *)
-  (** foldr ? *)
-  assert (Forall_ccw a p T). { pose proof Forall_inv_tail H. eauto. }
-  assert (sort_aux p (a :: T)). { simpl. eauto. }
-  rewrite Forall_cons_iff in H0; destruct H0.
-  apply Forall_cons_iff; split. clear H3.
-  2: {
-    pose proof succ_stack a (graham_scan_inc a0 (graham_scan T)) as [T1 [T2 [Hsp Hi]]].
-    pose proof succ_stack a0 (graham_scan T) as [T1' [T2' [Hsp' Hi']]].
-    simpl in *.
-    apply Forall_cons_iff; split.
-    -  *)
+(** Prove that stack incrementation preserves is_max_hull' *)
+Lemma hull_inc : forall p a T,
+  sort p (a :: T) ->
+  is_max_hull' p (graham_scan T) T ->
+  is_max_hull' p (graham_scan (a :: T)) T.
+Proof.
+  intros. simpl.
+  pose proof sort_gs_consec_ccw p (a :: T) H as Hconsec.
+  pose proof sort_ind p [a] T H as H_.
+  pose proof sort_gs_consec_ccw p T H_.
+  pose proof sort_gs_ccw_list p (a :: T) H as Hcl. clear H_.
+  pose proof H as H_. destruct H_ as [_ Hcl0].
+  simpl in Hconsec, Hcl, H1.
+  remember (graham_scan T) as l. clear Heql.
+  destruct l. 1: { unfold is_max_hull'. simpl. eauto. }
+  revert p0 H H0 H1 Hconsec Hcl.
+  induction l. 1: {
+    unfold is_max_hull' in *.
+    simpl; intros.
+    destruct T.
+    - apply Forall_nil.
+    - pose proof (forall_false_elim _ _ H0). tauto.
+  }
+
+  intros. simpl. simpl in Hconsec, Hcl.
+  (** is_max_hull' p (graham_scan_inc a (p0 :: a0 :: l)) T *)
+  destruct (ccw_dec a0 p0 a). 1: { apply is_max_hull'_cons. tauto. }
+  (** (1/1): is_max_hull' p (graham_scan_inc a (a0 :: l)) T *)
+  apply (IHl a0); try tauto.
+  - (** Hconsec : rev_consec_ccw (graham_scan_inc a (a0 :: l))*)
+    (** Hcl: rev_ccw_list p (graham_scan_inc a (a0 :: l)) *)
+    give_up.
+  - apply rev_consec_ccw_cons_iff in H1 as [? _]. eauto.
 Admitted.
 
 Theorem graham_convex_2 : forall p T,
   sort p T -> is_max_hull' p (graham_scan T) T.
 Proof.
-  unfold sort; intros. destruct H as [_ H].
-  induction T; simpl; try eauto.
-  - unfold is_max_hull'; eauto.
-  - pose proof sort_aux_ind p a [] T H. specialize (IHT H0).
-    clear H0.
-    apply hull_inc; assumption.
+  induction T; [unfold is_max_hull'; eauto|].
+  intros.
+  pose proof sort_ind _ [a] _ H as H_.
+  specialize (IHT H_); clear H_.
+  unfold is_max_hull'. rewrite Forall_cons_iff; split.
+  - simpl.
+    pose proof succ_stack a (graham_scan T) as [? [? [? ?]]].
+    rewrite H1.
+    destruct x0.
+    + (** point_in_hull 2-point *)
+      admit.
+    + left. admit.
+  - apply hull_inc; tauto.
 Admitted.

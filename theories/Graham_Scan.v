@@ -322,15 +322,41 @@ Proof.
     destruct H as [Hbc [Hab _]]. unfold Forall_ccw in Hbc, Hab, Hac. simpl in Hac.
     rewrite !Forall_cons_iff in Hbc, Hab, Hac. destruct Hbc, Hab, Hac.
     assert (~ ccw c a p). { apply ccw_anti_symmetry in H8. tauto. }
-    pose proof point_in_tri_incl _ _ _ _ H10 H3 _ H4.
-    tauto.
+    admit.
+(*     pose proof point_in_tri_incl _ _ _ _ H10 H3 _ H4.
+    tauto. *)
   }
   rewrite Forall_forall in H2. rewrite Forall_forall.
   intros. specialize (H2 x H5).
   destruct H2.
   - left. apply (H4 x). tauto.
   - right. tauto.
-Qed.
+Admitted.
+
+Lemma is_max_hull'_pop' : forall p a b c l T,
+  rev_ccw_list p (c :: b :: a :: l) ->
+  rev_consec_ccw (b :: a :: l) ->
+  ~ ccw a b c ->
+  is_max_hull' p (c :: b :: a :: l) T ->
+  is_max_hull' p (c :: a :: l) T.
+Proof.
+  intros.
+  unfold is_max_hull' in *.
+  rewrite Forall_forall. rewrite Forall_forall in H2.
+  intros. specialize (H2 _ H3). clear H3.
+  assert (point_in_triangle b c a p).
+  { admit. }
+  destruct H2 as [? | [? | ?]].
+  - (** x ∈ Δcbp -> x ∈ Δcap *)
+    left.
+    
+    give_up.
+  - (** x ∈ Δbap -> x ∈ Δcap *) 
+    left.
+    give_up.
+  - (** x ∈ [a :: l] -> x ∈ [a :: l] *)
+    right; tauto.
+Abort.
 
 (** Prove that stack incrementation preserves is_max_hull' *)
 Lemma hull_inc : forall p a T,
@@ -338,33 +364,35 @@ Lemma hull_inc : forall p a T,
   is_max_hull' p (graham_scan T) T ->
   is_max_hull' p (graham_scan (a :: T)) T.
 Proof.
-  intros. simpl.
+  intros. simpl. 
   pose proof sort_gs_consec_ccw p (a :: T) H as Hconsec.
   pose proof sort_ind p [a] T H as H_.
   pose proof sort_gs_consec_ccw p T H_.
   pose proof sort_gs_ccw_list p (a :: T) H as Hcl. clear H_.
-  pose proof H as H_. destruct H_ as [_ Hcl0].
+  (** assert (is_max_hull' p (a :: graham_scan T) T) *)
+  assert (is_max_hull' p (a :: graham_scan T) T). { apply is_max_hull'_cons. tauto. }
   simpl in Hconsec, Hcl, H1.
   remember (graham_scan T) as l. clear Heql.
-  destruct l. 1: { unfold is_max_hull'. simpl. eauto. }
-  revert p0 H H0 H1 Hconsec Hcl.
+  destruct l. 1: { unfold is_max_hull'. simpl. tauto. }
+  clear H0.
+  revert p0 H1 H2 Hconsec Hcl.
   induction l. 1: {
     unfold is_max_hull' in *.
     simpl; intros.
-    destruct T.
-    - apply Forall_nil.
-    - pose proof (forall_false_elim _ _ H0). tauto.
+    destruct T; tauto.
   }
-
-  intros. simpl. simpl in Hconsec, Hcl.
+  intros.
+  simpl. simpl in Hconsec, Hcl.
   (** is_max_hull' p (graham_scan_inc a (p0 :: a0 :: l)) T *)
-  destruct (ccw_dec a0 p0 a). 1: { apply is_max_hull'_cons. tauto. }
+  destruct (ccw_dec a0 p0 a). 1: { tauto. }
+  (** Hconsec : rev_consec_ccw (graham_scan_inc a (a0 :: l))*)
+  (** Hcl: rev_ccw_list p (graham_scan_inc a (a0 :: l)) *)
   (** (1/1): is_max_hull' p (graham_scan_inc a (a0 :: l)) T *)
+  (* ? *)
   apply (IHl a0); try tauto.
-  - (** Hconsec : rev_consec_ccw (graham_scan_inc a (a0 :: l))*)
-    (** Hcl: rev_ccw_list p (graham_scan_inc a (a0 :: l)) *)
-    give_up.
-  - apply rev_consec_ccw_cons_iff in H1 as [? _]. eauto.
+  - apply rev_consec_ccw_cons_iff in H1 as [? _]. tauto.
+  (** is_max_hull' p (a :: p0 :: a0 :: l) T -> is_max_hull' p (a :: a0 :: l) T *)
+  - apply (is_max_hull'_pop p a0 p0 a l T); try assumption.
 Admitted.
 
 Theorem graham_convex_2 : forall p T,
@@ -380,7 +408,23 @@ Proof.
     rewrite H1.
     destruct x0.
     + (** point_in_hull 2-point *)
+      rewrite H0 in *.
+      replace (x ++ []) with x in *. 2: { rewrite <- app_nil_end. tauto. }
+      assert (Hgs_inv: forall a x, graham_scan_inc a x = [a] -> x = []). {
+        intros a0 x0 Hgs.
+        induction x0; [tauto|].
+        simpl in Hgs.
+        destruct x0.
+        - inversion Hgs.
+        - destruct (ccw_dec p0 a1 a0); [inversion Hgs|].
+          specialize (IHx0 Hgs). inversion IHx0.
+      }
+      specialize (Hgs_inv _ _ H1). subst. simpl in *.
+      rewrite Hgs_inv in IHT.
+      unfold is_max_hull' in IHT. simpl in IHT.
       admit.
-    + left. admit.
+    + left.
+      apply point_in_tri_1.
+      admit.
   - apply hull_inc; tauto.
 Admitted.

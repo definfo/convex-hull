@@ -59,15 +59,6 @@ Lemma dot_prod_comm: forall v1 v2,
   dot_prod v1 v2 = dot_prod v2 v1.
 Proof. unfold dot_prod. intros. lia. Qed.
 
-Lemma cross_dot_eqn0: forall v v1 v2,
-  cross_prod v1 v * cross_prod v2 v <= 0 ->
-  cross_prod v1 v2 = 0 ->
-  dot_prod v1 v2 <= 0.
-Proof.
-  intros.
-  (** If v1 v2 v are nonzero, parallel, of same orientation, then dot_prod v1 v2 >= 0, failed! *)
-Abort.
-
 Lemma metric_nonneg: forall v,
   dot_prod v v >= 0.
 Proof. unfold dot_prod. intros. nia. Qed.
@@ -176,6 +167,7 @@ Proof.
   nia.
 Qed.
 
+(** Translate inequality *)
 Lemma aux: forall v v1 v2: vec,
   dot_prod v1 v2 * dot_prod v v =
   dot_prod v1 v * dot_prod v2 v +

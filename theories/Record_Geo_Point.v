@@ -2,7 +2,7 @@
 Require Import Coq.ZArith.ZArith.
 Require Import Coq.micromega.Psatz.
 Require Import Coq.Lists.List.
-From ConvexHull Require Import C00601a_Record_Geo_Vec.
+From ConvexHull Require Import Record_Geo_Vec.
 Local Open Scope Z.
 Import ListNotations.
 (* /COQ-HEAD *)
@@ -1232,35 +1232,85 @@ Print left_equal.
 (* Check if p is in triangle p1-p2-p3 *)
 (** requires `~ ccw p1 p2 p3` *)
 Definition point_in_triangle (p p1 p2 p3: point) : Prop :=
+  (
+    ccw p3 p2 p1 /\
     left_equal (build_vec p1 p2) (build_vec p1 p) /\
     left_equal (build_vec p2 p3) (build_vec p2 p) /\
-    left_equal (build_vec p3 p1) (build_vec p3 p).
+    left_equal (build_vec p3 p1) (build_vec p3 p)
+  ) \/
+  (
+    colinear p1 p2 p3 /\
+    (
+      colinear p p1 p2 /\ at_mid p p1 p2 \/
+      colinear p p2 p3 /\ at_mid p p2 p3 \/
+      colinear p p3 p1 /\ at_mid p p3 p1
+    )
+  ).
 
 Lemma point_in_tri_1 : forall p1 p2 p3,
   ~ ccw p1 p2 p3 -> point_in_triangle p1 p1 p2 p3.
 Proof.
   intros.
-  unfold point_in_triangle, ccw, left_equal, left_than, cross_prod, build_vec in *.
-  simpl in *.
-  split; nia.
+  destruct (ccw_trichotomy p1 p2 p3) as [[? | ?] | ?].
+  - (** ccw p1 p2 p3 *)
+    contradiction.
+  - (** colinear p1 p2 p3 *)
+    clear H.
+    right. split; [tauto|].
+    left.
+    unfold colinear, parallel, at_mid, backward_or_perp in *.
+    unfold cross_prod, dot_prod in *.
+    simpl in *. nia.
+  - (** ccw p2 p1 p3 *)
+    clear H.
+    left. split; [apply ccw_cyclicity; tauto|].
+    unfold ccw, left_equal, left_than in *.
+    unfold cross_prod in *. simpl in *.
+    repeat split; nia.
 Qed.
 
 Lemma point_in_tri_2 : forall p1 p2 p3,
   ~ ccw p1 p2 p3 -> point_in_triangle p2 p1 p2 p3.
 Proof.
   intros.
-  unfold point_in_triangle, ccw, left_equal, left_than, cross_prod, build_vec in *.
-  simpl in *.
-  split; nia.
+  destruct (ccw_trichotomy p1 p2 p3) as [[? | ?] | ?].
+  - (** ccw p1 p2 p3 *)
+    contradiction.
+  - (** colinear p1 p2 p3 *)
+    clear H.
+    right. split; [tauto|].
+    right; left.
+    unfold colinear, parallel, at_mid, backward_or_perp in *.
+    unfold cross_prod, dot_prod in *.
+    simpl in *. nia.
+  - (** ccw p2 p1 p3 *)
+    clear H.
+    left. split; [apply ccw_cyclicity; tauto|].
+    unfold ccw, left_equal, left_than in *.
+    unfold cross_prod in *. simpl in *.
+    repeat split; nia.
 Qed.
 
 Lemma point_in_tri_3 : forall p1 p2 p3,
   ~ ccw p1 p2 p3 -> point_in_triangle p3 p1 p2 p3.
 Proof.
   intros.
-  unfold point_in_triangle, ccw, left_equal, left_than, cross_prod, build_vec in *.
-  simpl in *.
-  split; nia.
+  destruct (ccw_trichotomy p1 p2 p3) as [[? | ?] | ?].
+  - (** ccw p1 p2 p3 *)
+    contradiction.
+  - (** colinear p1 p2 p3 *)
+    clear H.
+    right. split; [tauto|].
+    right.
+    unfold colinear, parallel, at_mid, backward_or_perp in *.
+    unfold cross_prod, dot_prod in *.
+    simpl in *. nia.
+  - (** ccw p2 p1 p3 *)
+    clear H.
+    left. split; [apply ccw_cyclicity; tauto|].
+    unfold ccw, left_equal, left_than in *.
+    unfold cross_prod in *. simpl in *.
+    repeat split; nia.
 Qed.
 
 Lemma point_in_tri_general : forall p a b c,
@@ -1278,13 +1328,14 @@ Qed.
 Lemma point_in_tri_cyclicity : forall p a b c,
   point_in_triangle p a b c <-> point_in_triangle p b c a.
 Proof.
-  unfold point_in_triangle, ccw, left_equal, left_than, cross_prod, build_vec;
+  unfold point_in_triangle, ccw, left_equal, left_than, colinear, parallel, at_mid, backward_or_perp, cross_prod, build_vec;
   simpl in *. intros.
   nia.
 Qed.
 
 Lemma point_in_tri_at_mid : forall p q r a b c,
   ~ ccw a b c ->
+  colinear r p q ->
   at_mid r p q ->
   point_in_triangle p a b c ->
   point_in_triangle q a b c ->
@@ -1297,88 +1348,16 @@ Definition strict_point_in_triangle (p a b c : point) :=
   ccw c p a /\ ccw b p c /\ ccw a p b.
 
 (** Construct a method to seperate situation on the edges of triangle. *)
-Lemma point_in_tri_split_border : forall p a b c,
-  ~ ccw a b c ->
-  point_in_triangle p a b c ->
-  strict_point_in_triangle p a b c \/
-  colinear c a p \/ colinear b c p \/ colinear a b p.
-Proof.
-  unfold point_in_triangle, strict_point_in_triangle.
-  intros; rewrite !left_equal_iff in *.
-  destruct H0 as [H1 [H2 H3]].
-  destruct H1; destruct H2; destruct H3;
-  try (left; tauto);
-  try (right; left;
-  unfold colinear; tauto);
-  try (right; right; left;
-  unfold colinear; tauto);
-  try (right; right; right;
-  unfold colinear; tauto).
-Qed.
-
 Lemma point_in_tri_col : forall p a b c,
   colinear a b c ->
   point_in_triangle p a b c ->
   at_mid p c a \/ at_mid p b c \/ at_mid p a b.
 Proof.
-  unfold point_in_triangle, colinear, at_mid, parallel, left_equal, backward_or_perp.
   intros.
-  destruct H0 as [? [? ?]].
-Abort.
-
-Lemma point_in_tri_split_border_2 : forall p a b c,
-  ~ ccw a b c ->
-  point_in_triangle p a b c ->
-  strict_point_in_triangle p a b c \/
-  at_mid p c a \/ at_mid p b c \/ at_mid p a b.
-Proof.
-  intros.
-  pose proof point_in_tri_split_border p a b c H H0 as [? | ?]; [tauto|right].
-  destruct H1 as [? | [? | ?]].
-  - left.
-    unfold colinear, at_mid, parallel, backward_or_perp in *.
-    assert (cross_prod (build_vec p c) (build_vec p a) = 0). {
-      rewrite cross_prod_comm.
-      unfold cross_prod in *; simpl in *.
-      lia.
-    }
-    assert (cross_prod (build_vec b p) (build_vec b a) * (cross_prod (build_vec b p) (build_vec b c)) <= 0).
-    {
-      destruct H0 as [? [? ?]].
-      unfold left_equal in *.
-      assert (cross_prod (build_vec b p) (build_vec b a) <= 0).
-      {
-        unfold cross_prod in *. simpl in *.
-        replace (p.(x) - b.(x)) with ((p.(x) - a.(x)) + (a.(x) - b.(x))). 2: { lia. }
-        replace (p.(y) - b.(y)) with ((p.(y) - a.(y)) + (a.(y) - b.(y))). 2: { lia. }
-        rewrite !Z.mul_add_distr_l.
-        rewrite !Z.mul_add_distr_r.
-        replace ((p.(x) - a.(x)) * (a.(y) - b.(y)) +
-        (a.(x) - b.(x)) * (a.(y) - b.(y)) -
-        ((a.(x) - b.(x)) * (p.(y) - a.(y)) +
-         (a.(x) - b.(x)) * (a.(y) - b.(y))))
-        with ((p.(x) - a.(x)) * (a.(y) - b.(y)) - (a.(x) - b.(x)) * (p.(y) - a.(y))).
-        2: {
-          remember ((p.(x) - a.(x)) * (a.(y) - b.(y))).
-          remember ((a.(x) - b.(x)) * (a.(y) - b.(y))).
-          remember ((a.(x) - b.(x)) * (p.(y) - a.(y))).
-          replace (z + z0 - (z1 + z0)) with (z - z1). 2: { lia. }
-          lia.
-        }
-        nia.
-      }
-      rewrite cross_prod_comm in H3. nia.
-    }
-    assert (cross_prod (build_vec p c) (build_vec p b) * cross_prod (build_vec p a) (build_vec p b) <= 0). { unfold cross_prod in *. simpl in *. nia. }
-    clear H H0 H1 H3.
-    assert
-    (
-      cross_prod (build_vec p c) (build_vec p b) = 0 \/
-      cross_prod (build_vec p a) (build_vec p b) = 0 \/
-      cross_prod (build_vec p c) (build_vec p b) *
-      cross_prod (build_vec p a) (build_vec p b) < 0) as [? | [? | ?]]. { nia. }
-Admitted.
-
+  unfold point_in_triangle, colinear, parallel, at_mid, backward_or_perp, ccw, left_equal, left_than in *.
+  unfold cross_prod, dot_prod in *.
+  simpl in *. nia.
+Qed.
 
 Lemma point_in_tri_split_weak : forall p a b c,
   ~ ccw c a p ->
@@ -1393,16 +1372,83 @@ Proof.
 Qed.
 
 (** Remove strict is non-trivial ... *)
-(*! unprovable due to inconsistent definition of point_in_triangle *)
 Lemma point_in_tri_incl : forall p a b c,
-  ~ ccw c a p ->
   point_in_triangle b c a p ->
   forall q,
   point_in_triangle q b a p ->
   point_in_triangle q c a p.
 Proof.
   intros.
-  pose proof point_in_tri_split_border b c a p H H0 as [? | [? | [? | ?]]].
+  destruct H.
+  - (** ccw p a c *)
+    left.
+    destruct H0.
+    + (** ccw p a b *)
+      unfold ccw, left_than, left_equal in *.
+      unfold cross_prod in *.
+      simpl in *. nia.
+    + (** colinear b a p *)
+      split; [tauto|].
+      destruct H0.
+      destruct H as [? [? [? ?]]];
+      destruct H1 as [[? ?] | [[? ?] | [? ?]]].
+      (** Lemma aux *)
+      * repeat split.
+        unfold left_equal in *.
+        unfold colinear, parallel in *.
+        unfold at_mid, backward_or_perp in *.
+        (** e × (b + c) >= 0 *)
+        assert (cross_prod (build_vec c a) (build_vec b a) >= 0) as Hc_e_bc.
+        {
+          unfold cross_prod in H2; unfold cross_prod.
+          simpl in *; nia.
+        }
+        (** e × a >= 0 *)
+        assert (cross_prod (build_vec c a) (build_vec p b) >= 0) as Hc_e_a.
+        {
+          unfold cross_prod in H0, H4; unfold cross_prod.
+          simpl in *; nia.
+        }
+        (** c × (b + c) = 0 *)
+        assert (cross_prod (build_vec q a) (build_vec b a) = 0) as Hc_c_bc.
+        {
+          unfold cross_prod in H1; unfold cross_prod.
+          simpl in *; nia.
+        }
+        (** c ⋅ (b + c) >= 0 *)
+        assert (dot_prod (build_vec q a) (build_vec b a) >= 0) as Hd_c_bc.
+        {
+          assert (dot_prod (build_vec q a) (build_vec b a) =
+                  dot_prod (build_vec q a) (build_vec b q) +
+                  dot_prod (build_vec q a) (build_vec q a)) as _Hd1.
+          { unfold dot_prod; simpl; nia. }
+          assert (dot_prod (build_vec q a) (build_vec b a) >=
+                  dot_prod (build_vec q a) (build_vec b q)) as _Hd2.
+          { pose proof metric_nonneg (build_vec q a) as _H.
+            unfold dot_prod in _Hd1, _H; unfold dot_prod.
+            simpl in *; nia. } clear _Hd1.
+          assert (dot_prod (build_vec q a) (build_vec b q) >= 0) as _Hd3.
+          { unfold dot_prod in H5; unfold dot_prod.
+            simpl in *; nia. }
+          unfold dot_prod in _Hd2, _Hd3; unfold dot_prod.
+          simpl in *; nia.
+        }
+        (** Goal_1: Prove that `e × c >= 0` *)
+        pose proof aux2 (build_vec b a) (build_vec c a) (build_vec q a) as H1_aux.
+        rewrite Hc_c_bc in H1_aux; simpl in H1_aux.
+        pose proof metric_nonneg (build_vec b a) as _Hd_bc_bc.
+        remember (cross_prod (build_vec c a) (build_vec q a)) as z0;
+        remember (dot_prod (build_vec b a) (build_vec b a)) as z1;
+        remember (cross_prod (build_vec c a) (build_vec b a)) as z2;
+        remember (dot_prod (build_vec q a) (build_vec b a)) as z3.
+        assert (z0 * z1 >= 0). { rewrite H1_aux; nia. }
+        (** destruct on overlapping *)
+        
+        (** Goal_2: Prove that `a ⋅ (b + c) >= 0` *)
+
+(*         (** (a × c) * (b + c) = ... *)
+        pose proof aux (build_vec b a) (build_vec p b) (build_vec q a) as H2_aux. *)
+
 Admitted.
 
 (* split first point p0 with convex hull CH *)

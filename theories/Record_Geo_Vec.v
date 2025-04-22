@@ -55,6 +55,10 @@ Lemma cross_prod_comm: forall v1 v2,
   cross_prod v1 v2 = - cross_prod v2 v1.
 Proof. unfold cross_prod. intros. lia. Qed.
 
+Lemma cross_prod_self: forall v,
+  cross_prod v v = 0.
+Proof. unfold cross_prod. intros. lia. Qed.
+
 Lemma dot_prod_comm: forall v1 v2,
   dot_prod v1 v2 = dot_prod v2 v1.
 Proof. unfold dot_prod. intros. lia. Qed.

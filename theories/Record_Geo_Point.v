@@ -1227,7 +1227,7 @@ Definition is_max_hull (CH l: list point) :=
   (* ? In p T \/ *)
   Forall (fun p => point_in_or_on p CH) l.
 
-Print left_equal.
+(* Print left_equal. *)
 
 (* Check if p is in triangle p1-p2-p3 *)
 (** requires `~ ccw p1 p2 p3` *)
@@ -1333,7 +1333,7 @@ Proof.
   nia.
 Qed.
 
-Lemma point_in_tri_at_mid : forall p q r a b c,
+(* Lemma point_in_tri_at_mid : forall p q r a b c,
   ~ ccw a b c ->
   colinear r p q ->
   at_mid r p q ->
@@ -1342,7 +1342,7 @@ Lemma point_in_tri_at_mid : forall p q r a b c,
   point_in_triangle r a b c.
 Proof.
   intros.
-Abort.
+Abort. *)
 
 Definition strict_point_in_triangle (p a b c : point) :=
   ccw c p a /\ ccw b p c /\ ccw a p b.
@@ -1371,6 +1371,105 @@ Proof.
   nia.
 Qed.
 
+Lemma Z_ge_dec : forall (a b : Z),
+  a >= b -> {a > b} + {a = b}.
+Proof.
+  intros.
+  apply Z.ge_le in H.
+  apply Z_le_lt_eq_dec in H.
+  destruct H.
+  - left; nia.
+  - right; lia.
+Qed.
+
+Lemma dot_prod_squared_zero_dec : forall a b,
+  dot_prod (build_vec a b) (build_vec a b) = 0 ->
+  a = b.
+Proof.
+  unfold dot_prod; simpl; intros.
+  destruct a, b; simpl in H.
+  remember (point_x1 - point_x0) as x;
+  remember (point_y1 - point_y0) as y.
+  assert (x = 0 /\ y = 0). { nia. }
+  assert (point_x0 = point_x1 /\ point_y0 = point_y1). { lia. }
+  destruct H1; subst. tauto.
+Qed.
+
+Lemma dot_prod_squared_dec : forall a b,
+  {a = b} + {dot_prod (build_vec a b) (build_vec a b) > 0}.
+Proof.
+  intros;
+  pose proof metric_nonneg (build_vec a b);
+  remember (dot_prod (build_vec a b) (build_vec a b)).
+  apply Z_ge_dec in H; destruct H.
+  - right; tauto. 
+  - left; apply dot_prod_squared_zero_dec; lia.
+Qed.
+
+Lemma dot_prod_squared_non_neg : forall a b,
+  dot_prod (build_vec a b) (build_vec a b) <= 0 ->
+  a = b.
+Proof.
+  intros.
+  pose proof metric_nonneg (build_vec a b).
+  assert (dot_prod (build_vec a b) (build_vec a b) = 0). { nia. }
+  apply dot_prod_squared_zero_dec; tauto.
+Qed.
+
+(** =========================================== *)
+
+Print colinear_perm132. (** p q r -> p r q *)
+Print colinear_perm213. (** p q r -> q p r *)
+Print colinear_perm231. (** p q r -> q r p *)
+Print colinear_perm312. (** p q r -> r p q *)
+Print colinear_perm321. (** p q r -> r q p *)
+
+(** double colinear, one with at_mid => 4-point colinear ? *)
+Lemma mid_colinear_4point : forall a b c d,
+  colinear c a b ->
+  colinear d a b ->
+  at_mid d a b ->
+  colinear c a d.
+Proof.
+  intros ? ? ? ? Hcab Hdab ?;
+  pose proof colinear_perm213 _ _ _ Hcab as Hacb;
+  pose proof colinear_perm213 _ _ _ Hdab as Hadb;
+  unfold colinear, parallel, at_mid, backward_or_perp in *.
+  assert (cross_prod (build_vec c a) (build_vec a b) = 0) as Hcab_.
+  {
+    unfold cross_prod in Hcab; unfold cross_prod; simpl in *; nia.
+  }
+  assert (cross_prod (build_vec c d) (build_vec a b) = 0) as Hdab_.
+  {
+    assert (cross_prod (build_vec c d) (build_vec a b) =
+            - cross_prod (build_vec a c) (build_vec a b) +
+            cross_prod (build_vec a d) (build_vec a b)) as _Hc.
+            { unfold cross_prod; simpl; nia. }
+    lia.
+  }
+  pose proof aux2 (build_vec a b) (build_vec c a) (build_vec c d) as H_aux.
+  pose proof dot_prod_squared_dec a b as [? | ?].
+  - (** A = B *)
+    subst.
+    pose proof dot_prod_squared_non_neg _ _ H; subst.
+    apply cross_prod_self.
+  - (** A != B *)
+    remember (cross_prod (build_vec c a) (build_vec c d)) as z0;
+    remember (dot_prod (build_vec a b) (build_vec a b)) as z1.
+    rewrite Hcab_ in H_aux; rewrite Hdab_ in H_aux; simpl in H_aux.
+    nia.
+Qed.
+
+(* Lemma mid_colinear_split : forall a b c d,
+  colinear c a b ->
+  at_mid c a b -> (* This may fail to assert :| *)
+  colinear d a b ->
+  at_mid d a b ->
+  (colinear d a c /\ at_mid d a c) \/
+  (colinear d b c /\ at_mid d b c). *)
+
+(** =========================================== *)
+
 (** Remove strict is non-trivial ... *)
 Lemma point_in_tri_incl : forall p a b c,
   point_in_triangle b c a p ->
@@ -1386,17 +1485,17 @@ Proof.
     + (** ccw p a b *)
       unfold ccw, left_than, left_equal in *.
       unfold cross_prod in *.
-      simpl in *. nia.
+      simpl in *; nia.
     + (** colinear b a p *)
       split; [tauto|].
       destruct H0.
-      destruct H as [? [? [? ?]]];
-      destruct H1 as [[? ?] | [[? ?] | [? ?]]].
-      (** Lemma aux *)
-      * repeat split.
-        unfold left_equal in *.
-        unfold colinear, parallel in *.
-        unfold at_mid, backward_or_perp in *.
+      destruct H as [? [? [? ?]]].
+      destruct H1 as [[? ?] | [[? ?] | [? ?]]];
+      unfold left_equal in *;
+      unfold colinear, parallel in *;
+      unfold at_mid, backward_or_perp in *.
+      (** Below proofs may have to use `Lemma aux` to convert between `cross_prod` and `dot_prod` *)
+      *
         (** e × (b + c) >= 0 *)
         assert (cross_prod (build_vec c a) (build_vec b a) >= 0) as Hc_e_bc.
         {
@@ -1407,6 +1506,12 @@ Proof.
         assert (cross_prod (build_vec c a) (build_vec p b) >= 0) as Hc_e_a.
         {
           unfold cross_prod in H0, H4; unfold cross_prod.
+          simpl in *; nia.
+        }
+        (** a × (b + c) = 0 *)
+        assert (cross_prod (build_vec p b) (build_vec b a) = 0) as Hc_a_bc.
+        {
+          unfold cross_prod in H0; unfold cross_prod.
           simpl in *; nia.
         }
         (** c × (b + c) = 0 *)
@@ -1433,22 +1538,109 @@ Proof.
           unfold dot_prod in _Hd2, _Hd3; unfold dot_prod.
           simpl in *; nia.
         }
-        (** Goal_1: Prove that `e × c >= 0` *)
-        pose proof aux2 (build_vec b a) (build_vec c a) (build_vec q a) as H1_aux.
-        rewrite Hc_c_bc in H1_aux; simpl in H1_aux.
-        pose proof metric_nonneg (build_vec b a) as _Hd_bc_bc.
-        remember (cross_prod (build_vec c a) (build_vec q a)) as z0;
-        remember (dot_prod (build_vec b a) (build_vec b a)) as z1;
-        remember (cross_prod (build_vec c a) (build_vec b a)) as z2;
-        remember (dot_prod (build_vec q a) (build_vec b a)) as z3.
-        assert (z0 * z1 >= 0). { rewrite H1_aux; nia. }
-        (** destruct on overlapping *)
-        
-        (** Goal_2: Prove that `a ⋅ (b + c) >= 0` *)
-
-(*         (** (a × c) * (b + c) = ... *)
-        pose proof aux (build_vec b a) (build_vec p b) (build_vec q a) as H2_aux. *)
-
+        (** c × (a + b) = 0 *)
+        assert (cross_prod (build_vec q a) (build_vec p q) = 0) as Hc_c_ab.
+        {
+          pose proof aux2 (build_vec b a) (build_vec q a) (build_vec p b) as H1_aux.
+          rewrite Hc_c_bc, Hc_a_bc in H1_aux; simpl in H1_aux.
+          pose proof metric_nonneg (build_vec b a) as Hmet.
+          pose proof dot_prod_squared_dec b a Hmet as [? | ?].
+          - (** B = A *)
+            subst.
+            pose proof dot_prod_squared_non_neg _ _ H5. subst.
+            unfold cross_prod. simpl; lia.
+          - (** B != A, *)
+            clear Hmet.
+            remember (dot_prod (build_vec b a) (build_vec b a)).
+            assert (cross_prod (build_vec q a) (build_vec p b) = 0). { lia. }
+            assert (
+              cross_prod (build_vec q a) (build_vec p q) =
+              cross_prod (build_vec q a) (build_vec p b) +
+              cross_prod (build_vec q b) (build_vec q a)
+            ). { unfold cross_prod; simpl; lia. }
+            lia.
+        }
+        (** e × c >= 0 *)
+        assert (cross_prod (build_vec c a) (build_vec q a) >= 0) as Hc_e_c.
+        {
+          pose proof aux2 (build_vec b a) (build_vec c a) (build_vec q a) as Hc_e_c_aux2.
+          rewrite Hc_c_bc in Hc_e_c_aux2; simpl in Hc_e_c_aux2.
+          pose proof metric_nonneg (build_vec b a) as _Hd_bc_bc.
+          remember (cross_prod (build_vec c a) (build_vec q a)) as z0;
+          remember (dot_prod (build_vec b a) (build_vec b a)) as z1;
+          remember (cross_prod (build_vec c a) (build_vec b a)) as z2;
+          remember (dot_prod (build_vec q a) (build_vec b a)) as z3.
+          assert (z0 * z1 >= 0). { rewrite Hc_e_c_aux2; nia. }
+          rewrite Heqz1 in _Hd_bc_bc.
+          (** destruct on `B =? A` *)
+          pose proof dot_prod_squared_dec _ _ _Hd_bc_bc as [? | ?].
+          - (** B = A *)
+            subst.
+            pose proof dot_prod_squared_non_neg q a H5; subst.
+            assert (cross_prod (build_vec c a) (build_vec c a) = 0). { apply cross_prod_self. } tauto.
+          - (** B != A *)
+            assert (z1 > 0) as Hz1. { rewrite Heqz1; tauto. }
+            nia.
+        }
+        (** e × b >= 0 *)
+        assert (cross_prod (build_vec c a) (build_vec b q) >= 0) as Hc_e_b.
+        {
+          pose proof aux2 (build_vec q a) (build_vec c a) (build_vec b q) as H1_aux.
+          pose proof metric_nonneg (build_vec q a) as Hd_c_c.
+          assert (cross_prod (build_vec b q) (build_vec q a) = 0). { unfold cross_prod in H1; unfold cross_prod. simpl in *; lia. } rewrite H6 in H1_aux; simpl in H1_aux.
+          assert (dot_prod (build_vec b q) (build_vec q a) >= 0). { unfold dot_prod in H5; unfold dot_prod. simpl in *; nia. }
+          remember (cross_prod (build_vec c a) (build_vec b q)) as z0;
+          remember (dot_prod (build_vec q a) (build_vec q a)) as z1;
+          remember (cross_prod (build_vec c a) (build_vec q a)) as z2;
+          remember (dot_prod (build_vec b q) (build_vec q a)) as z3.
+          assert (z0 * z1 >= 0). { nia. }
+          rewrite Heqz1 in Hd_c_c.
+          (** destruct Q =? A *)
+          pose proof dot_prod_squared_dec _ _ Hd_c_c as [? | ?].
+          - (** Q = A *)
+            subst; tauto.
+          - (** Q != A *)
+            nia.
+        }
+        repeat split.
+        --(** Prove that `e × (e + c) >= 0` *)
+          (** It suffices to prove that `e × c >= 0` *)
+          assert (
+            cross_prod (build_vec c a) (build_vec c q) =
+            cross_prod (build_vec c a) (build_vec c a) -
+            cross_prod (build_vec c a) (build_vec q a)
+          ). { unfold cross_prod; simpl; nia. }
+          pose proof cross_prod_self (build_vec c a) as Hc_e_e.
+          nia.
+        --(** Prove that `(a + b + c) × c >= 0` *)
+          (** It suffices to prove that `c × (a + b) = 0` *)
+          assert (
+            cross_prod (build_vec a p) (build_vec a q) =
+            cross_prod (build_vec q a) (build_vec q a) -
+            cross_prod (build_vec q a) (build_vec p q)
+          ). { unfold cross_prod; simpl; nia. }
+          pose proof cross_prod_self (build_vec q a) as Hc_c_c.
+          nia.
+        --(** Prove that `(a + b + c - e) × (a + b) <= 0` *)
+          (** It suffice to prove that `e × (a + b) >= 0` *)
+          assert (
+            cross_prod (build_vec p c) (build_vec p q) =
+            cross_prod (build_vec p q) (build_vec p q) +
+            cross_prod (build_vec q a) (build_vec p q) -
+            cross_prod (build_vec c a) (build_vec p b) -
+            cross_prod (build_vec c a) (build_vec b q)
+          ). { unfold cross_prod; simpl; lia. }
+          pose proof cross_prod_self (build_vec p q) as Hc_ab_ab.
+          nia.
+      * admit.
+      * admit.
+  - (** colinear p a c *)
+    destruct H;
+    destruct H1 as [[? ?] | [[? ?] | [? ?]]].
+    + (** colinear p a b *)
+      unfold colinear, parallel, at_mid, backward_or_perp in *.
+      unfold cross_prod, dot_prod in *.
+      simpl in *; nia.
 Admitted.
 
 (* split first point p0 with convex hull CH *)
@@ -1521,11 +1713,16 @@ Proof.
         apply IHT. tauto.
 Qed.
 
+
+
+
+
 (* split first point p0 with convex hull CH *)
 (* TODO: definition *)
 Fixpoint point_in_hull'_aux (p p0 p1 : point) (CH: list point) :=
   match CH with
-  | p2 :: l => left_equal (build_vec p0 p1) (build_vec p0 p) /\ point_in_hull'_aux p p1 p2 l
+  | p2 :: l => left_equal (build_vec p0 p1) (build_vec p0 p) /\
+               point_in_hull'_aux p p1 p2 l
   | _ => False
   end.
 
@@ -1535,17 +1732,6 @@ Definition point_in_hull' (p: point) (CH: list point) :=
   | p0 :: p1 :: l => point_in_hull'_aux p p0 p1 l
   | _ => False
   end.
-
-Lemma left_equal_dec : forall p q r,
-  {left_equal (build_vec p q) (build_vec p r)} +
-  {left_equal (build_vec p r) (build_vec p q)}.
-Proof.
-  unfold left_equal. intros.
-  pose proof Ztrichotomy_inf (cross_prod (build_vec p q) (build_vec p r)) 0.
-  destruct H.
-  - left. destruct s; nia.
-  - right. rewrite cross_prod_comm. nia.
-Qed.
 
 (** Prove that splitting into triangles implies convex hull *)
 Lemma point_in_hull_equiv : forall p p0 CH,

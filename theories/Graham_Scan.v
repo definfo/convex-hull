@@ -449,25 +449,24 @@ Proof.
     pose proof succ_stack a (graham_scan T) as [? [? [? ?]]].
     rewrite H1.
     destruct x0.
-    + (** point_in_hull 2-point *)
-      (* TODO: add *)
-      rewrite H0 in *.
-      replace (x ++ []) with x in *. 2: { rewrite <- app_nil_end. tauto. }
-      assert (Hgs_inv: forall a x, graham_scan_inc a x = [a] -> x = []). {
-        intros a0 x0 Hgs.
-        induction x0; [tauto|].
-        simpl in Hgs.
-        destruct x0.
-        - inversion Hgs.
-        - destruct (ccw_dec p0 a1 a0); [inversion Hgs|].
-          specialize (IHx0 Hgs). inversion IHx0.
-      }
-      specialize (Hgs_inv _ _ H1). subst. simpl in *.
-      rewrite Hgs_inv in IHT.
-      unfold is_max_hull' in IHT. simpl in IHT.
-      admit.
+    + (** point_in_hull 2point *)
+      simpl;
+      unfold colinear, parallel, at_mid, backward_or_perp;
+      unfold cross_prod, dot_prod;
+      simpl; split; lia.
     + left.
+      (* ? need additional `~ccw a p0 p` *)
       apply point_in_tri_1.
-      admit.
+(*       pose proof sort_gs_consec_ccw p (a :: T) H as Hconsec.
+      pose proof sort_ind p [a] T H as H_.
+      pose proof sort_gs_consec_ccw p T H_. *)
+      pose proof sort_gs_ccw_list' p a T H as Hcl.
+      rewrite H0 in *.
+      pose proof rev_ccw_list_remove_middle p [a] x (p0 :: x0) Hcl as [? _].
+      simpl in H2; unfold Forall_ccw in H2.
+      apply Forall_inv in H2.
+      destruct (ccw_dec a p0 p).
+      * unfold ccw, left_than, cross_prod in *; nia.
+      * tauto.
   - apply hull_inc; tauto.
-Admitted.
+Qed.

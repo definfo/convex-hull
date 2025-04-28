@@ -455,11 +455,7 @@ Proof.
       unfold cross_prod, dot_prod;
       simpl; split; lia.
     + left.
-      (* ? need additional `~ccw a p0 p` *)
       apply point_in_tri_1.
-(*       pose proof sort_gs_consec_ccw p (a :: T) H as Hconsec.
-      pose proof sort_ind p [a] T H as H_.
-      pose proof sort_gs_consec_ccw p T H_. *)
       pose proof sort_gs_ccw_list' p a T H as Hcl.
       rewrite H0 in *.
       pose proof rev_ccw_list_remove_middle p [a] x (p0 :: x0) Hcl as [? _].

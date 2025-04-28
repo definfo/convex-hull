@@ -1690,6 +1690,7 @@ Proof.
           pose proof cross_prod_self (build_vec p q) as Hc_ab_ab.
           nia.
       *
+        
         admit.
       * admit.
   - (** colinear p a c *)
@@ -1792,15 +1793,27 @@ Definition point_in_hull_edges (p: point) (CH: list point) :=
   | _ => False
   end.
 
+Lemma point_in_hull_edges_cons : forall p a b CH,
+  rev_ccw_list p CH ->
+  rev_consec_ccw CH ->
+  point_in_hull_edges p (p0 :: CH) \/ point_in_triangle p ->
+  point_in_hull_edges p (a :: b :: CH).
+Proof. Admitted.
+
 (* TODO: point_in_hull_edges *)
-(** Prove that splitting into triangles implies convex hull *)
+(** Prove that convex hull triangulation implies inclusion by edges *)
+(** Splitting head `p0` with tail `CH`  *)
 Lemma point_in_hull_equiv : forall p p0 CH,
   (* rev_ccw _list consec_ccw *)
+  rev_ccw_list p0 CH -> rev_consec_ccw CH ->
   point_in_hull p p0 CH -> point_in_hull_edges p (p0 :: CH).
 Proof.
-  destruct CH; intros; [simpl; tauto|].
-  revert p1 H.
-  destruct CH; [tauto|].
-  intros. simpl.
-  destruct H.
+  destruct CH; [simpl; tauto|].
+  revert p0 p1. induction CH; [simpl; tauto|].
+  intros.
+  pose proof rev_ccw_list_app_iff p0 [p1] (a :: CH) as [Hcl _];
+  specialize (Hcl H) as [_ [Hcl _]].
+  pose proof rev_consec_ccw_cons_iff p1 (a :: CH) as [Hccw _];
+  specialize (Hccw H0) as [Hccw _].
+  pose proof IHCH p1 a as IH.
 Abort.

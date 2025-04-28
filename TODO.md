@@ -10,7 +10,7 @@
 
 3. 算法得到的凸多边形包含所有点 (WIP)
 
-3.1. 凸包定义等价 (triangle <-> edge)
+3.1. 凸包定义等价 (triangle -> edge)
 
 point_in_hull  : ⋃ 起始点与各边构成的三角形内部
 point_in_hull_edges : ⋂ 每条边左侧

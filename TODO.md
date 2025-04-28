@@ -12,13 +12,9 @@
 
 3.1 凸包定义等价 (triangle -> edge)
 
-4. 单子程序定义与证明
-
 Problems:
 
-1. rev_consec_ccw : remove_middle ?
-
-2. point_in_hull_pop' ?
+1. point_in_hull_le_aux ?
 
 point_in_hull : ⋃ 起始点与各边构成的三角形内部
 point_in_hull_edges : ⋂ 每条边左侧

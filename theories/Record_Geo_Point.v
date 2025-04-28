@@ -2177,7 +2177,7 @@ Admitted.
 
 Lemma point_in_hull_le_aux : forall p p0 p1 p2 CH,
   rev_ccw_list p0 (p1 :: p2 :: CH) ->
-(*   rev_consec_ccw (p0 :: p1 :: p2 :: CH) -> *)
+  rev_consec_ccw (p0 :: p1 :: p2 :: CH) -> 
   point_in_hull p p0 (p1 :: p2 :: CH) ->
   left_equal (build_vec p0 p1) (build_vec p0 p) /\
   left_equal (build_vec p1 p2) (build_vec p1 p).

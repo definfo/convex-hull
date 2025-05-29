@@ -57,6 +57,24 @@ Definition colinear (p q r: point): Prop :=
 Definition at_mid (p q r: point): Prop :=
   backward_or_perp (build_vec p q) (build_vec p r).
 
+Lemma colinear_comm : forall p q r,
+  colinear p q r <-> colinear p r q.
+Proof.
+  unfold colinear, parallel, cross_prod; simpl; nia.
+Qed.
+
+Lemma at_mid_comm : forall p q r,
+  at_mid p q r <-> at_mid p r q.
+Proof.
+  unfold at_mid, backward_or_perp, dot_prod; simpl; nia.
+Qed.
+
+Ltac into_vec_prod :=
+  unfold colinear, parallel in *;
+  unfold at_mid, backward_or_perp in *;
+  unfold ccw, left_than in *;
+  unfold left_equal in *.
+
 Definition g_ccw (p q r: point): Prop := 
   ccw p q r \/ (* ccw *)
   colinear p q r /\ at_mid q p r. (* or colinear p - q - r *)
@@ -1107,6 +1125,87 @@ Proof.
     tauto.
 Qed.
 
+Lemma rev_consec_ccw_snoc_iff: forall a l,
+  rev_consec_ccw (l ++ a :: nil) <->
+  rev_consec_ccw l /\ (forall b c l0, l = l0 ++ c :: b :: nil -> ccw a b c).
+Proof.
+  intros.
+  destruct l as [| ? [|]].
+  + simpl.
+    assert (forall b c l0, [] = l0 ++ [c; b] -> ccw a b c); [| tauto].
+    intros.
+    destruct l0; discriminate H.
+  + simpl.
+    assert (forall b c l0, [p] = l0 ++ [c; b] -> ccw a b c); [| tauto].
+    intros.
+    destruct l0 as [| ? [|]]; discriminate H.
+  + simpl app.
+    revert p p0; induction l; intros.
+    - simpl.
+      assert (ccw p0 p a <->
+              forall b c l0, [p; p0] = l0 ++ [c; b] -> ccw b c a);
+      split.
+      * intros.
+        destruct l0 as [| ? [| ? [|]]]; [| discriminate H0 ..].
+        injection H0 as ? ?.
+        subst; tauto.
+      * intros.
+        apply (H _ _ nil).
+        reflexivity.
+      * intros _H; destruct _H as [_H _].
+        split; [tauto|].
+        intros.
+        destruct l0 as [| ? [| ? [|]]]; [| discriminate H0 ..].
+        injection H0 as ? ?.
+        subst; apply ccw_cyclicity_2; tauto.
+      * intros _H; destruct _H as [_ _H].
+        split; [|tauto].
+        destruct H as [_ ?].
+        apply H.
+        intros; specialize (_H _ _ _ H0).
+        apply ccw_cyclicity; tauto.
+    - simpl app.
+      do 2 rewrite (rev_consec_ccw_cons_iff p).
+      rewrite IHl.
+      clear IHl.
+      split; intros [[? ?] ?]; (split; [split |]); try tauto.
+      * intros.
+        injection H2 as ? ? ?; subst.
+        apply (H1 _ _ (l0 ++ [a])).
+        reflexivity.
+      * intros.
+        destruct l0; [discriminate H2 | simpl in H2].
+        injection H2 as ? ?.
+        subst.
+        apply (H0 _ _ l0); tauto.
+      * intros.
+        apply (H1 _ _ (p :: l0)).
+        rewrite H2; reflexivity.
+      * intros.
+        injection H2 as ? ? ?; subst.
+        eapply H0.
+        reflexivity.
+Qed.
+
+Lemma rev_consec_ccw_snoc3_iff: forall a b c l,
+  rev_consec_ccw (l ++ c :: b :: a :: nil) <->
+  rev_consec_ccw (l ++ c :: b :: nil) /\ ccw a b c.
+Proof.
+  intros.
+  change (c :: b :: a :: nil) with ((c :: b :: nil) ++ (a :: nil)).
+  rewrite app_assoc.
+  rewrite rev_consec_ccw_snoc_iff.
+  assert ((forall b0 c0 l0, l ++ [c; b] = l0 ++ [c0; b0] -> ccw a b0 c0) <->
+          ccw a b c); [| split; tauto].
+  split; intros.
+  + eapply H; reflexivity.
+  + change (c :: b :: nil) with ((c :: nil) ++ (b :: nil)) in H0.
+    change (c0 :: b0 :: nil) with ((c0 :: nil) ++ (b0 :: nil)) in H0.
+    rewrite !app_assoc in H0.
+    rewrite !app_inj_tail_iff in H0.
+    destruct H0 as [[? ?] ?]; subst.
+    tauto.
+Qed.
 
 (* ========================== *)
 (*      Sort Definition       *)
@@ -1333,17 +1432,6 @@ Proof.
   nia.
 Qed.
 
-(* Lemma point_in_tri_at_mid : forall p q r a b c,
-  ~ ccw a b c ->
-  colinear r p q ->
-  at_mid r p q ->
-  point_in_triangle p a b c ->
-  point_in_triangle q a b c ->
-  point_in_triangle r a b c.
-Proof.
-  intros.
-Abort. *)
-
 Definition strict_point_in_triangle (p a b c : point) :=
   ccw c p a /\ ccw b p c /\ ccw a p b.
 
@@ -1500,28 +1588,165 @@ Proof.
   split; tauto.
 Qed.
 
-(** double in_tri, latter with colinear&at_mid => at_mid ? *)
-Lemma point_in_tri_col_incl : forall a b c d e,
-  point_in_triangle d a b c ->
-  colinear d a c -> colinear e a c -> at_mid e a c ->
-  at_mid d a c.
+(** Print aux. *)
+(* forall v v1 v2 : vec,
+dot_prod v1 v2 * dot_prod v v =
+dot_prod v1 v * dot_prod v2 v + cross_prod v1 v * cross_prod v2 v *)
+(** Print aux2. *)
+(* forall v v1 v2 : vec,
+cross_prod v1 v2 * dot_prod v v =
+cross_prod v1 v * dot_prod v2 v - cross_prod v2 v * dot_prod v1 v *)
+
+Lemma point_in_tri_col_mid : forall p a b c,
+  ~ ccw a b c ->
+  colinear p b c ->
+  at_mid p b c ->
+  point_in_triangle p a b c.
 Proof.
   intros.
-  pose proof mid_colinear_4point a c d e H0 H1 H2 as [Hdae Hcde].
-  destruct H.
-  - (** ccw c b a *)
-    destruct H as [? [? [? ?]]].
-Admitted.
+  pose proof (ccw_trichotomy c b a) as [[? | ?] | ?].
+  - clear H. left. split; [tauto|].
+    repeat split.
+    + (** LE a->b a->p *)
+      into_vec_prod.
+      pose proof aux2 (build_vec c b) (build_vec b a) (build_vec p b).
+      assert (cross_prod (build_vec b a) (build_vec c b) < 0) as _H1.
+      {
+        assert (cross_prod (build_vec c a) (build_vec c b) =
+                cross_prod (build_vec c b) (build_vec c b) +
+                cross_prod (build_vec b a) (build_vec c b)).
+        { unfold cross_prod; simpl; nia. }
+        pose proof cross_prod_self (build_vec c b).
+        nia.
+      }
+      assert (dot_prod (build_vec p b) (build_vec c b) >= 0) as _H2.
+      {
+        assert (dot_prod (build_vec p b) (build_vec c b) =
+                dot_prod (build_vec p b) (build_vec p b) -
+                dot_prod (build_vec p b) (build_vec p c)).
+        { unfold dot_prod; simpl; nia. }
+        pose proof metric_nonneg (build_vec p b).
+        nia.
+      }
+      assert (cross_prod (build_vec p b) (build_vec c b) = 0) as _H3.
+      {
+        assert (cross_prod (build_vec p b) (build_vec c b) =
+                cross_prod (build_vec p b) (build_vec p b) -
+                cross_prod (build_vec p b) (build_vec p c)).
+        { unfold cross_prod; simpl; nia. }
+        pose proof cross_prod_self (build_vec p b).
+        nia.
+      }
+      assert (cross_prod (build_vec b a) (build_vec p b) *
+              dot_prod (build_vec c b) (build_vec c b) <= 0) as _H.
+      { nia. }
+      clear H; rename _H into H.
+      assert (cross_prod (build_vec a b) (build_vec a p) =
+              cross_prod (build_vec b a) (build_vec p b)) as _H.
+      {
+        assert (cross_prod (build_vec a b) (build_vec a p) =
+                cross_prod (build_vec b a) (build_vec b a) +
+                cross_prod (build_vec b a) (build_vec p b)) as _H.
+        { unfold cross_prod; simpl; nia. }
+        pose proof cross_prod_self (build_vec b a).
+        nia.
+      }
+      rewrite _H.
+      pose proof dot_prod_squared_dec c b as [? | ?].
+      * (** c = b *)
+        subst.
+        pose proof dot_prod_squared_non_neg p b H1.
+        subst.
+        unfold cross_prod; simpl; nia.
+      * (** c != b *)
+        nia.
+    + (** LE b->c b->p *)
+      pose proof cross_prod_self (build_vec p b).
+      into_vec_prod.
+      assert (cross_prod (build_vec b c) (build_vec b p) =
+              cross_prod (build_vec p b) (build_vec p b) +
+              cross_prod (build_vec p b) (build_vec p c)).
+      { unfold cross_prod; simpl; nia. }
+      rewrite H0, H in H2; simpl; nia.
 
-Lemma mid_colinear_split : forall a b c d,
-  colinear c a b ->
-  at_mid c a b -> (* This is again non-trivial :| *)
-  colinear d a b ->
-  at_mid d a b ->
-  (colinear d a c /\ at_mid d a c) \/
-  (colinear d b c /\ at_mid d b c).
+    + (** LE c->a c->p *)
+      into_vec_prod.
+      pose proof aux2 (build_vec c b) (build_vec b a) (build_vec c p).
+      assert (cross_prod (build_vec b a) (build_vec c b) < 0) as _H1.
+      {
+        assert (cross_prod (build_vec c a) (build_vec c b) =
+                cross_prod (build_vec c b) (build_vec c b) +
+                cross_prod (build_vec b a) (build_vec c b)).
+        { unfold cross_prod; simpl; nia. }
+        pose proof cross_prod_self (build_vec c b).
+        nia.
+      }
+      assert (dot_prod (build_vec c p) (build_vec c b) >= 0) as _H2.
+      {
+        assert (dot_prod (build_vec c p) (build_vec c b) =
+                dot_prod (build_vec c p) (build_vec c p) -
+                dot_prod (build_vec p b) (build_vec p c)).
+        { unfold dot_prod; simpl; nia. }
+        pose proof metric_nonneg (build_vec c p).
+        nia.
+      }
+      assert (cross_prod (build_vec c p) (build_vec c b) = 0) as _H3.
+      {
+        assert (cross_prod (build_vec c p) (build_vec c b) =
+                cross_prod (build_vec c p) (build_vec c p) +
+                cross_prod (build_vec p b) (build_vec p c)).
+        { unfold cross_prod; simpl; nia. }
+        pose proof cross_prod_self (build_vec c p).
+        nia.
+      }
+      assert (cross_prod (build_vec b a) (build_vec c p) *
+              dot_prod (build_vec c b) (build_vec c b) <= 0) as _H.
+      { nia. }
+      clear H; rename _H into H.
+      assert (cross_prod (build_vec c a) (build_vec c p) =
+              cross_prod (build_vec b a) (build_vec c p)) as _H.
+      {
+        assert (cross_prod (build_vec c a) (build_vec c p) =
+                cross_prod (build_vec c p) (build_vec c p) -
+                cross_prod (build_vec p b) (build_vec p c) +
+                cross_prod (build_vec b a) (build_vec c p)).
+        { unfold cross_prod; simpl; nia. }
+        pose proof cross_prod_self (build_vec c p).
+        nia.
+      }
+      rewrite _H; clear _H.
+      pose proof dot_prod_squared_dec c b as [? | ?].
+      * (** c = b *)
+        subst.
+        pose proof dot_prod_squared_non_neg p b H1.
+        subst.
+        unfold cross_prod; simpl; nia.
+      * (** c != b *)
+        nia.
+  - clear H. right. split; [apply colinear_perm321; tauto|].
+    right; left. split; tauto.
+  - apply ccw_cyclicity in c0; contradiction.
+Qed.
+
+(*
+ccw r p0 q
+H0: colinear p p0 q /\ at_mid p p0 q
+-------------------------------------
+p in Δp0_r_q = Δr_q_p0
+*)
+Lemma point_in_tri_col_mid' : forall p a b c,
+  ccw a c b ->
+  colinear p b c ->
+  at_mid p b c ->
+  point_in_triangle p a b c.
 Proof.
-Abort.
+  intros.
+  pose proof point_in_tri_col_mid p a b c as _H.
+  assert (~ ccw a b c) as Hn_ccw.
+  { unfold ccw, left_than, cross_prod in *; simpl in *; nia. }
+  specialize (_H Hn_ccw H0 H1); clear Hn_ccw.
+  tauto.
+Qed.
 
 (** dot_prod *)
 
@@ -1547,12 +1772,12 @@ Proof.
       split; [tauto|].
       destruct H0.
       destruct H as [? [? [? ?]]].
-      destruct H1 as [[? ?] | [[? ?] | [? ?]]];
-      unfold left_equal in *;
-      unfold colinear, parallel in *;
-      unfold at_mid, backward_or_perp in *.
-      (** Below proofs may have to use `Lemma aux` to convert between `cross_prod` and `dot_prod` *)
-      *
+      destruct H1 as [[? ?] | [[? ?] | [? ?]]].
+      (** Below proofs may have to use `Lemma aux` to convert between `cross_prod` and `dot_prod`, currently cannot be auto-solved. *)
+      * (** colinear_at_mid q b a *)
+        unfold left_equal in *;
+        unfold colinear, parallel in *;
+        unfold at_mid, backward_or_perp in *.
         (** e × (b + c) >= 0 *)
         assert (cross_prod (build_vec c a) (build_vec b a) >= 0) as Hc_e_bc.
         {
@@ -1689,7 +1914,10 @@ Proof.
           ). { unfold cross_prod; simpl; lia. }
           pose proof cross_prod_self (build_vec p q) as Hc_ab_ab.
           nia.
-      *
+      * (** colinear_at_mid q a p *)
+      pose proof mid_colinear_4point a p b q H0 H1 H5 as [? ?].
+      
+        
         
         admit.
       * admit.
@@ -1741,7 +1969,7 @@ Proof.
   unfold is_max_hull' in *. intros p q T l.
   apply Forall_impl. intros.
   apply point_in_hull_cons.
-  eauto.
+  tauto.
 Qed.
 
 Lemma forall_false_elim : forall a l,
@@ -1774,46 +2002,331 @@ Proof.
         apply IHT. tauto.
 Qed.
 
-(* split first point p0 with convex hull CH *)
-Fixpoint point_in_hull_edges_aux (p p0 p1 : point) (CH: list point) :=
+(*** ========== Definition ========== ***)
+
+(** Auxiliary recursive function to traverse each edge of hull *)
+(* split first point `p0` from the hull *)
+(* record two leading hull vertices as `p1` `p2` *)
+Fixpoint point_in_hull_edges_aux_ (p p0 p1: point) (CH: list point) :=
   match CH with
-  | p2 :: l => left_equal (build_vec p0 p1) (build_vec p0 p) /\
-               point_in_hull_edges_aux p p1 p2 l
+  (** hull is not empty, proceed from `p1->p2` to `p2->p3` *)
+  | p2 :: l => point_in_hull_edges_aux_ p p0 p2 l /\
+               left_equal (build_vec p1 p2) (build_vec p1 p)
+  (** `p2` is last point, add the last edge `p2->p0` *)
+  | nil => left_equal (build_vec p1 p0) (build_vec p1 p)
+  end.
+
+(** Define if point `p` sets inside the hull `CH`. *)
+(* split first point `p0` from the hull *)
+(* in order to facilitate recursion. *)
+Definition point_in_hull_edges (p : point) (CH: list point) :=
+  match CH with
+  (** hull := `p0 p1 ...`, recurse into _aux *)
+  | p0 :: p1 :: p2 :: l => left_equal (build_vec p0 p1) (build_vec p0 p) /\
+                     point_in_hull_edges_aux_ p p0 p1 (p2 :: l)
+  (** hull := `p0 p1`, check if p is on segment `p0->p1` *)
+  | p0 :: p1 :: nil => colinear p p0 p1 /\ at_mid p p0 p1
+  (** hull := `p0`, simply eliminate this case *)
   | _ => False
   end.
 
-(*? Check the last edge *)
-Definition point_in_hull_edges (p: point) (CH: list point) :=
-  match CH with
-  | p0 :: p1 :: l => 
-    match l with
-    | nil => colinear p p0 p1 /\ at_mid p p0 p1
-    | _ => point_in_hull_edges_aux p p0 p1 l
-    end
-  | _ => False
-  end.
+(*** ========== Proof ========== ***)
 
-Lemma point_in_hull_edges_cons : forall p a b CH,
-  rev_ccw_list p CH ->
-  rev_consec_ccw CH ->
-  point_in_hull_edges p (p0 :: CH) \/ point_in_triangle p ->
-  point_in_hull_edges p (a :: b :: CH).
-Proof. Admitted.
+(*! deprecated 
+Lemma point_in_hull_edges_cons : forall p p0 q r CH,
+  rev_ccw_list p0 (r :: q :: CH) ->
+  rev_consec_ccw (q :: CH) ->
+  point_in_hull_edges p (r :: q :: CH) \/ point_in_triangle p p0 q r ->
+  point_in_hull_edges p (p0 :: r :: q :: CH).
+Proof.
+  intros. revert p p0 q r H H0 H1; destruct CH; [simpl; intros|].
+  -
+    destruct H as [? _]. clear H0.
+    unfold Forall_ccw in H; apply Forall_inv in H.
+    destruct H1.
+    +
+      pose proof point_in_tri_col_mid' p r q p0 as _H.
+      destruct H0 as [Hcol Hmid].
+(*       apply colinear_comm in Hcol; apply at_mid_comm in Hmid.
+      specialize (_H H Hcol Hmid).
+      destruct _H as [[_ [? [? ?]]] | [? _]].
+      * repeat split; tauto.
+      * apply colinear_comm in H0.
+        into_vec_prod.
+        rewrite cross_prod_comm in H0.
+        nia. *)
+      admit.
+    + admit.
+(*       destruct H0 as [[? _] | [? _]].
+      * into_vec_prod.
+        rewrite cross_prod_comm in H0.
+        nia.
+      * into_vec_prod. 
+        assert (cross_prod (build_vec p0 r) (build_vec p0 q) =
+                cross_prod (build_vec p0 r) (build_vec p0 r) +
+                cross_prod (build_vec r q) (build_vec r p0)).
+        { unfold cross_prod; simpl; nia. }
+        rewrite cross_prod_comm in H0.
+        pose proof cross_prod_self (build_vec p0 r).
+        nia. *)
+  -
+    intros. simpl in H, H1; simpl.
+    destruct H1 as [[? ?] | ?].
+    * repeat split; try tauto.
 
-(* TODO: point_in_hull_edges *)
+Abort. *)
+
+Lemma point_in_hull_snoc : forall p p0 p1 x x0 l,
+  point_in_hull p p0 (p1 :: l ++ [x ; x0]) ->
+  point_in_triangle p p0 x x0 \/
+  point_in_hull p p0 (p1 :: l ++ [x]).
+Proof.
+  destruct l using rev_ind.
+  - simpl; intros.
+    destruct H as [? | [? | ?]].
+    + right; left. tauto.
+    + left. apply point_in_tri_cyclicity; tauto.
+    + right; right. (*  tauto. *)
+
+Abort.
+
+Lemma point_in_hull_le_0 : forall p p0 p1 CH,
+  rev_ccw_list p0 (p1 :: CH) ->
+  point_in_hull p p0 (p1 :: CH) ->
+  left_equal (build_vec p0 p1) (build_vec p0 p).
+Proof.
+  intros p p0 p1.
+  destruct CH using rev_ind.
+  1: {
+    simpl; into_vec_prod.
+    intros.
+    assert (cross_prod (build_vec p0 p1) (build_vec p0 p) =
+            cross_prod (build_vec p p0) (build_vec p p1) -
+            cross_prod (build_vec p p0) (build_vec p p0)).
+    { unfold cross_prod; simpl; nia. }
+    pose proof cross_prod_self (build_vec p p0); nia.
+  }
+  clear IHCH; revert x p0 p1.
+  (*? How to generalize CH? *)
+  destruct CH using rev_ind.
+(*   refine (rev_ind _ _ _). *)
+  1: {
+    simpl; intros; into_vec_prod;
+    rewrite Forall_ccw_cons_iff in H; destruct H as [? _].
+    destruct H0 as [[[_ ?] | [? _]] | ?].
+    - destruct H0 as [_ [_ ?]].
+      into_vec_prod; tauto.
+    - into_vec_prod; nia.
+    - into_vec_prod.
+      destruct H0.
+      pose proof aux2 (build_vec p0 x) (build_vec p0 p1) (build_vec p0 p) as H_aux.
+      assert (cross_prod (build_vec p0 p1) (build_vec p0 x) < 0) as Hr1.
+      {
+        assert (cross_prod (build_vec p1 x) (build_vec p1 p0) =
+                cross_prod (build_vec p1 p0) (build_vec p1 p0) +
+                cross_prod (build_vec p0 p1) (build_vec p0 x)).
+        { unfold cross_prod; simpl; nia. }
+        pose proof cross_prod_self (build_vec p1 p0).
+        nia.
+      }
+      assert (dot_prod (build_vec p0 p) (build_vec p0 x) >= 0) as Hr2.
+      {
+        assert (dot_prod (build_vec p0 p) (build_vec p0 x) =
+                dot_prod (build_vec p0 p) (build_vec p0 p) -
+                dot_prod (build_vec p p0) (build_vec p x)).
+        { unfold dot_prod; simpl; nia. }
+        pose proof metric_nonneg (build_vec p0 p).
+        nia.
+      }
+      assert (cross_prod (build_vec p0 p) (build_vec p0 x) = 0) as Hr3.
+      {
+        assert (cross_prod (build_vec p0 p) (build_vec p0 x) =
+                cross_prod (build_vec p0 p) (build_vec p0 p) -
+                cross_prod (build_vec p p0) (build_vec p x)).
+        { unfold cross_prod; simpl; nia. }
+        pose proof cross_prod_self (build_vec p0 p).
+        nia.
+      }
+      assert (cross_prod (build_vec p0 p1) (build_vec p0 p) *
+              dot_prod (build_vec p0 x) (build_vec p0 x) <= 0)
+              as H_s by nia.
+      pose proof dot_prod_squared_dec p0 x as [? | ?].
+      + (* p0 = x *)
+        subst.
+        pose proof dot_prod_squared_non_neg _ _ H1.
+        subst.
+        into_vec_prod; nia.
+      + (* p0 != x *)
+        nia.
+  }
+  (** *)
+  - intros.
+    specialize (IHCH x0 p0 p1).
+    (** split point_in_hull p p0 (p1 :: l ++ [x; x0]) with
+              point_in_triangle p p0 x x0 \/
+              point_in_hull p p0 (p1 :: l ++ [x])  *)
+    apply IHCH.
+    + pose proof rev_ccw_list_remove_middle p0 (p1 :: CH) [x] [x0] as Hrm.
+      rewrite !app_comm_cons in H, H0;
+      rewrite !app_assoc_reverse in H, H0.
+      specialize (Hrm H); tauto.
+    + (** split edge cases using AI ? *)
+      (* TODO: Lemma split_back_point_in_hull *)
+
+Admitted.
+
+Lemma point_in_hull_le_aux : forall p p0 p1 p2 CH,
+  rev_ccw_list p0 (p1 :: p2 :: CH) ->
+(*   rev_consec_ccw (p0 :: p1 :: p2 :: CH) -> *)
+  point_in_hull p p0 (p1 :: p2 :: CH) ->
+  left_equal (build_vec p0 p1) (build_vec p0 p) /\
+  left_equal (build_vec p1 p2) (build_vec p1 p).
+Proof.
+  intros; revert p0 p1 p2 H H0 H1;
+  induction CH; intros.
+  - clear H; destruct H0 as [? _].
+    destruct H1.
+    + (** point_in_tri *)
+      destruct H0 as [[_ ?] | [? _]].
+      * (** ccw p0 p2 p1 *)
+        tauto.
+      * (** colinear p1 p2 p0 *)
+        into_vec_prod; nia.
+    + (** col_at_mid *)
+      destruct H0.
+      rewrite colinear_comm in H0; rewrite at_mid_comm in H1.
+      pose proof point_in_tri_col_mid' p p1 p2 p0 H H0 H1 as Htri.
+      destruct Htri as [[_ ?] | [? _]].
+      * (** ccw p0 p2 p1 *)
+        tauto.
+      * (** colinear p1 p2 p0 *)
+        into_vec_prod; nia.
+  - destruct H1.
+    * (** point_in_tri *)
+      destruct H1 as [[_ ?] | [? _]].
+      --(** le *)
+        tauto.
+      --(** col_at_mid *)
+        destruct H0.
+        into_vec_prod; nia.
+    * (* TODO: point_in_hull *)
+      (*! manually deal with vec_prod *)
+      destruct H as [Hc1 [Hc2 _]];
+      destruct H0 as [Hc_p1_p0_p2 [Hc_p2_p1_a _]].
+      unfold Forall_ccw in *.
+      do 2 rewrite Forall_cons_iff in Hc1; destruct Hc1 as [_ [Hc_p1_p0_a _]].
+      rewrite Forall_cons_iff in Hc2; destruct Hc2 as [Hc_p2_p0_a _].
+Admitted.
+
+(** Lemma ??: forall p0 p1 p2 CH,
+  rev_ccw_list p0 (p1 :: p2 :: CH) ->
+  rev_consec_ccw (p0 :: p1 :: p2 :: CH) ->
+  rev_consec_ccw (p0 :: p1 :: CH).
+*)
+
+Lemma point_in_tri_pop' : forall p a b c l T,
+  (** should `rev_ccw_list` be included in `is_max_hull'` ? *)
+  rev_ccw_list p (c :: b :: a :: l) ->
+  rev_consec_ccw (b :: a :: l) ->
+  ~ ccw a b c ->
+  is_max_hull' p (c :: b :: a :: l) T ->
+  is_max_hull' p (c :: a :: l) T.
+Proof.
+  unfold is_max_hull' in *; intros.
+  assert (point_in_triangle b c a p).
+  {
+    pose proof rev_ccw_list_remove_middle p [c] [b] (a :: l) H as [Hac _].
+    destruct H as [Hbc [Hab _]]. unfold Forall_ccw in Hbc, Hab, Hac. simpl in Hac.
+    rewrite !Forall_cons_iff in Hbc, Hab, Hac. destruct Hbc, Hab, Hac.
+    clear H3 H5.
+    assert (point_in_triangle b p c a). { apply point_in_tri_general; tauto. }
+    do 2 apply point_in_tri_cyclicity in H3. tauto.
+  }
+  assert (forall q, point_in_triangle q b a p ->
+                    point_in_triangle q c a p).
+  {
+    intros.
+    pose proof rev_ccw_list_remove_middle p [c] [b] (a :: l) H as [Hac _].
+    destruct H as [Hbc [Hab _]]. unfold Forall_ccw in Hbc, Hab, Hac. simpl in Hac.
+    rewrite !Forall_cons_iff in Hbc, Hab, Hac. destruct Hbc, Hab, Hac.
+    assert (~ ccw c a p). { apply ccw_anti_symmetry in H8. tauto. }
+    pose proof point_in_tri_incl _ _ _ _ H3 _ H4.
+    tauto.
+  }
+  assert (forall q, point_in_triangle q c b p ->
+                    point_in_triangle q c a p).
+  {
+    intros.
+    pose proof rev_ccw_list_remove_middle p [c] [] (b :: a :: l) H as [Hac _].
+    destruct H as [Hbc [Hab _]]. unfold Forall_ccw in Hbc, Hab, Hac. simpl in Hac.
+    rewrite !Forall_cons_iff in Hbc, Hab, Hac. destruct Hbc, Hab, Hac.
+    assert (~ ccw c b p). { apply ccw_anti_symmetry in H9. tauto. }
+    admit.
+  }
+  rewrite Forall_forall in H2; rewrite Forall_forall.
+  intros x _H; specialize (H2 x _H); clear _H.
+  destruct H2 as [? | [? | ?]].
+  - (** x ∈ Δcbp -> x ∈ Δcap *)
+    left.
+    apply H5. tauto.
+  - (** x ∈ Δbap -> x ∈ Δcap *) 
+    left.
+    apply H4. tauto.
+  - (** x ∈ [a :: l] -> x ∈ [a :: l] *)
+    right; tauto.
+Admitted.
+
 (** Prove that convex hull triangulation implies inclusion by edges *)
 (** Splitting head `p0` with tail `CH`  *)
-Lemma point_in_hull_equiv : forall p p0 CH,
-  (* rev_ccw _list consec_ccw *)
-  rev_ccw_list p0 CH -> rev_consec_ccw CH ->
-  point_in_hull p p0 CH -> point_in_hull_edges p (p0 :: CH).
+Theorem point_in_hull_equiv_aux : forall p p0 p1 CH,
+  rev_ccw_list p0 (p1 :: CH) ->
+  rev_consec_ccw (p0 :: p1 :: CH) ->
+  point_in_hull p p0 (p1 :: CH) ->
+  point_in_hull_edges_aux_ p p0 p1 CH.
 Proof.
-  destruct CH; [simpl; tauto|].
-  revert p0 p1. induction CH; [simpl; tauto|].
+  intros; revert p0 p1 H H0 H1.
+  induction CH.
+  - simpl; intros.
+    destruct H1.
+    into_vec_prod.
+    assert (cross_prod (build_vec p1 p0) (build_vec p1 p) =
+          - cross_prod (build_vec p p0) (build_vec p p1) +
+            cross_prod (build_vec p p1) (build_vec p p1)).
+    { unfold cross_prod; simpl; nia. }
+    pose proof cross_prod_self (build_vec p p1).
+    nia.
+  - intros. split.
+    + apply (IHCH p0 a).
+      *
+        pose proof rev_ccw_list_app_iff p0 [p1] (a :: CH) as [Hccw _].
+        apply Hccw in H as [_ [? _]]; tauto.
+      *
+        destruct H0 as [? [? ?]].
+        split; [|tauto].
+        destruct CH; [tauto|].
+        destruct H as [_ [? _]].
+        apply Forall_ccw_cons_iff in H. tauto.
+      *
+        destruct H1; [|tauto].
+        (*? should be able to reuse
+        is_max_hull'_pop' in Graham_Scan.v *)
+        admit.
+    + (* TODO: point_in_hull_le_aux *)
+      pose proof point_in_hull_le_aux _ _ _ _ _ H H0 H1;
+      tauto.
+Admitted.
+
+Theorem point_in_hull_equiv : forall p p0 CH,
+  rev_ccw_list p0 CH ->
+  rev_consec_ccw (p0 :: CH) ->
+  point_in_hull p p0 CH ->
+  point_in_hull_edges p (p0 :: CH).
+Proof.
   intros.
-  pose proof rev_ccw_list_app_iff p0 [p1] (a :: CH) as [Hcl _];
-  specialize (Hcl H) as [_ [Hcl _]].
-  pose proof rev_consec_ccw_cons_iff p1 (a :: CH) as [Hccw _];
-  specialize (Hccw H0) as [Hccw _].
-  pose proof IHCH p1 a as IH.
-Abort.
+  destruct CH; [simpl; tauto|].
+  destruct CH; [simpl in *; tauto|].
+  split.
+  - pose proof point_in_hull_le_aux _ _ _ _ _ H H0 H1;
+    tauto.
+  - apply point_in_hull_equiv_aux; tauto.
+Admitted.

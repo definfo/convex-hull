@@ -118,7 +118,7 @@ Proof.
       * simpl; destruct (ccw_dec p0 p a).
         exists [], [p ; p0]. split; reflexivity.
         exists [p], [p0]. split; reflexivity.
-      * pose proof IHT a0 p0 a. 
+      * pose proof IHT a0 p0 a.
         pose proof IHT a0 p p0.
         destruct H as [T0 [T' [H1 H2]]].
         destruct H0 as [T1 [T'' [H3 H4]]].
@@ -248,7 +248,7 @@ Proof.
   induction T; intros.
   - tauto.
   - simpl.
-    pose proof rev_ccw_list_app_iff p [a] T as [Hs1 _]. 
+    pose proof rev_ccw_list_app_iff p [a] T as [Hs1 _].
     pose proof sort_ind p [a] T H as Hs0.
     specialize (Hs1 H0) as [_ [Hs1 _]].
     specialize (IHT Hs0 Hs1). clear Hs0 Hs1.
@@ -388,7 +388,7 @@ Proof.
   - (** x ∈ Δcbp -> x ∈ Δcap *)
     left.
     apply H5. tauto.
-  - (** x ∈ Δbap -> x ∈ Δcap *) 
+  - (** x ∈ Δbap -> x ∈ Δcap *)
     left.
     apply H4. tauto.
   - (** x ∈ [a :: l] -> x ∈ [a :: l] *)
@@ -401,7 +401,7 @@ Lemma hull_inc : forall p a T,
   is_max_hull' p (graham_scan T) T ->
   is_max_hull' p (graham_scan (a :: T)) T.
 Proof.
-  intros. simpl. 
+  intros. simpl.
   pose proof sort_gs_consec_ccw p (a :: T) H as Hconsec.
   pose proof sort_ind p [a] T H as H_.
   pose proof sort_gs_consec_ccw p T H_.

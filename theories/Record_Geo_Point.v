@@ -48,7 +48,7 @@ Lemma nonzero_sym: forall p q,
   nonzero (build_vec q p).
 Proof. unfold nonzero, dot_prod, build_vec; simpl; nia. Qed.
 
-Definition ccw (p q r: point): Prop := 
+Definition ccw (p q r: point): Prop :=
   left_than (build_vec p r) (build_vec p q).
 
 Definition colinear (p q r: point): Prop :=
@@ -75,7 +75,7 @@ Ltac into_vec_prod :=
   unfold ccw, left_than in *;
   unfold left_equal in *.
 
-Definition g_ccw (p q r: point): Prop := 
+Definition g_ccw (p q r: point): Prop :=
   ccw p q r \/ (* ccw *)
   colinear p q r /\ at_mid q p r. (* or colinear p - q - r *)
 
@@ -189,7 +189,7 @@ Lemma ccw_skip_head_simple: forall (p q r s t: point),
   ccw p q s \/ colinear p q s ->
   ccw p r s ->
   ccw p s t ->
-  ccw q r s -> 
+  ccw q r s ->
   ccw r s t ->
   ccw q s t.
 Proof. unfold ccw, colinear, left_than, parallel, cross_prod, build_vec; simpl; intros. nia. Qed.
@@ -304,7 +304,7 @@ Proof.
       lia.
 Qed.
 
-(* p q r 
+(* p q r
    p q s
    p q t
    p r t *)
@@ -354,7 +354,7 @@ Proof.
     { unfold colinear, parallel.
       remember (cross_prod (build_vec p q) (build_vec p r)) as a.
       pose proof Z_dec a 0 as [[Hlt | Heq] | Hgt];
-      try (left; assumption); 
+      try (left; assumption);
       try (right; intros H'; nia). }
     + left. right. assumption.
     + right. pose proof (ccw_non_degeneracy p q r Hncol).
@@ -1490,7 +1490,7 @@ Proof.
   pose proof metric_nonneg (build_vec a b);
   remember (dot_prod (build_vec a b) (build_vec a b)).
   apply Z_ge_dec in H; destruct H.
-  - right; tauto. 
+  - right; tauto.
   - left; apply dot_prod_squared_zero_dec; lia.
 Qed.
 
@@ -1915,10 +1915,7 @@ Proof.
           pose proof cross_prod_self (build_vec p q) as Hc_ab_ab.
           nia.
       * (** colinear_at_mid q a p *)
-      pose proof mid_colinear_4point a p b q H0 H1 H5 as [? ?].
-      
-        
-        
+        pose proof mid_colinear_4point a p b q H0 H1 H5 as [? ?].
         admit.
       * admit.
   - (** colinear p a c *)
@@ -2032,7 +2029,7 @@ Definition point_in_hull_edges (p : point) (CH: list point) :=
 
 (*** ========== Proof ========== ***)
 
-(*! deprecated 
+(*! deprecated
 Lemma point_in_hull_edges_cons : forall p p0 q r CH,
   rev_ccw_list p0 (r :: q :: CH) ->
   rev_consec_ccw (q :: CH) ->
@@ -2061,7 +2058,7 @@ Proof.
       * into_vec_prod.
         rewrite cross_prod_comm in H0.
         nia.
-      * into_vec_prod. 
+      * into_vec_prod.
         assert (cross_prod (build_vec p0 r) (build_vec p0 q) =
                 cross_prod (build_vec p0 r) (build_vec p0 r) +
                 cross_prod (build_vec r q) (build_vec r p0)).
@@ -2086,7 +2083,8 @@ Proof.
     destruct H as [? | [? | ?]].
     + right; left. tauto.
     + left. apply point_in_tri_cyclicity; tauto.
-    + right; right. (*  tauto. *)
+    + left.
+      right.
 
 Abort.
 
@@ -2177,7 +2175,7 @@ Admitted.
 
 Lemma point_in_hull_le_aux : forall p p0 p1 p2 CH,
   rev_ccw_list p0 (p1 :: p2 :: CH) ->
-  rev_consec_ccw (p0 :: p1 :: p2 :: CH) -> 
+  rev_consec_ccw (p0 :: p1 :: p2 :: CH) ->
   point_in_hull p p0 (p1 :: p2 :: CH) ->
   left_equal (build_vec p0 p1) (build_vec p0 p) /\
   left_equal (build_vec p1 p2) (build_vec p1 p).
@@ -2216,6 +2214,7 @@ Proof.
       unfold Forall_ccw in *.
       do 2 rewrite Forall_cons_iff in Hc1; destruct Hc1 as [_ [Hc_p1_p0_a _]].
       rewrite Forall_cons_iff in Hc2; destruct Hc2 as [Hc_p2_p0_a _].
+
 Admitted.
 
 (** Lemma ??: forall p0 p1 p2 CH,
@@ -2269,7 +2268,7 @@ Proof.
   - (** x ∈ Δcbp -> x ∈ Δcap *)
     left.
     apply H5. tauto.
-  - (** x ∈ Δbap -> x ∈ Δcap *) 
+  - (** x ∈ Δbap -> x ∈ Δcap *)
     left.
     apply H4. tauto.
   - (** x ∈ [a :: l] -> x ∈ [a :: l] *)
@@ -2329,4 +2328,4 @@ Proof.
   - pose proof point_in_hull_le_aux _ _ _ _ _ H H0 H1;
     tauto.
   - apply point_in_hull_equiv_aux; tauto.
-Admitted.
+Qed.

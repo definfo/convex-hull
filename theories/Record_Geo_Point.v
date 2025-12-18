@@ -2067,56 +2067,6 @@ Definition point_in_hull_edges (p : point) (CH: list point) :=
 
 (*** ========== Proof ========== ***)
 
-(* Lemma point_in_hull_snoc : forall p p0 p1 x x0 l,
-  point_in_hull p (p0 :: p1 :: l ++ [x ; x0]) ->
-  point_in_triangle p p0 x x0 \/
-  point_in_hull p (p0 :: p1 :: l ++ [x0]).
-Proof.
-Abort. *)
-
-(* Lemma point_in_hull_le_0 : forall p p0 p1 CH,
-  rev_ccw_list p0 (p1 :: CH) ->
-  point_in_hull p (p0 :: p1 :: CH) ->
-  left_equal (build_vec p0 p1) (build_vec p0 p).
-Proof.
-  intros p p0 p1.
-  destruct CH using rev_ind.
-  1: {
-    simpl; into_vec_prod.
-    intros.
-    assert (cross_prod (build_vec p0 p1) (build_vec p0 p) =
-            cross_prod (build_vec p p0) (build_vec p p1) -
-            cross_prod (build_vec p p0) (build_vec p p0)).
-    { unfold cross_prod; simpl; nia. }
-    pose proof cross_prod_self (build_vec p p0); nia.
-  }
-  clear IHCH; revert x p0 p1.
-  (*? How to generalize CH? *)
-  destruct CH using rev_ind.
-(*   refine (rev_ind _ _ _). *)
-  1: {
-    simpl; intros; into_vec_prod;
-    rewrite Forall_ccw_cons_iff in H; destruct H as [? _].
-    destruct H0 as [[[_ ?] | [? _]] | ?].
-    - destruct H0 as [_ [_ ?]].
-      into_vec_prod; tauto.
-    - into_vec_prod; nia.
-    - into_vec_prod.
-      destruct H0.
-  }
-  (** *)
-  - intros.
-    specialize (IHCH x0 p0 p1).
-    (** split point_in_hull p p0 (p1 :: l ++ [x; x0]) with
-              point_in_triangle p p0 x x0 \/
-              point_in_hull p p0 (p1 :: l ++ [x])  *)
-    apply IHCH.
-    + pose proof rev_ccw_list_remove_middle p0 (p1 :: CH) [x] [x0] as Hrm.
-      apply Hrm. simpl. simpl in H.
-      rewrite <- !app_assoc in H. tauto.
-    +
-Admitted. *)
-
 Lemma point_in_hull_le_aux : forall p p0 p1 p2 CH,
   rev_ccw_list p0 (p1 :: p2 :: CH) ->
   rev_consec_ccw (p0 :: p1 :: p2 :: CH) ->
@@ -2153,15 +2103,34 @@ Proof.
       -- (** rew_consec_ccw (p0 :: p1 :: p2 :: CH) *)
         Print rev_consec_ccw_cons_iff.
         Print rev_consec_ccw_snoc_iff.
+        admit.
       -- (** point_ih_hull p (p0 :: p1 :: p2 :: CH) *)
+        admit.
 
 Admitted.
 
-(** Lemma ??: forall p0 p1 p2 CH,
+Lemma rev_consec_ccw_remove_3 : forall p0 p1 p2 CH,
   rev_ccw_list p0 (p1 :: p2 :: CH) ->
   rev_consec_ccw (p0 :: p1 :: p2 :: CH) ->
   rev_consec_ccw (p0 :: p1 :: CH).
-*)
+Proof.
+  induction CH; intros.
+  - (* CH := nil *)
+    simpl; tauto.
+  - pose proof rev_ccw_list_remove_middle p0 [p1; p2] [a] CH H as _H.
+    apply rev_consec_ccw_cons_iff; split.
+    + apply rev_consec_ccw_cons_iff; split.
+      * do 3 (apply rev_consec_ccw_cons_iff in H0; destruct H0 as [H0 _]).
+        tauto.
+      * intros.
+        injection H1; intros; clear H1; subst.
+        admit.
+    + intros.
+      injection H1; intros; clear H1; subst.
+      admit.
+
+    specialize (IHCH _H); clear _H.
+Abort.
 
 Lemma point_in_tri_pop' : forall p a b c l T,
   (** should `rev_ccw_list` be included in `is_max_hull'` ? *)

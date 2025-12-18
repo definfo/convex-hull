@@ -1916,8 +1916,8 @@ Proof.
           nia.
       * (** colinear_at_mid q a p *)
         pose proof mid_colinear_4point a p b q H0 H1 H5 as [? ?].
-        admit.
-      * admit.
+        admit. (*-*)
+      * admit. (*-*)
   - (** colinear p a c *)
     destruct H;
     destruct H1 as [[? ?] | [[? ?] | [? ?]]].
@@ -1925,7 +1925,23 @@ Proof.
 Admitted.
 
 (* split first point p0 with convex hull CH *)
-Fixpoint point_in_hull (p p0: point) (CH: list point) :=
+Fixpoint point_in_hull_aux (p p0 p1: point) (CH: list point) :=
+  match CH with
+  (** hull is not empty, proceed from `p1` to `p2` *)
+  | p2 :: l => point_in_triangle p p1 p2 p0 \/
+               point_in_hull_aux p p0 p2 l
+  | nil => False
+  end.
+
+Definition point_in_hull (p: point) (CH: list point) :=
+  match CH with
+  | p0 :: p1 :: p2 :: l => point_in_hull_aux p p0 p1 (p2 :: l)
+  | p0 :: p1 :: nil => colinear p p0 p1 /\ at_mid p p0 p1
+  | _ => False
+  end.
+
+(* Deprecated *)
+(* Fixpoint point_in_hull (p p0: point) (CH: list point) :=
   match CH with
   | p1 :: l' =>
     match l' with
@@ -1933,30 +1949,31 @@ Fixpoint point_in_hull (p p0: point) (CH: list point) :=
     | _ => colinear p p0 p1 /\ at_mid p p0 p1
     end
   | _ => False
-  end.
+  end. *)
 
+(** l ⊆ (p :: CH) *)
 Definition is_max_hull' (p: point) (CH l: list point) :=
-  Forall (fun q => point_in_hull q p CH) l.
+  Forall (fun q => point_in_hull q (p :: CH)) l.
 
 Lemma point_in_hull_last_tri : forall p p0 p1 p2,
   point_in_triangle p p1 p2 p0 ->
   forall CH,
-  point_in_hull p p0 (p1 :: p2 :: CH).
+  point_in_hull p (p0 :: p1 :: p2 :: CH).
 Proof.
   induction CH; simpl; left; tauto.
 Qed.
 
-Lemma point_in_hull_cons : forall p q p0 T,
-  point_in_hull q p T ->
-  point_in_hull q p (p0 :: T).
+(* Lemma point_in_hull_cons : forall p q p0 T,
+  point_in_hull q (p :: T) ->
+  point_in_hull q (p :: p0 :: T).
 Proof.
-  intros; revert p0.
-  destruct T.
+  intros; revert p0 H.
+  induction T.
   - intros. simpl in H; tauto.
-  - destruct T; intros; [right; tauto|].
-    destruct H; right.
-    + left; tauto.
-    + right; tauto.
+  - intros.
+    destruct T.
+    + simpl. simpl in H.
+      left.
 Qed.
 
 Lemma is_max_hull'_cons : forall p q T l,
@@ -1967,7 +1984,7 @@ Proof.
   apply Forall_impl. intros.
   apply point_in_hull_cons.
   tauto.
-Qed.
+Qed. *)
 
 Lemma forall_false_elim : forall a l,
   Forall (fun _ : point => False) (a :: l) -> False.
@@ -1978,25 +1995,46 @@ Proof.
   tauto.
 Qed.
 
-Lemma is_max_hull'_cons_iff : forall p a b l T,
-  is_max_hull' p (b :: a :: l) T <->
-  Forall (fun q : point => point_in_hull q p (a :: l) \/
-                           point_in_triangle q b a p) T.
+Lemma point_in_hull_cons_iff : forall q p a b l,
+  rev_ccw_list p (b :: a :: l) ->
+  (
+    point_in_hull q (p :: b :: a :: l) <->
+    point_in_hull q (p :: a :: l) \/
+    point_in_triangle q b a p
+  ).
 Proof.
-  induction T; intros.
-  - unfold is_max_hull';
-    split; intros; apply Forall_nil.
-  - split; unfold is_max_hull'; intros;
-    rewrite !Forall_cons_iff in H.
-    + destruct H.
-      rewrite !Forall_cons_iff. split; [destruct H; tauto|].
-      apply IHT. tauto.
-    + destruct H as [[? | ?] ?];
-      rewrite !Forall_cons_iff.
-      * split; [right; tauto|].
-        apply IHT. tauto.
-      * split; [left; tauto|].
-        apply IHT. tauto.
+  intros. induction l; intros.
+  - simpl; split; intros.
+    + right. tauto.
+    + destruct H as [? _];
+      rewrite Forall_ccw_cons_iff in H;
+      destruct H as [? _].
+      destruct H0; [|tauto].
+      left. apply (point_in_tri_col_mid' q b a p).
+      * tauto.
+      * apply colinear_perm132. tauto.
+      * apply at_mid_comm; tauto.
+  - split; intros.
+    + pose proof rev_ccw_list_remove_middle p [b; a] [a0] l H as _H.
+      specialize (IHl _H); clear _H.
+      simpl in H0. simpl. tauto.
+    + simpl in H0. simpl. tauto.
+Qed.
+
+Lemma is_max_hull'_cons_iff : forall p a b l T,
+  rev_ccw_list p (b :: a :: l) ->
+  (
+    is_max_hull' p (b :: a :: l) T <->
+    Forall (fun q : point => point_in_hull q (p :: a :: l) \/
+                             point_in_triangle q b a p) T
+  ).
+Proof.
+  unfold is_max_hull'. intros.
+  induction T.
+  - rewrite !Forall_nil_iff. tauto.
+  - rewrite !Forall_cons_iff.
+    pose proof point_in_hull_cons_iff a0 p a b l H.
+    tauto.
 Qed.
 
 (*** ========== Definition ========== ***)
@@ -2029,68 +2067,16 @@ Definition point_in_hull_edges (p : point) (CH: list point) :=
 
 (*** ========== Proof ========== ***)
 
-(*! deprecated
-Lemma point_in_hull_edges_cons : forall p p0 q r CH,
-  rev_ccw_list p0 (r :: q :: CH) ->
-  rev_consec_ccw (q :: CH) ->
-  point_in_hull_edges p (r :: q :: CH) \/ point_in_triangle p p0 q r ->
-  point_in_hull_edges p (p0 :: r :: q :: CH).
+(* Lemma point_in_hull_snoc : forall p p0 p1 x x0 l,
+  point_in_hull p (p0 :: p1 :: l ++ [x ; x0]) ->
+  point_in_triangle p p0 x x0 \/
+  point_in_hull p (p0 :: p1 :: l ++ [x0]).
 Proof.
-  intros. revert p p0 q r H H0 H1; destruct CH; [simpl; intros|].
-  -
-    destruct H as [? _]. clear H0.
-    unfold Forall_ccw in H; apply Forall_inv in H.
-    destruct H1.
-    +
-      pose proof point_in_tri_col_mid' p r q p0 as _H.
-      destruct H0 as [Hcol Hmid].
-(*       apply colinear_comm in Hcol; apply at_mid_comm in Hmid.
-      specialize (_H H Hcol Hmid).
-      destruct _H as [[_ [? [? ?]]] | [? _]].
-      * repeat split; tauto.
-      * apply colinear_comm in H0.
-        into_vec_prod.
-        rewrite cross_prod_comm in H0.
-        nia. *)
-      admit.
-    + admit.
-(*       destruct H0 as [[? _] | [? _]].
-      * into_vec_prod.
-        rewrite cross_prod_comm in H0.
-        nia.
-      * into_vec_prod.
-        assert (cross_prod (build_vec p0 r) (build_vec p0 q) =
-                cross_prod (build_vec p0 r) (build_vec p0 r) +
-                cross_prod (build_vec r q) (build_vec r p0)).
-        { unfold cross_prod; simpl; nia. }
-        rewrite cross_prod_comm in H0.
-        pose proof cross_prod_self (build_vec p0 r).
-        nia. *)
-  -
-    intros. simpl in H, H1; simpl.
-    destruct H1 as [[? ?] | ?].
-    * repeat split; try tauto.
-
 Abort. *)
 
-Lemma point_in_hull_snoc : forall p p0 p1 x x0 l,
-  point_in_hull p p0 (p1 :: l ++ [x ; x0]) ->
-  point_in_triangle p p0 x x0 \/
-  point_in_hull p p0 (p1 :: l ++ [x]).
-Proof.
-  destruct l using rev_ind.
-  - simpl; intros.
-    destruct H as [? | [? | ?]].
-    + right; left. tauto.
-    + left. apply point_in_tri_cyclicity; tauto.
-    + left.
-      right.
-
-Abort.
-
-Lemma point_in_hull_le_0 : forall p p0 p1 CH,
+(* Lemma point_in_hull_le_0 : forall p p0 p1 CH,
   rev_ccw_list p0 (p1 :: CH) ->
-  point_in_hull p p0 (p1 :: CH) ->
+  point_in_hull p (p0 :: p1 :: CH) ->
   left_equal (build_vec p0 p1) (build_vec p0 p).
 Proof.
   intros p p0 p1.
@@ -2117,45 +2103,6 @@ Proof.
     - into_vec_prod; nia.
     - into_vec_prod.
       destruct H0.
-      pose proof aux2 (build_vec p0 x) (build_vec p0 p1) (build_vec p0 p) as H_aux.
-      assert (cross_prod (build_vec p0 p1) (build_vec p0 x) < 0) as Hr1.
-      {
-        assert (cross_prod (build_vec p1 x) (build_vec p1 p0) =
-                cross_prod (build_vec p1 p0) (build_vec p1 p0) +
-                cross_prod (build_vec p0 p1) (build_vec p0 x)).
-        { unfold cross_prod; simpl; nia. }
-        pose proof cross_prod_self (build_vec p1 p0).
-        nia.
-      }
-      assert (dot_prod (build_vec p0 p) (build_vec p0 x) >= 0) as Hr2.
-      {
-        assert (dot_prod (build_vec p0 p) (build_vec p0 x) =
-                dot_prod (build_vec p0 p) (build_vec p0 p) -
-                dot_prod (build_vec p p0) (build_vec p x)).
-        { unfold dot_prod; simpl; nia. }
-        pose proof metric_nonneg (build_vec p0 p).
-        nia.
-      }
-      assert (cross_prod (build_vec p0 p) (build_vec p0 x) = 0) as Hr3.
-      {
-        assert (cross_prod (build_vec p0 p) (build_vec p0 x) =
-                cross_prod (build_vec p0 p) (build_vec p0 p) -
-                cross_prod (build_vec p p0) (build_vec p x)).
-        { unfold cross_prod; simpl; nia. }
-        pose proof cross_prod_self (build_vec p0 p).
-        nia.
-      }
-      assert (cross_prod (build_vec p0 p1) (build_vec p0 p) *
-              dot_prod (build_vec p0 x) (build_vec p0 x) <= 0)
-              as H_s by nia.
-      pose proof dot_prod_squared_dec p0 x as [? | ?].
-      + (* p0 = x *)
-        subst.
-        pose proof dot_prod_squared_non_neg _ _ H1.
-        subst.
-        into_vec_prod; nia.
-      + (* p0 != x *)
-        nia.
   }
   (** *)
   - intros.
@@ -2165,18 +2112,15 @@ Proof.
               point_in_hull p p0 (p1 :: l ++ [x])  *)
     apply IHCH.
     + pose proof rev_ccw_list_remove_middle p0 (p1 :: CH) [x] [x0] as Hrm.
-      rewrite !app_comm_cons in H, H0;
-      rewrite !app_assoc_reverse in H, H0.
-      specialize (Hrm H); tauto.
-    + (** split edge cases using AI ? *)
-      (* TODO: Lemma split_back_point_in_hull *)
-
-Admitted.
+      apply Hrm. simpl. simpl in H.
+      rewrite <- !app_assoc in H. tauto.
+    +
+Admitted. *)
 
 Lemma point_in_hull_le_aux : forall p p0 p1 p2 CH,
   rev_ccw_list p0 (p1 :: p2 :: CH) ->
   rev_consec_ccw (p0 :: p1 :: p2 :: CH) ->
-  point_in_hull p p0 (p1 :: p2 :: CH) ->
+  point_in_hull p (p0 :: p1 :: p2 :: CH) ->
   left_equal (build_vec p0 p1) (build_vec p0 p) /\
   left_equal (build_vec p1 p2) (build_vec p1 p).
 Proof.
@@ -2192,13 +2136,6 @@ Proof.
         into_vec_prod; nia.
     + (** col_at_mid *)
       destruct H0.
-      rewrite colinear_comm in H0; rewrite at_mid_comm in H1.
-      pose proof point_in_tri_col_mid' p p1 p2 p0 H H0 H1 as Htri.
-      destruct Htri as [[_ ?] | [? _]].
-      * (** ccw p0 p2 p1 *)
-        tauto.
-      * (** colinear p1 p2 p0 *)
-        into_vec_prod; nia.
   - destruct H1.
     * (** point_in_tri *)
       destruct H1 as [[_ ?] | [? _]].
@@ -2207,13 +2144,16 @@ Proof.
       --(** col_at_mid *)
         destruct H0.
         into_vec_prod; nia.
-    * (* TODO: point_in_hull *)
-      (*! manually deal with vec_prod *)
-      destruct H as [Hc1 [Hc2 _]];
-      destruct H0 as [Hc_p1_p0_p2 [Hc_p2_p1_a _]].
-      unfold Forall_ccw in *.
+    * (* unfold Forall_ccw in *.
       do 2 rewrite Forall_cons_iff in Hc1; destruct Hc1 as [_ [Hc_p1_p0_a _]].
-      rewrite Forall_cons_iff in Hc2; destruct Hc2 as [Hc_p2_p0_a _].
+      rewrite Forall_cons_iff in Hc2; destruct Hc2 as [Hc_p2_p0_a _]. *)
+      apply IHCH.
+      -- (** rew_ccw_lits p0 (p1 :: p2 :: CH) *)
+        apply (rev_ccw_list_remove_middle p0 [p1; p2] [a] CH H).
+      -- (** rew_consec_ccw (p0 :: p1 :: p2 :: CH) *)
+        Print rev_consec_ccw_cons_iff.
+        Print rev_consec_ccw_snoc_iff.
+      -- (** point_ih_hull p (p0 :: p1 :: p2 :: CH) *)
 
 Admitted.
 
@@ -2260,6 +2200,8 @@ Proof.
     destruct H as [Hbc [Hab _]]. unfold Forall_ccw in Hbc, Hab, Hac. simpl in Hac.
     rewrite !Forall_cons_iff in Hbc, Hab, Hac. destruct Hbc, Hab, Hac.
     assert (~ ccw c b p). { apply ccw_anti_symmetry in H9. tauto. }
+    apply H4.
+    (* TODO *)
     admit.
   }
   rewrite Forall_forall in H2; rewrite Forall_forall.
@@ -2276,11 +2218,11 @@ Proof.
 Admitted.
 
 (** Prove that convex hull triangulation implies inclusion by edges *)
-(** Splitting head `p0` with tail `CH`  *)
+(** Splitting head `p0` with tail `CH` *)
 Theorem point_in_hull_equiv_aux : forall p p0 p1 CH,
   rev_ccw_list p0 (p1 :: CH) ->
   rev_consec_ccw (p0 :: p1 :: CH) ->
-  point_in_hull p p0 (p1 :: CH) ->
+  point_in_hull p (p0 :: p1 :: CH) ->
   point_in_hull_edges_aux_ p p0 p1 CH.
 Proof.
   intros; revert p0 p1 H H0 H1.
@@ -2289,7 +2231,7 @@ Proof.
     destruct H1.
     into_vec_prod.
     assert (cross_prod (build_vec p1 p0) (build_vec p1 p) =
-          - cross_prod (build_vec p p0) (build_vec p p1) +
+            - cross_prod (build_vec p p0) (build_vec p p1) +
             cross_prod (build_vec p p1) (build_vec p p1)).
     { unfold cross_prod; simpl; nia. }
     pose proof cross_prod_self (build_vec p p1).
@@ -2306,19 +2248,18 @@ Proof.
         destruct H as [_ [? _]].
         apply Forall_ccw_cons_iff in H. tauto.
       *
-        destruct H1; [|tauto].
         (*? should be able to reuse
         is_max_hull'_pop' in Graham_Scan.v *)
+        (* TODO: point_in_hull_le_aux *)
         admit.
-    + (* TODO: point_in_hull_le_aux *)
-      pose proof point_in_hull_le_aux _ _ _ _ _ H H0 H1;
+    + pose proof point_in_hull_le_aux _ _ _ _ _ H H0 H1;
       tauto.
 Admitted.
 
 Theorem point_in_hull_equiv : forall p p0 CH,
   rev_ccw_list p0 CH ->
   rev_consec_ccw (p0 :: CH) ->
-  point_in_hull p p0 CH ->
+  point_in_hull p (p0 :: CH) ->
   point_in_hull_edges p (p0 :: CH).
 Proof.
   intros.

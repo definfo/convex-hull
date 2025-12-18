@@ -380,7 +380,8 @@ Proof.
     destruct H as [Hbc [Hab _]]. unfold Forall_ccw in Hbc, Hab, Hac. simpl in Hac.
     rewrite !Forall_cons_iff in Hbc, Hab, Hac. destruct Hbc, Hab, Hac.
     assert (~ ccw c b p). { apply ccw_anti_symmetry in H9. tauto. }
-    admit.
+    (* should be similar to above case ? *)
+    admit. (*-*)
   }
   rewrite Forall_forall in H2; rewrite Forall_forall.
   intros x _H; specialize (H2 x _H); clear _H.
@@ -408,9 +409,30 @@ Proof.
   pose proof sort_gs_ccw_list' p a T H as Hcl.
   clear H_.
   (** assert (is_max_hull' p (a :: graham_scan T) T) *)
-  assert (is_max_hull' p (a :: graham_scan T) T). { apply is_max_hull'_cons. tauto. }
   simpl in Hconsec, Hcl, H1.
   remember (graham_scan T) as l. clear Heql.
+  assert (is_max_hull' p (a :: l) T).
+    {
+      destruct l.
+      - unfold is_max_hull' in *. simpl in *.
+        destruct T; [apply Forall_nil|].
+        pose proof (forall_false_elim _ _ H0). tauto.
+      - destruct l.
+        + unfold is_max_hull' in *. simpl in *.
+          destruct Hcl as [Hcl _];
+          rewrite Forall_ccw_cons_iff in Hcl;
+          destruct Hcl as [Hcl _].
+          rewrite Forall_forall in H0; rewrite Forall_forall.
+          intros.
+          pose proof (H0 x) H2. left.
+          (* H3: colinear x p p0 /\ at_mid x p p0
+          1/1
+          point_in_triangle x a p0 p \/ False *)
+          (* should be trivial with elimination on colinearity ? *)
+          admit. (*-*)
+        + (* TODO: pose proof is_max_hull'_cons_iff. *)
+          admit.
+    }
   destruct l. 1: { unfold is_max_hull'. simpl. tauto. }
   clear H0.
   revert p0 H1 H2 Hconsec Hcl.
@@ -435,7 +457,7 @@ Proof.
     apply Forall_ccw_cons_iff in Hcl1.
     pose proof rev_ccw_list_ind p p0 [] (a0 :: l) Hcl2 as Hcl2_.
     split; tauto.
-Qed.
+Admitted.
 
 Theorem graham_convex_2 : forall p T,
   sort p T -> is_max_hull' p (graham_scan T) T.

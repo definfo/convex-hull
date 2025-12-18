@@ -2,21 +2,16 @@
   description = "A Nix-flake-based Rocq(Coq) development environment";
 
   inputs = {
-    nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
+    nixpkgs = { };
     flake-parts = {
       url = "github:hercules-ci/flake-parts";
       inputs.nixpkgs-lib.follows = "nixpkgs";
     };
-    pre-commit-hooks.url = "github:cachix/git-hooks.nix";
   };
 
   outputs =
     inputs@{ flake-parts, ... }:
     flake-parts.lib.mkFlake { inherit inputs; } {
-      imports = [
-        inputs.pre-commit-hooks.flakeModule
-      ];
-
       systems = [
         "x86_64-linux"
         "aarch64-linux"
@@ -28,28 +23,16 @@
         {
           config,
           pkgs,
+          lib,
           ...
         }:
         let
-          coqVersion = "8_15"; # Change this value to update the whole stack
-          # coqVersion = "8_20";
-          coqPackages = pkgs."coqPackages_${coqVersion}";
+          coqVersion = "8.15"; # Change this value to update the whole stack
+          # coqVersion = "8.20";
+          coqPackages = pkgs."coqPackages_${lib.versions.major coqVersion}_${lib.versions.minor coqVersion}";
         in
         {
-          # https://flake.parts/options/git-hooks-nix.html
-          # Example: https://github.com/cachix/git-hooks.nix/blob/master/template/flake.nix
-          pre-commit.settings.hooks = {
-            commitizen.enable = true;
-            eclint.enable = true;
-          };
-
           devShells.default = pkgs.mkShell {
-            inputsFrom = [
-              config.pre-commit.devShell
-            ];
-            shellHook = ''
-              echo 1>&2 "Welcome to the development shell!"
-            '';
             packages =
               with coqPackages;
               [

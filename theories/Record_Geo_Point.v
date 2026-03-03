@@ -1963,29 +1963,6 @@ Proof.
   induction CH; simpl; left; tauto.
 Qed.
 
-(* Lemma point_in_hull_cons : forall p q p0 T,
-  point_in_hull q (p :: T) ->
-  point_in_hull q (p :: p0 :: T).
-Proof.
-  intros; revert p0 H.
-  induction T.
-  - intros. simpl in H; tauto.
-  - intros.
-    destruct T.
-    + simpl. simpl in H.
-      left.
-Qed.
-
-Lemma is_max_hull'_cons : forall p q T l,
-  is_max_hull' p T l ->
-  is_max_hull' p (q :: T) l.
-Proof.
-  unfold is_max_hull' in *. intros p q T l.
-  apply Forall_impl. intros.
-  apply point_in_hull_cons.
-  tauto.
-Qed. *)
-
 Lemma forall_false_elim : forall a l,
   Forall (fun _ : point => False) (a :: l) -> False.
 Proof.
@@ -2020,6 +1997,36 @@ Proof.
       simpl in H0. simpl. tauto.
     + simpl in H0. simpl. tauto.
 Qed.
+
+Lemma point_in_hull_cons : forall p q p0 T,
+  rev_ccw_list p (p0 :: T) ->
+  point_in_hull q (p :: T) ->
+  point_in_hull q (p :: p0 :: T).
+Proof.
+  intros; revert p0 H.
+  induction T.
+  - intros. simpl in H0; tauto.
+  - intros.
+    destruct T.
+    + simpl. simpl in H0.
+      left.
+      simpl in H; destruct H as [H _]; apply Forall_ccw_cons_iff in H as [H _].
+      pose proof point_in_tri_col_mid' q p0 a p H.
+      destruct H0 as [Hcol Hmid]; rewrite colinear_comm in Hcol; rewrite at_mid_comm in Hmid.
+      tauto.
+    + pose proof point_in_hull_cons_iff q p a p0 (p1 :: T) H as [_ H1].
+      apply H1. left; tauto.
+Qed.
+
+(* Lemma is_max_hull'_cons : forall p q T l,
+  is_max_hull' p T l ->
+  is_max_hull' p (q :: T) l.
+Proof.
+  unfold is_max_hull' in *. intros p q T l.
+  apply Forall_impl. intros.
+  apply point_in_hull_cons.
+  tauto.
+Qed. *)
 
 Lemma is_max_hull'_cons_iff : forall p a b l T,
   rev_ccw_list p (b :: a :: l) ->
@@ -2101,36 +2108,14 @@ Proof.
       -- (** rew_ccw_lits p0 (p1 :: p2 :: CH) *)
         apply (rev_ccw_list_remove_middle p0 [p1; p2] [a] CH H).
       -- (** rew_consec_ccw (p0 :: p1 :: p2 :: CH) *)
-        Print rev_consec_ccw_cons_iff.
-        Print rev_consec_ccw_snoc_iff.
+        (* Print rev_consec_ccw_cons_iff.
+        Print rev_consec_ccw_snoc_iff. *)
         admit.
-      -- (** point_ih_hull p (p0 :: p1 :: p2 :: CH) *)
+      -- (** point_in_hull p (p0 :: p1 :: p2 :: CH) *)
+        simpl.
         admit.
 
 Admitted.
-
-Lemma rev_consec_ccw_remove_3 : forall p0 p1 p2 CH,
-  rev_ccw_list p0 (p1 :: p2 :: CH) ->
-  rev_consec_ccw (p0 :: p1 :: p2 :: CH) ->
-  rev_consec_ccw (p0 :: p1 :: CH).
-Proof.
-  induction CH; intros.
-  - (* CH := nil *)
-    simpl; tauto.
-  - pose proof rev_ccw_list_remove_middle p0 [p1; p2] [a] CH H as _H.
-    apply rev_consec_ccw_cons_iff; split.
-    + apply rev_consec_ccw_cons_iff; split.
-      * do 3 (apply rev_consec_ccw_cons_iff in H0; destruct H0 as [H0 _]).
-        tauto.
-      * intros.
-        injection H1; intros; clear H1; subst.
-        admit.
-    + intros.
-      injection H1; intros; clear H1; subst.
-      admit.
-
-    specialize (IHCH _H); clear _H.
-Abort.
 
 Lemma point_in_tri_pop' : forall p a b c l T,
   (** should `rev_ccw_list` be included in `is_max_hull'` ? *)
@@ -2150,6 +2135,7 @@ Proof.
     assert (point_in_triangle b p c a). { apply point_in_tri_general; tauto. }
     do 2 apply point_in_tri_cyclicity in H3. tauto.
   }
+  (* ΔBAP ⊆ ΔCAP *)
   assert (forall q, point_in_triangle q b a p ->
                     point_in_triangle q c a p).
   {
@@ -2161,6 +2147,7 @@ Proof.
     pose proof point_in_tri_incl _ _ _ _ H3 _ H4.
     tauto.
   }
+  (** ΔCBP ⊆ ΔCAP, can be somehow inferred from previous proof *)
   assert (forall q, point_in_triangle q c b p ->
                     point_in_triangle q c a p).
   {
@@ -2170,7 +2157,6 @@ Proof.
     rewrite !Forall_cons_iff in Hbc, Hab, Hac. destruct Hbc, Hab, Hac.
     assert (~ ccw c b p). { apply ccw_anti_symmetry in H9. tauto. }
     apply H4.
-    (* TODO *)
     admit.
   }
   rewrite Forall_forall in H2; rewrite Forall_forall.
@@ -2217,6 +2203,8 @@ Proof.
         destruct H as [_ [? _]].
         apply Forall_ccw_cons_iff in H. tauto.
       *
+        specialize (IHCH p0 a).
+        destruct H.
         (*? should be able to reuse
         is_max_hull'_pop' in Graham_Scan.v *)
         (* TODO: point_in_hull_le_aux *)
@@ -2235,7 +2223,8 @@ Proof.
   destruct CH; [simpl; tauto|].
   destruct CH; [simpl in *; tauto|].
   split.
-  - pose proof point_in_hull_le_aux _ _ _ _ _ H H0 H1;
-    tauto.
+  - admit.
+    (* pose proof point_in_hull_le_aux _ _ _ _ _ H H0 H1;
+    tauto. *)
   - apply point_in_hull_equiv_aux; tauto.
-Qed.
+Abort.

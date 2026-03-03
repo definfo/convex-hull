@@ -218,7 +218,7 @@ Proof.
   unfold sort, rev_ccw_list; intros. destruct H as [_ H].
   induction T; simpl; try eauto.
   pose proof rev_ccw_list_ind p a [] T H. specialize (IHT H0).
-  pose proof rev_ccw_list_convex_ind p a (graham_scan T).
+  pose proof rev_ccw_list_convex_ind p a (graham_scan T) as H1.
   apply H1; try assumption. clear H0 H1.
   simpl in *. destruct H. split.
   - apply Forall_ccw_conv. assumption.
@@ -425,13 +425,16 @@ Proof.
           rewrite Forall_forall in H0; rewrite Forall_forall.
           intros.
           pose proof (H0 x) H2. left.
-          (* H3: colinear x p p0 /\ at_mid x p p0
-          1/1
-          point_in_triangle x a p0 p \/ False *)
-          (* should be trivial with elimination on colinearity ? *)
-          admit. (*-*)
-        + (* TODO: pose proof is_max_hull'_cons_iff. *)
-          admit.
+          destruct H3 as [Hcol Hmid];
+          rewrite colinear_comm in Hcol; rewrite at_mid_comm in Hmid.
+          apply point_in_tri_col_mid'; tauto.
+        +
+          unfold is_max_hull' in *.
+          rewrite Forall_forall in H0. rewrite Forall_forall.
+          intros x HIn. specialize (H0 x HIn).
+          pose proof point_in_hull_cons p x a (p0 :: p1 :: l).
+          apply H2; try tauto.
+          split; tauto.
     }
   destruct l. 1: { unfold is_max_hull'. simpl. tauto. }
   clear H0.
@@ -457,7 +460,7 @@ Proof.
     apply Forall_ccw_cons_iff in Hcl1.
     pose proof rev_ccw_list_ind p p0 [] (a0 :: l) Hcl2 as Hcl2_.
     split; tauto.
-Admitted.
+Qed.
 
 Theorem graham_convex_2 : forall p T,
   sort p T -> is_max_hull' p (graham_scan T) T.

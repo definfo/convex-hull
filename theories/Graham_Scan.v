@@ -380,8 +380,7 @@ Proof.
     destruct H as [Hbc [Hab _]]. unfold Forall_ccw in Hbc, Hab, Hac. simpl in Hac.
     rewrite !Forall_cons_iff in Hbc, Hab, Hac. destruct Hbc, Hab, Hac.
     assert (~ ccw c b p). { apply ccw_anti_symmetry in H9. tauto. }
-    (* should be similar to above case ? *)
-    admit. (*-*)
+    eapply point_in_tri_incl'; eassumption.
   }
   rewrite Forall_forall in H2; rewrite Forall_forall.
   intros x _H; specialize (H2 x _H); clear _H.
@@ -394,7 +393,7 @@ Proof.
     apply H4. tauto.
   - (** x ∈ [a :: l] -> x ∈ [a :: l] *)
     right; tauto.
-Admitted.
+Qed.
 
 (** Prove that stack incrementation preserves is_max_hull' *)
 Lemma hull_inc : forall p a T,

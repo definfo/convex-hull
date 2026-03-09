@@ -1924,6 +1924,19 @@ Proof.
     + (** colinear p a b *)
 Admitted.
 
+Lemma point_in_tri_incl' : forall p a b c,
+  point_in_triangle b c a p ->
+  forall q,
+  point_in_triangle q c b p ->
+  point_in_triangle q c a p.
+Proof.
+  intros p a b c H q Hq.
+  rewrite point_in_tri_cyclicity in H.
+  rewrite point_in_tri_cyclicity in Hq.
+  rewrite point_in_tri_cyclicity.
+  exact (point_in_tri_incl c p b a H q Hq).
+Qed.
+
 (* split first point p0 with convex hull CH *)
 Fixpoint point_in_hull_aux (p p0 p1: point) (CH: list point) :=
   match CH with

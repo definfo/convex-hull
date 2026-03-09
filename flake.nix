@@ -2,7 +2,7 @@
   description = "A Nix-flake-based Rocq(Coq) development environment";
 
   inputs = {
-    nixpkgs = { };
+    nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
     flake-parts = {
       url = "github:hercules-ci/flake-parts";
       inputs.nixpkgs-lib.follows = "nixpkgs";
@@ -37,7 +37,7 @@
               with coqPackages;
               [
                 coq
-                # For coq.version <= 8.15, use legacy version instead
+                # For coq.version <= 8.15, use legacy Vscoq version instead
                 # coq-lsp
               ];
           };

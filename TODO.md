@@ -10,11 +10,9 @@
 
 3. 算法得到的凸多边形包含所有点 (DONE)
 
-3.1 凸包定义等价 (WIP)
+    3.1. 凸包定义等价
+    point_in_hull : ⋃ 起始点与各边构成的三角形内部
+    point_in_hull_edges : ⋂ 每条边左侧
 
-Problems:
+4. monadlib 程序、C 程序
 
-1. point_in_hull_le_aux ?
-
-point_in_hull : ⋃ 起始点与各边构成的三角形内部
-point_in_hull_edges : ⋂ 每条边左侧

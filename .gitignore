@@ -1,5 +1,5 @@
-Makefile.coq
-Makefile.coq.conf
+CoqMakefile
+CoqMakefile.conf
 _build
 *~
 *.d

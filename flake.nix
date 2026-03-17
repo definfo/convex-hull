@@ -21,24 +21,30 @@
 
       perSystem =
         {
-          config,
           pkgs,
           lib,
           ...
         }:
         let
-          coqVersion = "8.15"; # Change this value to update the whole stack
-          # coqVersion = "8.20";
-          coqPackages = pkgs."coqPackages_${lib.versions.major coqVersion}_${lib.versions.minor coqVersion}";
+          coqVersion = builtins.head (builtins.split "\n" (builtins.readFile ./.coq-version));
         in
         {
+          _module.args.pkgs = import inputs.nixpkgs {
+            overlays = [
+              (_final: _prev: {
+                coqPackages = _prev."coqPackages_${lib.versions.major coqVersion}_${lib.versions.minor coqVersion}";
+              })
+            ];
+          };
+
           devShells.default = pkgs.mkShell {
             packages =
-              with coqPackages;
+              with pkgs.coqPackages;
               [
                 coq
-                # For coq.version <= 8.15, use legacy Vscoq version instead
-                # coq-lsp
+                coq-lsp
+                # NOTE: For coq.version <= 8.15, use Vscoq legacy
+                vsrocq-language-server
               ];
           };
         };

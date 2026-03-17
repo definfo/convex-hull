@@ -1916,12 +1916,16 @@ Proof.
           nia.
       * (** colinear_at_mid q a p *)
         pose proof mid_colinear_4point a p b q H0 H1 H5 as [? ?].
-        admit. (*-*)
-      * admit. (*-*)
-  - (** colinear p a c *)
-    destruct H;
-    destruct H1 as [[? ?] | [[? ?] | [? ?]]].
-    + (** colinear p a b *)
+        pose proof point_in_tri_col_mid' q c a p
+          ltac:(do 2 apply ccw_cyclicity; eassumption) H1 H5
+          as [[_ ?] | [? _]].
+        -- assumption.
+        -- exfalso. into_vec_prod. unfold cross_prod, build_vec in *; simpl in *; lia.
+      * (** colinear_at_mid q p b *)
+        into_vec_prod.
+        admit.
+  - (** colinear c a p *)
+    admit.
 Admitted.
 
 Lemma point_in_tri_incl' : forall p a b c,

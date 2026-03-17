@@ -11,12 +11,19 @@ ifeq ($(origin .RECIPEPREFIX), undefined)
 endif
 .RECIPEPREFIX = >
 
-all: build
+all: generate build
 
-build:
+generate:
+> coq_makefile -f _CoqProject -o CoqMakefile
+
+build: generate
 > $(MAKE) -f CoqMakefile
 
-clean:
+clean: generate
 > $(MAKE) -f CoqMakefile clean
 
-.PHONY: all build clean
+clean-dist:
+> rm -f CoqMakefile CoqMakefile.conf .Makefile.coq.d
+> find . -type f -name '*.(vo|vok|vos|glob|aux)' -delete
+
+.PHONY: all generate build clean clean-dist

@@ -16,13 +16,13 @@
         "x86_64-linux"
         "aarch64-linux"
         "aarch64-darwin"
-        "x86_64-darwin"
       ];
 
       perSystem =
         {
           pkgs,
           lib,
+          system,
           ...
         }:
         let
@@ -30,6 +30,7 @@
         in
         {
           _module.args.pkgs = import inputs.nixpkgs {
+            inherit system;
             overlays = [
               (_final: _prev: {
                 coqPackages = _prev."coqPackages_${lib.versions.major coqVersion}_${lib.versions.minor coqVersion}";

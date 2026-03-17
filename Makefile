@@ -24,6 +24,7 @@ clean: generate
 
 clean-dist:
 > rm -f CoqMakefile CoqMakefile.conf .Makefile.coq.d
-> find . -type f -name '*.(vo|vok|vos|glob|aux)' -delete
+> find . -type f -name '*[.](vo|vok|vos|glob)' -delete
+> find . -type f -name '[.]*[.]aux' -delete
 
 .PHONY: all generate build clean clean-dist

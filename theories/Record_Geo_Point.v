@@ -89,6 +89,12 @@ Proof.
   try (right; nia).
 Qed.
 
+Definition prop_to_bool (P : Prop) (dec : {P} + {~P}) : bool :=
+  if dec then true else false.
+
+Definition ccw_b (p q r: point): bool :=
+  prop_to_bool (ccw p q r) (ccw_dec p q r).
+
 Lemma ccw_g_ccw: forall (p q r: point),
   ccw p q r -> g_ccw p q r.
 Proof. unfold ccw, g_ccw. tauto. Qed.

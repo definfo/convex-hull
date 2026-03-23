@@ -14,6 +14,7 @@ endif
 all: generate build
 
 generate:
+> git submodule update --init
 > coq_makefile -f _CoqProject -o CoqMakefile
 
 build: generate

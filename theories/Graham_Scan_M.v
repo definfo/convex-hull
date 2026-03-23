@@ -5,10 +5,10 @@ Require Import Coq.Lists.List.
 From ConvexHull Require Import Record_Geo_Vec Record_Geo_Point Graham_Scan.
 From SetsClass Require Import SetsClass.
 Require Import MonadLib.Monad.
-From MonadLib.StateRelMonad Require StateRelBasic StateRelMonad.
+From MonadLib.StateRelMonad Require StateRelBasic StateRelMonad StateRelHoare.
 Import ListNotations.
 Import Monad MonadNotation.
-Import StateRelBasic.
+Import StateRelBasic StateRelMonad StateRelHoare.
 Local Open Scope Z_scope.
 Local Open Scope monad_scope.
 (* /COQ-HEAD *)
@@ -16,55 +16,83 @@ Local Open Scope monad_scope.
 (** Program state (T: list point) := a stack containing sorted points *)
 Section GrahamScanRel.
 
-  Definition State := list point.
-
-  Fixpoint graham_scan_inc_rel (p : point) (T : list point) : program State unit :=
-    match T with
-    | t :: T' =>
-      match T' with
-      | s :: _ =>
-        (* We branch on the pure Prop `ccw s t p`.
-           The relational monad will handle this non-deterministically via `choice` and `test` *)
-        if_else (fun _ => ccw s t p)
-          (update' (fun _ => p :: T))
-          (graham_scan_inc_rel p T')
-      | _ =>
-        update' (fun _ => p :: T)
-      end
-    | _ =>
-      update' (fun _ => p :: T)
-    end.
-
-  Definition step_point (p : point) : program State unit :=
-    T <- get' (fun s => s) ;;
-    graham_scan_inc_rel p T.
-
-  Fixpoint build_hull (l : list point) : program State unit :=
+  (** acr. foldl, adopted from MonadHoare.v *)
+  Fixpoint prog_list_iter
+             {A B: Type}
+             (f: A -> B -> program (list A) B)
+             (l: list A)
+             (b: B):
+    program (list A) B :=
     match l with
-    | p :: l' =>
-      (** stack order ? *)
-      build_hull l' ;;
-      step_point p
-    | _ =>
-      skip
+    | nil => ret b
+    | a :: l0 =>
+      b0 <- f a b ;;
+      prog_list_iter f l0 b0
     end.
+
+  (** =================================================== *)
+
+  (** while ( length(T) >= 2 && ¬ccw(T[1], T[0], p) ) **)
+  Definition pop_cond (p: point) : program (list point) bool :=
+    T <- get' (fun s => s) ;;
+    match T with
+    | t :: s_pt :: _ =>
+        ret (negb (ccw_b s_pt t p))
+    | _ =>
+        ret false
+    end.
+
+  (** pop(&T); **)
+  Definition pop_stack : program (list point) unit :=
+    T <- get' (fun s => s) ;;
+    match T with
+    | _ :: T' => update' (fun _ => T')
+    | nil => skip
+    end.
+
+  (** while ( length(T) >= 2 && ¬ccw(T[1], T[0], p) ) { pop(&T); }; push(p);  **)
+  Definition step_point (p : point) : program (list point) unit :=
+    (** replace with repeat_break *)
+    whileb (pop_cond p) pop_stack ;;
+    T <- get' (fun s => s) ;;
+    update' (fun _ => p :: T).
+
+  Definition step_point' (p : point) (_ : unit) : program (list point) unit :=
+    step_point p.
+
+
+  (** init with one point -> iter *)
+  (** Assume that l is sorted *)
+  Definition build_hull (l : list point) : program (list point) unit :=
+    (** append first point, or start iteration from beginning ? *)
+    prog_list_iter step_point' l tt.
 
 End GrahamScanRel.
+
+
+
+
+
+
+
 
 Section GrahamScan.
 
   Example build_hull_3_points_left_turn :
     forall p1 p2 p3,
     ccw p1 p2 p3 ->
-    build_hull [p3; p2; p1] [] tt[p3; p2; p1].
+    build_hull [p3; p2; p1]   [] tt [p3; p2; p1].
   Proof.
     intros p1 p2 p3 Hccw.
     simpl.
 
-    unfold step_point, graham_scan_inc_rel.
+    unfold build_hull, step_point'.
 
     (* State transition 1: skip (s =[]) *)
-    eexists tt, []. split; eauto.
+    eexists tt, []. split.
+    - unfold step_point.
+      unfold pop_cond.
+
 
     (* State transition 2: step_point p1 (s = [p1]) *)
     (* eexists tt, [p1]. split. *)
@@ -76,12 +104,6 @@ Section GrahamScan.
     (* eexists [p2; p1],[p2; p1]. split. *)
 
 
-  Abort.
-
-  Lemma graham_scan_inc_equiv :
-    forall T p s,
-    (graham_scan_inc_rel p T) s tt (graham_scan_inc p T).
-  Proof.
   Abort.
 
 End GrahamScan.

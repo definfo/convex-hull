@@ -1781,9 +1781,7 @@ Proof.
       destruct H1 as [[? ?] | [[? ?] | [? ?]]].
       (** Below proofs may have to use `Lemma aux` to convert between `cross_prod` and `dot_prod`, currently cannot be auto-solved. *)
       * (** colinear_at_mid q b a *)
-        unfold left_equal in *;
-        unfold colinear, parallel in *;
-        unfold at_mid, backward_or_perp in *.
+        into_vec_prod.
         (** e × (b + c) >= 0 *)
         assert (cross_prod (build_vec c a) (build_vec b a) >= 0) as Hc_e_bc.
         {

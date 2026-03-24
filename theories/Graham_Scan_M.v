@@ -5,10 +5,10 @@ Require Import Coq.Lists.List.
 From ConvexHull Require Import Record_Geo_Vec Record_Geo_Point Graham_Scan.
 From SetsClass Require Import SetsClass.
 Require Import MonadLib.Monad.
-From MonadLib.StateRelMonad Require StateRelBasic StateRelMonad StateRelHoare.
+From MonadLib.StateRelMonad Require StateRelBasic StateRelMonad StateRelHoare FixpointLib.
 Import ListNotations.
 Import Monad MonadNotation.
-Import StateRelBasic StateRelMonad StateRelHoare.
+Import StateRelBasic StateRelMonad StateRelHoare FixpointLib.
 Local Open Scope Z_scope.
 Local Open Scope monad_scope.
 (* /COQ-HEAD *)
@@ -32,29 +32,38 @@ Section GrahamScanRel.
 
   (** =================================================== *)
 
-  (** while ( length(T) >= 2 && ¬ccw(T[1], T[0], p) ) **)
-  Definition pop_cond (p: point) : program (list point) bool :=
-    T <- get' (fun s => s) ;;
+  (** while ( length(T) >= 3 && ¬ccw(T[1], T[0], p) ) **)
+  Definition pop_cond (p: point) : program (list point) (CntOrBrk unit unit) :=
+    T <- get' id ;;
     match T with
-    | t :: s_pt :: _ =>
-        ret (negb (ccw_b s_pt t p))
+    | t :: s :: u :: T' =>
+        match (ccw_dec s t p) with
+        (* Left turn found: break out of the loop *)
+        | left _ =>
+          ret (by_break tt)
+        (* Right turn / Collinear: pop 't' by setting state to s :: T' *)
+        | right _ =>
+          update' (fun _ => s :: u :: T') ;;
+          (* Loop again *)
+          ret (by_continue tt)
+        end
     | _ =>
-        ret false
+        (* Less than 2 elements in stack: break out of the loop *)
+        ret (by_break tt)
     end.
 
   (** pop(&T); **)
   Definition pop_stack : program (list point) unit :=
-    T <- get' (fun s => s) ;;
+    T <- get' id ;;
     match T with
     | _ :: T' => update' (fun _ => T')
     | nil => skip
     end.
 
-  (** while ( length(T) >= 2 && ¬ccw(T[1], T[0], p) ) { pop(&T); }; push(p);  **)
+  (** while ( length(T) >= 3 && ¬ccw(T[1], T[0], p) ) { pop(&T); }; push(p);  **)
   Definition step_point (p : point) : program (list point) unit :=
-    (** replace with repeat_break *)
-    whileb (pop_cond p) pop_stack ;;
-    T <- get' (fun s => s) ;;
+    repeat_break (fun _ => pop_cond p) tt ;;
+    T <- get' id ;;
     update' (fun _ => p :: T).
 
   Definition step_point' (p : point) (_ : unit) : program (list point) unit :=
@@ -62,49 +71,665 @@ Section GrahamScanRel.
 
 
   (** init with one point -> iter *)
+  Definition build_hull_init (l : list point) : program (list point) unit :=
+    match l with
+    | nil => skip
+    | p :: _ => update' (fun _ => [p])
+    end.
+
+  (** Step 1: Sort points by x-coordinate (and y-coordinate as tie-breaker) *)
+  (* Here we assume that l is already sorted *)
+
+  (** Step 2: Build lower hull *)
+  (* for point in points:
+       while size(lower_stack) >= 2 and not ccw lower_stack[-1] lower_stack[-2] point:
+         pop lower_stack
+       push_back lower_stack point *)
+
   (** Assume that l is sorted *)
+  Definition build_hull_next (l : list point) : program (list point) unit :=
+    (** iterate from tail since build_hull_init has inserted the head *)
+    match l with
+    | _ :: l' => prog_list_iter step_point' l' tt
+    | nil => skip
+    end.
+
   Definition build_hull (l : list point) : program (list point) unit :=
-    (** append first point, or start iteration from beginning ? *)
-    prog_list_iter step_point' l tt.
+    build_hull_init l ;;
+    build_hull_next l.
 
 End GrahamScanRel.
 
 
+Section GrahamScanExecution.
 
+  Inductive exec_steps : list point -> list point -> list point -> Prop :=
+  | exec_steps_nil : forall T,
+      exec_steps [] T T
+  | exec_steps_cons : forall p l T T1 T2,
+      step_point p T tt T1 ->
+      exec_steps l T1 T2 ->
+      exec_steps (p :: l) T T2.
 
-
-
-
-
-Section GrahamScan.
-
-  Example build_hull_3_points_left_turn :
-    forall p1 p2 p3,
-    ccw p1 p2 p3 ->
-    build_hull [p3; p2; p1]   [] tt [p3; p2; p1].
+  Lemma prog_list_iter_step_point_exec_steps :
+    forall l T T',
+      prog_list_iter step_point' l tt T tt T' <->
+      exec_steps l T T'.
   Proof.
-    intros p1 p2 p3 Hccw.
+    induction l as [| p l IH]; intros T T'.
+    - simpl.
+      split.
+      + intros H.
+        unfold ret, StateRelMonad.ret in H.
+        simpl in H.
+        destruct H as [_ Heq].
+        subst.
+        constructor.
+      + intros H.
+        inversion H; subst.
+        unfold ret, StateRelMonad.ret.
+        simpl.
+        split; reflexivity.
+    - simpl.
+      split.
+      + intros H.
+        unfold bind, StateRelMonad.bind in H.
+        simpl in H.
+        destruct H as [u [T1 [Hstep Hrest]]].
+        destruct u.
+        apply exec_steps_cons with (T1 := T1).
+        * exact Hstep.
+        * apply (IH T1 T'). exact Hrest.
+      + intros H.
+        inversion H as [| p' l' T0 T1 T2 Hstep Hexec Hpeq]; subst.
+        unfold bind, StateRelMonad.bind.
+        simpl.
+        exists tt, T1.
+        split.
+        * exact Hstep.
+        * apply (IH T1 T').
+          exact Hexec.
+  Qed.
+
+  Lemma build_hull_next_exec_steps :
+    forall l T T',
+      build_hull_next l T tt T' <->
+      match l with
+      | [] => T = T'
+      | _ :: l' => exec_steps l' T T'
+      end.
+  Proof.
+    intros l T T'.
+    unfold build_hull_next.
+    destruct l as [| p l']; simpl.
+    - split.
+      + intros H.
+        unfold ret, StateRelMonad.ret in H.
+        simpl in H.
+        destruct H as [_ Heq].
+        exact Heq.
+      + intros H.
+        unfold ret, StateRelMonad.ret.
+        simpl. split; [reflexivity | exact H].
+    - apply prog_list_iter_step_point_exec_steps.
+  Qed.
+
+  Lemma build_hull_exec_steps :
+    forall l T',
+      build_hull l [] tt T' <->
+      match l with
+      | [] => T' = []
+      | p1 :: l' => exec_steps l' [p1] T'
+      end.
+  Proof.
+    intros l T'.
+    unfold build_hull, build_hull_init.
+    destruct l as [| p1 l']; simpl.
+    - split.
+      + intros H.
+        unfold bind, StateRelMonad.bind in H.
+        simpl in H.
+        destruct H as [u [T1 [Hret Hnext]]].
+        destruct u.
+        unfold ret, StateRelMonad.ret in Hret.
+        simpl in Hret.
+        destruct Hret as [_ Heq].
+        subst T1.
+        unfold ret, StateRelMonad.ret in Hnext.
+        simpl in Hnext.
+        destruct Hnext as [_ Heq].
+        subst T'.
+        reflexivity.
+      + intros H.
+        subst T'.
+        unfold bind, StateRelMonad.bind.
+        simpl.
+        exists tt, [].
+        split.
+        * unfold ret, StateRelMonad.ret. simpl. split; reflexivity.
+        * unfold ret, StateRelMonad.ret. simpl. split; reflexivity.
+    - split.
+      + intros H.
+        unfold bind, StateRelMonad.bind in H.
+        simpl in H.
+        destruct H as [u [T1 [Hinit Hnext]]].
+        destruct u.
+        unfold update', update in Hinit.
+        simpl in Hinit.
+        sets_unfold in Hinit.
+        subst T1.
+        apply (build_hull_next_exec_steps (p1 :: l') [p1] T').
+        exact Hnext.
+      + intros H.
+        unfold bind, StateRelMonad.bind.
+        simpl.
+        exists tt, [p1].
+        split.
+        * unfold update', update. simpl. sets_unfold. reflexivity.
+        * apply (build_hull_next_exec_steps (p1 :: l') [p1] T').
+          exact H.
+  Qed.
+
+End GrahamScanExecution.
+
+
+Section GrahamScanInvariant.
+
+  Definition stack_subset (base : list point) (T : list point) : Prop :=
+    forall q, In q T -> In q base.
+
+  Lemma pop_cond_preserve_subset : forall base p T x T',
+    stack_subset base T ->
+    pop_cond p T x T' ->
+    stack_subset base T'.
+  Proof.
+    intros base p T x T' Hsub Hrun.
+    unfold pop_cond in Hrun.
+    unfold bind, StateRelMonad.bind in Hrun.
+    simpl in Hrun.
+    destruct Hrun as [T0 [smid [Hget Hmatch]]].
+    unfold get', get in Hget.
+    simpl in Hget.
+    destruct Hget as [Hid Hss].
+    subst T0 smid.
+    destruct T as [| t [| s [| u T0]]]; simpl in Hmatch.
+    - unfold ret, StateRelMonad.ret in Hmatch.
+      simpl in Hmatch.
+      destruct Hmatch as [_ HT].
+      subst T'.
+      exact Hsub.
+    - unfold ret, StateRelMonad.ret in Hmatch.
+      simpl in Hmatch.
+      destruct Hmatch as [_ HT].
+      subst T'.
+      exact Hsub.
+    - unfold ret, StateRelMonad.ret in Hmatch.
+      simpl in Hmatch.
+      destruct Hmatch as [_ HT].
+      subst T'.
+      exact Hsub.
+    - destruct (ccw_dec s t p) as [Hccw | Hnccw].
+      + unfold ret, StateRelMonad.ret in Hmatch.
+        simpl in Hmatch.
+        destruct Hmatch as [_ HT].
+        subst T'.
+        exact Hsub.
+      + unfold bind, StateRelMonad.bind in Hmatch.
+        simpl in Hmatch.
+        destruct Hmatch as [uu [s1 [Hupd Hret]]].
+        destruct uu.
+        unfold update', update in Hupd.
+        simpl in Hupd.
+        sets_unfold in Hupd.
+        subst s1.
+        unfold ret, StateRelMonad.ret in Hret.
+        simpl in Hret.
+        destruct Hret as [_ HT].
+        subst T'.
+        intros q Hinq.
+        apply Hsub.
+        simpl.
+        tauto.
+  Qed.
+
+  Lemma Hoare_pop_cond_subset : forall base p,
+    Hoare (stack_subset base) (pop_cond p)
+      (fun _ T' => stack_subset base T').
+  Proof.
+    intros base p.
+    unfold Hoare.
+    intros s1 x s2 Hpre Hrun.
+    eapply (pop_cond_preserve_subset base p s1 x s2); eauto.
+  Qed.
+
+  Lemma repeat_break_preserve_subset : forall base p T T',
+    stack_subset base T ->
+    repeat_break (fun _ : unit => pop_cond p) tt T tt T' ->
+    stack_subset base T'.
+  Proof.
+    intros base p T T' Hsub Hrun.
+    assert (Hbody :
+      forall a : unit,
+        Hoare (fun T0 : list point => stack_subset base T0)
+              (pop_cond p)
+              (fun (x : CntOrBrk unit unit) (s : list point) =>
+                 match x with
+                 | by_continue _ => stack_subset base s
+                 | by_break _ => stack_subset base s
+                 end)).
+    {
+      intros a.
+      unfold Hoare.
+      intros s1 x s2 Hpre Hpc.
+      destruct x as [a0 | b0]; simpl.
+      - exact (pop_cond_preserve_subset base p s1 (by_continue a0) s2 Hpre Hpc).
+      - exact (pop_cond_preserve_subset base p s1 (by_break b0) s2 Hpre Hpc).
+    }
+    pose proof (Hoare_repeat_break
+                  (Σ := list point) (A := unit) (B := unit)
+                  (fun _ : unit => pop_cond p)
+                  (fun _ T0 => stack_subset base T0)
+                  (fun _ T0 => stack_subset base T0)
+                  Hbody
+                  tt) as Hrb.
+    unfold Hoare in Hrb.
+    exact (Hrb T tt T' Hsub Hrun).
+  Qed.
+
+  Lemma step_point_preserve_subset : forall base p T T',
+    stack_subset base T ->
+    step_point p T tt T' ->
+    stack_subset (p :: base) T'.
+  Proof.
+    intros base p T T' Hsub Hrun.
+    unfold step_point in Hrun.
+    unfold bind, StateRelMonad.bind in Hrun.
+    simpl in Hrun.
+    destruct Hrun as [u [Tmid [Hrep Htail]]].
+    destruct u.
+    unfold bind, StateRelMonad.bind in Htail.
+    simpl in Htail.
+    destruct Htail as [T0 [s1 [Hget Hupd]]].
+    unfold get', get in Hget.
+    simpl in Hget.
+    destruct Hget as [Heq Hss].
+    subst T0 s1.
+    unfold update', update in Hupd.
+    simpl in Hupd.
+    sets_unfold in Hupd.
+    subst T'.
+    intros q Hinq.
+    simpl in Hinq.
+    destruct Hinq as [<- | Hinq].
+    - left; reflexivity.
+    - right.
+      pose proof (repeat_break_preserve_subset base p T (id Tmid) Hsub Hrep) as Hmid.
+      apply Hmid.
+      exact Hinq.
+  Qed.
+
+  Lemma step_point_result_shape : forall p T T',
+    step_point p T tt T' ->
+    exists T0, T' = p :: T0.
+  Proof.
+    intros p T T' Hrun.
+    unfold step_point in Hrun.
+    unfold bind, StateRelMonad.bind in Hrun.
+    simpl in Hrun.
+    destruct Hrun as [u [Tmid [Hrep Htail]]].
+    destruct u.
+    unfold bind, StateRelMonad.bind in Htail.
+    simpl in Htail.
+    destruct Htail as [T0 [s1 [Hget Hupd]]].
+    unfold get', get in Hget.
+    simpl in Hget.
+    destruct Hget as [Heq Hss].
+    subst T0 s1.
+    unfold update', update in Hupd.
+    simpl in Hupd.
+    sets_unfold in Hupd.
+    subst T'.
+    eauto.
+  Qed.
+
+  Lemma exec_steps_preserve_subset : forall l base T T',
+    exec_steps l T T' ->
+    stack_subset base T ->
+    stack_subset (l ++ base) T'.
+  Proof.
+    intros l base T T' Hexec.
+    revert base.
+    induction Hexec as [T|p l T T1 T2 Hstep Hexec IH]; intros base Hsub.
+    - simpl. exact Hsub.
+    - simpl.
+      assert (Hsub1 : stack_subset (p :: base) T1).
+      { eapply step_point_preserve_subset; eauto using Hstep. }
+      specialize (IH (p :: base) Hsub1).
+      intros q Hinq.
+      specialize (IH q Hinq).
+      apply in_app_iff in IH as [Hinl | Hinpb].
+      + simpl.
+        right.
+        apply in_or_app.
+        left.
+        exact Hinl.
+      + simpl in Hinpb.
+        simpl.
+        destruct Hinpb as [Heq | Hinb].
+        * left. exact Heq.
+        * right.
+          apply in_or_app.
+          right.
+          exact Hinb.
+  Qed.
+
+  Lemma exec_steps_nonempty : forall l T T',
+    exec_steps l T T' ->
+    T <> [] ->
+    T' <> [].
+  Proof.
+    induction 1 as [T|p l T T1 T2 Hstep Hexec IH]; intros Hne.
+    - exact Hne.
+    - apply IH.
+      intro HeqT1.
+      pose proof (step_point_result_shape p T T1 Hstep) as [Tx HT1].
+      rewrite HT1 in HeqT1.
+      discriminate.
+  Qed.
+
+  Lemma build_hull_subset : forall l T',
+    build_hull l [] tt T' ->
+    stack_subset l T'.
+  Proof.
+    intros l T' Hrun.
+    apply build_hull_exec_steps in Hrun.
+    destruct l as [| p1 l'].
+    - subst T'.
+      intros q Hinq.
+      inversion Hinq.
+    - assert (Hbase : stack_subset [p1] [p1]).
+      {
+        intros q Hinq.
+        simpl in Hinq.
+        destruct Hinq as [Heq | Hfalse].
+        + left. exact Heq.
+        + inversion Hfalse.
+      }
+      pose proof (exec_steps_preserve_subset l' [p1] [p1] T' Hrun Hbase) as Hsub'.
+      intros q Hinq.
+      specialize (Hsub' q Hinq).
+      apply in_app_iff in Hsub' as [Hinl' | Hin1].
+      + right. exact Hinl'.
+      + simpl in Hin1.
+        destruct Hin1 as [Heq | Hfalse].
+        * left. exact Heq.
+        * inversion Hfalse.
+  Qed.
+
+End GrahamScanInvariant.
+
+
+
+
+
+
+
+Section GrahamScanExample.
+
+  Lemma pop_cond_singleton_break : forall p q,
+    pop_cond p [q] (by_break tt) [q].
+  Proof.
+    intros p q.
+    unfold pop_cond.
+    unfold get', get, update', update.
+    unfold_monad.
     simpl.
+    exists [q], [q].
+    split; [split; reflexivity | split; reflexivity].
+  Qed.
 
-    unfold build_hull, step_point'.
+  Lemma pop_cond_double_break : forall p p1 p2,
+    pop_cond p [p2; p1] (by_break tt) [p2; p1].
+  Proof.
+    intros p p1 p2.
+    unfold pop_cond.
+    unfold get', get, update', update.
+    unfold_monad.
+    simpl.
+    exists [p2; p1], [p2; p1].
+    split; [split; reflexivity | split; reflexivity].
+  Qed.
 
-    (* State transition 1: skip (s =[]) *)
-    eexists tt, []. split.
-    - unfold step_point.
-      unfold pop_cond.
+  Lemma pop_cond_triple_break : forall p1 p2 p3 p4,
+    ccw p2 p3 p4 ->
+    pop_cond p4 [p3; p2; p1] (by_break tt) [p3; p2; p1].
+  Proof.
+    intros p1 p2 p3 p4 Hccw.
+    unfold pop_cond.
+    unfold get', get, update', update.
+    unfold_monad.
+    simpl.
+    exists [p3; p2; p1], [p3; p2; p1].
+    split.
+    - split; reflexivity.
+    - destruct (ccw_dec p2 p3 p4) as [Hccw' | Hnccw].
+      + split; reflexivity.
+      + exfalso. contradiction.
+  Qed.
+
+  Lemma pop_cond_triple_continue : forall p1 p2 p3 p4,
+    ~ ccw p2 p3 p4 ->
+    pop_cond p4 [p3; p2; p1] (by_continue tt) [p2; p1].
+  Proof.
+    intros p1 p2 p3 p4 Hnccw.
+    unfold pop_cond.
+    unfold get', get, update', update.
+    unfold_monad.
+    simpl.
+    exists [p3; p2; p1], [p3; p2; p1].
+    split.
+    - split; reflexivity.
+    - destruct (ccw_dec p2 p3 p4) as [Hccw | Hnccw'].
+      + exfalso. contradiction.
+      + exists tt, [p2; p1].
+        split.
+          * reflexivity.
+        * split; reflexivity.
+  Qed.
+
+  Lemma repeat_break_singleton_break : forall p q,
+    repeat_break (fun _ : unit => pop_cond p) tt [q] tt [q].
+  Proof.
+    intros p q.
+    pose proof (repeat_break_unfold (fun _ : unit => pop_cond p) tt [q] tt [q]) as Hrb.
+    apply Hrb.
+    unfold_monad.
+    simpl.
+    exists (by_break tt), [q].
+    split.
+    - apply pop_cond_singleton_break.
+    - split; reflexivity.
+  Qed.
+
+  Lemma repeat_break_double_break : forall p p1 p2,
+    repeat_break (fun _ : unit => pop_cond p) tt [p2; p1] tt [p2; p1].
+  Proof.
+    intros p p1 p2.
+    pose proof (repeat_break_unfold (fun _ : unit => pop_cond p) tt [p2; p1] tt [p2; p1]) as Hrb.
+    apply Hrb.
+    unfold_monad.
+    simpl.
+    exists (by_break tt), [p2; p1].
+    split.
+    - apply pop_cond_double_break.
+    - split; reflexivity.
+  Qed.
+
+  Lemma repeat_break_triple_break : forall p1 p2 p3 p4,
+    ccw p2 p3 p4 ->
+    repeat_break (fun _ : unit => pop_cond p4) tt [p3; p2; p1] tt [p3; p2; p1].
+  Proof.
+    intros p1 p2 p3 p4 Hccw.
+    pose proof (repeat_break_unfold (fun _ : unit => pop_cond p4) tt [p3; p2; p1] tt [p3; p2; p1]) as Hrb.
+    apply Hrb.
+    unfold_monad.
+    simpl.
+    exists (by_break tt), [p3; p2; p1].
+    split.
+    - apply pop_cond_triple_break; assumption.
+    - split; reflexivity.
+  Qed.
+
+  Lemma repeat_break_triple_pop_once : forall p1 p2 p3 p4,
+    ~ ccw p2 p3 p4 ->
+    repeat_break (fun _ : unit => pop_cond p4) tt [p3; p2; p1] tt [p2; p1].
+  Proof.
+    intros p1 p2 p3 p4 Hnccw.
+    pose proof (repeat_break_unfold (fun _ : unit => pop_cond p4) tt [p3; p2; p1] tt [p2; p1]) as Hrb.
+    apply Hrb.
+    unfold_monad.
+    simpl.
+    exists (by_continue tt), [p2; p1].
+    split.
+    - apply pop_cond_triple_continue; assumption.
+    - apply repeat_break_double_break.
+  Qed.
+
+  Lemma get_update_push : forall (p : point) (T : list point),
+    (T0 <- get' id;; update' (fun _ => p :: T0)) T tt (p :: T).
+  Proof.
+    intros p T.
+    unfold get', get, update', update.
+    unfold_monad.
+    simpl.
+    exists T, T.
+    split.
+    - split; reflexivity.
+    - reflexivity.
+  Qed.
+
+  Lemma step_point_of_repeat : forall p T T',
+    repeat_break (fun _ : unit => pop_cond p) tt T tt T' ->
+    step_point p T tt (p :: T').
+  Proof.
+    intros p T T' Hrep.
+    unfold step_point.
+    unfold_monad.
+    simpl.
+    exists tt, T'.
+    split.
+    - exact Hrep.
+    - apply get_update_push.
+  Qed.
+
+  Lemma step_point_singleton : forall p q,
+    step_point p [q] tt [p; q].
+  Proof.
+    intros p q.
+    apply step_point_of_repeat.
+    apply repeat_break_singleton_break.
+  Qed.
+
+  Lemma step_point_two_no_pop : forall p p1 p2,
+    step_point p [p2; p1] tt [p; p2; p1].
+  Proof.
+    intros p p1 p2.
+    apply step_point_of_repeat.
+    apply repeat_break_double_break.
+  Qed.
+
+  Lemma step_point_three_break_now : forall p1 p2 p3 p4,
+    ccw p2 p3 p4 ->
+    step_point p4 [p3; p2; p1] tt [p4; p3; p2; p1].
+  Proof.
+    intros p1 p2 p3 p4 Hccw.
+    apply step_point_of_repeat.
+    apply repeat_break_triple_break; assumption.
+  Qed.
+
+  Lemma step_point_three_pop_once : forall p1 p2 p3 p4,
+    ~ ccw p2 p3 p4 ->
+    step_point p4 [p3; p2; p1] tt [p4; p2; p1].
+  Proof.
+    intros p1 p2 p3 p4 Hnccw.
+    apply step_point_of_repeat.
+    apply repeat_break_triple_pop_once; assumption.
+  Qed.
+
+  Example build_hull_3_points_no_pop :
+    forall p1 p2 p3,
+    build_hull [p1; p2; p3] [] tt [p3; p2; p1].
+  Proof.
+    intros p1 p2 p3.
+    unfold build_hull, build_hull_init, build_hull_next, step_point, step_point'.
+    simpl.
+    unfold_monad.
+    simpl.
+    exists tt, [p1].
+    split.
+    - reflexivity.
+    - exists tt, [p2; p1].
+      split.
+      + apply step_point_singleton.
+      + exists tt, [p3; p2; p1].
+        split.
+        * apply step_point_two_no_pop.
+        * split; reflexivity.
+  Qed.
+
+  Example build_hull_4_points_left_turn :
+    forall p1 p2 p3 p4,
+    sort p1 [p2; p3; p4] ->
+    ccw p2 p3 p4 ->
+    build_hull [p1; p2; p3; p4] [] tt [p4; p3; p2; p1].
+  Proof.
+    intros p1 p2 p3 p4 Hsort Hccw.
+    unfold build_hull, build_hull_init, build_hull_next, step_point, step_point'.
+    simpl.
+    unfold_monad.
+    simpl.
+    exists tt, [p1].
+    split.
+    - reflexivity.
+    - exists tt, [p2; p1].
+      split.
+      + apply step_point_singleton.
+      + exists tt, [p3; p2; p1].
+        split.
+        * apply step_point_two_no_pop.
+        * exists tt, [p4; p3; p2; p1].
+          split.
+          -- apply step_point_three_break_now.
+             exact Hccw.
+          -- split; reflexivity.
+  Qed.
+
+  Example build_hull_4_points_pop_once :
+    forall p1 p2 p3 p4,
+    sort p1 [p2; p3; p4] ->
+    ~ ccw p2 p3 p4 ->
+    build_hull [p1; p2; p3; p4] [] tt [p4; p2; p1].
+  Proof.
+    intros p1 p2 p3 p4 Hsort  Hnccw.
+    unfold build_hull, build_hull_init, build_hull_next, step_point, step_point'.
+    simpl.
+    unfold_monad.
+    simpl.
+    exists tt, [p1].
+    split.
+    - reflexivity.
+    - exists tt, [p2; p1].
+      split.
+      + apply step_point_singleton.
+      + exists tt, [p3; p2; p1].
+        split.
+        * apply step_point_two_no_pop.
+        * exists tt, [p4; p2; p1].
+          split.
+          -- apply step_point_three_pop_once.
+             exact Hnccw.
+          -- split; reflexivity.
+  Qed.
 
 
-    (* State transition 2: step_point p1 (s = [p1]) *)
-    (* eexists tt, [p1]. split. *)
-
-    (* State transition 3: step_point p2 (s = [p2; p1]) *)
-    (* eexists tt, [p2; p1]. split. *)
-
-    (* State transition 4: step_point p3 (state-dependent) *)
-    (* eexists [p2; p1],[p2; p1]. split. *)
-
-
-  Abort.
-
-End GrahamScan.
-
+End GrahamScanExample.

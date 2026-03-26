@@ -13,8 +13,18 @@ Local Open Scope Z_scope.
 Local Open Scope monad_scope.
 (* /COQ-HEAD *)
 
+
 (** Program state (T: list point) := a stack containing sorted points *)
 Section GrahamScanRel.
+
+(** Step 1: Sort points by x-coordinate (and y-coordinate as tie-breaker) *)
+(* Here we assume that l is already sorted *)
+
+(** Step 2: Build hull *)
+(* for point in points:
+     while size(lower_stack) >= 2 and not ccw lower_stack[-1] lower_stack[-2] point:
+       pop lower_stack
+     push_back lower_stack point *)
 
   (** acr. foldl, adopted from MonadHoare.v *)
   Fixpoint prog_list_iter
@@ -37,6 +47,7 @@ Section GrahamScanRel.
     T <- get' id ;;
     match T with
     | t :: s :: u :: T' =>
+        (** TODO: choice *)
         match (ccw_dec s t p) with
         (* Left turn found: break out of the loop *)
         | left _ =>
@@ -47,8 +58,8 @@ Section GrahamScanRel.
           (* Loop again *)
           ret (by_continue tt)
         end
+    (* Less than 3 elements in stack: break out of the loop *)
     | _ =>
-        (* Less than 2 elements in stack: break out of the loop *)
         ret (by_break tt)
     end.
 
@@ -69,22 +80,12 @@ Section GrahamScanRel.
   Definition step_point' (p : point) (_ : unit) : program (list point) unit :=
     step_point p.
 
-
   (** init with one point -> iter *)
   Definition build_hull_init (l : list point) : program (list point) unit :=
     match l with
     | nil => skip
     | p :: _ => update' (fun _ => [p])
     end.
-
-  (** Step 1: Sort points by x-coordinate (and y-coordinate as tie-breaker) *)
-  (* Here we assume that l is already sorted *)
-
-  (** Step 2: Build lower hull *)
-  (* for point in points:
-       while size(lower_stack) >= 2 and not ccw lower_stack[-1] lower_stack[-2] point:
-         pop lower_stack
-       push_back lower_stack point *)
 
   (** Assume that l is sorted *)
   Definition build_hull_next (l : list point) : program (list point) unit :=
@@ -467,6 +468,215 @@ Section GrahamScanInvariant.
   Qed.
 
 End GrahamScanInvariant.
+
+Section GrahamScanRefinement.
+
+  Fixpoint pop_fun (p : point) (T : list point) : list point :=
+    match T with
+    | t :: T' =>
+        match T' with
+        | s :: u :: T'' =>
+            match ccw_dec s t p with
+            | left _ => T
+            | right _ => pop_fun p T'
+            end
+        | _ => T
+        end
+    | _ => T
+    end.
+
+  Definition step_fun (p : point) (T : list point) : list point :=
+    p :: pop_fun p T.
+
+  (** TODO: DO NOT reverse stack, prove with rev_ccw_list *)
+  Definition run_fun (l : list point) : list point :=
+    match l with
+    | [] => []
+    | p1 :: l' => fold_left (fun T p => step_fun p T) l' [p1]
+    end.
+
+  Lemma repeat_break_pop_fun : forall p T,
+    repeat_break (fun _ : unit => pop_cond p) tt T tt (pop_fun p T).
+  Proof.
+    intros p T.
+    induction T as [| t T IH].
+    - simpl.
+      pose proof (repeat_break_unfold (fun _ : unit => pop_cond p) tt [] tt []) as Hrb.
+      apply Hrb.
+      unfold_monad.
+      simpl.
+      exists (by_break tt), [].
+      split.
+      + unfold pop_cond.
+        unfold get', get.
+        unfold_monad.
+        simpl.
+        exists [], [].
+        now repeat split.
+      + split; reflexivity.
+    - destruct T as [| s T].
+      + simpl.
+        pose proof (repeat_break_unfold (fun _ : unit => pop_cond p) tt [t] tt [t]) as Hrb.
+        apply Hrb.
+        unfold_monad.
+        simpl.
+        exists (by_break tt), [t].
+        split.
+        * unfold pop_cond.
+          unfold get', get.
+          unfold_monad.
+          simpl.
+          exists [t], [t].
+          now repeat split.
+        * split; reflexivity.
+      + destruct T as [| u T'].
+        * simpl.
+          pose proof (repeat_break_unfold (fun _ : unit => pop_cond p) tt [t; s] tt [t; s]) as Hrb.
+          apply Hrb.
+          unfold_monad.
+          simpl.
+          exists (by_break tt), [t; s].
+          split.
+          -- unfold pop_cond.
+             unfold get', get.
+             unfold_monad.
+             simpl.
+             exists [t; s], [t; s].
+             now repeat split.
+          -- split; reflexivity.
+        * simpl.
+          destruct (ccw_dec s t p) as [Hccw | Hnccw].
+          -- pose proof (repeat_break_unfold (fun _ : unit => pop_cond p) tt (t :: s :: u :: T') tt (t :: s :: u :: T')) as Hrb.
+             apply Hrb.
+             unfold_monad.
+             simpl.
+             exists (by_break tt), (t :: s :: u :: T').
+             split.
+             ++ unfold pop_cond.
+                unfold get', get.
+                unfold_monad.
+                simpl.
+                exists (t :: s :: u :: T'), (t :: s :: u :: T').
+                split.
+                ** split; reflexivity.
+                ** destruct (ccw_dec s t p) as [Hccw' | Hnccw'].
+                   --- split; reflexivity.
+                   --- exfalso. contradiction.
+             ++ split; reflexivity.
+          -- pose proof (repeat_break_unfold (fun _ : unit => pop_cond p) tt (t :: s :: u :: T') tt (pop_fun p (s :: u :: T'))) as Hrb.
+             apply Hrb.
+             unfold_monad.
+             simpl.
+             exists (by_continue tt), (s :: u :: T').
+             split.
+             ++ unfold pop_cond.
+                unfold get', get, update', update.
+                unfold_monad.
+                simpl.
+                exists (t :: s :: u :: T'), (t :: s :: u :: T').
+                split.
+                ** split; reflexivity.
+                ** destruct (ccw_dec s t p) as [Hccw' | Hnccw'].
+                   --- exfalso. contradiction.
+                   --- exists tt, (s :: u :: T').
+                       split; [reflexivity | split; reflexivity].
+             ++ apply IH.
+  Qed.
+
+  Lemma step_point_spec : forall p T,
+    step_point p T tt (step_fun p T).
+  Proof.
+    intros p T.
+    unfold step_fun, step_point.
+    unfold bind, StateRelMonad.bind.
+    simpl.
+    exists tt, (pop_fun p T).
+    split.
+    - apply repeat_break_pop_fun.
+    - unfold bind, StateRelMonad.bind.
+      simpl.
+      exists (pop_fun p T), (pop_fun p T).
+      split.
+      + unfold get', get.
+        simpl.
+        split; reflexivity.
+      + unfold update', update.
+        simpl.
+        sets_unfold.
+        reflexivity.
+  Qed.
+
+  Lemma prog_list_iter_spec : forall l T,
+    prog_list_iter step_point' l tt T tt
+      (fold_left (fun T0 p => step_fun p T0) l T).
+  Proof.
+    induction l as [| p l IH]; intros T.
+    - simpl.
+      unfold ret, StateRelMonad.ret.
+      simpl.
+      split; reflexivity.
+    - simpl.
+      unfold bind, StateRelMonad.bind.
+      simpl.
+      exists tt, (step_fun p T).
+      split.
+      + unfold step_point'.
+        apply step_point_spec.
+      + apply IH.
+  Qed.
+
+  Lemma build_hull_spec : forall l,
+    build_hull l  [] tt (run_fun l).
+  Proof.
+    intros l.
+    unfold run_fun.
+    destruct l as [| p1 l']; simpl.
+    - unfold build_hull, build_hull_init, build_hull_next.
+      unfold bind, StateRelMonad.bind.
+      simpl.
+      exists tt, [].
+      split.
+      + unfold ret, StateRelMonad.ret.
+        simpl.
+        split; reflexivity.
+      + unfold ret, StateRelMonad.ret.
+        simpl.
+        split; reflexivity.
+    - unfold build_hull, build_hull_init, build_hull_next.
+      unfold bind, StateRelMonad.bind.
+      simpl.
+      exists tt, [p1].
+      split.
+      + unfold update', update.
+        simpl.
+        sets_unfold.
+        reflexivity.
+      + apply prog_list_iter_spec.
+  Qed.
+
+  Lemma run_fun_subset : forall l,
+    stack_subset l (run_fun l).
+  Proof.
+    intros l.
+    apply build_hull_subset.
+    apply build_hull_spec.
+  Qed.
+
+  Lemma run_fun_nonempty : forall p l,
+    run_fun (p :: l) <> [].
+  Proof.
+    intros p l Heq.
+    assert (Hrun : build_hull (p :: l) [] tt (run_fun (p :: l))).
+    { apply build_hull_spec. }
+    apply build_hull_exec_steps in Hrun.
+    simpl in Hrun.
+    eapply exec_steps_nonempty.
+    - exact Hrun.
+    - discriminate.
+    - exact Heq.
+  Qed.
+
+End GrahamScanRefinement.
 
 
 

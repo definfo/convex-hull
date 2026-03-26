@@ -46,7 +46,10 @@
                 coq-lsp
                 # NOTE: For coq.version <= 8.15, use Vscoq legacy
                 vsrocq-language-server
-              ];
+              ] ++ (with pkgs; [
+                bubblewrap
+                socat
+              ]);
           };
         };
     };

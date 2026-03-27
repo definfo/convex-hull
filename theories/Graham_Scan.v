@@ -329,11 +329,14 @@ Proof.
                     point_in_triangle q c a p).
   {
     intros.
-    pose proof rev_ccw_list_remove_middle p [c] [b] (a :: l) H as [Hac _].
-    destruct H as [Hbc [Hab _]]. unfold Forall_ccw in Hbc, Hab, Hac. simpl in Hac.
-    rewrite !Forall_cons_iff in Hbc, Hab, Hac. destruct Hbc, Hab, Hac.
-    assert (~ ccw c a p). { apply ccw_anti_symmetry in H8. tauto. }
-    pose proof point_in_tri_incl _ _ _ _ H3 _ H4.
+    destruct H as [Hbc [Hab _]].
+    rewrite Forall_ccw_forall in Hbc, Hab.
+    assert (ccw c p a) as Hcpa.
+    { apply Hbc. simpl. tauto. }
+    assert (ccw b p a) as Hbpa.
+    { apply Hab. simpl. tauto. }
+    pose proof (point_in_tri_incl p a b c H3
+      (ccw_cyclicity _ _ _ Hcpa) Hbpa q H4).
     tauto.
   }
   rewrite Forall_forall in H2. rewrite Forall_forall.
@@ -365,22 +368,27 @@ Proof.
                     point_in_triangle q c a p).
   {
     intros.
-    pose proof rev_ccw_list_remove_middle p [c] [b] (a :: l) H as [Hac _].
-    destruct H as [Hbc [Hab _]]. unfold Forall_ccw in Hbc, Hab, Hac. simpl in Hac.
-    rewrite !Forall_cons_iff in Hbc, Hab, Hac. destruct Hbc, Hab, Hac.
-    assert (~ ccw c a p). { apply ccw_anti_symmetry in H8. tauto. }
-    pose proof point_in_tri_incl _ _ _ _ H3 _ H4.
+    destruct H as [Hbc [Hab _]].
+    rewrite Forall_ccw_forall in Hbc, Hab.
+    assert (ccw c p a) as Hcpa.
+    { apply Hbc. simpl. tauto. }
+    assert (ccw b p a) as Hbpa.
+    { apply Hab. simpl. tauto. }
+    pose proof (point_in_tri_incl p a b c H3
+      (ccw_cyclicity _ _ _ Hcpa) Hbpa q H4).
     tauto.
   }
   assert (forall q, point_in_triangle q c b p ->
                     point_in_triangle q c a p).
   {
     intros.
-    pose proof rev_ccw_list_remove_middle p [c] [] (b :: a :: l) H as [Hac _].
-    destruct H as [Hbc [Hab _]]. unfold Forall_ccw in Hbc, Hab, Hac. simpl in Hac.
-    rewrite !Forall_cons_iff in Hbc, Hab, Hac. destruct Hbc, Hab, Hac.
-    assert (~ ccw c b p). { apply ccw_anti_symmetry in H9. tauto. }
-    eapply point_in_tri_incl'; eassumption.
+    destruct H as [Hbc [_ _]].
+    rewrite Forall_ccw_forall in Hbc.
+    assert (ccw c p a) as Hcpa.
+    { apply Hbc. simpl. tauto. }
+    assert (ccw c p b) as Hcpb.
+    { apply Hbc. simpl. tauto. }
+    eapply point_in_tri_incl'; eauto.
   }
   rewrite Forall_forall in H2; rewrite Forall_forall.
   intros x _H; specialize (H2 x _H); clear _H.

@@ -816,6 +816,21 @@ Section GrahamScanRefinement.
       tauto.
   Qed.
 
+  Lemma run_fun_hull_properties : forall p l,
+    sort p l ->
+    build_hull l [] tt (run_fun l) /\
+    rev_ccw_list p (rev (run_fun l)) /\
+    rev_consec_ccw (run_fun l).
+  Proof.
+    intros p l Hsort.
+    split.
+    - apply build_hull_spec.
+    - split.
+      + apply run_fun_rev_ccw.
+        exact Hsort.
+      + apply run_fun_rev_consec.
+  Qed.
+
   Theorem build_hull_assert_hull : forall p l,
     sort p l ->
     exists T',
@@ -823,11 +838,11 @@ Section GrahamScanRefinement.
       rev_ccw_list p (rev T').
   Proof.
     intros p l Hsort.
+    destruct (run_fun_hull_properties p l Hsort) as [Hbuild [Hccw _]].
     exists (run_fun l).
     split.
-    - apply build_hull_spec.
-    - apply run_fun_rev_ccw.
-      exact Hsort.
+    - exact Hbuild.
+    - exact Hccw.
   Qed.
 
   Theorem build_hull_assert_hull_convex : forall p l,
@@ -838,13 +853,13 @@ Section GrahamScanRefinement.
       rev_consec_ccw T'.
   Proof.
     intros p l Hsort.
+    destruct (run_fun_hull_properties p l Hsort) as [Hbuild [Hccw Hcon]].
     exists (run_fun l).
     split.
-    - apply build_hull_spec.
+    - exact Hbuild.
     - split.
-      + apply run_fun_rev_ccw.
-        exact Hsort.
-      + apply run_fun_rev_consec.
+      + exact Hccw.
+      + exact Hcon.
   Qed.
 
 End GrahamScanRefinement.

@@ -288,22 +288,30 @@ Qed.
 (* forall (p : point) (T : list point),
    sort p T -> is_convex p (graham_scan T) *)
 
+Lemma is_convex_rev_consec : forall p T,
+  is_convex p T ->
+  rev_consec_ccw T.
+Proof.
+  intros p T.
+  induction T as [| a T IH]; intros Hconv; simpl in *; try tauto.
+  destruct T as [| b T']; simpl in *; try tauto.
+  destruct T' as [| c T'']; simpl in *; try tauto.
+  destruct Hconv as [Habc [_ Htail]].
+  split.
+  - apply ccw_cyclicity.
+    exact Habc.
+  - apply IH.
+    exact Htail.
+Qed.
+
 Lemma sort_gs_consec_ccw : forall p T,
   sort p T ->
   rev_consec_ccw (graham_scan T).
 Proof.
-  intros.
-  pose proof graham_convex_1 p T H.
-  remember (graham_scan T) as l.
-  clear Heql.
-  induction l; eauto.
-  destruct l; [ simpl; tauto |].
-  destruct l; [ simpl; tauto |].
-  destruct H0 as [? [? ?]].
-  specialize (IHl H2).
-  split.
-  - apply ccw_cyclicity. tauto.
-  - tauto.
+  intros p T Hsort.
+  apply (is_convex_rev_consec p (graham_scan T)).
+  apply graham_convex_1.
+  exact Hsort.
 Qed.
 
 (* TODO *)

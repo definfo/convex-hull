@@ -42,18 +42,18 @@ Section GrahamScanRel.
 
   (** =================================================== *)
 
-  (** while ( length(T) >= 3 && ¬ccw(T[1], T[0], p) ) **)
+  (** while ( length(T) >= 2 && ¬ccw(T[1], T[0], p) ) **)
   Definition pop_cond (p: point) : program (list point) (CntOrBrk unit unit) :=
     T <- get' id ;;
     match T with
-    | t :: s :: u :: T' =>
+    | t :: s :: T' =>
         choice
           (assume!! (ccw s t p) ;;
            ret (by_break tt))
           (assume!! (~ ccw s t p) ;;
-           update' (fun _ => s :: u :: T') ;;
+           update' (fun _ => s :: T') ;;
            ret (by_continue tt))
-    (* Less than 3 elements in stack: break out of the loop *)
+    (* Less than 2 elements in stack: break out of the loop *)
     | _ =>
         ret (by_break tt)
     end.
@@ -66,7 +66,7 @@ Section GrahamScanRel.
     | nil => skip
     end.
 
-  (** while ( length(T) >= 3 && ¬ccw(T[1], T[0], p) ) { pop(&T); }; push(p);  **)
+  (** while ( length(T) >= 2 && ¬ccw(T[1], T[0], p) ) { pop(&T); }; push(p);  **)
   Definition step_point (p : point) : program (list point) unit :=
     repeat_break (fun _ => pop_cond p) tt ;;
     T <- get' id ;;
@@ -248,12 +248,7 @@ Section GrahamScanInvariant.
     simpl in Hget.
     destruct Hget as [Hid Hss].
     subst T0 smid.
-    destruct T as [| t [| s [| u T0]]]; simpl in Hmatch.
-    - unfold ret, StateRelMonad.ret in Hmatch.
-      simpl in Hmatch.
-      destruct Hmatch as [_ HT].
-      subst T'.
-      exact Hsub.
+    destruct T as [| t [| s T0]]; simpl in Hmatch.
     - unfold ret, StateRelMonad.ret in Hmatch.
       simpl in Hmatch.
       destruct Hmatch as [_ HT].
@@ -486,7 +481,7 @@ Section GrahamScanRefinement.
     match T with
     | t :: T' =>
         match T' with
-        | s :: u :: T'' =>
+        | s :: T'' =>
             match ccw_dec s t p with
             | left _ => T
             | right _ => pop_fun p T'
@@ -530,7 +525,7 @@ Section GrahamScanRefinement.
         exists [], [].
         now repeat split.
       + split; reflexivity.
-    - destruct T as [| s T].
+    - destruct T as [| s T'].
       + simpl.
         pose proof (repeat_break_unfold (fun _ : unit => pop_cond p) tt [t] tt [t]) as Hrb.
         apply Hrb.
@@ -545,62 +540,47 @@ Section GrahamScanRefinement.
           exists [t], [t].
           now repeat split.
         * split; reflexivity.
-      + destruct T as [| u T'].
-        * simpl.
-          pose proof (repeat_break_unfold (fun _ : unit => pop_cond p) tt [t; s] tt [t; s]) as Hrb.
+      + simpl.
+        destruct (ccw_dec s t p) as [Hccw | Hnccw].
+        * pose proof (repeat_break_unfold (fun _ : unit => pop_cond p) tt (t :: s :: T') tt (t :: s :: T')) as Hrb.
           apply Hrb.
           unfold_monad.
           simpl.
-          exists (by_break tt), [t; s].
+          exists (by_break tt), (t :: s :: T').
           split.
           -- unfold pop_cond.
-             unfold get', get.
+             unfold choice, get', get.
              unfold_monad.
              simpl.
-             exists [t; s], [t; s].
-             now repeat split.
-          -- split; reflexivity.
-        * simpl.
-          destruct (ccw_dec s t p) as [Hccw | Hnccw].
-          -- pose proof (repeat_break_unfold (fun _ : unit => pop_cond p) tt (t :: s :: u :: T') tt (t :: s :: u :: T')) as Hrb.
-             apply Hrb.
-             unfold_monad.
-             simpl.
-             exists (by_break tt), (t :: s :: u :: T').
+             exists (t :: s :: T'), (t :: s :: T').
              split.
-             ++ unfold pop_cond.
-                unfold choice, get', get.
-                unfold_monad.
-                simpl.
-                exists (t :: s :: u :: T'), (t :: s :: u :: T').
-                split.
-                ** split; reflexivity.
-                ** left.
-                   exists tt, (t :: s :: u :: T').
-                   split.
-                   --- split; [exact Hccw | reflexivity].
-                   --- split; reflexivity.
              ++ split; reflexivity.
-          -- pose proof (repeat_break_unfold (fun _ : unit => pop_cond p) tt (t :: s :: u :: T') tt (pop_fun p (s :: u :: T'))) as Hrb.
-             apply Hrb.
+             ++ left.
+                exists tt, (t :: s :: T').
+                split.
+                ** split; [exact Hccw | reflexivity].
+                ** split; reflexivity.
+          -- split; reflexivity.
+        * pose proof (repeat_break_unfold (fun _ : unit => pop_cond p) tt (t :: s :: T') tt (pop_fun p (s :: T'))) as Hrb.
+          apply Hrb.
+          unfold_monad.
+          simpl.
+          exists (by_continue tt), (s :: T').
+          split.
+          -- unfold pop_cond.
+             unfold choice, get', get, update', update.
              unfold_monad.
              simpl.
-             exists (by_continue tt), (s :: u :: T').
+             exists (t :: s :: T'), (t :: s :: T').
              split.
-             ++ unfold pop_cond.
-                unfold choice, get', get, update', update.
-                unfold_monad.
-                simpl.
-                exists (t :: s :: u :: T'), (t :: s :: u :: T').
+             ++ split; reflexivity.
+             ++ right.
+                exists tt, (t :: s :: T').
                 split.
-                ** split; reflexivity.
-                ** right.
-                   exists tt, (t :: s :: u :: T').
-                   split.
-                   --- split; [exact Hnccw | reflexivity].
-                   --- exists tt, (s :: u :: T').
-                       split; [reflexivity | split; reflexivity].
-             ++ apply IH.
+                ** split; [exact Hnccw | reflexivity].
+                ** exists tt, (s :: T').
+                   split; [reflexivity | split; reflexivity].
+          -- apply IH.
   Qed.
 
   Lemma step_point_spec : forall p T,
@@ -706,21 +686,81 @@ Section GrahamScanRefinement.
     - destruct T as [| s T'].
       + exists [], [t].
         split; reflexivity.
-      + destruct T' as [| u T''].
-        * exists [], [t; s].
+      + simpl.
+        destruct (ccw_dec s t a).
+        * exists [], (t :: s :: T').
           split; reflexivity.
-        * simpl.
-          destruct (ccw_dec s t a).
-          -- exists [], (t :: s :: u :: T'').
-             split; reflexivity.
-          -- destruct IH as [T0 [T1 [HT Hstep]]].
-             exists (t :: T0), T1.
-             split.
-             ++ simpl.
-                rewrite HT.
-                reflexivity.
-             ++ simpl.
-                exact Hstep.
+        * destruct IH as [T0 [T1 [HT Hstep]]].
+          exists (t :: T0), T1.
+          split.
+          -- simpl.
+             rewrite HT.
+             reflexivity.
+          -- simpl.
+             exact Hstep.
+  Qed.
+
+  Lemma pop_fun_preserve_rev_consec : forall p T,
+    rev_consec_ccw T ->
+    rev_consec_ccw (pop_fun p T).
+  Proof.
+    intros p T.
+    induction T as [| t T IH]; intros Hcon.
+    - simpl; exact Hcon.
+    - destruct T as [| s T'].
+      + simpl; exact Hcon.
+      + simpl.
+        destruct (ccw_dec s t p).
+        * exact Hcon.
+        * apply IH.
+          apply rev_consec_ccw_cons_iff in Hcon as [Hs _].
+          exact Hs.
+  Qed.
+
+  Lemma pop_fun_result_ccw : forall p T t s T',
+    pop_fun p T = t :: s :: T' ->
+    ccw s t p.
+  Proof.
+    intros p T.
+    induction T as [| x T IH]; intros t s T' Hpop; simpl in Hpop.
+    - discriminate.
+    - destruct T as [| y T0].
+      + discriminate.
+      + destruct (ccw_dec y x p) as [Hccw | Hnccw].
+        * inversion Hpop; subst.
+          exact Hccw.
+        * eapply IH.
+          exact Hpop.
+  Qed.
+
+  Lemma step_fun_preserve_rev_consec : forall p T,
+    rev_consec_ccw T ->
+    rev_consec_ccw (step_fun p T).
+  Proof.
+    intros p T Hcon.
+    unfold step_fun.
+    pose proof (pop_fun_preserve_rev_consec p T Hcon) as Hpopcon.
+    destruct (pop_fun p T) as [| t [| s T']] eqn:Hpop; simpl.
+    - tauto.
+    - tauto.
+    - split.
+      + apply ccw_cyclicity.
+        eapply pop_fun_result_ccw.
+        exact Hpop.
+      + exact Hpopcon.
+  Qed.
+
+  Lemma run_tail_rev_consec : forall l T,
+    rev_consec_ccw T ->
+    rev_consec_ccw (run_tail T l).
+  Proof.
+    induction l as [| a l IH]; intros T Hcon.
+    - simpl.
+      exact Hcon.
+    - simpl.
+      apply IH.
+      apply step_fun_preserve_rev_consec.
+      exact Hcon.
   Qed.
 
   Lemma run_tail_rev_ccw : forall p l T,
@@ -764,6 +804,18 @@ Section GrahamScanRefinement.
       exact Hrev.
   Qed.
 
+  Theorem run_fun_rev_consec : forall l,
+    rev_consec_ccw (run_fun l).
+  Proof.
+    intros l.
+    unfold run_fun.
+    destruct l as [| a l']; simpl.
+    - tauto.
+    - apply run_tail_rev_consec.
+      simpl.
+      tauto.
+  Qed.
+
   Theorem build_hull_assert_hull : forall p l,
     sort p l ->
     exists T',
@@ -776,6 +828,23 @@ Section GrahamScanRefinement.
     - apply build_hull_spec.
     - apply run_fun_rev_ccw.
       exact Hsort.
+  Qed.
+
+  Theorem build_hull_assert_hull_convex : forall p l,
+    sort p l ->
+    exists T',
+      build_hull l [] tt T' /\
+      rev_ccw_list p (rev T') /\
+      rev_consec_ccw T'.
+  Proof.
+    intros p l Hsort.
+    exists (run_fun l).
+    split.
+    - apply build_hull_spec.
+    - split.
+      + apply run_fun_rev_ccw.
+        exact Hsort.
+      + apply run_fun_rev_consec.
   Qed.
 
 End GrahamScanRefinement.
@@ -801,15 +870,42 @@ Section GrahamScanExample.
   Qed.
 
   Lemma pop_cond_double_break : forall p p1 p2,
+    ccw p1 p2 p ->
     pop_cond p [p2; p1] (by_break tt) [p2; p1].
   Proof.
-    intros p p1 p2.
+    intros p p1 p2 Hccw.
     unfold pop_cond.
-    unfold get', get, update', update.
+    unfold choice, get', get, update', update.
     unfold_monad.
     simpl.
     exists [p2; p1], [p2; p1].
-    split; [split; reflexivity | split; reflexivity].
+    split.
+    - split; reflexivity.
+    - left.
+      exists tt, [p2; p1].
+      split.
+      + split; [exact Hccw | reflexivity].
+      + split; reflexivity.
+  Qed.
+
+  Lemma pop_cond_double_continue : forall p p1 p2,
+    ~ ccw p1 p2 p ->
+    pop_cond p [p2; p1] (by_continue tt) [p1].
+  Proof.
+    intros p p1 p2 Hnccw.
+    unfold pop_cond.
+    unfold choice, get', get, update', update.
+    unfold_monad.
+    simpl.
+    exists [p2; p1], [p2; p1].
+    split.
+    - split; reflexivity.
+    - right.
+      exists tt, [p2; p1].
+      split.
+      + split; [exact Hnccw | reflexivity].
+      + exists tt, [p1].
+        split; [reflexivity | split; reflexivity].
   Qed.
 
   Lemma pop_cond_triple_break : forall p1 p2 p3 p4,
@@ -868,16 +964,17 @@ Section GrahamScanExample.
   Qed.
 
   Lemma repeat_break_double_break : forall p p1 p2,
+    ccw p1 p2 p ->
     repeat_break (fun _ : unit => pop_cond p) tt [p2; p1] tt [p2; p1].
   Proof.
-    intros p p1 p2.
+    intros p p1 p2 Hccw.
     pose proof (repeat_break_unfold (fun _ : unit => pop_cond p) tt [p2; p1] tt [p2; p1]) as Hrb.
     apply Hrb.
     unfold_monad.
     simpl.
     exists (by_break tt), [p2; p1].
     split.
-    - apply pop_cond_double_break.
+    - apply pop_cond_double_break; exact Hccw.
     - split; reflexivity.
   Qed.
 
@@ -898,9 +995,10 @@ Section GrahamScanExample.
 
   Lemma repeat_break_triple_pop_once : forall p1 p2 p3 p4,
     ~ ccw p2 p3 p4 ->
+    ccw p1 p2 p4 ->
     repeat_break (fun _ : unit => pop_cond p4) tt [p3; p2; p1] tt [p2; p1].
   Proof.
-    intros p1 p2 p3 p4 Hnccw.
+    intros p1 p2 p3 p4 Hnccw Hccw.
     pose proof (repeat_break_unfold (fun _ : unit => pop_cond p4) tt [p3; p2; p1] tt [p2; p1]) as Hrb.
     apply Hrb.
     unfold_monad.
@@ -908,7 +1006,7 @@ Section GrahamScanExample.
     exists (by_continue tt), [p2; p1].
     split.
     - apply pop_cond_triple_continue; assumption.
-    - apply repeat_break_double_break.
+    - apply repeat_break_double_break; assumption.
   Qed.
 
   Lemma get_update_push : forall (p : point) (T : list point),
@@ -947,11 +1045,13 @@ Section GrahamScanExample.
   Qed.
 
   Lemma step_point_two_no_pop : forall p p1 p2,
+    ccw p1 p2 p ->
     step_point p [p2; p1] tt [p; p2; p1].
   Proof.
-    intros p p1 p2.
+    intros p p1 p2 Hccw.
     apply step_point_of_repeat.
     apply repeat_break_double_break.
+    exact Hccw.
   Qed.
 
   Lemma step_point_three_break_now : forall p1 p2 p3 p4,
@@ -965,18 +1065,20 @@ Section GrahamScanExample.
 
   Lemma step_point_three_pop_once : forall p1 p2 p3 p4,
     ~ ccw p2 p3 p4 ->
+    ccw p1 p2 p4 ->
     step_point p4 [p3; p2; p1] tt [p4; p2; p1].
   Proof.
-    intros p1 p2 p3 p4 Hnccw.
+    intros p1 p2 p3 p4 Hnccw Hccw.
     apply step_point_of_repeat.
     apply repeat_break_triple_pop_once; assumption.
   Qed.
 
   Example build_hull_3_points_no_pop :
     forall p1 p2 p3,
+    ccw p1 p2 p3 ->
     build_hull [p1; p2; p3] [] tt [p3; p2; p1].
   Proof.
-    intros p1 p2 p3.
+    intros p1 p2 p3 Hccw.
     unfold build_hull, build_hull_init, build_hull_next, step_point, step_point'.
     simpl.
     unfold_monad.
@@ -990,16 +1092,18 @@ Section GrahamScanExample.
       + exists tt, [p3; p2; p1].
         split.
         * apply step_point_two_no_pop.
+          exact Hccw.
         * split; reflexivity.
   Qed.
 
   Example build_hull_4_points_left_turn :
     forall p1 p2 p3 p4,
     sort p1 [p2; p3; p4] ->
+    ccw p1 p2 p3 ->
     ccw p2 p3 p4 ->
     build_hull [p1; p2; p3; p4] [] tt [p4; p3; p2; p1].
   Proof.
-    intros p1 p2 p3 p4 Hsort Hccw.
+    intros p1 p2 p3 p4 Hsort Hccw12 Hccw.
     unfold build_hull, build_hull_init, build_hull_next, step_point, step_point'.
     simpl.
     unfold_monad.
@@ -1013,6 +1117,7 @@ Section GrahamScanExample.
       + exists tt, [p3; p2; p1].
         split.
         * apply step_point_two_no_pop.
+          exact Hccw12.
         * exists tt, [p4; p3; p2; p1].
           split.
           -- apply step_point_three_break_now.
@@ -1023,10 +1128,12 @@ Section GrahamScanExample.
   Example build_hull_4_points_pop_once :
     forall p1 p2 p3 p4,
     sort p1 [p2; p3; p4] ->
+    ccw p1 p2 p3 ->
     ~ ccw p2 p3 p4 ->
+    ccw p1 p2 p4 ->
     build_hull [p1; p2; p3; p4] [] tt [p4; p2; p1].
   Proof.
-    intros p1 p2 p3 p4 Hsort  Hnccw.
+    intros p1 p2 p3 p4 Hsort Hccw12 Hnccw Hccw14.
     unfold build_hull, build_hull_init, build_hull_next, step_point, step_point'.
     simpl.
     unfold_monad.
@@ -1040,10 +1147,10 @@ Section GrahamScanExample.
       + exists tt, [p3; p2; p1].
         split.
         * apply step_point_two_no_pop.
+          exact Hccw12.
         * exists tt, [p4; p2; p1].
           split.
-          -- apply step_point_three_pop_once.
-             exact Hnccw.
+          -- apply step_point_three_pop_once; [exact Hnccw | exact Hccw14].
           -- split; reflexivity.
   Qed.
 

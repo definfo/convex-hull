@@ -653,6 +653,190 @@ Section GrahamScanRefinement.
       + apply prog_list_iter_spec.
   Qed.
 
+  Lemma pop_cond_outcome : forall p T x T',
+    pop_cond p T x T' ->
+    match T with
+    | t :: s :: T0 =>
+        (x = by_break tt /\ T' = t :: s :: T0 /\ ccw s t p) \/
+        (x = by_continue tt /\ T' = s :: T0 /\ ~ ccw s t p)
+    | _ =>
+        x = by_break tt /\ T' = T
+    end.
+  Proof.
+    intros p T x T' Hrun.
+    unfold pop_cond in Hrun.
+    unfold bind, StateRelMonad.bind in Hrun.
+    simpl in Hrun.
+    destruct Hrun as [T0 [smid [Hget Hmatch]]].
+    unfold get', get in Hget.
+    simpl in Hget.
+    destruct Hget as [Hid Hss].
+    subst T0 smid.
+    destruct T as [| t [| s T0]]; simpl in Hmatch.
+    - unfold ret, StateRelMonad.ret in Hmatch.
+      simpl in Hmatch.
+      destruct Hmatch as [Hx HT].
+      subst x T'.
+      split; reflexivity.
+    - unfold ret, StateRelMonad.ret in Hmatch.
+      simpl in Hmatch.
+      destruct Hmatch as [Hx HT].
+      subst x T'.
+      split; reflexivity.
+    - unfold choice in Hmatch.
+      simpl in Hmatch.
+      destruct Hmatch as [Hmatch | Hmatch].
+      + unfold bind, StateRelMonad.bind in Hmatch.
+        simpl in Hmatch.
+        destruct Hmatch as [uu [s1 [Hassume Hret]]].
+        unfold test' in Hassume.
+        simpl in Hassume.
+        destruct Hassume as [Hccw Hs1].
+        subst s1.
+        unfold ret, StateRelMonad.ret in Hret.
+        simpl in Hret.
+        destruct Hret as [Hx HT].
+        subst x T'.
+        left.
+        repeat split; auto.
+      + unfold bind, StateRelMonad.bind in Hmatch.
+        simpl in Hmatch.
+        destruct Hmatch as [uu [s1 [Hassume Hrest]]].
+        unfold test' in Hassume.
+        simpl in Hassume.
+        destruct Hassume as [Hnccw Hs1].
+        subst s1.
+        unfold bind, StateRelMonad.bind in Hrest.
+        simpl in Hrest.
+        destruct Hrest as [u0 [s2 [Hupd Hret]]].
+        destruct u0.
+        unfold update', update in Hupd.
+        simpl in Hupd.
+        sets_unfold in Hupd.
+        subst s2.
+        unfold ret, StateRelMonad.ret in Hret.
+        simpl in Hret.
+        destruct Hret as [Hx HT].
+        subst x T'.
+        right.
+        repeat split; auto.
+  Qed.
+
+  Lemma repeat_break_pop_fun_unique : forall p T T',
+    repeat_break (fun _ : unit => pop_cond p) tt T tt T' ->
+    T' = pop_fun p T.
+  Proof.
+    intros p T.
+    induction T as [| t T IH]; intros T' Hrun.
+    - simpl in *.
+      pose proof (repeat_break_unfold (fun _ : unit => pop_cond p)) as Hunf.
+      specialize (Hunf tt [] tt T').
+      destruct Hunf as [Hto _].
+      apply Hto in Hrun.
+      unfold bind, StateRelMonad.bind in Hrun.
+      simpl in Hrun.
+      destruct Hrun as [x [smid [Hbody Hnext]]].
+      pose proof (pop_cond_outcome p [] x smid Hbody) as Hout.
+      simpl in Hout.
+      destruct Hout as [Hx Hsmid].
+      subst x smid.
+      unfold ret, StateRelMonad.ret in Hnext.
+      simpl in Hnext.
+      destruct Hnext as [_ Heq].
+      symmetry; exact Heq.
+    - destruct T as [| s T0].
+      + simpl in *.
+        pose proof (repeat_break_unfold (fun _ : unit => pop_cond p)) as Hunf.
+        specialize (Hunf tt [t] tt T').
+        destruct Hunf as [Hto _].
+        apply Hto in Hrun.
+        unfold bind, StateRelMonad.bind in Hrun.
+        simpl in Hrun.
+        destruct Hrun as [x [smid [Hbody Hnext]]].
+        pose proof (pop_cond_outcome p [t] x smid Hbody) as Hout.
+        simpl in Hout.
+        destruct Hout as [Hx Hsmid].
+        subst x smid.
+        unfold ret, StateRelMonad.ret in Hnext.
+        simpl in Hnext.
+        destruct Hnext as [_ Heq].
+        symmetry; exact Heq.
+      + simpl in *.
+        pose proof (repeat_break_unfold (fun _ : unit => pop_cond p)) as Hunf.
+        specialize (Hunf tt (t :: s :: T0) tt T').
+        destruct Hunf as [Hto _].
+        apply Hto in Hrun.
+        unfold bind, StateRelMonad.bind in Hrun.
+        simpl in Hrun.
+        destruct Hrun as [x [smid [Hbody Hnext]]].
+        pose proof (pop_cond_outcome p (t :: s :: T0) x smid Hbody) as Hout.
+        simpl in Hout.
+        destruct Hout as [[Hx [Hsmid Hccw]] | [Hx [Hsmid Hnccw]]].
+        * subst x smid.
+          unfold ret, StateRelMonad.ret in Hnext.
+          simpl in Hnext.
+          destruct Hnext as [_ Heq].
+          subst T'.
+          destruct (ccw_dec s t p) as [Hccw' | Hnccw']; [reflexivity | contradiction].
+        * subst x smid.
+          specialize (IH T' Hnext).
+          destruct (ccw_dec s t p) as [Hccw' | Hnccw']; [contradiction | exact IH].
+  Qed.
+
+  Lemma step_point_unique_run : forall p T T',
+    step_point p T tt T' ->
+    T' = step_fun p T.
+  Proof.
+    intros p T T' Hrun.
+    unfold step_point in Hrun.
+    unfold bind, StateRelMonad.bind in Hrun.
+    simpl in Hrun.
+    destruct Hrun as [u [Tmid [Hrep Htail]]].
+    destruct u.
+    unfold bind, StateRelMonad.bind in Htail.
+    simpl in Htail.
+    destruct Htail as [T0 [s1 [Hget Hupd]]].
+    unfold get', get in Hget.
+    simpl in Hget.
+    destruct Hget as [Heq Hss].
+    subst T0 s1.
+    unfold update', update in Hupd.
+    simpl in Hupd.
+    sets_unfold in Hupd.
+    subst T'.
+    unfold step_fun.
+    f_equal.
+    eapply repeat_break_pop_fun_unique.
+    exact Hrep.
+  Qed.
+
+  Lemma exec_steps_unique_run_tail : forall l T T',
+    exec_steps l T T' ->
+    T' = run_tail T l.
+  Proof.
+    intros l T T' Hexec.
+    induction Hexec as [T0|p l0 T0 T1 T2 Hstep Hrest IH].
+    - reflexivity.
+    - simpl.
+      apply step_point_unique_run in Hstep.
+      subst T1.
+      exact IH.
+  Qed.
+
+  Lemma build_hull_unique_run_fun : forall l T',
+    build_hull l [] tt T' ->
+    T' = run_fun l.
+  Proof.
+    intros l T' Hrun.
+    apply build_hull_exec_steps in Hrun.
+    destruct l as [| p1 l'].
+    - simpl in *.
+      exact Hrun.
+    - simpl in *.
+      apply exec_steps_unique_run_tail in Hrun.
+      exact Hrun.
+  Qed.
+
   Lemma run_fun_subset : forall l,
     stack_subset l (run_fun l).
   Proof.
@@ -814,6 +998,30 @@ Section GrahamScanRefinement.
     - apply run_tail_rev_consec.
       simpl.
       tauto.
+  Qed.
+
+  Theorem build_hull_hoare_final : forall p l,
+    sort p l ->
+    Hoare (fun T0 => T0 = [])
+          (build_hull l)
+          (fun _ T' =>
+             T' = run_fun l /\
+             rev_ccw_list p (rev T') /\
+             rev_consec_ccw T').
+  Proof.
+    intros p l Hsort.
+    unfold Hoare.
+    intros s1 x s2 Hpre Hrun.
+    subst s1.
+    destruct x.
+    assert (Heq : s2 = run_fun l).
+    { eapply build_hull_unique_run_fun. exact Hrun. }
+    subst s2.
+    split.
+    - reflexivity.
+    - split.
+      + apply run_fun_rev_ccw. exact Hsort.
+      + apply run_fun_rev_consec.
   Qed.
 
   Lemma run_fun_hull_properties : forall p l,

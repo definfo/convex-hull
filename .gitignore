@@ -11,5 +11,12 @@ _build
 *.vos
 .lia.cache
 .nia.cache
+.csdp.cache
 
+.vscode/
+
+.direnv/
 .pre-commit-config.yaml
+
+assets/
+

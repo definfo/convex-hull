@@ -38,18 +38,26 @@
             ];
           };
 
-          devShells.default = pkgs.mkShell {
-            packages =
+          devShells.default = pkgs.mkShell.override {
+            stdenv = pkgs.gccStdenv;
+          } {
+            strictDeps = true;
+
+            shellHook = ''
+              export ROCQ_WORKSPACE=$PWD
+            '';
+
+            nativeBuildInputs =
               with pkgs.coqPackages;
               [
                 coq
                 coq-lsp
-                # NOTE: For coq.version <= 8.15, use Vscoq legacy
-                vsrocq-language-server
-              ] ++ (with pkgs; [
-                bubblewrap
-                socat
-              ]);
+                vsrocq-language-server # For coq.version <= 8.15, use Vscoq legacy
+              ]
+              ++ [
+                pkgs.clang-tools # for QCP
+                (pkgs.python3.withPackages (ps: with ps; [ z3-solver ])) # for LLM
+              ];
           };
         };
     };

@@ -1000,30 +1000,6 @@ Section GrahamScanRefinement.
       tauto.
   Qed.
 
-  Theorem build_hull_hoare_final : forall p l,
-    sort p l ->
-    Hoare (fun T0 => T0 = [])
-          (build_hull l)
-          (fun _ T' =>
-             T' = run_fun l /\
-             rev_ccw_list p (rev T') /\
-             rev_consec_ccw T').
-  Proof.
-    intros p l Hsort.
-    unfold Hoare.
-    intros s1 x s2 Hpre Hrun.
-    subst s1.
-    destruct x.
-    assert (Heq : s2 = run_fun l).
-    { eapply build_hull_unique_run_fun. exact Hrun. }
-    subst s2.
-    split.
-    - reflexivity.
-    - split.
-      + apply run_fun_rev_ccw. exact Hsort.
-      + apply run_fun_rev_consec.
-  Qed.
-
   Lemma run_fun_hull_properties : forall p l,
     sort p l ->
     build_hull l [] tt (run_fun l) /\
@@ -1379,3 +1355,40 @@ Section GrahamScanExample.
 
 
 End GrahamScanExample.
+
+
+Theorem build_hull_hoare_final : forall p l,
+  sort p l ->
+  Hoare (fun T0 => T0 = [])
+        (build_hull l)
+        (fun _ T' =>
+           T' = run_fun l /\
+           rev_ccw_list p (rev T') /\
+           rev_consec_ccw T').
+        (** replace run_fun with previous local props *)
+        (** conjunction + subseq  *)
+Proof.
+  intros p l Hsort.
+  unfold Hoare.
+  intros s1 x s2 Hpre Hrun.
+  subst s1.
+  destruct x.
+  assert (Heq : s2 = run_fun l).
+  { eapply build_hull_unique_run_fun. exact Hrun. }
+  subst s2.
+  split.
+  - reflexivity.
+  - split.
+    + apply run_fun_rev_ccw. exact Hsort.
+    + apply run_fun_rev_consec.
+Qed.
+
+(* Theorem build_hull_hoare_final_convex : forall p l,
+  sort p l ->
+  Hoare (fun T0 => T0 = [])
+        (build_hull l)
+        (fun _ T' =>
+           is_convex T' /\
+           is_max_hull T' /\
+           subset_of T' l). *)
+

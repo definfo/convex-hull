@@ -10,7 +10,7 @@ typedef struct {
 
 static Point g_pivot;
 
-static int cmp_xy(const void *a, const void *b) {
+int cmp_xy(const void *a, const void *b) {
     const Point *pa = (const Point *)a;
     const Point *pb = (const Point *)b;
     if (pa->x < pb->x) return -1;
@@ -20,7 +20,7 @@ static int cmp_xy(const void *a, const void *b) {
     return 0;
 }
 
-static i64 cross(Point a, Point b, Point c) {
+i64 cross(Point a, Point b, Point c) {
     i64 abx = b.x - a.x;
     i64 aby = b.y - a.y;
     i64 acx = c.x - a.x;
@@ -28,13 +28,13 @@ static i64 cross(Point a, Point b, Point c) {
     return abx * acy - aby * acx;
 }
 
-static i64 dist2(Point a, Point b) {
+i64 dist2(Point a, Point b) {
     i64 dx = a.x - b.x;
     i64 dy = a.y - b.y;
     return dx * dx + dy * dy;
 }
 
-static int cmp_polar(const void *a, const void *b) {
+int cmp_polar(const void *a, const void *b) {
     const Point *pa = (const Point *)a;
     const Point *pb = (const Point *)b;
     i64 cr = cross(g_pivot, *pa, *pb);
@@ -53,7 +53,7 @@ static int cmp_polar(const void *a, const void *b) {
     return 0;
 }
 
-static int unique_points(Point *pts, int n) {
+int unique_points(Point *pts, int n) {
     if (n <= 1) return n;
     qsort(pts, (size_t)n, sizeof(Point), cmp_xy);
 
@@ -66,7 +66,7 @@ static int unique_points(Point *pts, int n) {
     return m;
 }
 
-static int min_yx_index(const Point *pts, int n) {
+int min_yx_index(const Point *pts, int n) {
     int idx = 0;
     for (int i = 1; i < n; i++) {
         if (pts[i].y < pts[idx].y ||
@@ -77,7 +77,7 @@ static int min_yx_index(const Point *pts, int n) {
     return idx;
 }
 
-static void rotate_to_min_yx(Point *pts, int n) {
+void rotate_to_min_yx(Point *pts, int n) {
     if (n <= 1) return;
     int k = min_yx_index(pts, n);
     if (k == 0) return;
@@ -92,7 +92,7 @@ static void rotate_to_min_yx(Point *pts, int n) {
     free(tmp);
 }
 
-static int graham_scan(Point *pts, int n, Point *hull) {
+int graham_scan(Point *pts, int n, Point *hull) {
     if (n == 0) return 0;
     if (n == 1) {
         hull[0] = pts[0];
@@ -135,13 +135,14 @@ int main(void) {
         int n;
         if (scanf("%d", &n) != 1) return 0;
 
+        /* Safe malloc? */
         Point *pts = (Point *)malloc((size_t)n * sizeof(Point));
         Point *hull = (Point *)malloc((size_t)n * sizeof(Point));
-        if (pts == NULL || hull == NULL) {
-            free(pts);
-            free(hull);
-            return 0;
-        }
+        // if (pts == NULL || hull == NULL) {
+        //     free(pts);
+        //     free(hull);
+        //     return 0;
+        // }
 
         for (int i = 0; i < n; i++) {
             if (scanf("%lld %lld", &pts[i].x, &pts[i].y) != 2) {

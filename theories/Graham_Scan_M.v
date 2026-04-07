@@ -229,6 +229,94 @@ Section GrahamScanExecution.
 End GrahamScanExecution.
 
 
+Section Subsequence.
+
+  Inductive subseq {A : Type} : list A -> list A -> Prop :=
+  | subseq_nil : forall l,
+      subseq [] l
+  | subseq_cons : forall x l1 l2,
+      subseq l1 l2 ->
+      subseq (x :: l1) (x :: l2)
+  | subseq_skip : forall x l1 l2,
+      subseq l1 l2 ->
+      subseq l1 (x :: l2).
+
+  Lemma subseq_refl : forall (A : Type) (l : list A),
+    subseq l l.
+  Proof.
+    intros A l.
+    induction l as [| x l IH].
+    - constructor.
+    - constructor.
+      exact IH.
+  Qed.
+
+  Lemma subseq_trans : forall (A : Type) (l1 l2 l3 : list A),
+    subseq l1 l2 ->
+    subseq l2 l3 ->
+    subseq l1 l3.
+  Proof.
+    intros A l1 l2 l3 H12 H23.
+    revert l1 H12.
+    induction H23 as [l3|x l2 l3 H23 IH|x l2 l3 H23 IH]; intros l1 H12.
+    - inversion H12.
+      constructor.
+    - inversion H12; subst.
+      + constructor.
+      + constructor.
+        apply IH.
+        assumption.
+      + apply subseq_skip.
+        apply IH.
+        assumption.
+    - apply subseq_skip.
+      apply IH.
+      assumption.
+  Qed.
+
+  Lemma subseq_app_left : forall (A : Type) (l1 l2 : list A),
+    subseq l1 (l1 ++ l2).
+  Proof.
+    intros A l1 l2.
+    induction l1 as [| x l1 IH].
+    - constructor.
+    - simpl.
+      constructor.
+      exact IH.
+  Qed.
+
+  Lemma subseq_last : forall (A : Type) (l : list A) (x : A),
+    subseq [x] (l ++ [x]).
+  Proof.
+    intros A l x.
+    induction l as [| y l IH].
+    - simpl.
+      constructor.
+      constructor.
+    - simpl.
+      apply subseq_skip.
+      exact IH.
+  Qed.
+
+  Lemma subseq_snoc : forall (A : Type) (l1 l2 : list A) (x : A),
+    subseq l1 l2 ->
+    subseq (l1 ++ [x]) (l2 ++ [x]).
+  Proof.
+    intros A l1 l2 x Hsub.
+    induction Hsub.
+    - simpl.
+      apply subseq_last.
+    - simpl.
+      constructor.
+      exact IHHsub.
+    - simpl.
+      apply subseq_skip.
+      exact IHHsub.
+  Qed.
+
+End Subsequence.
+
+
 Section GrahamScanInvariant.
 
   Definition stack_subset (base : list point) (T : list point) : Prop :=
@@ -476,6 +564,9 @@ Section GrahamScanInvariant.
 End GrahamScanInvariant.
 
 Section GrahamScanRefinement.
+
+  Definition stack_subseq (base : list point) (T : list point) : Prop :=
+    subseq (rev T) base.
 
   Fixpoint pop_fun (p : point) (T : list point) : list point :=
     match T with
@@ -882,6 +973,218 @@ Section GrahamScanRefinement.
              reflexivity.
           -- simpl.
              exact Hstep.
+  Qed.
+
+  Lemma run_tail_stack_subseq : forall l base T,
+    stack_subseq base T ->
+    stack_subseq (base ++ l) (run_tail T l).
+  Proof.
+    intros l.
+    induction l as [| a l IH]; intros base T Hsub.
+    - simpl.
+      rewrite app_nil_r.
+      exact Hsub.
+    - simpl.
+      destruct (step_fun_succ_stack a T) as [T0 [T' [HT Hstep]]].
+      subst T.
+      replace (base ++ (a :: l)) with ((base ++ [a]) ++ l).
+      2: {
+        rewrite <- app_assoc.
+        reflexivity.
+      }
+      apply IH.
+      unfold stack_subseq in *.
+      rewrite Hstep.
+      simpl.
+      apply subseq_snoc.
+      rewrite rev_app_distr in Hsub.
+      eapply subseq_trans.
+      + apply subseq_app_left.
+      + exact Hsub.
+  Qed.
+
+  Lemma run_fun_stack_subseq : forall l,
+    stack_subseq l (run_fun l).
+  Proof.
+    intros l.
+    unfold run_fun, stack_subseq.
+    destruct l as [| p1 l']; simpl.
+    - constructor.
+    - replace (p1 :: l') with ([p1] ++ l') by reflexivity.
+      apply run_tail_stack_subseq.
+      simpl.
+      apply subseq_refl.
+  Qed.
+
+  Lemma build_hull_stack_subseq : forall l T',
+    build_hull l [] tt T' ->
+    stack_subseq l T'.
+  Proof.
+    intros l T' Hrun.
+    apply build_hull_unique_run_fun in Hrun.
+    subst T'.
+    apply run_fun_stack_subseq.
+  Qed.
+
+  Lemma point_in_hull_head : forall p a l,
+    rev_ccw_list p (a :: l) ->
+    point_in_hull a (p :: a :: l).
+  Proof.
+    intros p a l Hccw.
+    destruct l as [| b l'].
+    - simpl.
+      unfold colinear, parallel, at_mid, backward_or_perp.
+      unfold dot_prod, cross_prod, build_vec.
+      simpl.
+      split.
+      + lia.
+      + lia.
+    - simpl.
+      left.
+      unfold point_in_triangle.
+      left.
+      destruct Hccw as [Hfor _].
+      apply Forall_ccw_cons_iff in Hfor as [Hab _].
+      repeat split.
+      + apply ccw_cyclicity.
+        exact Hab.
+      + unfold left_equal, cross_prod, build_vec.
+        simpl.
+        lia.
+      + unfold left_equal, cross_prod, build_vec.
+        unfold ccw, left_than in Hab.
+        simpl in *.
+        replace ((point_x p - point_x b) * (point_y a - point_y b) -
+                 (point_x a - point_x b) * (point_y p - point_y b))
+          with ((point_x b - point_x a) * (point_y p - point_y a) -
+                (point_x p - point_x a) * (point_y b - point_y a)) by nia.
+        apply Z.lt_le_incl.
+        exact Hab.
+      + unfold left_equal, cross_prod, build_vec.
+        simpl.
+        lia.
+  Qed.
+
+  Lemma rev_ccw_list_self_max_hull : forall p CH,
+    rev_ccw_list p CH ->
+    is_max_hull' p CH CH.
+  Proof.
+    intros p CH Hccw.
+    induction CH as [| a CH IH].
+    - unfold is_max_hull'.
+      apply Forall_nil.
+    - unfold is_max_hull'.
+      apply Forall_cons.
+      + apply point_in_hull_head.
+        exact Hccw.
+      + destruct CH as [| b CH'].
+        * apply Forall_nil.
+        * apply Forall_impl with
+            (P := fun q : point => point_in_hull q (p :: b :: CH')).
+          -- intros q Hq.
+             eapply point_in_hull_cons.
+             ++ exact Hccw.
+             ++ exact Hq.
+          -- apply IH.
+             destruct Hccw as [_ Htail].
+             exact Htail.
+  Qed.
+
+  Lemma point_in_hull_snoc : forall p q a CH,
+    rev_ccw_list p (CH ++ [a]) ->
+    point_in_hull q (p :: CH) ->
+    point_in_hull q (p :: CH ++ [a]).
+  Proof.
+    intros p q a CH.
+    induction CH as [| b CH IH]; intros Hccw Hinh.
+    - simpl in Hinh.
+      contradiction.
+    - destruct CH as [| c CH'].
+      + simpl in *.
+        destruct Hccw as [Hfor _].
+        apply Forall_ccw_cons_iff in Hfor as [Hba _].
+        destruct Hinh as [Hcol Hmid].
+        left.
+        rewrite point_in_tri_cyclicity.
+        assert (Htri : point_in_triangle q a p b).
+        {
+          eapply point_in_tri_col_mid'.
+          - exact (ccw_cyclicity_2 _ _ _ Hba).
+          - exact Hcol.
+          - exact Hmid.
+        }
+        exact Htri.
+      + change (p :: b :: c :: CH' ++ [a]) with (p :: b :: (c :: CH' ++ [a])).
+        pose proof (point_in_hull_cons_iff q p c b (CH' ++ [a]) Hccw) as [_ Hto].
+        apply Hto.
+        assert (Hsmall_ccw : rev_ccw_list p (b :: c :: CH')).
+        {
+          assert (Hccw' : rev_ccw_list p ((b :: c :: CH') ++ [a] ++ []%list)).
+          {
+            rewrite app_nil_r.
+            exact Hccw.
+          }
+          pose proof (rev_ccw_list_remove_middle p (b :: c :: CH') [a] [] Hccw') as Htmp.
+          rewrite app_nil_r in Htmp.
+          exact Htmp.
+        }
+        pose proof (point_in_hull_cons_iff q p c b CH' Hsmall_ccw) as [Hfrom _].
+        destruct (Hfrom Hinh) as [Hsmall | Htri].
+        * left.
+          destruct Hccw as [_ Htail_ccw].
+          apply (IH Htail_ccw Hsmall).
+        * right.
+          exact Htri.
+  Qed.
+
+  Lemma point_in_hull_last : forall p CH a,
+    rev_ccw_list p (CH ++ [a]) ->
+    point_in_hull a (p :: CH ++ [a]).
+  Proof.
+    intros p CH a Hccw.
+    induction CH as [| b CH IH].
+    - simpl.
+      unfold colinear, parallel, at_mid, backward_or_perp.
+      unfold dot_prod, cross_prod, build_vec.
+      simpl.
+      split; lia.
+    - change (p :: b :: CH ++ [a]) with (p :: b :: (CH ++ [a])).
+      eapply point_in_hull_cons.
+      + exact Hccw.
+      + apply IH.
+        destruct Hccw as [_ Htail_ccw].
+        exact Htail_ccw.
+  Qed.
+
+  Lemma is_max_hull'_snoc : forall p a CH l,
+    rev_ccw_list p (CH ++ [a]) ->
+    is_max_hull' p CH l ->
+    is_max_hull' p (CH ++ [a]) l.
+  Proof.
+    intros p a CH l Hccw Hmax.
+    unfold is_max_hull' in *.
+    eapply Forall_impl.
+    - intros q Hinh.
+      eapply point_in_hull_snoc.
+      + exact Hccw.
+      + exact Hinh.
+    - exact Hmax.
+  Qed.
+
+  Lemma is_max_hull'_snoc_self : forall p a CH l,
+    rev_ccw_list p (CH ++ [a]) ->
+    is_max_hull' p CH l ->
+    is_max_hull' p (CH ++ [a]) (l ++ [a]).
+  Proof.
+    intros p a CH l Hccw Hmax.
+    unfold is_max_hull' in *.
+    rewrite Forall_app.
+    split.
+    - apply is_max_hull'_snoc; assumption.
+    - apply Forall_cons.
+      + apply point_in_hull_last.
+        exact Hccw.
+      + apply Forall_nil.
   Qed.
 
   Lemma pop_fun_preserve_rev_consec : forall p T,
@@ -1362,33 +1665,53 @@ Theorem build_hull_hoare_final : forall p l,
   Hoare (fun T0 => T0 = [])
         (build_hull l)
         (fun _ T' =>
-           T' = run_fun l /\
+           stack_subseq l T' /\
            rev_ccw_list p (rev T') /\
            rev_consec_ccw T').
-        (** replace run_fun with previous local props *)
-        (** conjunction + subseq  *)
 Proof.
   intros p l Hsort.
   unfold Hoare.
   intros s1 x s2 Hpre Hrun.
   subst s1.
   destruct x.
-  assert (Heq : s2 = run_fun l).
-  { eapply build_hull_unique_run_fun. exact Hrun. }
-  subst s2.
   split.
-  - reflexivity.
+  - eapply build_hull_stack_subseq.
+    exact Hrun.
   - split.
-    + apply run_fun_rev_ccw. exact Hsort.
-    + apply run_fun_rev_consec.
+    + assert (Heq : s2 = run_fun l).
+      { eapply build_hull_unique_run_fun. exact Hrun. }
+      subst s2.
+      apply run_fun_rev_ccw.
+      exact Hsort.
+    + assert (Heq : s2 = run_fun l).
+      { eapply build_hull_unique_run_fun. exact Hrun. }
+      subst s2.
+      apply run_fun_rev_consec.
 Qed.
 
-(* Theorem build_hull_hoare_final_convex : forall p l,
-  sort p l ->
-  Hoare (fun T0 => T0 = [])
-        (build_hull l)
-        (fun _ T' =>
-           is_convex T' /\
-           is_max_hull T' /\
-           subset_of T' l). *)
+  (*
+  - stack_subseq l T' at theories/Graham_Scan_M.v:568: rev T' appears in the input order. This is an algorithmic provenance/order fact, not a geometric hull property.
+  - rev_ccw_list p (rev T') from theories/Record_Geo_Point.v:1054: the vertices are arranged around the anchor p in the expected angular order.
+  - rev_consec_ccw T' from theories/Record_Geo_Point.v:1106: every consecutive triple makes the correct turn. This is a local convexity condition.
 
+  So together they say roughly:
+
+  - T' is an ordered convex chain/polygonal boundary made from input points.
+
+  What is still missing for “convex hull”:
+
+  - The hull must contain all input points, equivalently every input point lies in or on the polygon determined by the output.
+  - In this development, that missing global property is closer to is_max_hull' at theories/Record_Geo_Point.v:1834.
+
+  Why the current three are not enough:
+
+  - A proper convex subset of the true hull can satisfy all three.
+  - Example: for four input points forming a square, three corner points form an ordered locally convex triangle and are a subsequence of the input, but that triangle is not the
+    convex hull because it does not contain the fourth corner.
+
+  So the clean geometric answer is:
+
+  - rev_ccw_list + rev_consec_ccw: yes, they fit convexity/boundary order.
+  - stack_subseq: useful, but not part of the abstract geometric definition.
+  - All three together: still not enough for “this is the convex hull”.
+  - You need an additional containment/maximality property such as “every point of l lies in point_in_hull _ (p :: rev T')” or the corresponding is_max_hull' statement. *)

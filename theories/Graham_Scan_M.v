@@ -1667,8 +1667,11 @@ Theorem build_hull_hoare_final : forall p l,
         (fun _ T' =>
            stack_subseq l T' /\
            rev_ccw_list p (rev T') /\
-           rev_consec_ccw T').
+           rev_consec_ccw T'
+           (** /\ is_max_hull' (rev T') l *)
+           ).
 Proof.
+  (* FIXME: use `Hoare_conj` instead of `unfold Hoare; split.` *)
   intros p l Hsort.
   unfold Hoare.
   intros s1 x s2 Hpre Hrun.

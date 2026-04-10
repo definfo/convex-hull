@@ -1,43 +1,43 @@
-# C. Convex Hull Extension
+# C. 凸包扩展
 
 | | |
 |---|---|
-| Time limit | 4 seconds |
-| Memory limit | 1024 MB |
+| 时间限制 | 4 秒 |
+| 内存限制 | 1024 MB |
 
-## Problem
+## 题目
 
-Dr. Hugh Klidd is a geometry expert who has recently become preoccupied with convex hulls. Recall that for a set of points in the x-y plane, the convex hull is the smallest convex polygon containing all of those points. (A convex polygon has the property that for any two points on/in the polygon, the line segment connecting those two points lies entirely on/in the polygon.) Dr. Klidd has just computed the convex hull of a set of points, *S*, which he denotes *H(S)*, and is quite pleased with the result:
+Hugh Klidd 博士是一位几何学专家，最近迷上了凸包问题。回忆一下，对于 x-y 平面上的一组点，凸包是包含所有这些点的最小凸多边形。（凸多边形的性质是，对于多边形上或内部的任意两点，连接这两点的线段完全位于多边形上或内部。）Klidd 博士刚刚计算了一组点 S 的凸包，记为 H(S)，并对结果非常满意：
 
-- the convex hull has *n* ≥ 3 vertices
-- each vertex has integer coordinates
-- no three of the convex hull vertices are collinear, i.e., lie on the same line
+- 凸包有 n ≥ 3 个顶点
+- 每个顶点的坐标均为整数
+- 凸包的任意三个顶点不共线
 
-Dr. Klidd is ambitious, though, so he wants this convex hull to grow. Specifically, he is looking for an **extension point**, which is a point *p* = (*x*, *y*) satisfying the following conditions:
+然而，Klidd 博士很有野心，他希望凸包能够扩展。具体来说，他正在寻找一个**扩展点**，即满足以下条件的点 p = (x, y)：
 
-1. *x* and *y* are integers
-2. if *S*′ = *S* ∪ {*p*} (*S* with *p* added), then the convex hull of *S*′, i.e., *H(S*′*)*, has *n* + 1 vertices
-3. no three of these *n* + 1 vertices are collinear
+1. x 和 y 为整数
+2. 若 S' = S ∪ {p}（将 p 加入 S），则 S' 的凸包 H(S') 有 n + 1 个顶点
+3. 这 n + 1 个顶点中没有三个共线
 
-In other words, an extension point increases the number of convex hull vertices by 1, while still keeping all its nice properties. For most convex hulls *H(S)*, Dr. Klidd can usually find at least one extension point, but he would like to know **how many** extension points there are to choose from. He postulates that there is an efficient way to count the number of extension points, but having never taken an algorithms course, he turns to you for help.
+换句话说，扩展点使凸包顶点数增加 1，同时保持其所有优良性质。对于大多数凸包 H(S)，Klidd 博士通常至少能找到一个扩展点，但他想知道**有多少**个扩展点可供选择。他推测存在一种高效的方法来计算扩展点的数量，但由于从未学过算法课程，他向你求助。
 
-![Illustration of an extension point for Sample Input 1](ECNA2023C_1.png)
+![样例输入 1 的扩展点示意图](ECNA2023C_1.png)
 
-## Input
+## 输入
 
-- The first line contains an integer **n** (3 ≤ n ≤ 50), the number of vertices of the convex hull.
-- This is followed by **n** lines, each containing two space-separated integers — the *x* and *y* coordinates of one vertex (−1000 ≤ *x*, *y* ≤ 1000).
-- The *n* points are distinct, no three are collinear, and they are given in **counterclockwise order**.
+- 第一行包含一个整数 **n**（3 ≤ n ≤ 50），表示凸包的顶点数。
+- 接下来 **n** 行，每行包含两个空格分隔的整数 — 一个顶点的 *x* 和 *y* 坐标（−1000 ≤ *x*, *y* ≤ 1000）。
+- 这 *n* 个点互不相同，没有三点共线，且按**逆时针顺序**给出。
 
-## Output
+## 输出
 
-If the number of extension points is infinite, output `infinitely many`. Otherwise, output the number of extension points.
+如果扩展点的数量是无限的，输出 `infinitely many`。否则，输出扩展点的数量。
 
-## Examples
+## 样例
 
-### Example 1
+### 样例 1
 
-**Input:**
+**输入：**
 ```
 5
 0 2
@@ -47,14 +47,14 @@ If the number of extension points is infinite, output `infinitely many`. Otherwi
 2 1
 ```
 
-**Output:**
+**输出：**
 ```
 23
 ```
 
-### Example 2
+### 样例 2
 
-**Input:**
+**输入：**
 ```
 4
 -7 -7
@@ -63,27 +63,30 @@ If the number of extension points is infinite, output `infinitely many`. Otherwi
 -7 7
 ```
 
-**Output:**
+**输出：**
 ```
 infinitely many
 ```
 
-**Explanation:** The convex hull is a square. Any integer point on the outward extension of an edge is an extension point — and there are infinitely many such points along the lines extending each edge outward.
+**解释：** 凸包是一个正方形。沿任一条边向外延伸线上的任意整数点都是扩展点——而每条边的延长线上有无限多个这样的点。
 
-## Note
+## 注释
 
-Dr. Klidd has postulated exactly four things before now, so this is his fifth postulate.
+Klidd 博士之前恰好做过四个推测，所以这是他的第五公设。
 
 
-### AI Explanation
+### AI 解析
 
-Problem summary: Given a convex hull with n vertices (integer coordinates, CCW order), count the number of integer points p such that adding p to the point set produces a convex hull with exactly n + 1 vertices and no three vertices collinear. If the count is infinite, output "infinitely many".
+题目概述：给定一个有 n 个顶点的凸包（整数坐标，逆时针顺序），计算整数点 p 的数量，使得将 p 加入点集后凸包恰好有 n + 1 个顶点且没有三个顶点共线。若数量无限，输出 "infinitely many"。
 
-Key observations:
+关键观察：
 
-1. Where can an extension point go? It must lie strictly outside the current hull but inside the "extended wedge" formed by extending two adjacent edges outward. Specifically, for each edge (vi, vi+1), an extension point that makes vi+1 no longer a hull vertex (replaced by p) must lie in the exterior region delimited by the lines through (vi−1, vi) and (vi+1, vi+2) extended outward — effectively "beveling" a vertex.
+1. 扩展点可以在哪里？它必须严格位于当前凸包外部，但位于由两条相邻边向外延伸所形成的"扩展楔形"内。具体来说，对于每条边 (vi, vi+1)，使得 vi+1 不再是凸包顶点（被 p 替代）的扩展点必须位于由 (vi−1, vi) 和 (vi+1, vi+2) 的延长线向外所围成的区域——实际上是在"倒角"一个顶点。
 
-More precisely: p must lie outside the hull, on the outward side of exactly one edge, and on the inward (or on) side of all other edges. This means p must be in the region outside one specific edge but still "visible" from the hull.
-2. When is the count infinite? When the outward region for some edge extends infinitely — i.e., the two adjacent edge lines are parallel (or the outward wedge is unbounded). This happens when consecutive edges have the same slope direction. Example 2 (a square): each pair of opposite edges is parallel, so extending any edge outward gives an infinite half-strip of integer points.
-3. When finite, count lattice points in the bounded region outside each edge. For n ≤ 50 and coordinates ≤ 1000, each region is small enough to count directly or via Pick's theorem.
-4. Algorithm sketch: For each edge, compute the outward feasible region (intersection of half-planes from other edges + the exterior of this edge). Check if it's bounded. If bounded, count integer points via enumeration or area-based methods. If unbounded for any edge, answer is "infinitely many".
+更精确地说：p 必须位于凸包外部，严格在某一条边的外侧，而在所有其他边的内侧（或边上）。这意味着 p 必须位于某条特定边的外部但仍从凸包"可见"的区域。
+
+2. 何时数量无限？当某条边的外部区域无限延伸——即相邻两条边的延长线平行（或外部楔形无界）。当连续边具有相同的斜率方向时会发生这种情况。样例 2（正方形）：每对对边平行，因此向外延伸任一条边会得到无限的整数点半带。
+
+3. 当有限时，计算每条边外部有界区域中的格点数。对于 n ≤ 50 且坐标 ≤ 1000，每个区域足够小，可以直接枚举或通过 Pick 定理计算。
+
+4. 算法概要：对于每条边，计算外部可行区域（其他边的半平面交 + 该边的外部）。检查是否有界。若有界，通过枚举或基于面积的方法计算整数点数。若任何边的区域无界，答案为 "infinitely many"。

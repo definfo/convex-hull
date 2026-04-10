@@ -1,85 +1,86 @@
-# F. Bear and Bowling 4
+# F. 熊与保龄球 4
 
 | | |
 |---|---|
-| Time limit | 2 seconds |
-| Memory limit | 256 MB |
+| 时间限制 | 2 秒 |
+| 内存限制 | 256 MB |
 
-## Problem
+## 题目
 
-Limak is an old brown bear. He often goes bowling with his friends. Today he feels really good and tries to beat his own record!
+Limak 是一只棕熊。他经常和朋友们去打保龄球。今天他感觉状态很好，想要打破自己的纪录！
 
-For rolling a ball one gets a score — an integer (maybe negative) number of points. Score for the *i*-th roll is multiplied by *i* and scores are summed up. So, for *k* rolls with scores *s*<sub>1</sub>, *s*<sub>2</sub>, ..., *s*<sub>k</sub>, the total score is 1·*s*<sub>1</sub> + 2·*s*<sub>2</sub> + ... + *k*·*s*<sub>k</sub>. The total score is 0 if there were no rolls.
+每次滚球会得到一个分数——一个整数（可能为负）。第 i 次滚球的分数乘以 i，然后所有分数求和。所以，对于 k 次滚球，分数分别为 s₁, s₂, ..., sₖ，总分为 1·s₁ + 2·s₂ + ... + k·sₖ。如果没有滚球，则总分为 0。
 
-Limak made *n* rolls and got score *a*<sub>*i*</sub> for the *i*-th of them. He wants to maximize his total score and he came up with an interesting idea. He can say that some first rolls were only a warm-up, and that he wasn't focused during the last rolls. More formally, he can **cancel any prefix and any suffix** of the sequence *a*<sub>1</sub>, *a*<sub>2</sub>, ..., *a*<sub>*n*</sub>. It is allowed to cancel all rolls, or to cancel none of them.
+Limak 进行了 n 次滚球，第 i 次得到分数 aᵢ。他想要最大化自己的总分，于是想出了一个有趣的主意。他可以说前面几次滚球只是热身，后面几次没有集中注意力。更正式地说，他可以**取消序列 a₁, a₂, ..., aₙ的任意前缀和任意后缀**。可以取消全部滚球，也可以一个都不取消。
 
-The total score is calculated as if there were only non-canceled rolls. So, the first non-canceled roll has score multiplied by 1, the second one has score multiplied by 2, and so on, till the last non-canceled roll.
+总分按仅计算未被取消的滚球来计算。所以，第一个未被取消的滚球分数乘以 1，第二个乘以 2，以此类推，直到最后一个未被取消的滚球。
 
-**What maximum total score can Limak get?**
+**Limak 能获得的最大总分是多少？**
 
-## Input
+## 输入
 
-- The first line contains a single integer **n** (1 ≤ n ≤ 2·10<sup>5</sup>) — the total number of rolls.
-- The second line contains **n** integers *a*<sub>1</sub>, *a*<sub>2</sub>, ..., *a*<sub>*n*</sub> (|*a*<sub>*i*</sub>| ≤ 10<sup>7</sup>) — scores for Limak's rolls.
+- 第一行包含一个整数 **n**（1 ≤ n ≤ 2·10⁵）— 滚球的总次数。
+- 第二行包含 **n** 个整数 a₁, a₂, ..., aₙ（|aᵢ| ≤ 10⁷）— Limak 每次滚球的分数。
 
-## Output
+## 输出
 
-Print the maximum possible total score after cancelling rolls.
+输出取消滚球后可能获得的最大总分。
 
-## Examples
+## 样例
 
-### Example 1
+### 样例 1
 
-**Input:**
+**输入：**
 ```
 6
 5 -1000 1 -3 7 -8
 ```
 
-**Output:**
+**输出：**
 ```
 16
 ```
 
-**Explanation:** Limak should cancel the first two rolls and the last roll. He is left with rolls 1, −3, 7, giving total score 1·1 + 2·(−3) + 3·7 = 1 − 6 + 21 = **16**.
+**解释：** Limak 应取消前两次和最后一次滚球。剩余滚球的分数为 1, −3, 7，总分为 1·1 + 2·(−3) + 3·7 = 1 − 6 + 21 = **16**。
 
-### Example 2
+### 样例 2
 
-**Input:**
+**输入：**
 ```
 5
 1000 1000 1001 1000 1000
 ```
 
-**Output:**
+**输出：**
 ```
 15003
 ```
 
-### Example 3
+### 样例 3
 
-**Input:**
+**输入：**
 ```
 3
 -60 -70 -80
 ```
 
-**Output:**
+**输出：**
 ```
 0
 ```
 
-**Explanation:** All rolls are negative, so cancelling all rolls yields score 0.
+**解释：** 所有滚球分数都为负，因此取消全部滚球得到总分 0。
 
-### AI Explanation
+### AI 解析
 
-Problem summary: Given a sequence of integers, select a contiguous subsequence (i.e., cancel any prefix & suffix) to maximize the weighted sum where the i-th chosen element is multiplied by its position i within the subsequence.
+题目概述：给定一个整数序列，选择一个连续子序列（即取消任意前缀和后缀），使得被选中的第 i 个元素乘以其在子序列中的位置 i，最大化加权总和。
 
-Key observations:
+关键观察：
 
-1. Cancel all is allowed — the answer is at least 0. (Example 3: all negatives → cancel everything.)
-2. This is a DP / convex hull trick problem. Let $dp[i] = max score ending at position i$, with element a[i] as the k-th chosen roll.
+1. 允许取消全部——答案至少为 0。（样例 3：全为负数 → 取消全部。）
 
-The transition can be expressed as: $dp[i] = max over j < i of { dp[j] + (count[j]+1) * a[i] }$
+2. 这是一个 DP / 凸包技巧问题。设 dp[i] = 以位置 i 结尾的最大分数，其中元素 a[i] 作为第 k 个被选中的滚球。
 
-which rearranges into a linear function in a[i], making it solvable with the convex hull trick in O(n log n) — matching the n ≤ 2·105 constraint.
+转移可以表示为：dp[i] = max over j < i { dp[j] + (count[j]+1) * a[i] }
+
+这可以重排为关于 a[i] 的线性函数，因此可以用凸包技巧在 O(n log n) 内求解——符合 n ≤ 2·10⁵ 的约束。

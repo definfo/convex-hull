@@ -35,6 +35,9 @@ Definition point_in_hull_edges (p : point) (CH: list point) :=
   | _ => False
   end.
 
+Definition is_max_hull'_edges (p: point) (CH l: list point) :=
+  Forall (fun q => point_in_hull_edges q (p :: CH)) l.
+
 
 (*** ========== Proof ========== ***)
 
@@ -846,4 +849,46 @@ Proof.
            ++ exact HIn.
         -- exact Hhull.
       * eapply (point_in_hull_edges_aux_from_hull p p0 nil p1 p2 post); eauto.
+Qed.
+
+Lemma rev_consec_ccw_with_anchor : forall p CH,
+  rev_ccw_list p CH ->
+  rev_consec_ccw CH ->
+  rev_consec_ccw (p :: CH).
+Proof.
+  intros p CH Hrev Hcon.
+  destruct CH as [| p1 CH].
+  - simpl.
+    tauto.
+  - destruct CH as [| p2 CH'].
+    + simpl.
+      tauto.
+    + simpl.
+      split.
+      * destruct Hrev as [Hfor _].
+        rewrite Forall_ccw_forall in Hfor.
+        apply Hfor.
+        simpl.
+        tauto.
+      * exact Hcon.
+Qed.
+
+Theorem is_max_hull'_edges_of_max_hull : forall p CH l,
+  sort p CH ->
+  rev_consec_ccw CH ->
+  is_max_hull' p CH l ->
+  is_max_hull'_edges p CH l.
+Proof.
+  intros p CH l Hsort Hcon Hmax.
+  destruct Hsort as [Hleft Hrev].
+  unfold is_max_hull'_edges, is_max_hull' in *.
+  rewrite !Forall_forall in *.
+  intros q HIn.
+  eapply point_in_hull_equiv.
+  - split; [exact Hleft | exact Hrev].
+  - eapply rev_consec_ccw_with_anchor.
+    + exact Hrev.
+    + exact Hcon.
+  - apply Hmax.
+    exact HIn.
 Qed.

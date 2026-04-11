@@ -2,7 +2,7 @@
 Require Import Coq.ZArith.ZArith.
 Require Import Coq.micromega.Psatz.
 Require Import Coq.Lists.List.
-From ConvexHull Require Import Record_Geo_Vec Record_Geo_Point Graham_Scan.
+From ConvexHull Require Import Record_Geo_Vec Record_Geo_Point Graham_Scan Hull_Equiv.
 From SetsClass Require Import SetsClass.
 Require Import MonadLib.Monad.
 From MonadLib.StateRelMonad Require StateRelBasic StateRelMonad StateRelHoare FixpointLib.
@@ -270,6 +270,20 @@ Section Subsequence.
       assumption.
   Qed.
 
+  Lemma subseq_Forall : forall (A : Type) (P : A -> Prop) (l1 l2 : list A),
+    subseq l1 l2 ->
+    Forall P l2 ->
+    Forall P l1.
+  Proof.
+    intros A P l1 l2 Hsub.
+    induction Hsub; intros Hall.
+    - constructor.
+    - inversion Hall; subst.
+      constructor; auto.
+    - inversion Hall; subst.
+      auto.
+  Qed.
+
   Lemma subseq_app_left : forall (A : Type) (l1 l2 : list A),
     subseq l1 (l1 ++ l2).
   Proof.
@@ -323,6 +337,16 @@ Section Subsequence.
   Qed.
 
 End Subsequence.
+
+Lemma leftmost_subseq : forall p l1 l2,
+  subseq l1 l2 ->
+  leftmost p l2 ->
+  leftmost p l1.
+Proof.
+  intros p l1 l2 Hsub Hleft.
+  unfold leftmost in *.
+  eapply subseq_Forall; eauto.
+Qed.
 
 
 Section GrahamScanInvariant.
@@ -566,8 +590,10 @@ Section GrahamScanRefinement.
 
   Definition is_convex_hull (p : point) (base T : list point) : Prop :=
     stack_subseq base T /\
-    is_convex p (rev T) /\
-    is_max_hull' p (rev T) base.
+    rev_ccw_list p (rev T) /\
+    rev_consec_ccw (rev T) /\
+    is_max_hull' p (rev T) base /\
+    is_max_hull'_edges p (rev T) base.
 
   Fixpoint pop_fun (p : point) (T : list point) : list point :=
     match T with
@@ -1300,14 +1326,48 @@ Section GrahamScanRefinement.
     exact Hsort.
   Qed.
 
+  Theorem run_fun_rev_consec : forall p l,
+    sort p l ->
+    rev_consec_ccw (rev (run_fun l)).
+  Proof.
+    intros p l Hsort.
+    rewrite rev_run_fun_graham_scan.
+    apply (sort_gs_consec_ccw p).
+    exact Hsort.
+  Qed.
+
+  Lemma rev_ccw_consec_is_convex : forall p T,
+    rev_ccw_list p T ->
+    rev_consec_ccw T ->
+    is_convex p T.
+  Proof.
+    intros p T.
+    induction T as [| p3 T IH]; intros Hccw Hcon; simpl in *; auto.
+    destruct T as [| p2 T']; simpl in *; auto.
+    destruct T' as [| p1 T'']; simpl in *; auto.
+    destruct Hcon as [Hturn Hcon'].
+    destruct Hccw as [Hfor Hccw'].
+    rewrite Forall_ccw_cons_iff in Hfor.
+    destruct Hfor as [Hedge _].
+    split.
+    - apply ccw_cyclicity_2.
+      exact Hturn.
+    - split.
+      + apply ccw_cyclicity_2.
+        exact Hedge.
+      + apply IH; assumption.
+  Qed.
+
   Theorem run_fun_convex : forall p l,
     sort p l ->
     is_convex p (rev (run_fun l)).
   Proof.
     intros p l Hsort.
-    rewrite rev_run_fun_graham_scan.
-    apply graham_convex_1.
-    exact Hsort.
+    apply (rev_ccw_consec_is_convex p).
+    - apply run_fun_rev_ccw.
+      exact Hsort.
+    - apply (run_fun_rev_consec p).
+      exact Hsort.
   Qed.
 
   Lemma run_fun_hull_properties : forall p l,
@@ -1339,6 +1399,35 @@ Section GrahamScanRefinement.
     unfold stack_subseq.
     rewrite rev_run_fun_graham_scan.
     apply graham_scan_subseq.
+  Qed.
+
+  Theorem run_fun_sort : forall p l,
+    sort p l ->
+    sort p (rev (run_fun l)).
+  Proof.
+    intros p l Hsort.
+    destruct Hsort as [Hleft Hrev].
+    split.
+    - apply leftmost_subseq with (l2 := l).
+      + unfold stack_subseq.
+        apply run_fun_stack_subseq.
+      + exact Hleft.
+    - apply run_fun_rev_ccw.
+      split; assumption.
+  Qed.
+
+  Theorem run_fun_max_hull_edges : forall p l,
+    sort p l ->
+    is_max_hull'_edges p (rev (run_fun l)) l.
+  Proof.
+    intros p l Hsort.
+    apply is_max_hull'_edges_of_max_hull.
+    - apply run_fun_sort.
+      exact Hsort.
+    - apply (run_fun_rev_consec p).
+      exact Hsort.
+    - apply run_fun_max_hull.
+      exact Hsort.
   Qed.
 
   Lemma build_hull_stack_subseq : forall l T',
@@ -1648,6 +1737,36 @@ Proof.
   exact Hsort.
 Qed.
 
+Lemma build_hull_hoare_max_edges : forall p l,
+  sort p l ->
+  Hoare (fun T0 => T0 = [])
+        (build_hull l)
+        (fun _ T' => is_max_hull'_edges p (rev T') l).
+Proof.
+  intros p l Hsort s1 x s2 Hpre Hrun.
+  subst s1. destruct x.
+  assert (Heq : s2 = run_fun l).
+  { eapply build_hull_unique_run_fun. exact Hrun. }
+  subst s2.
+  apply run_fun_max_hull_edges.
+  exact Hsort.
+Qed.
+
+Lemma build_hull_hoare_consec : forall p l,
+  sort p l ->
+  Hoare (fun T0 => T0 = [])
+        (build_hull l)
+        (fun _ T' => rev_consec_ccw (rev T')).
+Proof.
+  intros p l Hsort s1 x s2 Hpre Hrun.
+  subst s1. destruct x.
+  assert (Heq : s2 = run_fun l).
+  { eapply build_hull_unique_run_fun. exact Hrun. }
+  subst s2.
+  apply (run_fun_rev_consec p).
+  exact Hsort.
+Qed.
+
 Lemma build_hull_hoare_convex : forall p l,
   sort p l ->
   Hoare (fun T0 => T0 = [])
@@ -1672,12 +1791,56 @@ Proof.
   intros p l Hsort.
   unfold is_convex_hull.
   apply Hoare_conj with (Q1 := fun _ T' => stack_subseq l T')
-                         (Q2 := fun _ T' => is_convex p (rev T') /\ is_max_hull' p (rev T') l).
+                         (Q2 := fun _ T' => rev_ccw_list p (rev T') /\
+                                            rev_consec_ccw (rev T') /\
+                                            is_max_hull' p (rev T') l /\
+                                            is_max_hull'_edges p (rev T') l).
   - apply build_hull_hoare_subseq.
-  - apply Hoare_conj with (Q1 := fun _ T' => is_convex p (rev T'))
-                           (Q2 := fun _ T' => is_max_hull' p (rev T') l).
-    + apply build_hull_hoare_convex.
+  - apply Hoare_conj with (Q1 := fun _ T' => rev_ccw_list p (rev T'))
+                           (Q2 := fun _ T' => rev_consec_ccw (rev T') /\
+                                              is_max_hull' p (rev T') l /\
+                                              is_max_hull'_edges p (rev T') l).
+    + apply build_hull_hoare_ccw.
       exact Hsort.
-    + apply build_hull_hoare_max.
-      exact Hsort.
+    + apply Hoare_conj with (Q1 := fun _ T' => rev_consec_ccw (rev T'))
+                             (Q2 := fun _ T' => is_max_hull' p (rev T') l /\
+                                                is_max_hull'_edges p (rev T') l).
+      * apply (build_hull_hoare_consec p).
+        exact Hsort.
+      * apply Hoare_conj with (Q1 := fun _ T' => is_max_hull' p (rev T') l)
+                               (Q2 := fun _ T' => is_max_hull'_edges p (rev T') l).
+        -- apply build_hull_hoare_max.
+           exact Hsort.
+        -- apply build_hull_hoare_max_edges.
+           exact Hsort.
+Qed.
+
+Lemma is_convex_hull_convex : forall p base T,
+  is_convex_hull p base T ->
+  stack_subseq base T /\
+  is_convex p (rev T) /\
+  is_max_hull' p (rev T) base.
+Proof.
+  intros p base T [Hsub [Hccw [Hcon [Hmax _]]]].
+  repeat split; try assumption.
+  eapply rev_ccw_consec_is_convex; eauto.
+Qed.
+
+Theorem build_hull_hoare_final_convex : forall p l,
+  sort p l ->
+  Hoare (fun T0 => T0 = [])
+        (build_hull l)
+        (fun _ T' => stack_subseq l T' /\
+                      is_convex p (rev T') /\
+                      is_max_hull' p (rev T') l).
+Proof.
+  intros p l Hsort.
+  eapply Hoare_conseq_post.
+  2: {
+    apply build_hull_hoare_final.
+    exact Hsort.
+  }
+  intros x T' Hhull.
+  apply is_convex_hull_convex.
+  exact Hhull.
 Qed.

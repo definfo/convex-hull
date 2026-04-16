@@ -8,6 +8,8 @@ typedef struct {
     i64 y;
 } Point;
 
+/*@ Extern Coq (Point : *) */
+
 static Point g_pivot;
 
 int cmp_xy(const void *a, const void *b) {

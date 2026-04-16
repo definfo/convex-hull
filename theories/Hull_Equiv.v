@@ -35,8 +35,8 @@ Definition point_in_hull_edges (p : point) (CH: list point) :=
   | _ => False
   end.
 
-Definition is_max_hull'_edges (p: point) (CH l: list point) :=
-  Forall (fun q => point_in_hull_edges q (p :: CH)) l.
+Definition is_max_hull'_edges (CH l: list point) :=
+  Forall (fun q => point_in_hull_edges q CH) l.
 
 
 (*** ========== Proof ========== ***)
@@ -877,7 +877,7 @@ Theorem is_max_hull'_edges_of_max_hull : forall p CH l,
   sort p CH ->
   rev_consec_ccw CH ->
   is_max_hull' p CH l ->
-  is_max_hull'_edges p CH l.
+  is_max_hull'_edges (p :: CH) l.
 Proof.
   intros p CH l Hsort Hcon Hmax.
   destruct Hsort as [Hleft Hrev].

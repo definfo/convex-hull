@@ -76,8 +76,8 @@ Section GrahamScanRel.
     step_point p.
 
   (** init with one point -> iter *)
-  Definition build_hull_init (_ : list point) : program (list point) unit :=
-    skip.
+  Definition build_hull_init (p : point) (_ : list point) : program (list point) unit :=
+    update' (fun _ => [p]).
 
   (** Assume that l is sorted *)
   Definition build_hull_next (l : list point) : program (list point) unit :=
@@ -87,10 +87,24 @@ Section GrahamScanRel.
     T <- get' id ;;
     update' (fun _ => rev T).
 
-  Definition build_hull (l : list point) : program (list point) unit :=
-    build_hull_init l ;;
+  Definition normalize_stack_fun (T : list point) : list point :=
+    match rev T with
+    | [] => []
+    | p :: T' => p :: rev T'
+    end.
+
+  Definition normalize_stack : program (list point) unit :=
+    T <- get' id ;;
+    update' (fun _ => normalize_stack_fun T).
+
+  Definition build_hull_tail (l : list point) : program (list point) unit :=
     build_hull_next l ;;
     reverse_stack.
+
+  Definition build_hull (p : point) (l : list point) : program (list point) unit :=
+    build_hull_init p l ;;
+    build_hull_next l ;;
+    normalize_stack.
 
 End GrahamScanRel.
 
@@ -155,28 +169,20 @@ Section GrahamScanExecution.
     apply prog_list_iter_step_point_exec_steps.
   Qed.
 
-  Lemma build_hull_exec_steps :
+  Lemma build_hull_tail_exec_steps :
     forall l T',
-      build_hull l [] tt T' <->
+      build_hull_tail l [] tt T' <->
       exists Tmid,
         exec_steps (rev l) [] Tmid /\
         T' = rev Tmid.
   Proof.
     intros l T'.
-    unfold build_hull, build_hull_init.
+    unfold build_hull_tail.
     split.
     - intros H.
       unfold bind, StateRelMonad.bind in H.
       simpl in H.
-      destruct H as [u [T1 [Hinit Hrest]]].
-      destruct u.
-      unfold ret, StateRelMonad.ret in Hinit.
-      simpl in Hinit.
-      destruct Hinit as [_ HT1].
-      subst T1.
-      unfold bind, StateRelMonad.bind in Hrest.
-      simpl in Hrest.
-      destruct Hrest as [u [Tmid [Hnext Hrev]]].
+      destruct H as [u [Tmid [Hnext Hrev]]].
       destruct u.
       exists Tmid.
       split.
@@ -198,18 +204,77 @@ Section GrahamScanExecution.
     - intros [Tmid [Hexec ->]].
       unfold bind, StateRelMonad.bind.
       simpl.
-      exists tt, [].
+      exists tt, Tmid.
       split.
-      + unfold ret, StateRelMonad.ret.
+      + apply (build_hull_next_exec_steps l [] Tmid).
+        exact Hexec.
+      + unfold reverse_stack, bind, StateRelMonad.bind.
         simpl.
-        split; reflexivity.
+        exists Tmid, Tmid.
+        split.
+        * unfold get', get.
+          simpl.
+          split; reflexivity.
+        * unfold update', update.
+          simpl.
+          sets_unfold.
+          reflexivity.
+  Qed.
+
+  Lemma build_hull_exec_steps :
+    forall p l T',
+      build_hull p l [] tt T' <->
+      exists Tmid,
+        exec_steps (rev l) [p] Tmid /\
+        T' = normalize_stack_fun Tmid.
+  Proof.
+    intros p l T'.
+    unfold build_hull.
+    split.
+    - intros H.
+      unfold bind, StateRelMonad.bind in H.
+      simpl in H.
+      destruct H as [u [T1 [Hinit Hrest]]].
+      destruct u.
+      unfold build_hull_init, update', update in Hinit.
+      simpl in Hinit.
+      inversion Hinit; subst T1; clear Hinit.
+      unfold bind, StateRelMonad.bind in Hrest.
+      simpl in Hrest.
+      destruct Hrest as [u [Tmid [Hnext Hrev]]].
+      destruct u.
+      exists Tmid.
+      split.
+      + apply (build_hull_next_exec_steps l [p] Tmid).
+        exact Hnext.
+      + unfold normalize_stack in Hrev.
+        unfold bind, StateRelMonad.bind in Hrev.
+        simpl in Hrev.
+        destruct Hrev as [T0 [s1 [Hget Hupd]]].
+        unfold get', get in Hget.
+        simpl in Hget.
+        destruct Hget as [HeqT0 Heqs1].
+        subst T0 s1.
+        unfold update', update in Hupd.
+        simpl in Hupd.
+        sets_unfold in Hupd.
+        subst T'.
+        reflexivity.
+    - intros [Tmid [Hexec ->]].
+      unfold bind, StateRelMonad.bind.
+      simpl.
+      exists tt, [p].
+      split.
+      + unfold build_hull_init, update', update.
+        simpl.
+        reflexivity.
       + unfold bind, StateRelMonad.bind.
         simpl.
         exists tt, Tmid.
         split.
-        * apply (build_hull_next_exec_steps l [] Tmid).
+        * apply (build_hull_next_exec_steps l [p] Tmid).
           exact Hexec.
-        * unfold reverse_stack, bind, StateRelMonad.bind.
+        * unfold normalize_stack, bind, StateRelMonad.bind.
           simpl.
           exists Tmid, Tmid.
           split.
@@ -559,12 +624,12 @@ Section GrahamScanInvariant.
       discriminate.
   Qed.
 
-  Lemma build_hull_subset : forall l T',
-    build_hull l [] tt T' ->
+  Lemma build_hull_tail_subset : forall l T',
+    build_hull_tail l [] tt T' ->
     stack_subset l T'.
   Proof.
     intros l T' Hrun.
-    apply build_hull_exec_steps in Hrun.
+    apply build_hull_tail_exec_steps in Hrun.
     destruct Hrun as [Tmid [Hexec ->]].
     assert (Hbase : stack_subset [] []).
     {
@@ -588,12 +653,14 @@ Section GrahamScanRefinement.
   Definition stack_subseq (base : list point) (T : list point) : Prop :=
     subseq (rev T) base.
 
-  Definition is_convex_hull (p : point) (base T : list point) : Prop :=
-    stack_subseq base T /\
-    rev_ccw_list p (rev T) /\
-    rev_consec_ccw (rev T) /\
-    is_max_hull' p (rev T) base /\
-    is_max_hull'_edges p (rev T) base.
+  Definition rev_ccw_convex (T : list point) : Prop :=
+    forall l1 q l2 r l3 s l4,
+      T = l1 ++ q :: l2 ++ r :: l3 ++ s :: l4 ->
+      ccw s r q.
+
+  Definition is_convex_hull (base T : list point) : Prop :=
+    rev_ccw_convex T /\
+    is_max_hull'_edges T base.
 
   Fixpoint pop_fun (p : point) (T : list point) : list point :=
     match T with
@@ -618,8 +685,11 @@ Section GrahamScanRefinement.
     | p :: l' => run_tail (step_fun p T) l'
     end.
 
-  Definition run_fun (l : list point) : list point :=
+  Definition run_fun_tail (l : list point) : list point :=
     rev (run_tail [] (rev l)).
+
+  Definition run_fun (p : point) (l : list point) : list point :=
+    normalize_stack_fun (run_tail [p] (rev l)).
 
   Lemma step_fun_eq_graham_scan_inc : forall p T,
     step_fun p T = graham_scan_inc p T.
@@ -658,20 +728,20 @@ Section GrahamScanRefinement.
       reflexivity.
   Qed.
 
-  Lemma run_fun_graham_scan : forall l,
-    run_fun l = rev (graham_scan l).
+  Lemma run_fun_tail_graham_scan : forall l,
+    run_fun_tail l = rev (graham_scan l).
   Proof.
     intros l.
-    unfold run_fun.
+    unfold run_fun_tail.
     rewrite run_tail_rev_graham_scan.
     reflexivity.
   Qed.
 
-  Lemma rev_run_fun_graham_scan : forall l,
-    rev (run_fun l) = graham_scan l.
+  Lemma rev_run_fun_tail_graham_scan : forall l,
+    rev (run_fun_tail l) = graham_scan l.
   Proof.
     intros l.
-    rewrite run_fun_graham_scan.
+    rewrite run_fun_tail_graham_scan.
     rewrite rev_involutive.
     reflexivity.
   Qed.
@@ -794,16 +864,16 @@ Section GrahamScanRefinement.
       + apply IH.
   Qed.
 
-  Lemma build_hull_spec : forall l,
-    build_hull l  [] tt (run_fun l).
+  Lemma build_hull_tail_spec : forall l,
+    build_hull_tail l [] tt (run_fun_tail l).
   Proof.
     intros l.
-    apply build_hull_exec_steps.
+    apply build_hull_tail_exec_steps.
     exists (run_tail [] (rev l)).
     split.
     - apply (proj1 (prog_list_iter_step_point_exec_steps (rev l) [] (run_tail [] (rev l)))).
       apply prog_list_iter_spec.
-    - unfold run_fun.
+    - unfold run_fun_tail.
       reflexivity.
   Qed.
 
@@ -977,24 +1047,24 @@ Section GrahamScanRefinement.
       exact IH.
   Qed.
 
-  Lemma build_hull_unique_run_fun : forall l T',
-    build_hull l [] tt T' ->
-    T' = run_fun l.
+  Lemma build_hull_tail_unique_run_fun : forall l T',
+    build_hull_tail l [] tt T' ->
+    T' = run_fun_tail l.
   Proof.
     intros l T' Hrun.
-    apply build_hull_exec_steps in Hrun.
+    apply build_hull_tail_exec_steps in Hrun.
     destruct Hrun as [Tmid [Hexec ->]].
     apply exec_steps_unique_run_tail in Hexec.
-    unfold run_fun.
+    unfold run_fun_tail.
     now rewrite Hexec.
   Qed.
 
-  Lemma run_fun_subset : forall l,
-    stack_subset l (run_fun l).
+  Lemma run_fun_tail_subset : forall l,
+    stack_subset l (run_fun_tail l).
   Proof.
     intros l.
-    apply build_hull_subset.
-    apply build_hull_spec.
+    apply build_hull_tail_subset.
+    apply build_hull_tail_spec.
   Qed.
 
   Lemma step_fun_succ_stack : forall a T,
@@ -1316,22 +1386,22 @@ Section GrahamScanRefinement.
         exact IH.
   Qed.
 
-  Theorem run_fun_rev_ccw : forall p l,
+  Theorem run_fun_tail_rev_ccw : forall p l,
     sort p l ->
-    rev_ccw_list p (rev (run_fun l)).
+    rev_ccw_list p (rev (run_fun_tail l)).
   Proof.
     intros p l Hsort.
-    rewrite rev_run_fun_graham_scan.
+    rewrite rev_run_fun_tail_graham_scan.
     apply sort_gs_ccw_list.
     exact Hsort.
   Qed.
 
-  Theorem run_fun_rev_consec : forall p l,
+  Theorem run_fun_tail_rev_consec : forall p l,
     sort p l ->
-    rev_consec_ccw (rev (run_fun l)).
+    rev_consec_ccw (rev (run_fun_tail l)).
   Proof.
     intros p l Hsort.
-    rewrite rev_run_fun_graham_scan.
+    rewrite rev_run_fun_tail_graham_scan.
     apply (sort_gs_consec_ccw p).
     exact Hsort.
   Qed.
@@ -1358,115 +1428,384 @@ Section GrahamScanRefinement.
       + apply IH; assumption.
   Qed.
 
-  Theorem run_fun_convex : forall p l,
+  Lemma rev_ccw_list_ccw_list_rev : forall p T,
+    rev_ccw_list p T ->
+    ccw_list p (rev T).
+  Proof.
+    intros p T.
+    induction T using rev_ind; intros Hrev.
+    - simpl.
+      tauto.
+    - rewrite rev_ccw_list_app_iff in Hrev.
+      destruct Hrev as [Hrev [_ Hbetween]].
+      rewrite rev_app_distr.
+      simpl.
+      split.
+      + rewrite Forall_ccw_forall.
+        intros q HIn.
+        apply ccw_cyclicity.
+        apply Hbetween.
+        * apply in_rev.
+          exact HIn.
+        * simpl.
+          tauto.
+      + apply IHT.
+        exact Hrev.
+  Qed.
+
+  Lemma rev_consec_ccw_consec_ccw_rev : forall T,
+    rev_consec_ccw T ->
+    consec_ccw (rev T).
+  Proof.
+    induction T using rev_ind; intros Hrev.
+    - simpl.
+      tauto.
+    - rewrite rev_consec_ccw_snoc_iff in Hrev.
+      destruct Hrev as [Hrev Hlast].
+      replace (rev (T ++ [x])) with (x :: rev T).
+      2: {
+        rewrite rev_app_distr.
+        simpl.
+        reflexivity.
+      }
+      rewrite consec_ccw_cons_iff.
+      split.
+      + apply IHT.
+        exact Hrev.
+      + intros b c l0 Heq.
+        apply Hlast with (l0 := rev l0).
+        apply (f_equal (@rev point)) in Heq.
+        rewrite rev_involutive in Heq.
+        simpl in Heq.
+        rewrite <- app_assoc in Heq.
+        exact Heq.
+  Qed.
+
+  Lemma ccw_list_forall2_inv : forall p l,
+    ccw_list p l ->
+    forall l1 q l2 r l3,
+      l = l1 ++ q :: l2 ++ r :: l3 ->
+      ccw p q r.
+  Proof.
+    intros p l Hccw.
+    induction l as [| a l IH]; intros l1 q l2 r l3 Heq.
+    - destruct l1; discriminate Heq.
+    - simpl in Hccw.
+      destruct Hccw as [Hfor Hccw].
+      destruct l1 as [| x l1].
+      + simpl in Heq.
+        injection Heq as <- Heq.
+        rewrite Forall_ccw_forall in Hfor.
+        apply Hfor.
+        rewrite Heq.
+        apply in_or_app.
+        right.
+        simpl.
+        tauto.
+      + simpl in Heq.
+        injection Heq as <- Heq.
+        eapply IH.
+        * exact Hccw.
+        * exact Heq.
+  Qed.
+
+  Lemma ccw_convex_forall3_inv : forall l,
+    ccw_convex l ->
+    forall l1 q l2 r l3 s l4,
+      l = l1 ++ q :: l2 ++ r :: l3 ++ s :: l4 ->
+      ccw q r s.
+  Proof.
+    intros l Hconv.
+    induction l as [| a l IH]; intros l1 q l2 r l3 s l4 Heq.
+    - destruct l1; discriminate Heq.
+    - simpl in Hconv.
+      destruct Hconv as [Hccw Hconv].
+      destruct l1 as [| x l1].
+      + simpl in Heq.
+        injection Heq as <- Heq.
+        eapply ccw_list_forall2_inv.
+        * exact Hccw.
+        * exact Heq.
+      + simpl in Heq.
+        injection Heq as <- Heq.
+        eapply IH.
+        * exact Hconv.
+        * exact Heq.
+  Qed.
+
+  Lemma rev_ccw_consec_rev_ccw_convex : forall p T,
+    rev_ccw_list p T ->
+    rev_consec_ccw T ->
+    rev_ccw_convex (p :: T).
+  Proof.
+    intros p T Hrev Hcon.
+    unfold rev_ccw_convex.
+    assert (Hccw_rev : ccw_list p (rev T)).
+    { apply rev_ccw_list_ccw_list_rev. exact Hrev. }
+    assert (Hcon_rev : consec_ccw (rev T)).
+    { apply rev_consec_ccw_consec_ccw_rev. exact Hcon. }
+    assert (Hconv_rev : ccw_convex (p :: rev T)).
+    { apply (ccw_convex_spec_simple p (rev T)).
+      - exact Hccw_rev.
+      - exact Hcon_rev. }
+    assert (Hconv_rot : ccw_convex (rev (p :: T))).
+    { simpl.
+      apply ccw_convex_rotate1.
+      exact Hconv_rev. }
+    intros l1 q l2 r l3 s l4 Heq.
+    eapply (ccw_convex_forall3_inv (rev (p :: T)) Hconv_rot
+              (rev l4) s (rev l3) r (rev l2) q (rev l1)).
+    rewrite Heq.
+    replace (rev l4 ++ s :: rev l3 ++ r :: rev l2 ++ q :: rev l1)
+      with (rev (l1 ++ q :: l2 ++ r :: l3 ++ s :: l4)).
+    - reflexivity.
+    - change (l1 ++ q :: l2 ++ r :: l3 ++ s :: l4)
+        with (l1 ++ [q] ++ l2 ++ [r] ++ l3 ++ [s] ++ l4).
+      repeat rewrite rev_app_distr.
+      simpl.
+      repeat rewrite <- app_assoc.
+      reflexivity.
+  Qed.
+
+  Theorem run_fun_tail_convex : forall p l,
     sort p l ->
-    is_convex p (rev (run_fun l)).
+    is_convex p (rev (run_fun_tail l)).
   Proof.
     intros p l Hsort.
     apply (rev_ccw_consec_is_convex p).
-    - apply run_fun_rev_ccw.
+    - apply run_fun_tail_rev_ccw.
       exact Hsort.
-    - apply (run_fun_rev_consec p).
+    - apply (run_fun_tail_rev_consec p).
       exact Hsort.
   Qed.
 
-  Lemma run_fun_hull_properties : forall p l,
+  Lemma run_fun_tail_hull_properties : forall p l,
     sort p l ->
-    build_hull l [] tt (run_fun l) /\
-    rev_ccw_list p (rev (run_fun l)).
+    build_hull_tail l [] tt (run_fun_tail l) /\
+    rev_ccw_list p (rev (run_fun_tail l)).
   Proof.
     intros p l Hsort.
     split.
-    - apply build_hull_spec.
-    - apply run_fun_rev_ccw.
+    - apply build_hull_tail_spec.
+    - apply run_fun_tail_rev_ccw.
       exact Hsort.
   Qed.
 
-  Theorem run_fun_max_hull : forall p l,
+  Theorem run_fun_tail_max_hull : forall p l,
     sort p l ->
-    is_max_hull' p (rev (run_fun l)) l.
+    is_max_hull' p (rev (run_fun_tail l)) l.
   Proof.
     intros p l Hsort.
-    rewrite rev_run_fun_graham_scan.
+    rewrite rev_run_fun_tail_graham_scan.
     apply graham_convex_2.
     exact Hsort.
   Qed.
 
-  Lemma run_fun_stack_subseq : forall l,
-    stack_subseq l (run_fun l).
+  Lemma run_fun_tail_stack_subseq : forall l,
+    stack_subseq l (run_fun_tail l).
   Proof.
     intros l.
     unfold stack_subseq.
-    rewrite rev_run_fun_graham_scan.
+    rewrite rev_run_fun_tail_graham_scan.
     apply graham_scan_subseq.
   Qed.
 
-  Theorem run_fun_sort : forall p l,
+  Theorem run_fun_tail_sort : forall p l,
     sort p l ->
-    sort p (rev (run_fun l)).
+    sort p (rev (run_fun_tail l)).
   Proof.
     intros p l Hsort.
     destruct Hsort as [Hleft Hrev].
     split.
     - apply leftmost_subseq with (l2 := l).
       + unfold stack_subseq.
-        apply run_fun_stack_subseq.
+        apply run_fun_tail_stack_subseq.
       + exact Hleft.
-    - apply run_fun_rev_ccw.
+    - apply run_fun_tail_rev_ccw.
       split; assumption.
   Qed.
 
-  Theorem run_fun_max_hull_edges : forall p l,
+  Theorem run_fun_tail_max_hull_edges : forall p l,
     sort p l ->
-    is_max_hull'_edges p (rev (run_fun l)) l.
+    is_max_hull'_edges (p :: rev (run_fun_tail l)) l.
   Proof.
     intros p l Hsort.
     apply is_max_hull'_edges_of_max_hull.
-    - apply run_fun_sort.
+    - apply run_fun_tail_sort.
       exact Hsort.
-    - apply (run_fun_rev_consec p).
+    - apply (run_fun_tail_rev_consec p).
       exact Hsort.
-    - apply run_fun_max_hull.
+    - apply run_fun_tail_max_hull.
       exact Hsort.
   Qed.
 
-  Lemma build_hull_stack_subseq : forall l T',
-    build_hull l [] tt T' ->
+  Lemma build_hull_tail_stack_subseq : forall l T',
+    build_hull_tail l [] tt T' ->
     stack_subseq l T'.
   Proof.
     intros l T' Hrun.
-    apply build_hull_unique_run_fun in Hrun.
+    apply build_hull_tail_unique_run_fun in Hrun.
     subst T'.
-    apply run_fun_stack_subseq.
+    apply run_fun_tail_stack_subseq.
   Qed.
 
-  Theorem build_hull_assert_hull_max : forall p l,
+  Theorem build_hull_tail_assert_hull_max : forall p l,
     sort p l ->
     exists T',
-      build_hull l [] tt T' /\
+      build_hull_tail l [] tt T' /\
       rev_ccw_list p (rev T') /\
       is_max_hull' p (rev T') l.
   Proof.
     intros p l Hsort.
-    destruct (run_fun_hull_properties p l Hsort) as [Hbuild Hccw].
-    exists (run_fun l).
+    destruct (run_fun_tail_hull_properties p l Hsort) as [Hbuild Hccw].
+    exists (run_fun_tail l).
     repeat split; try exact Hbuild; try exact Hccw.
-    apply run_fun_max_hull.
+    apply run_fun_tail_max_hull.
     exact Hsort.
   Qed.
 
-  Theorem build_hull_assert_hull : forall p l,
+  Theorem build_hull_tail_assert_hull : forall p l,
     sort p l ->
     exists T',
-      build_hull l [] tt T' /\
+      build_hull_tail l [] tt T' /\
       rev_ccw_list p (rev T').
   Proof.
     intros p l Hsort.
-    destruct (run_fun_hull_properties p l Hsort) as [Hbuild Hccw].
-    exists (run_fun l).
+    destruct (run_fun_tail_hull_properties p l Hsort) as [Hbuild Hccw].
+    exists (run_fun_tail l).
     split.
     - exact Hbuild.
     - exact Hccw.
+  Qed.
+
+  Lemma pop_fun_anchor : forall p a T,
+    rev_ccw_list p (a :: T) ->
+    pop_fun a (T ++ [p]) = pop_fun a T ++ [p].
+  Proof.
+    intros p a T Hccw.
+    induction T as [| t T IH].
+    - simpl.
+      reflexivity.
+    - destruct T as [| s T'].
+      + simpl in *.
+        destruct Hccw as [Hfor _].
+        apply Forall_ccw_cons_iff in Hfor as [Hat _].
+        destruct (ccw_dec p t a) as [Hpta | Hnpta].
+        * reflexivity.
+        * exfalso.
+          apply Hnpta.
+          apply ccw_cyclicity.
+          exact Hat.
+      + simpl in *.
+        destruct (ccw_dec s t a) as [Hsta | Hnsta].
+        * reflexivity.
+        * rewrite IH.
+          2: {
+            destruct Hccw as [Hfor Htail].
+            apply Forall_ccw_cons_iff in Hfor as [_ Has].
+            destruct Htail as [_ Htail'].
+            split; assumption.
+          }
+          reflexivity.
+  Qed.
+
+  Lemma step_fun_anchor : forall p a T,
+    rev_ccw_list p (a :: T) ->
+    step_fun a (T ++ [p]) = step_fun a T ++ [p].
+  Proof.
+    intros p a T Hccw.
+    unfold step_fun.
+    rewrite pop_fun_anchor; auto.
+  Qed.
+
+  Lemma run_tail_with_anchor : forall p l,
+    sort p l ->
+    run_tail [p] (rev l) = run_tail [] (rev l) ++ [p].
+  Proof.
+    intros p l Hsort.
+    induction l as [| a l IH].
+    - simpl.
+      reflexivity.
+    - simpl.
+      rewrite !run_tail_app.
+      rewrite (IH (sort_ind p [a] l Hsort)).
+      simpl.
+      rewrite step_fun_anchor.
+      + reflexivity.
+      + rewrite run_tail_rev_graham_scan.
+        apply sort_gs_ccw_list'.
+        exact Hsort.
+  Qed.
+
+  Lemma normalize_stack_fun_snoc : forall T p,
+    normalize_stack_fun (T ++ [p]) = p :: T.
+  Proof.
+    intros T p.
+    unfold normalize_stack_fun.
+    rewrite rev_app_distr.
+    simpl.
+    rewrite rev_involutive.
+    reflexivity.
+  Qed.
+
+  Lemma run_fun_eq_graham_scan : forall p l,
+    sort p l ->
+    run_fun p l = p :: graham_scan l.
+  Proof.
+    intros p l Hsort.
+    unfold run_fun.
+    rewrite run_tail_with_anchor by exact Hsort.
+    rewrite normalize_stack_fun_snoc.
+    rewrite run_tail_rev_graham_scan.
+    reflexivity.
+  Qed.
+
+  Lemma build_hull_spec : forall p l,
+    build_hull p l [] tt (run_fun p l).
+  Proof.
+    intros p l.
+    apply build_hull_exec_steps.
+    exists (run_tail [p] (rev l)).
+    split.
+    - apply (proj1 (prog_list_iter_step_point_exec_steps (rev l) [p] (run_tail [p] (rev l)))).
+      apply prog_list_iter_spec.
+    - unfold run_fun.
+      reflexivity.
+  Qed.
+
+  Lemma build_hull_unique_run_fun : forall p l T',
+    build_hull p l [] tt T' ->
+    T' = run_fun p l.
+  Proof.
+    intros p l T' Hrun.
+    apply build_hull_exec_steps in Hrun.
+    destruct Hrun as [Tmid [Hexec ->]].
+    apply exec_steps_unique_run_tail in Hexec.
+    unfold run_fun.
+    now rewrite Hexec.
+  Qed.
+
+  Theorem run_fun_convex_hull : forall p l,
+    sort p l ->
+    is_convex_hull l (run_fun p l).
+  Proof.
+    intros p l Hsort.
+    rewrite run_fun_eq_graham_scan by exact Hsort.
+    unfold is_convex_hull.
+    split.
+    - eapply rev_ccw_consec_rev_ccw_convex.
+      + apply sort_gs_ccw_list.
+        exact Hsort.
+      + apply (sort_gs_consec_ccw p).
+        exact Hsort.
+    - eapply is_max_hull'_edges_of_max_hull.
+      + rewrite <- rev_run_fun_tail_graham_scan.
+        apply run_fun_tail_sort.
+        exact Hsort.
+      + apply (sort_gs_consec_ccw p).
+        exact Hsort.
+      + apply graham_convex_2.
+        exact Hsort.
   Qed.
 
 End GrahamScanRefinement.
@@ -1698,149 +2037,101 @@ Section GrahamScanExample.
 End GrahamScanExample.
 
 
-Lemma build_hull_hoare_subseq : forall l,
+Lemma build_hull_tail_hoare_subseq : forall l,
   Hoare (fun T0 => T0 = [])
-        (build_hull l)
+        (build_hull_tail l)
         (fun _ T' => stack_subseq l T').
 Proof.
   intros l s1 x s2 Hpre Hrun.
   subst s1. destruct x.
-  eapply build_hull_stack_subseq. exact Hrun.
+  eapply build_hull_tail_stack_subseq. exact Hrun.
 Qed.
 
-Lemma build_hull_hoare_ccw : forall p l,
+Lemma build_hull_tail_hoare_ccw : forall p l,
   sort p l ->
   Hoare (fun T0 => T0 = [])
-        (build_hull l)
+        (build_hull_tail l)
         (fun _ T' => rev_ccw_list p (rev T')).
 Proof.
   intros p l Hsort s1 x s2 Hpre Hrun.
   subst s1. destruct x.
-  assert (Heq : s2 = run_fun l).
-  { eapply build_hull_unique_run_fun. exact Hrun. }
+  assert (Heq : s2 = run_fun_tail l).
+  { eapply build_hull_tail_unique_run_fun. exact Hrun. }
   subst s2.
-  apply run_fun_rev_ccw. exact Hsort.
+  apply run_fun_tail_rev_ccw. exact Hsort.
 Qed.
 
-Lemma build_hull_hoare_max : forall p l,
+Lemma build_hull_tail_hoare_max : forall p l,
   sort p l ->
   Hoare (fun T0 => T0 = [])
-        (build_hull l)
+        (build_hull_tail l)
         (fun _ T' => is_max_hull' p (rev T') l).
 Proof.
   intros p l Hsort s1 x s2 Hpre Hrun.
   subst s1. destruct x.
-  assert (Heq : s2 = run_fun l).
-  { eapply build_hull_unique_run_fun. exact Hrun. }
+  assert (Heq : s2 = run_fun_tail l).
+  { eapply build_hull_tail_unique_run_fun. exact Hrun. }
   subst s2.
-  apply run_fun_max_hull.
+  apply run_fun_tail_max_hull.
   exact Hsort.
 Qed.
 
-Lemma build_hull_hoare_max_edges : forall p l,
+Lemma build_hull_tail_hoare_max_edges : forall p l,
   sort p l ->
   Hoare (fun T0 => T0 = [])
-        (build_hull l)
-        (fun _ T' => is_max_hull'_edges p (rev T') l).
+        (build_hull_tail l)
+        (fun _ T' => is_max_hull'_edges (p :: rev T') l).
 Proof.
   intros p l Hsort s1 x s2 Hpre Hrun.
   subst s1. destruct x.
-  assert (Heq : s2 = run_fun l).
-  { eapply build_hull_unique_run_fun. exact Hrun. }
+  assert (Heq : s2 = run_fun_tail l).
+  { eapply build_hull_tail_unique_run_fun. exact Hrun. }
   subst s2.
-  apply run_fun_max_hull_edges.
+  apply run_fun_tail_max_hull_edges.
   exact Hsort.
 Qed.
 
-Lemma build_hull_hoare_consec : forall p l,
+Lemma build_hull_tail_hoare_consec : forall p l,
   sort p l ->
   Hoare (fun T0 => T0 = [])
-        (build_hull l)
+        (build_hull_tail l)
         (fun _ T' => rev_consec_ccw (rev T')).
 Proof.
   intros p l Hsort s1 x s2 Hpre Hrun.
   subst s1. destruct x.
-  assert (Heq : s2 = run_fun l).
-  { eapply build_hull_unique_run_fun. exact Hrun. }
+  assert (Heq : s2 = run_fun_tail l).
+  { eapply build_hull_tail_unique_run_fun. exact Hrun. }
   subst s2.
-  apply (run_fun_rev_consec p).
+  apply (run_fun_tail_rev_consec p).
   exact Hsort.
 Qed.
 
-Lemma build_hull_hoare_convex : forall p l,
+Lemma build_hull_tail_hoare_convex : forall p l,
   sort p l ->
   Hoare (fun T0 => T0 = [])
-        (build_hull l)
+        (build_hull_tail l)
         (fun _ T' => is_convex p (rev T')).
 Proof.
   intros p l Hsort s1 x s2 Hpre Hrun.
   subst s1. destruct x.
-  assert (Heq : s2 = run_fun l).
-  { eapply build_hull_unique_run_fun. exact Hrun. }
+  assert (Heq : s2 = run_fun_tail l).
+  { eapply build_hull_tail_unique_run_fun. exact Hrun. }
   subst s2.
-  apply run_fun_convex.
+  apply run_fun_tail_convex.
   exact Hsort.
 Qed.
 
 Theorem build_hull_hoare_final : forall p l,
   sort p l ->
   Hoare (fun T0 => T0 = [])
-        (build_hull l)
-        (fun _ T' => is_convex_hull p l T').
+        (build_hull p l)
+        (fun _ T' => is_convex_hull l T').
 Proof.
-  intros p l Hsort.
-  unfold is_convex_hull.
-  apply Hoare_conj with (Q1 := fun _ T' => stack_subseq l T')
-                         (Q2 := fun _ T' => rev_ccw_list p (rev T') /\
-                                            rev_consec_ccw (rev T') /\
-                                            is_max_hull' p (rev T') l /\
-                                            is_max_hull'_edges p (rev T') l).
-  - apply build_hull_hoare_subseq.
-  - apply Hoare_conj with (Q1 := fun _ T' => rev_ccw_list p (rev T'))
-                           (Q2 := fun _ T' => rev_consec_ccw (rev T') /\
-                                              is_max_hull' p (rev T') l /\
-                                              is_max_hull'_edges p (rev T') l).
-    + apply build_hull_hoare_ccw.
-      exact Hsort.
-    + apply Hoare_conj with (Q1 := fun _ T' => rev_consec_ccw (rev T'))
-                             (Q2 := fun _ T' => is_max_hull' p (rev T') l /\
-                                                is_max_hull'_edges p (rev T') l).
-      * apply (build_hull_hoare_consec p).
-        exact Hsort.
-      * apply Hoare_conj with (Q1 := fun _ T' => is_max_hull' p (rev T') l)
-                               (Q2 := fun _ T' => is_max_hull'_edges p (rev T') l).
-        -- apply build_hull_hoare_max.
-           exact Hsort.
-        -- apply build_hull_hoare_max_edges.
-           exact Hsort.
-Qed.
-
-Lemma is_convex_hull_convex : forall p base T,
-  is_convex_hull p base T ->
-  stack_subseq base T /\
-  is_convex p (rev T) /\
-  is_max_hull' p (rev T) base.
-Proof.
-  intros p base T [Hsub [Hccw [Hcon [Hmax _]]]].
-  repeat split; try assumption.
-  eapply rev_ccw_consec_is_convex; eauto.
-Qed.
-
-Theorem build_hull_hoare_final_convex : forall p l,
-  sort p l ->
-  Hoare (fun T0 => T0 = [])
-        (build_hull l)
-        (fun _ T' => stack_subseq l T' /\
-                      is_convex p (rev T') /\
-                      is_max_hull' p (rev T') l).
-Proof.
-  intros p l Hsort.
-  eapply Hoare_conseq_post.
-  2: {
-    apply build_hull_hoare_final.
-    exact Hsort.
-  }
-  intros x T' Hhull.
-  apply is_convex_hull_convex.
-  exact Hhull.
+  intros p l Hsort s1 x s2 Hpre Hrun.
+  subst s1. destruct x.
+  assert (Heq : s2 = run_fun p l).
+  { eapply build_hull_unique_run_fun. exact Hrun. }
+  subst s2.
+  apply run_fun_convex_hull.
+  exact Hsort.
 Qed.

@@ -2135,3 +2135,7 @@ Proof.
   apply run_fun_convex_hull.
   exact Hsort.
 Qed.
+
+(**
+@MCP @c-algo/uva681 @theories/Graham_Scan_M.v Now that we have proved that Rocq monadic program `build_hull` can produce a convex hull satisfying `is_convex_hull`. In uva681 we have another real-world C program implementing this convex hull algorithm. Note that we assume in Rocq program that input points are already sorted. Please first investigate the workflow for qcp-mcp, and try to split the C program for refinement proof with Rocq side.
+*)

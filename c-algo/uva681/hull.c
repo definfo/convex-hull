@@ -1,18 +1,11 @@
-#include <stdio.h>
+#include "hull.h"
+
+#include <stddef.h>
 #include <stdlib.h>
 
-typedef long long i64;
+static Point g_pivot; // head of sorted points (also leftmost point)
 
-typedef struct {
-    i64 x;
-    i64 y;
-} Point;
-
-/*@ Extern Coq (Point : *) */
-
-static Point g_pivot;
-
-int cmp_xy(const void *a, const void *b) {
+static int cmp_xy(const void *a, const void *b) {
     const Point *pa = (const Point *)a;
     const Point *pb = (const Point *)b;
     if (pa->x < pb->x) return -1;
@@ -36,7 +29,7 @@ i64 dist2(Point a, Point b) {
     return dx * dx + dy * dy;
 }
 
-int cmp_polar(const void *a, const void *b) {
+static int cmp_polar(const void *a, const void *b) {
     const Point *pa = (const Point *)a;
     const Point *pb = (const Point *)b;
     i64 cr = cross(g_pivot, *pa, *pb);
@@ -57,6 +50,7 @@ int cmp_polar(const void *a, const void *b) {
 
 int unique_points(Point *pts, int n) {
     if (n <= 1) return n;
+    // NOTE: this should be replaced by a proved version
     qsort(pts, (size_t)n, sizeof(Point), cmp_xy);
 
     int m = 1;
@@ -94,6 +88,28 @@ void rotate_to_min_yx(Point *pts, int n) {
     free(tmp);
 }
 
+int build_hull_from_sorted_tail(Point pivot, const Point *sorted_tail, int tail_n, Point *hull) {
+    if (tail_n < 0) return 0;
+
+    hull[0] = pivot;
+    int top = 0;
+
+    /*
+     * Rocq-side iterator consumes `rev l`, so we scan tail from end to start.
+     * The pop condition mirrors `cross(...) <= 0`.
+     */
+    for (int i = tail_n - 1; i >= 0; i--) {
+        while (top >= 1 && cross(hull[top - 1], hull[top], sorted_tail[i]) <= 0) {
+            top--;
+        }
+        hull[++top] = sorted_tail[i];
+    }
+
+    int m = top + 1;
+    rotate_to_min_yx(hull, m);
+    return m;
+}
+
 int graham_scan(Point *pts, int n, Point *hull) {
     if (n == 0) return 0;
     if (n == 1) {
@@ -107,76 +123,23 @@ int graham_scan(Point *pts, int n, Point *hull) {
     pts[pivot_idx] = tmp;
     g_pivot = pts[0];
 
-    if (n > 1) {
-        qsort(pts + 1, (size_t)(n - 1), sizeof(Point), cmp_polar);
+    qsort(pts + 1, (size_t)(n - 1), sizeof(Point), cmp_polar);
+
+    /*
+     * Adapter layer:
+     * - UVA preprocessing here gives a forward polar order.
+     * - Rocq refinement function consumes points as `rev l`.
+     * Reverse once here so `build_hull_from_sorted_tail` sees the intended order.
+     */
+    int tail_n = n - 1;
+    Point *rocq_tail = (Point *)malloc((size_t)tail_n * sizeof(Point));
+    if (rocq_tail == NULL) return 0;
+
+    for (int i = 0; i < tail_n; i++) {
+        rocq_tail[i] = pts[n - 1 - i];
     }
 
-    hull[0] = pts[0];
-    hull[1] = pts[1];
-    int top = 1;
-
-    for (int i = 2; i < n; i++) {
-        while (top >= 1 && cross(hull[top - 1], hull[top], pts[i]) <= 0) {
-            top--;
-        }
-        hull[++top] = pts[i];
-    }
-
-    int m = top + 1;
-    rotate_to_min_yx(hull, m);
+    int m = build_hull_from_sorted_tail(pts[0], rocq_tail, tail_n, hull);
+    free(rocq_tail);
     return m;
-}
-
-int main(void) {
-    int t;
-    if (scanf("%d", &t) != 1) return 0;
-
-    printf("%d\n", t);
-
-    for (int tc = 0; tc < t; tc++) {
-        int n;
-        if (scanf("%d", &n) != 1) return 0;
-
-        /* Safe malloc? */
-        Point *pts = (Point *)malloc((size_t)n * sizeof(Point));
-        Point *hull = (Point *)malloc((size_t)n * sizeof(Point));
-        // if (pts == NULL || hull == NULL) {
-        //     free(pts);
-        //     free(hull);
-        //     return 0;
-        // }
-
-        for (int i = 0; i < n; i++) {
-            if (scanf("%lld %lld", &pts[i].x, &pts[i].y) != 2) {
-                free(pts);
-                free(hull);
-                return 0;
-            }
-        }
-
-        int m_in = unique_points(pts, n);
-        int m_hull = graham_scan(pts, m_in, hull);
-
-        int out_n = m_hull + 1;
-        printf("%d\n", out_n);
-        for (int i = 0; i < m_hull; i++) {
-            printf("%lld %lld\n", hull[i].x, hull[i].y);
-        }
-        printf("%lld %lld\n", hull[0].x, hull[0].y);
-
-        if (tc + 1 < t) {
-            int sep;
-            if (scanf("%d", &sep) != 1) {
-                free(pts);
-                free(hull);
-                return 0;
-            }
-            printf("-1\n");
-        }
-
-        free(pts);
-        free(hull);
-    }
-
-    return 0;
 }

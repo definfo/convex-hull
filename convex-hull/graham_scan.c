@@ -356,6 +356,7 @@ static int partition_polar_points(struct Point *pts, int n,
       Zlength(pts_l) == n &&
       points_in_bound(pts_l) &&
       point_in_bound(point_mk(gx, gy)) &&
+      leftmost(point_mk(gx, gy), pts_l) &&
       PointArray::full(pts, n, pts_l)
     Ensure
       pts == pts@pre &&
@@ -368,6 +369,7 @@ static int partition_polar_points(struct Point *pts, int n,
       exists pts_out,
         Zlength(pts_out) == n &&
         points_in_bound(pts_out) &&
+        leftmost(point_mk(gx, gy), pts_out) &&
         point_permutation(pts_l, pts_out) &&
         point_same_outside_range(pts_l, pts_out, low, high) &&
         point_polar_partitioned_at(point_mk(gx, gy), pts_out, low, high, __return) &&
@@ -394,6 +396,8 @@ static int partition_polar_points(struct Point *pts, int n,
         points_in_bound(pts_cur) &&
         point_in_bound(point_mk(gx, gy)) &&
         point_in_bound(point_mk(pivot_x, pivot_y)) &&
+        leftmost(point_mk(gx, gy), pts_l) &&
+        leftmost(point_mk(gx, gy), pts_cur) &&
         point_polar_partition_scan_inv(point_mk(gx, gy), pts_l, pts_cur,
                                    low, high,
                                    point_mk(pivot_x, pivot_y), i, j) &&
@@ -426,11 +430,13 @@ static void quicksort_polar_points(struct Point *pts, int n,
       Zlength(pts_l) == n &&
       points_in_bound(pts_l) &&
       point_in_bound(point_mk(gx, gy)) &&
+      leftmost(point_mk(gx, gy), pts_l) &&
       PointArray::full(pts, n, pts_l)
     Ensure
       exists pts_out,
         Zlength(pts_out) == n &&
         points_in_bound(pts_out) &&
+        leftmost(point_mk(gx, gy), pts_out) &&
         point_permutation(pts_l, pts_out) &&
         point_same_outside_range(pts_l, pts_out, left, right) &&
         point_sorted_range(point_mk(gx, gy), pts_out, left, right) &&
@@ -529,6 +535,7 @@ int graham_scan(struct Point *pts, int n, struct Point *hull)
         points_in_bound(tail_sorted) &&
         point_in_bound(pivot0) &&
         point_leftmost_prefix(pts_l, pivot_idx, n) &&
+        leftmost(pivot0, pts_sorted) &&
         point_permutation(pts_pivot, pts_sorted) &&
         point_sorted_range(point_mk(gx, gy), pts_sorted, 1, n - 1) &&
         point_polar_sorted(pivot0, tail_sorted) &&

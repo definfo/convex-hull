@@ -707,6 +707,21 @@ Proof.
   apply Z2Nat.inj in Heq; lia.
 Qed.
 
+Lemma replace_Znth_twice : forall {A : Type} (l : list A) i (a b : A),
+  0 <= i < Zlength l ->
+  replace_Znth i a (replace_Znth i b l) = replace_Znth i a l.
+Proof.
+  intros A l i a b Hi.
+  unfold replace_Znth.
+  assert (Htwice : forall n l,
+    replace_nth n (replace_nth n l b) a = replace_nth n l a).
+  {
+    induction n as [| n IHn]; intros [| x xs]; simpl; auto.
+    f_equal. apply IHn.
+  }
+  apply Htwice.
+Qed.
+
 Lemma permutation_swap_znth : forall {A : Type} (l : list A) i j (d : A),
   0 <= i < Zlength l ->
   0 <= j < Zlength l ->
@@ -747,6 +762,67 @@ Definition PointSameOutsideRange (l l1 : list Point) (left right : Z) : Prop :=
 Definition point_same_outside_range
     (l l1 : list Point) (left right : Z) : Prop :=
   PointSameOutsideRange l l1 left right.
+
+Lemma point_swap_Znth_left_index : forall l i j,
+  0 <= i < Zlength l ->
+  0 <= j < Zlength l ->
+  Znth i (point_swap l i j) default_point = Znth j l default_point.
+Proof.
+  intros l i j Hi Hj.
+  unfold point_swap.
+  destruct (Z.eq_dec j i) as [-> | Hji].
+  - rewrite Znth_replace_Znth_Same by (rewrite Zlength_replace_Znth; lia).
+    reflexivity.
+  - rewrite Znth_replace_Znth_Diff with (i := j) (j := i)
+      by (try rewrite Zlength_replace_Znth; lia).
+    rewrite Znth_replace_Znth_Same by lia.
+    reflexivity.
+Qed.
+
+Lemma point_swap_Znth_right_index : forall l i j,
+  0 <= i < Zlength l ->
+  0 <= j < Zlength l ->
+  Znth j (point_swap l i j) default_point = Znth i l default_point.
+Proof.
+  intros l i j Hi Hj.
+  unfold point_swap.
+  rewrite Znth_replace_Znth_Same by (rewrite Zlength_replace_Znth; lia).
+  reflexivity.
+Qed.
+
+Lemma point_swap_Znth_other_index : forall l i j k,
+  0 <= i < Zlength l ->
+  0 <= j < Zlength l ->
+  0 <= k < Zlength l ->
+  k <> i ->
+  k <> j ->
+  Znth k (point_swap l i j) default_point = Znth k l default_point.
+Proof.
+  intros l i j k Hi Hj Hk Hki Hkj.
+  unfold point_swap.
+  rewrite Znth_replace_Znth_Diff with (i := j) (j := k)
+    by (try rewrite Zlength_replace_Znth; lia).
+  rewrite Znth_replace_Znth_Diff with (i := i) (j := k)
+    by lia.
+  reflexivity.
+Qed.
+
+Lemma PointSameOutsideRange_point_swap_inside : forall base cur left right i j,
+  PointSameOutsideRange base cur left right ->
+  0 <= i < Zlength cur ->
+  0 <= j < Zlength cur ->
+  left <= i <= right ->
+  left <= j <= right ->
+  PointSameOutsideRange base (point_swap cur i j) left right.
+Proof.
+  intros base cur left right i j Hsame Hi_range Hj_range Hi Hj.
+  destruct Hsame as [Hlen Hsame].
+  split.
+  - unfold point_swap. repeat rewrite Zlength_replace_Znth. exact Hlen.
+  - intros k Hk Hout.
+    rewrite point_swap_Znth_other_index; try lia.
+    apply Hsame; assumption.
+Qed.
 
 Definition PointSortedRange_Point
     (gp : Point) (l : list Point) (left right : Z) : Prop :=
@@ -1361,6 +1437,22 @@ Proof.
   destruct (Z_gt_dec (x a) (x b));
   destruct (Z_lt_dec (y a) (y b));
   destruct (Z_gt_dec (y a) (y b)); lia.
+Qed.
+
+Lemma point_cmp_xy_gt_flip_lt : forall a b,
+  point_cmp_xy a b > 0 ->
+  point_cmp_xy b a < 0.
+Proof.
+  intros a b Hgt.
+  unfold point_cmp_xy in *.
+  destruct (Z_lt_dec (x a) (x b));
+  destruct (Z_gt_dec (x a) (x b));
+  destruct (Z_lt_dec (y a) (y b));
+  destruct (Z_gt_dec (y a) (y b));
+  destruct (Z_lt_dec (x b) (x a));
+  destruct (Z_gt_dec (x b) (x a));
+  destruct (Z_lt_dec (y b) (y a));
+  destruct (Z_gt_dec (y b) (y a)); lia.
 Qed.
 
 Lemma point_eq_by_xy : forall a b,

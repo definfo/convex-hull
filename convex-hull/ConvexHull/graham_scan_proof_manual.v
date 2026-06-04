@@ -678,25 +678,214 @@ Proof.
 Qed.
 
 Lemma proof_of_swap_points_return_wit_1 : swap_points_return_wit_1.
-Proof. Admitted. 
+Proof.
+  unfold swap_points_return_wit_1.
+  intros.
+  entailer!.
+  rewrite (Znth_indep pts_l i_pre __default_Point default_point) by lia.
+  rewrite (Znth_indep pts_l j_pre __default_Point default_point) by lia.
+  unfold point_swap.
+  repeat rewrite Znth_replace_Znth_Same by (rewrite ?Zlength_replace_Znth; lia).
+  repeat rewrite Znth_replace_Znth_Diff by (rewrite ?Zlength_replace_Znth; lia).
+  repeat rewrite replace_Znth_Znth by lia.
+  repeat rewrite replace_Znth_twice by (rewrite ?Zlength_replace_Znth; lia).
+  rewrite (Znth_indep pts_l j_pre __default_Point default_point) by lia.
+  destruct (Znth i_pre pts_l default_point).
+  destruct (Znth j_pre pts_l default_point).
+  simpl.
+  apply derivable1_refl.
+Qed.
 
 Lemma proof_of_partition_polar_points_entail_wit_1 : partition_polar_points_entail_wit_1.
-Proof. Admitted. 
+Proof.
+  unfold partition_polar_points_entail_wit_1.
+  intros.
+  Exists pts_l.
+  entailer!.
+  - unfold point_polar_partition_scan_inv, PointPolarPartitionScanInv.
+    unfold point_permutation, PointPermutation.
+    unfold point_same_outside_range, PointSameOutsideRange.
+    split.
+    + apply Permutation_refl.
+    + split.
+      * split.
+        -- reflexivity.
+        -- intros k Hk _.
+           reflexivity.
+      * split.
+        -- rewrite (Znth_indep pts_l high_pre __default_Point default_point) by lia.
+           destruct (Znth high_pre pts_l default_point); reflexivity.
+        -- split; intros k Hk; lia.
+  - eapply PointCoordsBound_Znth_point_mk; eauto; lia.
+Qed.
 
 Lemma proof_of_partition_polar_points_entail_wit_2_1 : partition_polar_points_entail_wit_2_1.
-Proof. Admitted. 
+Proof.
+  unfold partition_polar_points_entail_wit_2_1.
+  intros.
+  Exists (point_swap pts_cur_2 (i + 1) j).
+  entailer!.
+  - unfold point_polar_partition_scan_inv, PointPolarPartitionScanInv in *.
+    destruct H18 as [Hperm [Hsame [Hpivot [Hle Hgt]]]].
+    split.
+    + eapply Permutation_trans.
+      * exact Hperm.
+      * eapply point_swap_permutation; lia.
+    + split.
+      * eapply PointSameOutsideRange_point_swap_inside; eauto; lia.
+      * split.
+        -- rewrite point_swap_Znth_other_index by lia.
+           exact Hpivot.
+        -- split.
+           ++ intros k Hk.
+              destruct (Z.eq_dec k (i + 1)) as [Hki | Hki].
+              ** subst k.
+                 rewrite point_swap_Znth_left_index by lia.
+                 replace (Znth j pts_cur_2 default_point)
+                   with (point_mk (point_x (Znth j pts_cur_2 __default_Point))
+                                  (point_y (Znth j pts_cur_2 __default_Point))).
+                 2:{
+                   rewrite (Znth_indep pts_cur_2 j __default_Point default_point)
+                     by lia.
+                   destruct (Znth j pts_cur_2 default_point); reflexivity.
+                 }
+                 rewrite <- H3. exact H2.
+              ** rewrite point_swap_Znth_other_index by lia.
+                 apply Hle. lia.
+           ++ intros k Hk.
+              destruct (Z.eq_dec k j) as [Hkj | Hkj].
+              ** subst k.
+                 rewrite point_swap_Znth_right_index by lia.
+                 apply Hgt. lia.
+              ** rewrite point_swap_Znth_other_index by lia.
+                 apply Hgt. lia.
+  - eapply PointCoordsBound_point_swap; eauto; lia.
+  - rewrite (Znth_indep (point_swap pts_cur_2 (i + 1) j)
+              high_pre __default_Point default_point)
+      by (rewrite Zlength_point_swap; lia).
+    rewrite point_swap_Znth_other_index by lia.
+    rewrite <- (Znth_indep pts_cur_2 high_pre __default_Point default_point)
+      by lia.
+    exact H14.
+  - rewrite (Znth_indep (point_swap pts_cur_2 (i + 1) j)
+              high_pre __default_Point default_point)
+      by (rewrite Zlength_point_swap; lia).
+    rewrite point_swap_Znth_other_index by lia.
+    rewrite <- (Znth_indep pts_cur_2 high_pre __default_Point default_point)
+      by lia.
+    exact H13.
+  - rewrite Zlength_point_swap. exact H0.
+Qed. 
 
 Lemma proof_of_partition_polar_points_entail_wit_2_2 : partition_polar_points_entail_wit_2_2.
-Proof. Admitted. 
+Proof.
+  unfold partition_polar_points_entail_wit_2_2.
+  intros.
+  Exists pts_cur_2.
+  entailer!.
+  unfold point_polar_partition_scan_inv, PointPolarPartitionScanInv in *.
+  match goal with
+  | Hscan : PointPermutation _ _ /\ _ |- _ =>
+      destruct Hscan as [Hperm [Hsame [Hpivot [Hle Hgt]]]]
+  end.
+  split; [exact Hperm|].
+  split; [exact Hsame|].
+  split; [exact Hpivot|].
+  split.
+  - intros k Hk.
+    destruct (Z_lt_ge_dec k (i + 1)) as [Hklt | Hkge].
+    + apply Hle. lia.
+    + assert (k = i + 1) by lia.
+      subst k.
+      match goal with
+      | Hij : i + 1 = j |- _ => rewrite Hij
+      end.
+      replace (Znth j pts_cur_2 default_point)
+        with (point_mk (point_x (Znth j pts_cur_2 __default_Point))
+                       (point_y (Znth j pts_cur_2 __default_Point))).
+      2:{
+        rewrite (Znth_indep pts_cur_2 j __default_Point default_point) by lia.
+        destruct (Znth j pts_cur_2 default_point); reflexivity.
+      }
+      match goal with
+      | Hretval : retval = point_cmp_polar _ _ _,
+        Hcmp : retval <= 0 |- _ =>
+          rewrite <- Hretval; exact Hcmp
+      end.
+  - intros k Hk.
+    lia.
+Qed.
 
 Lemma proof_of_partition_polar_points_entail_wit_2_3 : partition_polar_points_entail_wit_2_3.
 Proof. Admitted. 
 
 Lemma proof_of_partition_polar_points_return_wit_1 : partition_polar_points_return_wit_1.
-Proof. Admitted. 
+Proof.
+  unfold partition_polar_points_return_wit_1.
+  intros.
+  Exists (point_swap pts_cur (i + 1) high_pre).
+  entailer!;
+    unfold point_polar_partition_scan_inv, PointPolarPartitionScanInv in *;
+    match goal with
+    | Hscan : PointPermutation _ _ /\ _ |- _ =>
+        destruct Hscan as [Hperm [Hsame [Hpivot [Hle Hgt]]]]
+    end;
+    try (eapply PointSameOutsideRange_point_swap_inside; eauto; lia);
+    try (eapply Permutation_trans; [exact Hperm | eapply point_swap_permutation; lia]);
+    try (eapply PointCoordsBound_point_swap; eauto; lia);
+    try (rewrite Zlength_point_swap; exact H0).
+  unfold point_polar_partitioned_at, PointPolarPartitionedAt.
+  assert (Hj_high : j = high_pre) by lia.
+  subst j.
+  rewrite point_swap_Znth_left_index by lia.
+  rewrite Hpivot.
+  repeat split; try lia.
+  - apply Forall_Znth_intro with (d := default_point).
+    intros k Hk.
+    rewrite Zlength_sublist in Hk by (try rewrite Zlength_point_swap; lia).
+    rewrite Znth_sublist by (try rewrite Zlength_point_swap; lia).
+    rewrite point_swap_Znth_other_index by lia.
+    apply Hle. lia.
+  - apply Forall_Znth_intro with (d := default_point).
+    intros k Hk.
+    rewrite Zlength_sublist in Hk by (try rewrite Zlength_point_swap; lia).
+    rewrite Znth_sublist by (try rewrite Zlength_point_swap; lia).
+    destruct (Z.eq_dec (i + 1 + 1 + k) high_pre) as [Hkh | Hkh].
+    + replace (k + (i + 1 + 1)) with high_pre by lia.
+      rewrite point_swap_Znth_right_index by lia.
+      apply Hgt. lia.
+    + rewrite point_swap_Znth_other_index by lia.
+      apply Hgt. lia.
+Qed. 
 
 Lemma proof_of_partition_polar_points_return_wit_2 : partition_polar_points_return_wit_2.
-Proof. Admitted. 
+Proof.
+  unfold partition_polar_points_return_wit_2.
+  intros.
+  Exists pts_cur.
+  entailer!;
+    unfold point_polar_partition_scan_inv, PointPolarPartitionScanInv in *;
+    match goal with
+    | Hscan : PointPermutation _ _ /\ _ |- _ =>
+        destruct Hscan as [Hperm [Hsame [Hpivot [Hle Hgt]]]]
+    end;
+    try exact Hperm; try exact Hsame.
+  unfold point_polar_partitioned_at, PointPolarPartitionedAt.
+  assert (Hj_high : j = high_pre) by lia.
+  assert (Hpivot_idx : i + 1 = high_pre) by lia.
+  rewrite Hpivot_idx.
+  rewrite Hpivot.
+  repeat split; try lia.
+  - apply Forall_Znth_intro with (d := default_point).
+    intros k Hk.
+    rewrite Zlength_sublist in Hk by lia.
+    rewrite Znth_sublist by lia.
+    apply Hle.
+    lia.
+  - rewrite (@Zsublist_nil Point pts_cur (high_pre + 1) (high_pre + 1))
+      by lia.
+    constructor.
+Qed.
 
 Lemma proof_of_partition_polar_points_partial_solve_wit_5_pure : partition_polar_points_partial_solve_wit_5_pure.
 Proof.

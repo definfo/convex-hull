@@ -1057,6 +1057,299 @@ Fixpoint rev_ccw_list (p: point) (l: list point): Prop :=
   | nil => True
   end.
 
+Definition weak_rev_ccw (p q r: point): Prop :=
+  ccw q p r \/ colinear p q r /\ at_mid r q p.
+
+Lemma ccw_colinear_between_impossible : forall p q r s,
+  colinear p q r ->
+  at_mid r q p ->
+  ccw q p s ->
+  ccw s r q ->
+  False.
+Proof.
+  intros p q r s Hcol Hmid Hqps Hsrq.
+  pose proof ccw_cyclicity _ _ _ Hsrq as Hrqs.
+  pose proof colinear_perm321 _ _ _ Hcol as Hrqp.
+  assert (Hcross : cross_prod (build_vec r s) (build_vec r p) >= 0).
+  {
+    pose proof aux2 (build_vec r q) (build_vec r s) (build_vec r p) as Haux.
+    pose proof left_than_nonzero2 _ _ Hrqs as Hnz_rq.
+    rewrite nonzero_iff in Hnz_rq.
+    assert (parallel (build_vec r p) (build_vec r q)) as Hprq.
+    { apply parallel_sym. exact Hrqp. }
+    unfold ccw, colinear, at_mid, left_than, parallel, backward_or_perp in *.
+    rewrite dot_prod_comm with (v1 := build_vec r p) (v2 := build_vec r q) in Haux.
+    nia.
+  }
+  unfold ccw, colinear, at_mid, left_than, parallel, backward_or_perp,
+         build_vec, cross_prod, dot_prod in *; simpl in *.
+  nia.
+Qed.
+
+Lemma ccw_double_colinear_between_impossible : forall p q r s,
+  colinear p q r ->
+  at_mid r q p ->
+  colinear p q s ->
+  at_mid s q p ->
+  ccw s r q ->
+  False.
+Proof.
+  intros p q r s Hcol Hmid Hcol_s Hmid_s Hsrq.
+  assert (nonzero (build_vec p q)) as Hnz_pq.
+  {
+    unfold ccw in Hsrq.
+    pose proof left_than_nonzero1 _ _ Hsrq as Hnz_sq.
+    apply nonzero_sym in Hnz_sq.
+    pose proof at_mid_nonzero1 _ _ _ Hmid_s Hnz_sq as Hnz_qp.
+    apply nonzero_sym. exact Hnz_qp.
+  }
+  pose proof colinear_4p _ _ _ _ Hcol Hcol_s Hnz_pq as Hqrs.
+  apply colinear_perm231 in Hqrs.
+  unfold colinear, ccw, parallel, left_than, cross_prod, build_vec in *;
+    simpl in *.
+  nia.
+Qed.
+
+Lemma weak_rev_ccw_head_strict : forall p q r s,
+  weak_rev_ccw p q r ->
+  weak_rev_ccw p q s ->
+  ccw s r q ->
+  ccw r q p.
+Proof.
+  intros p q r s Hqr Hqs Hsrq.
+  destruct Hqr as [Hqr | [Hcol Hmid]].
+  - apply ccw_cyclicity_2. exact Hqr.
+  - destruct Hqs as [Hqs | [Hcol_s Hmid_s]].
+    + exact (False_rect _ (ccw_colinear_between_impossible p q r s
+                             Hcol Hmid Hqs Hsrq)).
+    + exact (False_rect _ (ccw_double_colinear_between_impossible p q r s
+                             Hcol Hmid Hcol_s Hmid_s Hsrq)).
+Qed.
+
+Definition Forall_weak_rev_ccw (p q: point) (P: list point): Prop :=
+  Forall (weak_rev_ccw p q) P.
+
+Lemma Forall_weak_rev_ccw_cons_iff:
+  forall p q a l,
+    Forall_weak_rev_ccw p q (a :: l) <->
+    weak_rev_ccw p q a /\ Forall_weak_rev_ccw p q l.
+Proof. intros. apply Forall_cons_iff. Qed.
+
+Lemma Forall_weak_rev_ccw_nil_iff:
+  forall p q,
+    Forall_weak_rev_ccw p q nil <-> True.
+Proof. intros. apply Forall_nil_iff. Qed.
+
+Lemma Forall_weak_rev_ccw_app:
+  forall p q l1 l2,
+    Forall_weak_rev_ccw p q (l1 ++ l2) <->
+    Forall_weak_rev_ccw p q l1 /\ Forall_weak_rev_ccw p q l2.
+Proof. intros. apply Forall_app. Qed.
+
+Lemma Forall_weak_rev_ccw_forall:
+  forall p q l,
+    Forall_weak_rev_ccw p q l <->
+    forall r, In r l -> weak_rev_ccw p q r.
+Proof. intros. apply Forall_forall. Qed.
+
+Lemma Forall_weak_rev_ccw_ind : forall (p q r : point) (P P' : list point),
+  Forall_weak_rev_ccw p q (P ++ r :: P') ->
+  Forall_weak_rev_ccw p q (P ++ P').
+Proof.
+  intros p q ? ? ?.
+  rewrite !Forall_weak_rev_ccw_app.
+  rewrite Forall_weak_rev_ccw_cons_iff.
+  tauto.
+Qed.
+
+Lemma Forall_weak_rev_ccw_ind' : forall (p q : point) (T0 T : list point),
+  Forall_weak_rev_ccw p q (T0 ++ T) -> Forall_weak_rev_ccw p q T.
+Proof.
+  intros p q ? ? .
+  rewrite !Forall_weak_rev_ccw_app.
+  tauto.
+Qed.
+
+Fixpoint weak_rev_ccw_list (p: point) (l: list point): Prop :=
+  match l with
+  | cons q l0 => Forall_weak_rev_ccw p q l0 /\ weak_rev_ccw_list p l0
+  | nil => True
+  end.
+
+Lemma weak_rev_ccw_list_app_iff: forall p l1 l2,
+  weak_rev_ccw_list p (l1 ++ l2) <->
+    weak_rev_ccw_list p l1 /\
+    weak_rev_ccw_list p l2 /\
+    (forall q r, In q l1 -> In r l2 -> weak_rev_ccw p q r).
+Proof.
+  intros.
+  split; induction l1; simpl.
+  + tauto.
+  + intros.
+    specialize (IHl1 ltac:(tauto)).
+    rewrite Forall_weak_rev_ccw_app in H.
+    destruct IHl1 as [? [? ?]], H as [[? ?] ?].
+    repeat split; try tauto.
+    intros.
+    destruct H5; [| apply H2; tauto].
+    subst q.
+    rewrite Forall_weak_rev_ccw_forall in H3.
+    apply H3; tauto.
+  + tauto.
+  + intros [[? ?] [? ?]].
+    assert (forall q r, In q l1 -> In r l2 -> weak_rev_ccw p q r)
+      by (intros; apply H2; tauto).
+    specialize (IHl1 ltac:(tauto)).
+    rewrite Forall_weak_rev_ccw_app.
+    repeat split; try tauto.
+    rewrite Forall_weak_rev_ccw_forall.
+    intros; apply H2; tauto.
+Qed.
+
+Lemma weak_rev_ccw_list_remove_middle: forall p l1 l2 l3,
+  weak_rev_ccw_list p (l1 ++ l2 ++ l3) ->
+  weak_rev_ccw_list p (l1 ++ l3).
+Proof.
+  intros.
+  rewrite weak_rev_ccw_list_app_iff.
+  rewrite !weak_rev_ccw_list_app_iff in H.
+  destruct H as [? [? ?]].
+  destruct H0 as [? [? ?]].
+  split; [| split]; try tauto.
+  intros.
+  apply H1; try tauto.
+  rewrite in_app_iff.
+  tauto.
+Qed.
+
+Definition g_rev_ccw (p q r: point): Prop :=
+  weak_rev_ccw p q r.
+
+Definition Forall_g_rev_ccw (p q: point) (P: list point): Prop :=
+  Forall_weak_rev_ccw p q P.
+
+Definition g_rev_ccw_list (p: point) (l: list point): Prop :=
+  weak_rev_ccw_list p l.
+
+Lemma g_rev_ccw_iff_weak_rev_ccw : forall p q r,
+  g_rev_ccw p q r <-> weak_rev_ccw p q r.
+Proof. intros; reflexivity. Qed.
+
+Lemma g_rev_ccw_iff_g_ccw_rev : forall p q r,
+  g_rev_ccw p q r <-> g_ccw p r q.
+Proof.
+  intros p q r.
+  unfold g_rev_ccw, weak_rev_ccw, g_ccw.
+  split; intros [H | [Hcol Hmid]].
+  - left.
+    apply ccw_cyclicity.
+    exact H.
+  - right.
+    split.
+    + rewrite colinear_comm.
+      exact Hcol.
+    + rewrite at_mid_comm.
+      exact Hmid.
+  - left.
+    apply ccw_cyclicity_2.
+    exact H.
+  - right.
+    split.
+    + rewrite colinear_comm.
+      exact Hcol.
+    + rewrite at_mid_comm.
+      exact Hmid.
+Qed.
+
+Lemma g_rev_ccw_head_strict : forall p q r s,
+  g_rev_ccw p q r ->
+  g_rev_ccw p q s ->
+  ccw s r q ->
+  ccw r q p.
+Proof.
+  unfold g_rev_ccw.
+  apply weak_rev_ccw_head_strict.
+Qed.
+
+Lemma Forall_g_rev_ccw_cons_iff:
+  forall p q a l,
+    Forall_g_rev_ccw p q (a :: l) <->
+    g_rev_ccw p q a /\ Forall_g_rev_ccw p q l.
+Proof.
+  intros.
+  unfold Forall_g_rev_ccw, g_rev_ccw.
+  apply Forall_weak_rev_ccw_cons_iff.
+Qed.
+
+Lemma Forall_g_rev_ccw_nil_iff:
+  forall p q,
+    Forall_g_rev_ccw p q nil <-> True.
+Proof.
+  intros.
+  unfold Forall_g_rev_ccw.
+  apply Forall_weak_rev_ccw_nil_iff.
+Qed.
+
+Lemma Forall_g_rev_ccw_app:
+  forall p q l1 l2,
+    Forall_g_rev_ccw p q (l1 ++ l2) <->
+    Forall_g_rev_ccw p q l1 /\ Forall_g_rev_ccw p q l2.
+Proof.
+  intros.
+  unfold Forall_g_rev_ccw.
+  apply Forall_weak_rev_ccw_app.
+Qed.
+
+Lemma Forall_g_rev_ccw_forall:
+  forall p q l,
+    Forall_g_rev_ccw p q l <->
+    forall r, In r l -> g_rev_ccw p q r.
+Proof.
+  intros.
+  unfold Forall_g_rev_ccw, g_rev_ccw.
+  apply Forall_weak_rev_ccw_forall.
+Qed.
+
+Lemma Forall_g_rev_ccw_ind : forall (p q r : point) (P P' : list point),
+  Forall_g_rev_ccw p q (P ++ r :: P') ->
+  Forall_g_rev_ccw p q (P ++ P').
+Proof.
+  intros p q r P P' H.
+  unfold Forall_g_rev_ccw in *.
+  apply (Forall_weak_rev_ccw_ind p q r P P').
+  exact H.
+Qed.
+
+Lemma Forall_g_rev_ccw_ind' : forall (p q : point) (T0 T : list point),
+  Forall_g_rev_ccw p q (T0 ++ T) -> Forall_g_rev_ccw p q T.
+Proof.
+  intros p q T0 T H.
+  unfold Forall_g_rev_ccw in *.
+  apply (Forall_weak_rev_ccw_ind' p q T0 T).
+  exact H.
+Qed.
+
+Lemma g_rev_ccw_list_app_iff: forall p l1 l2,
+  g_rev_ccw_list p (l1 ++ l2) <->
+    g_rev_ccw_list p l1 /\
+    g_rev_ccw_list p l2 /\
+    (forall q r, In q l1 -> In r l2 -> g_rev_ccw p q r).
+Proof.
+  intros.
+  unfold g_rev_ccw_list, g_rev_ccw.
+  apply weak_rev_ccw_list_app_iff.
+Qed.
+
+Lemma g_rev_ccw_list_remove_middle: forall p l1 l2 l3,
+  g_rev_ccw_list p (l1 ++ l2 ++ l3) ->
+  g_rev_ccw_list p (l1 ++ l3).
+Proof.
+  intros p l1 l2 l3 H.
+  unfold g_rev_ccw_list in *.
+  apply (weak_rev_ccw_list_remove_middle p l1 l2 l3).
+  exact H.
+Qed.
+
 Lemma rev_ccw_list_app_iff: forall p l1 l2,
   rev_ccw_list p (l1 ++ l2) <->
     rev_ccw_list p l1 /\
@@ -1218,11 +1511,11 @@ Qed.
 (* ========================== *)
 
 Definition leftmost (p: point) (P: list point) : Prop :=
-  Forall (fun (q: point) => p.(x) < q.(x) \/ (p.(x) = q.(x) /\ p.(y) < q.(y))) P.
+  Forall (fun (q: point) => p.(x) < q.(x) \/ (p.(x) = q.(x) /\ p.(y) <= q.(y))) P.
 
 (* split the first point p with P *)
 Definition sort (p: point) (P: list point) : Prop :=
-  leftmost p P /\ rev_ccw_list p P.
+  leftmost p P /\ g_rev_ccw_list p P.
 
 (* Gift-wrapping / Jarvis' march *)
 (* 每步查找最外侧点
@@ -1293,13 +1586,29 @@ Proof.
   specialize (IHT0 T). destruct H. apply (IHT0 H0).
 Qed.
 
+Lemma weak_rev_ccw_list_ind' : forall (p : point) (T0 T : list point),
+  weak_rev_ccw_list p (T0 ++ T) -> weak_rev_ccw_list p T.
+Proof.
+  induction T0; intros; try assumption.
+  specialize (IHT0 T). destruct H. apply (IHT0 H0).
+Qed.
+
+Lemma g_rev_ccw_list_ind' : forall (p : point) (T0 T : list point),
+  g_rev_ccw_list p (T0 ++ T) -> g_rev_ccw_list p T.
+Proof.
+  intros p T0 T H.
+  unfold g_rev_ccw_list in *.
+  apply (weak_rev_ccw_list_ind' p T0 T).
+  exact H.
+Qed.
+
 Lemma leftmost_ind : forall p T0 T,
   leftmost p (T0 ++ T) -> leftmost p T.
 Proof.
   induction T0; intros; try assumption.
   specialize (IHT0 T).
   simpl in H. unfold leftmost in *.
-  pose proof Forall_app (fun (q : point) => p.(x) < q.(x) \/ (p.(x) = q.(x) /\ p.(y) < q.(y))) [a] (T0 ++ T).
+  pose proof Forall_app (fun (q : point) => p.(x) < q.(x) \/ (p.(x) = q.(x) /\ p.(y) <= q.(y))) [a] (T0 ++ T).
   destruct H0 as [H0 _]. specialize (H0 H).
   destruct H0 as [_ H0]. specialize (IHT0 H0).
   tauto.
@@ -1311,7 +1620,7 @@ Proof.
   induction T0; intros; try assumption.
   specialize (IHT0 T). destruct H.
   pose proof leftmost_ind p [a] (T0 ++ T) H.
-  pose proof rev_ccw_list_ind' p [a] (T0 ++ T) H0.
+  pose proof g_rev_ccw_list_ind' p [a] (T0 ++ T) H0.
   assert (sort p (T0 ++ T)). { split; tauto.  }
   tauto.
 Qed.
@@ -1430,12 +1739,83 @@ Proof.
   nia.
 Qed.
 
+Lemma point_in_tri_weak_pop : forall p a b c,
+  weak_rev_ccw p c b ->
+  weak_rev_ccw p c a ->
+  weak_rev_ccw p b a ->
+  ~ ccw a b c ->
+  point_in_triangle b c a p.
+Proof.
+  intros p a b c Hcb Hca Hba Hn.
+  destruct Hcb as [Hcb | [Hcb_col Hcb_mid]];
+  destruct Hca as [Hca | [Hca_col Hca_mid]];
+  destruct Hba as [Hba | [Hba_col Hba_mid]];
+  unfold point_in_triangle, weak_rev_ccw, ccw, colinear, at_mid,
+         left_equal, left_than, parallel, backward_or_perp, build_vec,
+         cross_prod, dot_prod in *; simpl in *; nia.
+Qed.
+
+Lemma parallel_backward_same_side_impossible : forall e d v,
+  parallel d e ->
+  backward_or_perp d e ->
+  left_than v d ->
+  left_than v e ->
+  False.
+Proof.
+  intros e d v Hpar Hbwd Hvd Hve.
+  pose proof aux2 e v d as Haux.
+  pose proof left_than_nonzero2 _ _ Hve as Hnz_e.
+  rewrite nonzero_iff in Hnz_e.
+  unfold parallel, backward_or_perp, left_than in *.
+  nia.
+Qed.
+
+Lemma left_equal_segment : forall u v b a q,
+  left_equal (build_vec u v) (build_vec u b) ->
+  left_equal (build_vec u v) (build_vec u a) ->
+  colinear q b a ->
+  at_mid q b a ->
+  left_equal (build_vec u v) (build_vec u q).
+Proof.
+  intros u v b a q Hlb Hla Hcol Hmid.
+  destruct (Z_lt_ge_dec 0 (cross_prod (build_vec u v) (build_vec u q)))
+    as [Hpos | Hle].
+  - assert (left_than (build_vec u v) (build_vec q b)) as Hvb.
+    { unfold left_equal, left_than, build_vec, cross_prod in *; simpl in *; nia. }
+    assert (left_than (build_vec u v) (build_vec q a)) as Hva.
+    { unfold left_equal, left_than, build_vec, cross_prod in *; simpl in *; nia. }
+    unfold colinear, at_mid in Hcol, Hmid.
+    exact (False_rect _ (parallel_backward_same_side_impossible _ _ _
+                           Hcol Hmid Hvb Hva)).
+  - unfold left_equal in *.
+    lia.
+Qed.
+
 Lemma point_in_tri_cyclicity : forall p a b c,
   point_in_triangle p a b c <-> point_in_triangle p b c a.
 Proof.
   unfold point_in_triangle, ccw, left_equal, left_than, colinear, parallel, at_mid, backward_or_perp, cross_prod, build_vec;
   simpl in *. intros.
   nia.
+Qed.
+
+Lemma point_in_triangle_halfplane_weak : forall p a b c u v,
+  point_in_triangle p a b c ->
+  left_equal (build_vec u v) (build_vec u a) ->
+  left_equal (build_vec u v) (build_vec u b) ->
+  left_equal (build_vec u v) (build_vec u c) ->
+  left_equal (build_vec u v) (build_vec u p).
+Proof.
+  intros p a b c u v Htri Hla Hlb Hlc.
+  unfold point_in_triangle in Htri.
+  destruct Htri as [Htri | [Hcol Hseg]].
+  - unfold ccw, left_equal, left_than, cross_prod, build_vec in *.
+    simpl in *.
+    nia.
+  - destruct Hseg as [[Hpa Hmid] | [[Hpb Hmid] | [Hpc Hmid]]].
+    + exact (left_equal_segment u v a b p Hla Hlb Hpa Hmid).
+    + exact (left_equal_segment u v b c p Hlb Hlc Hpb Hmid).
+    + exact (left_equal_segment u v c a p Hlc Hla Hpc Hmid).
 Qed.
 
 Definition strict_point_in_triangle (p a b c : point) :=
@@ -1592,6 +1972,58 @@ Proof.
       lia.
   }
   split; tauto.
+Qed.
+
+Lemma segment_mid_trans_left : forall q b u v,
+  colinear b u v ->
+  at_mid b u v ->
+  colinear q u b ->
+  at_mid q u b ->
+  colinear q u v /\ at_mid q u v.
+Proof.
+  intros q b u v Hub Hbmid Huq Hqmid.
+  pose proof mid_colinear_4point u b v q
+    (colinear_perm321 _ _ _ Hub) Huq Hqmid as [Hvuq _].
+  assert (Hquv : colinear q u v).
+  { apply colinear_perm321. exact Hvuq. }
+  split.
+  - exact Hquv.
+  - pose proof metric_nonneg (build_vec q u).
+    pose proof metric_nonneg (build_vec q b).
+    pose proof metric_nonneg (build_vec u b).
+    pose proof metric_nonneg (build_vec u v).
+    pose proof metric_nonneg (build_vec b v).
+    pose proof metric_nonneg (build_vec q v).
+    unfold colinear, parallel, at_mid, backward_or_perp,
+           cross_prod, dot_prod, build_vec in *.
+    simpl in *.
+    nia.
+Qed.
+
+Lemma segment_mid_trans_right : forall q b u v,
+  colinear b u v ->
+  at_mid b u v ->
+  colinear q b v ->
+  at_mid q b v ->
+  colinear q u v /\ at_mid q u v.
+Proof.
+  intros q b u v Hub Hbmid Hqv Hqmid.
+  pose proof mid_colinear_4point b v u q
+    (colinear_perm213 _ _ _ Hub) Hqv Hqmid as [_ Hvuq].
+  assert (Hquv : colinear q u v).
+  { apply colinear_perm321. exact Hvuq. }
+  split.
+  - exact Hquv.
+  - pose proof metric_nonneg (build_vec q u).
+    pose proof metric_nonneg (build_vec q b).
+    pose proof metric_nonneg (build_vec q v).
+    pose proof metric_nonneg (build_vec u b).
+    pose proof metric_nonneg (build_vec u v).
+    pose proof metric_nonneg (build_vec b v).
+    unfold colinear, parallel, at_mid, backward_or_perp,
+           cross_prod, dot_prod, build_vec in *.
+    simpl in *.
+    nia.
 Qed.
 
 (** Print aux. *)
@@ -1754,6 +2186,213 @@ Proof.
   tauto.
 Qed.
 
+Lemma point_in_tri_weak_edge : forall p q a b,
+  weak_rev_ccw p a b ->
+  colinear q p b ->
+  at_mid q p b ->
+  point_in_triangle q a b p.
+Proof.
+  intros p q a b Hab Hqcol Hqmid.
+  destruct Hab as [Hab | [Hab_col Hab_mid]].
+  - apply point_in_tri_col_mid'; try exact Hab.
+    + rewrite colinear_comm. exact Hqcol.
+    + rewrite at_mid_comm. exact Hqmid.
+  - unfold point_in_triangle, weak_rev_ccw, ccw, colinear, at_mid,
+           left_equal, left_than, parallel, backward_or_perp, build_vec,
+           cross_prod, dot_prod in *; simpl in *.
+    nia.
+Qed.
+
+Lemma point_in_tri_incl_left_by_edges : forall p a b c q,
+  ccw p a c ->
+  left_equal (build_vec c a) (build_vec c b) ->
+  left_equal (build_vec a p) (build_vec a b) ->
+  left_equal (build_vec p c) (build_vec p b) ->
+  point_in_triangle q b a p ->
+  point_in_triangle q c a p.
+Proof.
+  intros p a b c q Hpac Hcab Hapb Hpcb Hq.
+  left; split; [exact Hpac |].
+  destruct Hq as [Hq | [Hq_col Hq_seg]].
+  - unfold point_in_triangle, ccw, left_equal, left_than, colinear,
+           parallel, at_mid, backward_or_perp, build_vec, cross_prod,
+           dot_prod in *; simpl in *; nia.
+  - destruct Hq_seg as [[Hcol Hmid] | [[Hcol Hmid] | [Hcol Hmid]]].
+    + repeat split.
+      * eapply (left_equal_segment c a b a q); try eassumption;
+        unfold ccw, left_equal, left_than, build_vec, cross_prod in *;
+        simpl in *; nia.
+      * eapply (left_equal_segment a p b a q); try eassumption;
+        unfold ccw, left_equal, left_than, build_vec, cross_prod in *;
+        simpl in *; nia.
+      * eapply (left_equal_segment p c b a q); try eassumption;
+        unfold ccw, left_equal, left_than, build_vec, cross_prod in *;
+        simpl in *; nia.
+    + repeat split.
+      * eapply (left_equal_segment c a a p q); try eassumption;
+        unfold ccw, left_equal, left_than, build_vec, cross_prod in *;
+        simpl in *; nia.
+      * eapply (left_equal_segment a p a p q); try eassumption;
+        unfold ccw, left_equal, left_than, build_vec, cross_prod in *;
+        simpl in *; nia.
+      * eapply (left_equal_segment p c a p q); try eassumption;
+        unfold ccw, left_equal, left_than, build_vec, cross_prod in *;
+        simpl in *; nia.
+    + repeat split.
+      * eapply (left_equal_segment c a p b q); try eassumption;
+        unfold ccw, left_equal, left_than, build_vec, cross_prod in *;
+        simpl in *; nia.
+      * eapply (left_equal_segment a p p b q); try eassumption;
+        unfold ccw, left_equal, left_than, build_vec, cross_prod in *;
+        simpl in *; nia.
+      * eapply (left_equal_segment p c p b q); try eassumption;
+        unfold ccw, left_equal, left_than, build_vec, cross_prod in *;
+        simpl in *; nia.
+Qed.
+
+Lemma point_in_tri_incl_right_by_edges : forall p a b c q,
+  ccw p a c ->
+  left_equal (build_vec c a) (build_vec c b) ->
+  left_equal (build_vec a p) (build_vec a b) ->
+  left_equal (build_vec p c) (build_vec p b) ->
+  point_in_triangle q c b p ->
+  point_in_triangle q c a p.
+Proof.
+  intros p a b c q Hpac Hcab Hapb Hpcb Hq.
+  left; split; [exact Hpac |].
+  destruct Hq as [Hq | [Hq_col Hq_seg]].
+  - unfold point_in_triangle, ccw, left_equal, left_than, colinear,
+           parallel, at_mid, backward_or_perp, build_vec, cross_prod,
+           dot_prod in *; simpl in *; nia.
+  - destruct Hq_seg as [[Hcol Hmid] | [[Hcol Hmid] | [Hcol Hmid]]].
+    + repeat split.
+      * eapply (left_equal_segment c a c b q); try eassumption;
+        unfold ccw, left_equal, left_than, build_vec, cross_prod in *;
+        simpl in *; nia.
+      * eapply (left_equal_segment a p c b q); try eassumption;
+        unfold ccw, left_equal, left_than, build_vec, cross_prod in *;
+        simpl in *; nia.
+      * eapply (left_equal_segment p c c b q); try eassumption;
+        unfold ccw, left_equal, left_than, build_vec, cross_prod in *;
+        simpl in *; nia.
+    + repeat split.
+      * eapply (left_equal_segment c a b p q); try eassumption;
+        unfold ccw, left_equal, left_than, build_vec, cross_prod in *;
+        simpl in *; nia.
+      * eapply (left_equal_segment a p b p q); try eassumption;
+        unfold ccw, left_equal, left_than, build_vec, cross_prod in *;
+        simpl in *; nia.
+      * eapply (left_equal_segment p c b p q); try eassumption;
+        unfold ccw, left_equal, left_than, build_vec, cross_prod in *;
+        simpl in *; nia.
+    + repeat split.
+      * eapply (left_equal_segment c a p c q); try eassumption;
+        unfold ccw, left_equal, left_than, build_vec, cross_prod in *;
+        simpl in *; nia.
+      * eapply (left_equal_segment a p p c q); try eassumption;
+        unfold ccw, left_equal, left_than, build_vec, cross_prod in *;
+        simpl in *; nia.
+      * eapply (left_equal_segment p c p c q); try eassumption;
+        unfold ccw, left_equal, left_than, build_vec, cross_prod in *;
+        simpl in *; nia.
+Qed.
+
+Local Ltac solve_point_in_tri :=
+  unfold point_in_triangle, weak_rev_ccw, ccw, colinear, at_mid,
+         left_equal, left_than, parallel, backward_or_perp, build_vec,
+         cross_prod, dot_prod in *; simpl in *;
+  first
+    [ left; repeat split; nia
+    | right; split; [nia | left; split; nia]
+    | right; split; [nia | right; left; split; nia]
+    | right; split; [nia | right; right; split; nia] ].
+
+Lemma point_in_tri_pop_left_weak : forall p a b c q,
+  weak_rev_ccw p c b ->
+  weak_rev_ccw p c a ->
+  weak_rev_ccw p b a ->
+  ~ ccw a b c ->
+  point_in_triangle q b a p ->
+  point_in_triangle q c a p.
+Proof.
+  intros p a b c q Hcb Hca Hba Hn Hq.
+  destruct Hca as [Hca | [Hca_col Hca_mid]].
+  - pose proof point_in_tri_weak_pop p a b c Hcb (or_introl Hca) Hba Hn
+      as Hbtri.
+    destruct Hbtri as [[Hpac [Hcab [Hapb Hpcb]]] | [Hbcol Hbseg]].
+    + exact (point_in_tri_incl_left_by_edges p a b c q Hpac Hcab Hapb Hpcb Hq).
+    + exfalso.
+      unfold ccw, colinear, left_than, parallel, build_vec, cross_prod in *;
+      simpl in *; nia.
+  - destruct Hcb as [Hcb | [Hcb_col Hcb_mid]];
+    destruct Hba as [Hba | [Hba_col Hba_mid]];
+    destruct Hq as [Hq | [Hq_col Hq_seg]].
+    all: try solve_point_in_tri.
+    all: destruct Hq_seg as [[Hq_seg_col Hq_seg_mid] |
+                             [[Hq_seg_col Hq_seg_mid] |
+                              [Hq_seg_col Hq_seg_mid]]];
+         try solve_point_in_tri.
+    + pose proof (segment_mid_trans_left q a b p)
+        (colinear_perm321 _ _ _ Hba_col) Hba_mid
+        Hq_seg_col Hq_seg_mid as [Hqbp_col Hqbp_mid].
+      pose proof (segment_mid_trans_right q b c p)
+        (colinear_perm321 _ _ _ Hcb_col) Hcb_mid
+        Hqbp_col Hqbp_mid as [Hqcp_col Hqcp_mid].
+      right. split; [apply colinear_perm231; exact Hca_col|].
+      right; right. split.
+      * apply colinear_perm132. exact Hqcp_col.
+      * apply at_mid_comm. exact Hqcp_mid.
+    + pose proof (segment_mid_trans_right q b c p)
+        (colinear_perm321 _ _ _ Hcb_col) Hcb_mid
+        (colinear_perm132 _ _ _ Hq_seg_col)
+        (proj1 (at_mid_comm _ _ _) Hq_seg_mid) as [Hqcp_col Hqcp_mid].
+      right. split; [apply colinear_perm231; exact Hca_col|].
+      right; right. split.
+      * apply colinear_perm132. exact Hqcp_col.
+      * apply at_mid_comm. exact Hqcp_mid.
+Qed.
+
+Lemma point_in_tri_pop_right_weak : forall p a b c q,
+  weak_rev_ccw p c b ->
+  weak_rev_ccw p c a ->
+  weak_rev_ccw p b a ->
+  ~ ccw a b c ->
+  point_in_triangle q c b p ->
+  point_in_triangle q c a p.
+Proof.
+  intros p a b c q Hcb Hca Hba Hn Hq.
+  destruct Hca as [Hca | [Hca_col Hca_mid]].
+  - pose proof point_in_tri_weak_pop p a b c Hcb (or_introl Hca) Hba Hn
+      as Hbtri.
+    destruct Hbtri as [[Hpac [Hcab [Hapb Hpcb]]] | [Hbcol Hbseg]].
+    + exact (point_in_tri_incl_right_by_edges p a b c q Hpac Hcab Hapb Hpcb Hq).
+    + exfalso.
+      unfold ccw, colinear, left_than, parallel, build_vec, cross_prod in *;
+      simpl in *; nia.
+  - destruct Hcb as [Hcb | [Hcb_col Hcb_mid]];
+    destruct Hba as [Hba | [Hba_col Hba_mid]];
+    destruct Hq as [Hq | [Hq_col Hq_seg]].
+    all: try solve_point_in_tri.
+    all: destruct Hq_seg as [[Hq_seg_col Hq_seg_mid] |
+                             [[Hq_seg_col Hq_seg_mid] |
+                              [Hq_seg_col Hq_seg_mid]]];
+         try solve_point_in_tri.
+    + pose proof (segment_mid_trans_left q b c p)
+        (colinear_perm321 _ _ _ Hcb_col) Hcb_mid
+        Hq_seg_col Hq_seg_mid as [Hqcp_col Hqcp_mid].
+      right. split; [apply colinear_perm231; exact Hca_col|].
+      right; right. split.
+      * apply colinear_perm132. exact Hqcp_col.
+      * apply at_mid_comm. exact Hqcp_mid.
+    + pose proof (segment_mid_trans_right q b c p)
+        (colinear_perm321 _ _ _ Hcb_col) Hcb_mid
+        Hq_seg_col Hq_seg_mid as [Hqcp_col Hqcp_mid].
+      right. split; [apply colinear_perm231; exact Hca_col|].
+      right; right. split.
+      * apply colinear_perm132. exact Hqcp_col.
+      * apply at_mid_comm. exact Hqcp_mid.
+Qed.
+
 (** dot_prod *)
 
 (** =========================================== *)
@@ -1877,6 +2516,37 @@ Proof.
     + simpl in H0. simpl. tauto.
 Qed.
 
+Lemma point_in_hull_cons_iff_weak : forall q p a b l,
+  weak_rev_ccw_list p (b :: a :: l) ->
+  (
+    point_in_hull q (p :: b :: a :: l) <->
+    point_in_hull q (p :: a :: l) \/
+    point_in_triangle q b a p
+  ).
+Proof.
+  intros q p a b l Hweak.
+  induction l; intros.
+  - simpl; split; intros H.
+    + right. tauto.
+    + destruct H as [Hseg | Htri]; [| tauto].
+      simpl in Hweak.
+      destruct Hweak as [Hb _].
+      rewrite Forall_weak_rev_ccw_cons_iff in Hb.
+      destruct Hb as [Hba _].
+      left.
+      destruct Hseg as [Hcol Hmid].
+      exact (point_in_tri_weak_edge p q b a Hba Hcol Hmid).
+  - split; intros H.
+    + pose proof weak_rev_ccw_list_remove_middle p [b; a] [a0] l Hweak as Hweak'.
+      specialize (IHl Hweak').
+      simpl in H.
+      simpl.
+      tauto.
+    + simpl in H.
+      simpl.
+      tauto.
+Qed.
+
 Lemma point_in_hull_cons : forall p q p0 T,
   rev_ccw_list p (p0 :: T) ->
   point_in_hull q (p :: T) ->
@@ -1910,5 +2580,21 @@ Proof.
   - rewrite !Forall_nil_iff. tauto.
   - rewrite !Forall_cons_iff.
     pose proof point_in_hull_cons_iff a0 p a b l H.
+    tauto.
+Qed.
+
+Lemma is_max_hull'_cons_iff_weak : forall p a b l T,
+  weak_rev_ccw_list p (b :: a :: l) ->
+  (
+    is_max_hull' p (b :: a :: l) T <->
+    Forall (fun q : point => point_in_hull q (p :: a :: l) \/
+                             point_in_triangle q b a p) T
+  ).
+Proof.
+  unfold is_max_hull'. intros.
+  induction T.
+  - rewrite !Forall_nil_iff. tauto.
+  - rewrite !Forall_cons_iff.
+    pose proof point_in_hull_cons_iff_weak a0 p a b l H.
     tauto.
 Qed.

@@ -1,5 +1,0 @@
-From SimpleC.EE.Applications_human.convex_hull Require Import point_array_strategy_goal point_array_strategy_proof.
-
-Module point_array_Strategy_Correctness : point_array_Strategy_Correct.
-  Include point_array_strategy_proof.
-End point_array_Strategy_Correctness.

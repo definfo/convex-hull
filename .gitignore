@@ -35,6 +35,9 @@ CONFIGURE
 .Makefile.d
 Makefile.conf
 
+.CoqMakefile.d
+CoqMakefile
+CoqMakefile.conf
 
 **/*.glob
 **/*.aux

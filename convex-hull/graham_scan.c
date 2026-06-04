@@ -2,10 +2,18 @@
 #include "safeexec_def.h"
 
 /*@ Extern Coq (point_polar_sorted : Point -> list Point -> Prop)
+               (leftmost : Point -> list Point -> Prop)
 	             (is_convex_hull : list Point -> list Point -> Prop)
                (point_bound : Z)
                (point_in_bound : Point -> Prop)
+               (points_in_bound : list Point -> Prop)
                (point_leftdown : Point -> Point -> Prop)
+               (point_leftmost_prefix : list Point -> Z -> Z -> Prop)
+               (point_permutation : list Point -> list Point -> Prop)
+               (point_same_outside_range : list Point -> list Point -> Z -> Z -> Prop)
+               (point_sorted_range : Point -> list Point -> Z -> Z -> Prop)
+               (point_polar_partitioned_at : Point -> list Point -> Z -> Z -> Z -> Prop)
+               (point_polar_partition_scan_inv : Point -> list Point -> list Point -> Z -> Z -> Point -> Z -> Z -> Prop)
                (point_cmp_leftdown : Point -> Point -> Z)
                (point_cross_by_value : Z -> Z -> Z -> Z -> Z -> Z -> Z)
                (point_dot_by_value : Z -> Z -> Z -> Z -> Z -> Z -> Z)
@@ -56,18 +64,18 @@ int cross_prod(int a_x, int a_y, int b_x, int b_y, int c_x, int c_y)
            __return == point_cross_by_value(a_x, a_y, b_x, b_y, c_x, c_y)
 */
 {
-    /*@ Assert
-          a_x == a_x@pre && a_y == a_y@pre &&
-          b_x == b_x@pre && b_y == b_y@pre &&
-          c_x == c_x@pre && c_y == c_y@pre &&
-          -point_bound <= a_x && a_x <= point_bound &&
-          -point_bound <= a_y && a_y <= point_bound &&
-          -point_bound <= b_x && b_x <= point_bound &&
-          -point_bound <= b_y && b_y <= point_bound &&
-          -point_bound <= c_x && c_x <= point_bound &&
-          -point_bound <= c_y && c_y <= point_bound
-    */
-    return (b_x - a_x) * (c_y - a_y) - (b_y - a_y) * (c_x - a_x);
+  /*@ Assert
+        a_x == a_x@pre && a_y == a_y@pre &&
+        b_x == b_x@pre && b_y == b_y@pre &&
+        c_x == c_x@pre && c_y == c_y@pre &&
+        -point_bound <= a_x && a_x <= point_bound &&
+        -point_bound <= a_y && a_y <= point_bound &&
+        -point_bound <= b_x && b_x <= point_bound &&
+        -point_bound <= b_y && b_y <= point_bound &&
+        -point_bound <= c_x && c_x <= point_bound &&
+        -point_bound <= c_y && c_y <= point_bound
+  */
+  return (b_x - a_x) * (c_y - a_y) - (b_y - a_y) * (c_x - a_x);
 }
 
 int dot_prod(int a_x, int a_y, int b_x, int b_y, int c_x, int c_y)
@@ -83,18 +91,18 @@ int dot_prod(int a_x, int a_y, int b_x, int b_y, int c_x, int c_y)
            __return == point_dot_by_value(a_x, a_y, b_x, b_y, c_x, c_y)
 */
 {
-    /*@ Assert
-          a_x == a_x@pre && a_y == a_y@pre &&
-          b_x == b_x@pre && b_y == b_y@pre &&
-          c_x == c_x@pre && c_y == c_y@pre &&
-          -point_bound <= a_x && a_x <= point_bound &&
-          -point_bound <= a_y && a_y <= point_bound &&
-          -point_bound <= b_x && b_x <= point_bound &&
-          -point_bound <= b_y && b_y <= point_bound &&
-          -point_bound <= c_x && c_x <= point_bound &&
-          -point_bound <= c_y && c_y <= point_bound
-    */
-    return (b_x - a_x) * (c_x - a_x) + (b_y - a_y) * (c_y - a_y);
+  /*@ Assert
+        a_x == a_x@pre && a_y == a_y@pre &&
+        b_x == b_x@pre && b_y == b_y@pre &&
+        c_x == c_x@pre && c_y == c_y@pre &&
+        -point_bound <= a_x && a_x <= point_bound &&
+        -point_bound <= a_y && a_y <= point_bound &&
+        -point_bound <= b_x && b_x <= point_bound &&
+        -point_bound <= b_y && b_y <= point_bound &&
+        -point_bound <= c_x && c_x <= point_bound &&
+        -point_bound <= c_y && c_y <= point_bound
+  */
+  return (b_x - a_x) * (c_x - a_x) + (b_y - a_y) * (c_y - a_y);
 }
 
 
@@ -180,11 +188,12 @@ int build_hull_from_sorted_tail(struct Point *pivot,
                                 struct Point *hull)
 /*@ high_level_spec <= low_level_spec
     With (pivot0 : Point) (l : list Point)
-    Require 0 <= tail_n && tail_n < INT_MAX &&
+    Require 1 <= tail_n && tail_n < INT_MAX &&
             tail_n == Zlength(l) &&
             point_polar_sorted(pivot0, l) &&
+            leftmost(pivot0, rev(l)) &&
             point_in_bound(pivot0) &&
-            PointCoordsBound(l) &&
+            points_in_bound(l) &&
             data_at(&(pivot->x), pivot0.x) *
             data_at(&(pivot->y), pivot0.y) *
             PointArray::full(sorted_tail, tail_n, l) *
@@ -196,8 +205,8 @@ int build_hull_from_sorted_tail(struct Point *pivot,
            hull == hull@pre &&
            __return == Zlength(hull_out) &&
            point_in_bound(pivot0) &&
-           PointCoordsBound(l) &&
-           is_convex_hull(l, hull_out) &&
+           points_in_bound(l) &&
+           is_convex_hull(cons(pivot0, l), hull_out) &&
            data_at(&(pivot->x), pivot0.x) *
            data_at(&(pivot->y), pivot0.y) *
            PointArray::full(sorted_tail, tail_n, l) *
@@ -206,18 +215,18 @@ int build_hull_from_sorted_tail(struct Point *pivot,
 */
 ;
 
-int build_hull_from_sorted_tail(struct Point *pivot, // head point `p`
-                                struct Point *sorted_tail, // tail points (`tail l`)
-                                int tail_n, // tail size
-                                struct Point *hull // hull points (`build_hull l`)
-)
+int build_hull_from_sorted_tail(struct Point *pivot,
+                                struct Point *sorted_tail,
+                                int tail_n,
+                                struct Point *hull)
 /*@ low_level_spec
     With (pivot0 : Point) (l : list Point) X
-    Require 0 <= tail_n && tail_n < INT_MAX &&
+    Require 1 <= tail_n && tail_n < INT_MAX &&
             tail_n == Zlength(l) &&
             point_polar_sorted(pivot0, l) &&
+            leftmost(pivot0, rev(l)) &&
             point_in_bound(pivot0) &&
-            PointCoordsBound(l) &&
+            points_in_bound(l) &&
             safeExec(equiv(empty_point_stack), build_hull(pivot0, l), X) &&
             data_at(&(pivot->x), pivot0.x) *
             data_at(&(pivot->y), pivot0.y) *
@@ -230,8 +239,8 @@ int build_hull_from_sorted_tail(struct Point *pivot, // head point `p`
            hull == hull@pre &&
            __return == Zlength(rev(stk)) &&
            point_in_bound(pivot0) &&
-           PointCoordsBound(l) &&
-           PointCoordsBound(rev(stk)) &&
+           points_in_bound(l) &&
+           points_in_bound(rev(stk)) &&
            safeExec(equiv(stk), return(tt), X) &&
            data_at(&(pivot->x), pivot0.x) *
            data_at(&(pivot->y), pivot0.y) *
@@ -240,9 +249,6 @@ int build_hull_from_sorted_tail(struct Point *pivot, // head point `p`
            PointArray::undef_seg(hull, __return, tail_n + 1)
 */
 {
-  if (tail_n < 0)
-    return 0;
-
   hull[0].x = pivot->x;
   hull[0].y = pivot->y;
   int top = 0;
@@ -263,8 +269,8 @@ int build_hull_from_sorted_tail(struct Point *pivot, // head point `p`
         top + 1 == Zlength(rev(stk)) &&
         point_polar_sorted(pivot0, l) &&
         point_in_bound(pivot0) &&
-        PointCoordsBound(l) &&
-        PointCoordsBound(rev(stk)) &&
+        points_in_bound(l) &&
+        points_in_bound(rev(stk)) &&
         safeExec(equiv(stk), build_hull_c_iter(l, i), X) &&
         data_at(&(pivot->x), pivot0.x) *
         data_at(&(pivot->y), pivot0.y) *
@@ -286,8 +292,8 @@ int build_hull_from_sorted_tail(struct Point *pivot, // head point `p`
           top + 1 == Zlength(rev(stk)) &&
           point_polar_sorted(pivot0, l) &&
           point_in_bound(pivot0) &&
-          PointCoordsBound(l) &&
-          PointCoordsBound(rev(stk)) &&
+          points_in_bound(l) &&
+          points_in_bound(rev(stk)) &&
           safeExec(equiv(stk), build_hull_c_step(l, i), X) &&
           data_at(&(pivot->x), pivot0.x) *
           data_at(&(pivot->y), pivot0.y) *
@@ -308,16 +314,12 @@ int build_hull_from_sorted_tail(struct Point *pivot, // head point `p`
     hull[top].y = sorted_tail[i].y;
   }
 
-  int m = top + 1;
-  return m;
+  return top + 1;
 }
 
-
-
-
 /* =============================================================
- *  Combined sort + build_hull (Graham scan composed)
- *  Uses presorting by polar angle, then stack-based hull building.
+ *  Sorting helpers and Graham scan
+ *  Sorts points by polar angle before stack-based hull building.
  * ============================================================ */
 
 static void swap_points(struct Point *pts, int n, int i, int j)
@@ -336,39 +338,6 @@ static void swap_points(struct Point *pts, int n, int i, int j)
       PointArray::full(pts, n, point_swap(pts_l, i, j))
 */
 {
-  if (i < j) {
-    /*@ Assert
-        pts == pts@pre &&
-        n == n@pre &&
-        i == i@pre &&
-        j == j@pre &&
-        0 <= i && i < j && j < n &&
-        Zlength(pts_l) == n &&
-        data_at(&(pts[i].x), pts_l[i].x) *
-        data_at(&(pts[i].y), pts_l[i].y) *
-        data_at(&(pts[j].x), pts_l[j].x) *
-        data_at(&(pts[j].y), pts_l[j].y) *
-        PointArray::seg(pts, 0, i, sublist(0, i, pts_l)) *
-        PointArray::seg(pts, i + 1, j, sublist(i + 1, j, pts_l)) *
-        PointArray::seg(pts, j + 1, n, sublist(j + 1, n, pts_l))
-    */
-  } else {
-    /*@ Assert
-        pts == pts@pre &&
-        n == n@pre &&
-        i == i@pre &&
-        j == j@pre &&
-        0 <= j && j < i && i < n &&
-        Zlength(pts_l) == n &&
-        data_at(&(pts[i].x), pts_l[i].x) *
-        data_at(&(pts[i].y), pts_l[i].y) *
-        data_at(&(pts[j].x), pts_l[j].x) *
-        data_at(&(pts[j].y), pts_l[j].y) *
-        PointArray::seg(pts, 0, j, sublist(0, j, pts_l)) *
-        PointArray::seg(pts, j + 1, i, sublist(j + 1, i, pts_l)) *
-        PointArray::seg(pts, i + 1, n, sublist(i + 1, n, pts_l))
-    */
-  }
   int tmp_x = pts[i].x;
   int tmp_y = pts[i].y;
   pts[i].x = pts[j].x;
@@ -385,7 +354,7 @@ static int partition_polar_points(struct Point *pts, int n,
       0 <= low && low <= high && high < n &&
       0 <= n && n <= 50000 &&
       Zlength(pts_l) == n &&
-      PointCoordsBound(pts_l) &&
+      points_in_bound(pts_l) &&
       point_in_bound(point_mk(gx, gy)) &&
       PointArray::full(pts, n, pts_l)
     Ensure
@@ -398,29 +367,13 @@ static int partition_polar_points(struct Point *pts, int n,
       low <= __return && __return <= high &&
       exists pts_out,
         Zlength(pts_out) == n &&
-        PointCoordsBound(pts_out) &&
-        PointPermutation(pts_l, pts_out) &&
-        PointSameOutsideRange(pts_l, pts_out, low, high) &&
-        PointPolarPartitionedAt(point_mk(gx, gy), pts_out, low, high, __return) &&
+        points_in_bound(pts_out) &&
+        point_permutation(pts_l, pts_out) &&
+        point_same_outside_range(pts_l, pts_out, low, high) &&
+        point_polar_partitioned_at(point_mk(gx, gy), pts_out, low, high, __return) &&
         PointArray::full(pts, n, pts_out)
 */
 {
-  /*@ Assert
-      pts == pts@pre &&
-      n == n@pre &&
-      low == low@pre &&
-      high == high@pre &&
-      gx == gx@pre &&
-      gy == gy@pre &&
-      0 <= low && low <= high && high < n &&
-      0 <= n && n <= 50000 &&
-      Zlength(pts_l) == n &&
-      PointCoordsBound(pts_l) &&
-      point_in_bound(point_mk(gx, gy)) &&
-      data_at(&(pts[high].x), pts_l[high].x) *
-      data_at(&(pts[high].y), pts_l[high].y) *
-      PointArray::missing_i(pts, high, 0, n, pts_l)
-  */
   int pivot_x = pts[high].x;
   int pivot_y = pts[high].y;
   int i = low - 1;
@@ -438,68 +391,17 @@ static int partition_polar_points(struct Point *pts, int n,
         low - 1 <= i && i < j && j <= high &&
         pts_cur[high].x == pivot_x &&
         pts_cur[high].y == pivot_y &&
-        PointCoordsBound(pts_cur) &&
+        points_in_bound(pts_cur) &&
         point_in_bound(point_mk(gx, gy)) &&
         point_in_bound(point_mk(pivot_x, pivot_y)) &&
-        PointPolarPartitionScanInv(point_mk(gx, gy), pts_l, pts_cur,
+        point_polar_partition_scan_inv(point_mk(gx, gy), pts_l, pts_cur,
                                    low, high,
                                    point_mk(pivot_x, pivot_y), i, j) &&
         PointArray::full(pts, n, pts_cur)
   */
   for (int j = low; j < high; j++) {
-    /*@ Assert
-        exists pts_cur,
-          Zlength(pts_cur) == n &&
-          pts == pts@pre &&
-          n == n@pre &&
-          low == low@pre &&
-          high == high@pre &&
-          gx == gx@pre &&
-          gy == gy@pre &&
-          0 <= n && n <= 50000 &&
-          0 <= low && low <= high && high < n &&
-          low <= j && j < high &&
-          low - 1 <= i && i < j &&
-          pts_cur[high].x == pivot_x &&
-          pts_cur[high].y == pivot_y &&
-          PointCoordsBound(pts_cur) &&
-          point_in_bound(point_mk(gx, gy)) &&
-          point_in_bound(point_mk(pivot_x, pivot_y)) &&
-          PointPolarPartitionScanInv(point_mk(gx, gy), pts_l, pts_cur,
-                                     low, high,
-                                     point_mk(pivot_x, pivot_y), i, j) &&
-          data_at(&(pts[j].x), pts_cur[j].x) *
-          data_at(&(pts[j].y), pts_cur[j].y) *
-          PointArray::missing_i(pts, j, 0, n, pts_cur)
-    */
     int ax = pts[j].x;
     int ay = pts[j].y;
-    /*@ Assert
-        exists pts_cur,
-          Zlength(pts_cur) == n &&
-          pts == pts@pre &&
-          n == n@pre &&
-          low == low@pre &&
-          high == high@pre &&
-          gx == gx@pre &&
-          gy == gy@pre &&
-          0 <= n && n <= 50000 &&
-          0 <= low && low <= high && high < n &&
-          low <= j && j < high &&
-          low - 1 <= i && i < j &&
-          pts_cur[high].x == pivot_x &&
-          pts_cur[high].y == pivot_y &&
-          pts_cur[j].x == ax &&
-          pts_cur[j].y == ay &&
-          PointCoordsBound(pts_cur) &&
-          point_in_bound(point_mk(gx, gy)) &&
-          point_in_bound(point_mk(pivot_x, pivot_y)) &&
-          point_in_bound(point_mk(ax, ay)) &&
-          PointPolarPartitionScanInv(point_mk(gx, gy), pts_l, pts_cur,
-                                     low, high,
-                                     point_mk(pivot_x, pivot_y), i, j) &&
-          PointArray::full(pts, n, pts_cur)
-    */
     int c = cmp_polar(gx, gy, ax, ay, pivot_x, pivot_y);
     if (c <= 0) {
       i++;
@@ -522,16 +424,16 @@ static void quicksort_polar_points(struct Point *pts, int n,
       0 <= n && n <= 50000 &&
       0 <= left && -1 <= right && right < n &&
       Zlength(pts_l) == n &&
-      PointCoordsBound(pts_l) &&
+      points_in_bound(pts_l) &&
       point_in_bound(point_mk(gx, gy)) &&
       PointArray::full(pts, n, pts_l)
     Ensure
       exists pts_out,
         Zlength(pts_out) == n &&
-        PointCoordsBound(pts_out) &&
-        PointPermutation(pts_l, pts_out) &&
-        PointSameOutsideRange(pts_l, pts_out, left, right) &&
-        PointSortedRange_Point(point_mk(gx, gy), pts_out, left, right) &&
+        points_in_bound(pts_out) &&
+        point_permutation(pts_l, pts_out) &&
+        point_same_outside_range(pts_l, pts_out, left, right) &&
+        point_sorted_range(point_mk(gx, gy), pts_out, left, right) &&
         PointArray::full(pts, n, pts_out)
 */
 {
@@ -558,9 +460,9 @@ static void quicksort_polar_points(struct Point *pts, int n,
 int graham_scan(struct Point *pts, int n, struct Point *hull)
 /*@ With (pts_l : list Point)
     Require
-      1 <= n && n <= 50000 &&
+      2 <= n && n <= 50000 &&
       Zlength(pts_l) == n &&
-      PointCoordsBound(pts_l) &&
+      points_in_bound(pts_l) &&
       PointArray::full(pts, n, pts_l) *
       PointArray::undef_full(hull, n)
     Ensure
@@ -568,8 +470,8 @@ int graham_scan(struct Point *pts, int n, struct Point *hull)
         Zlength(pts_out) == n &&
         Zlength(hull_out) <= n &&
         Zlength(hull_out) >= 1 &&
-        PointCoordsBound(pts_out) &&
-        PointPermutation(pts_l, pts_out) &&
+        points_in_bound(pts_out) &&
+        point_permutation(pts_l, pts_out) &&
         is_convex_hull(pts_l, hull_out) &&
         __return == Zlength(hull_out) &&
         PointArray::full(pts, n, pts_out) *
@@ -579,13 +481,16 @@ int graham_scan(struct Point *pts, int n, struct Point *hull)
 {
   int pivot_idx = 0;
   /*@ Inv Assert
-        pts == pts@pre &&
-        hull == hull@pre &&
-        0 <= n && n <= 50000 &&
+		        pts == pts@pre &&
+		        hull == hull@pre &&
+		        n == n@pre &&
+		        2 <= n &&
+		        0 <= n && n <= 50000 &&
         1 <= i && i <= n &&
         0 <= pivot_idx && pivot_idx < i &&
+        point_leftmost_prefix(pts_l, pivot_idx, i) &&
         Zlength(pts_l) == n &&
-        PointCoordsBound(pts_l) &&
+        points_in_bound(pts_l) &&
         PointArray::full(pts, n, pts_l) *
         PointArray::undef_full(hull, n)
   */
@@ -593,8 +498,8 @@ int graham_scan(struct Point *pts, int n, struct Point *hull)
     int ax = pts[i].x;
     int ay = pts[i].y;
     int bx = pts[pivot_idx].x;
-    int b_y_val = pts[pivot_idx].y;
-    if (leftdown(ax, ay, bx, b_y_val) < 0) {
+    int b_y = pts[pivot_idx].y;
+    if (leftdown(ax, ay, bx, b_y) < 0) {
       pivot_idx = i;
     }
   }
@@ -610,22 +515,24 @@ int graham_scan(struct Point *pts, int n, struct Point *hull)
   struct Point *tail = pts + 1;
   /*@ Assert
       exists pts_pivot pts_sorted tail_sorted pivot0,
-        pts == pts@pre &&
-        tail == pts + sizeof(struct Point) &&
-        hull == hull@pre &&
-        1 <= n && n <= 50000 &&
-        0 <= n - 1 && n - 1 < INT_MAX &&
+	        pts == pts@pre &&
+	        tail == pts + sizeof(struct Point) &&
+	        hull == hull@pre &&
+	        n == n@pre &&
+	        2 <= n && n <= 50000 &&
         pivot0 == point_mk(gx, gy) &&
         pts_pivot == point_swap(pts_l, 0, pivot_idx) &&
         Zlength(pts_sorted) == n &&
         Zlength(tail_sorted) == n - 1 &&
         tail_sorted == sublist(1, n, pts_sorted) &&
-        PointCoordsBound(pts_sorted) &&
-        PointCoordsBound(tail_sorted) &&
+        points_in_bound(pts_sorted) &&
+        points_in_bound(tail_sorted) &&
         point_in_bound(pivot0) &&
-        PointPermutation(pts_pivot, pts_sorted) &&
-        PointSortedRange_Point(point_mk(gx, gy), pts_sorted, 1, n - 1) &&
+        point_leftmost_prefix(pts_l, pivot_idx, n) &&
+        point_permutation(pts_pivot, pts_sorted) &&
+        point_sorted_range(point_mk(gx, gy), pts_sorted, 1, n - 1) &&
         point_polar_sorted(pivot0, tail_sorted) &&
+        leftmost(pivot0, rev(tail_sorted)) &&
         pts_sorted[0].x == gx &&
         pts_sorted[0].y == gy &&
         data_at(&(pts->x), pivot0.x) *

@@ -162,12 +162,6 @@ Proof. Admitted.
 Lemma proof_of_build_hull_from_sorted_tail_safety_wit_17 : build_hull_from_sorted_tail_safety_wit_17.
 Proof. Admitted. 
 
-Lemma proof_of_build_hull_from_sorted_tail_safety_wit_18 : build_hull_from_sorted_tail_safety_wit_18.
-Proof. Admitted. 
-
-Lemma proof_of_build_hull_from_sorted_tail_safety_wit_19 : build_hull_from_sorted_tail_safety_wit_19.
-Proof. Admitted. 
-
 Lemma proof_of_build_hull_from_sorted_tail_partial_solve_wit_1 : build_hull_from_sorted_tail_partial_solve_wit_1.
 Proof. Admitted. 
 
@@ -208,6 +202,30 @@ Lemma proof_of_build_hull_from_sorted_tail_partial_solve_wit_13 : build_hull_fro
 Proof. Admitted. 
 
 Lemma proof_of_build_hull_from_sorted_tail_partial_solve_wit_14 : build_hull_from_sorted_tail_partial_solve_wit_14.
+Proof. Admitted. 
+
+Lemma proof_of_swap_points_partial_solve_wit_1 : swap_points_partial_solve_wit_1.
+Proof. Admitted. 
+
+Lemma proof_of_swap_points_partial_solve_wit_2 : swap_points_partial_solve_wit_2.
+Proof. Admitted. 
+
+Lemma proof_of_swap_points_partial_solve_wit_3 : swap_points_partial_solve_wit_3.
+Proof. Admitted. 
+
+Lemma proof_of_swap_points_partial_solve_wit_4 : swap_points_partial_solve_wit_4.
+Proof. Admitted. 
+
+Lemma proof_of_swap_points_partial_solve_wit_5 : swap_points_partial_solve_wit_5.
+Proof. Admitted. 
+
+Lemma proof_of_swap_points_partial_solve_wit_6 : swap_points_partial_solve_wit_6.
+Proof. Admitted. 
+
+Lemma proof_of_swap_points_partial_solve_wit_7 : swap_points_partial_solve_wit_7.
+Proof. Admitted. 
+
+Lemma proof_of_swap_points_partial_solve_wit_8 : swap_points_partial_solve_wit_8.
 Proof. Admitted. 
 
 Lemma proof_of_partition_polar_points_safety_wit_1 : partition_polar_points_safety_wit_1.
@@ -255,22 +273,31 @@ Proof. Admitted.
 Lemma proof_of_partition_polar_points_safety_wit_15 : partition_polar_points_safety_wit_15.
 Proof. Admitted. 
 
-Lemma proof_of_partition_polar_points_partial_solve_wit_1_pure : partition_polar_points_partial_solve_wit_1_pure.
-Proof. Admitted. 
-
 Lemma proof_of_partition_polar_points_partial_solve_wit_1 : partition_polar_points_partial_solve_wit_1.
-Proof. Admitted. 
-
-Lemma proof_of_partition_polar_points_partial_solve_wit_2_pure : partition_polar_points_partial_solve_wit_2_pure.
 Proof. Admitted. 
 
 Lemma proof_of_partition_polar_points_partial_solve_wit_2 : partition_polar_points_partial_solve_wit_2.
 Proof. Admitted. 
 
-Lemma proof_of_partition_polar_points_partial_solve_wit_3_pure : partition_polar_points_partial_solve_wit_3_pure.
+Lemma proof_of_partition_polar_points_partial_solve_wit_3 : partition_polar_points_partial_solve_wit_3.
 Proof. Admitted. 
 
-Lemma proof_of_partition_polar_points_partial_solve_wit_3 : partition_polar_points_partial_solve_wit_3.
+Lemma proof_of_partition_polar_points_partial_solve_wit_4 : partition_polar_points_partial_solve_wit_4.
+Proof. Admitted. 
+
+Lemma proof_of_partition_polar_points_partial_solve_wit_5 : partition_polar_points_partial_solve_wit_5.
+Proof. Admitted. 
+
+Lemma proof_of_partition_polar_points_partial_solve_wit_6_pure : partition_polar_points_partial_solve_wit_6_pure.
+Proof. Admitted. 
+
+Lemma proof_of_partition_polar_points_partial_solve_wit_6 : partition_polar_points_partial_solve_wit_6.
+Proof. Admitted. 
+
+Lemma proof_of_partition_polar_points_partial_solve_wit_7_pure : partition_polar_points_partial_solve_wit_7_pure.
+Proof. Admitted. 
+
+Lemma proof_of_partition_polar_points_partial_solve_wit_7 : partition_polar_points_partial_solve_wit_7.
 Proof. Admitted. 
 
 Lemma proof_of_quicksort_polar_points_safety_wit_1 : quicksort_polar_points_safety_wit_1.
@@ -379,15 +406,6 @@ Lemma proof_of_graham_scan_safety_wit_20 : graham_scan_safety_wit_20.
 Proof. Admitted. 
 
 Lemma proof_of_graham_scan_safety_wit_21 : graham_scan_safety_wit_21.
-Proof. Admitted. 
-
-Lemma proof_of_graham_scan_entail_wit_1 : graham_scan_entail_wit_1.
-Proof. Admitted. 
-
-Lemma proof_of_graham_scan_entail_wit_2_1 : graham_scan_entail_wit_2_1.
-Proof. Admitted. 
-
-Lemma proof_of_graham_scan_entail_wit_2_2 : graham_scan_entail_wit_2_2.
 Proof. Admitted. 
 
 Lemma proof_of_graham_scan_partial_solve_wit_1 : graham_scan_partial_solve_wit_1.

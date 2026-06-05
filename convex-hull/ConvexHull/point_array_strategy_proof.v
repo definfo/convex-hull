@@ -190,3 +190,13 @@ Proof.
       * rewrite replace_Znth_Znth by lia.
         apply derivable1_refl.
 Qed.
+
+Lemma point_array_strategy14_correctness : point_array_strategy14.
+Proof.
+  pre_process_default.
+Qed.
+
+Lemma point_array_strategy15_correctness : point_array_strategy15.
+Proof.
+  pre_process_default.
+Qed.

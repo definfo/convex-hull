@@ -296,6 +296,42 @@ Definition point_array_strategy13 :=
     emp
     ).
 
+Definition point_array_strategy14 :=
+  forall (p : Z) (a : Point),
+    TT &&
+    emp **
+    ((store_point p a))
+    |--
+    (
+    TT &&
+    emp **
+    (((&((p) # "Point" ->ₛ "x")) # Int |-> point_x a)) **
+    (((&((p) # "Point" ->ₛ "y")) # Int |-> point_y a))
+    ) ** (
+    TT &&
+    emp -*
+    TT &&
+    emp
+    ).
+
+Definition point_array_strategy15 :=
+  TT &&
+  emp
+  |--
+  (
+  TT &&
+  emp
+  ) ** (
+  ALL (a : Point) (p : Z),
+    TT &&
+    emp **
+    (((&((p) # "Point" ->ₛ "x")) # Int |-> point_x a)) **
+    (((&((p) # "Point" ->ₛ "y")) # Int |-> point_y a)) -*
+    TT &&
+    emp **
+    ((store_point p a))
+    ).
+
 Module Type point_array_Strategy_Correct.
 
   Axiom point_array_strategy0_correctness : point_array_strategy0.
@@ -312,5 +348,7 @@ Module Type point_array_Strategy_Correct.
   Axiom point_array_strategy11_correctness : point_array_strategy11.
   Axiom point_array_strategy12_correctness : point_array_strategy12.
   Axiom point_array_strategy13_correctness : point_array_strategy13.
+  Axiom point_array_strategy14_correctness : point_array_strategy14.
+  Axiom point_array_strategy15_correctness : point_array_strategy15.
 
 End point_array_Strategy_Correct.

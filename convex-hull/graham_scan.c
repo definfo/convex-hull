@@ -171,15 +171,7 @@ static int cmp_polar(int gp_x, int gp_y, int a_x, int a_y, int b_x, int b_y)
   if (mid < 0)
     return -1;
 
-  if (a_x < b_x)
-    return -1;
-  if (a_x > b_x)
-    return 1;
-  if (a_y < b_y)
-    return -1;
-  if (a_y > b_y)
-    return 1;
-  return 0;
+  return leftdown(a_x, a_y, b_x, b_y);
 }
 
 int build_hull_from_sorted_tail(struct Point *pivot,
@@ -194,8 +186,7 @@ int build_hull_from_sorted_tail(struct Point *pivot,
             leftmost(pivot0, rev(l)) &&
             point_in_bound(pivot0) &&
             points_in_bound(l) &&
-            data_at(&(pivot->x), pivot0.x) *
-            data_at(&(pivot->y), pivot0.y) *
+            store_point(pivot, pivot0) *
             PointArray::full(sorted_tail, tail_n, l) *
             PointArray::undef_full(hull, tail_n + 1)
     Ensure exists hull_out,
@@ -207,8 +198,7 @@ int build_hull_from_sorted_tail(struct Point *pivot,
            point_in_bound(pivot0) &&
            points_in_bound(l) &&
            is_convex_hull(cons(pivot0, l), hull_out) &&
-           data_at(&(pivot->x), pivot0.x) *
-           data_at(&(pivot->y), pivot0.y) *
+           store_point(pivot, pivot0) *
            PointArray::full(sorted_tail, tail_n, l) *
            PointArray::seg(hull, 0, __return, hull_out) *
            PointArray::undef_seg(hull, __return, tail_n + 1)
@@ -228,8 +218,7 @@ int build_hull_from_sorted_tail(struct Point *pivot,
             point_in_bound(pivot0) &&
             points_in_bound(l) &&
             safeExec(equiv(empty_point_stack), build_hull(pivot0, l), X) &&
-            data_at(&(pivot->x), pivot0.x) *
-            data_at(&(pivot->y), pivot0.y) *
+            store_point(pivot, pivot0) *
             PointArray::full(sorted_tail, tail_n, l) *
             PointArray::undef_full(hull, tail_n + 1)
     Ensure exists stk,
@@ -242,8 +231,7 @@ int build_hull_from_sorted_tail(struct Point *pivot,
            points_in_bound(l) &&
            points_in_bound(rev(stk)) &&
            safeExec(equiv(stk), return(tt), X) &&
-           data_at(&(pivot->x), pivot0.x) *
-           data_at(&(pivot->y), pivot0.y) *
+           store_point(pivot, pivot0) *
            PointArray::full(sorted_tail, tail_n, l) *
            PointArray::seg(hull, 0, __return, rev(stk)) *
            PointArray::undef_seg(hull, __return, tail_n + 1)
@@ -272,8 +260,7 @@ int build_hull_from_sorted_tail(struct Point *pivot,
         points_in_bound(l) &&
         points_in_bound(rev(stk)) &&
         safeExec(equiv(stk), build_hull_c_iter(l, i), X) &&
-        data_at(&(pivot->x), pivot0.x) *
-        data_at(&(pivot->y), pivot0.y) *
+        store_point(pivot, pivot0) *
         PointArray::full(sorted_tail, tail_n, l) *
         PointArray::seg(hull, 0, top + 1, rev(stk)) *
         PointArray::undef_seg(hull, top + 1, tail_n + 1)
@@ -295,8 +282,7 @@ int build_hull_from_sorted_tail(struct Point *pivot,
           points_in_bound(l) &&
           points_in_bound(rev(stk)) &&
           safeExec(equiv(stk), build_hull_c_step(l, i), X) &&
-          data_at(&(pivot->x), pivot0.x) *
-          data_at(&(pivot->y), pivot0.y) *
+          store_point(pivot, pivot0) *
           PointArray::full(sorted_tail, tail_n, l) *
           PointArray::seg(hull, 0, top + 1, rev(stk)) *
           PointArray::undef_seg(hull, top + 1, tail_n + 1)
@@ -542,8 +528,7 @@ int graham_scan(struct Point *pts, int n, struct Point *hull)
         leftmost(pivot0, rev(tail_sorted)) &&
         pts_sorted[0].x == gx &&
         pts_sorted[0].y == gy &&
-        data_at(&(pts->x), pivot0.x) *
-        data_at(&(pts->y), pivot0.y) *
+        store_point(pts, pivot0) *
         PointArray::full(tail, n - 1, tail_sorted) *
         PointArray::undef_full(hull, (n - 1) + 1)
   */

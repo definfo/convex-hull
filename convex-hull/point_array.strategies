@@ -1,5 +1,5 @@
 // Point array strategies -- Point-specialized analogue of QCP_demos_LLM/int_array.strategies.
-// max rule id: 26
+// max rule id: 28
 #include "convex_hull_def.h"
 
 id : 1
@@ -198,6 +198,20 @@ check : infer(x <= y);
 action : left_erase(1);
          left_erase(0);
          left_add(PointArray::seg(p, x, y + 1, app{Point}(l, cons{Point}(a, nil{Point}))));
+
+id : 27
+priority : core(0)
+left : store_point(?p, ?a) at 0
+action : left_erase(0);
+         left_add(store(field_addr(p, Point, x), I32, point_x(a)));
+         left_add(store(field_addr(p, Point, y), I32, point_y(a)));
+
+id : 28
+priority : core(0)
+right : store_point(?p, ?a) at 0
+action : right_erase(0);
+         right_add(store(field_addr(p, Point, x), I32, point_x(a)));
+         right_add(store(field_addr(p, Point, y), I32, point_y(a)));
 
 id : 19
 priority : post(0)

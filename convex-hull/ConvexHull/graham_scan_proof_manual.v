@@ -400,12 +400,10 @@ Proof.
   match goal with H : ?mid = point_at_mid _ _ _ |- _ => rewrite <- H end.
   destruct (Z_gt_dec mid 0); [nia |].
   destruct (Z_lt_dec mid 0); [nia |].
-  unfold point_cmp_xy, point_mk, x, y.
-  simpl.
-  repeat match goal with
-  | |- context [Z_lt_dec ?a ?b] => destruct (Z_lt_dec a b); try nia
-  | |- context [Z_gt_dec ?a ?b] => destruct (Z_gt_dec a b); try nia
+  match goal with
+  | H : retval = point_cmp_leftdown _ _ |- _ => rewrite H
   end.
+  apply point_cmp_leftdown_eq_cmp_xy.
 Qed.
 
 Lemma proof_of_cmp_polar_return_wit_2 : cmp_polar_return_wit_2.
@@ -454,73 +452,6 @@ Proof.
   intros.
   entailer!.
   unfold point_cmp_polar.
-  match goal with H : ?cr = point_cross _ _ _ |- _ => rewrite <- H end.
-  destruct (Z_gt_dec cr 0); [nia |].
-  destruct (Z_lt_dec cr 0); [nia |].
-  match goal with H : ?mid = point_at_mid _ _ _ |- _ => rewrite <- H end.
-  destruct (Z_gt_dec mid 0); [nia |].
-  destruct (Z_lt_dec mid 0); [nia |].
-  unfold point_cmp_xy, point_mk, x, y.
-  simpl.
-  repeat match goal with
-  | |- context [Z_lt_dec ?a ?b] => destruct (Z_lt_dec a b); try nia
-  | |- context [Z_gt_dec ?a ?b] => destruct (Z_gt_dec a b); try nia
-  end.
-Qed.
-
-Lemma proof_of_cmp_polar_return_wit_5 : cmp_polar_return_wit_5.
-Proof.
-  unfold cmp_polar_return_wit_5.
-  intros.
-  entailer!.
-  unfold point_cmp_polar.
-  match goal with H : ?cr = point_cross _ _ _ |- _ => rewrite <- H end.
-  destruct (Z_gt_dec cr 0); [nia |].
-  destruct (Z_lt_dec cr 0); [nia |].
-  match goal with H : ?mid = point_at_mid _ _ _ |- _ => rewrite <- H end.
-  destruct (Z_gt_dec mid 0); [nia |].
-  destruct (Z_lt_dec mid 0); [nia |].
-  unfold point_cmp_xy, point_mk, x, y.
-  simpl.
-  repeat match goal with
-  | |- context [Z_lt_dec ?a ?b] => destruct (Z_lt_dec a b); try nia
-  | |- context [Z_gt_dec ?a ?b] => destruct (Z_gt_dec a b); try nia
-  end.
-Qed.
-
-Lemma proof_of_cmp_polar_return_wit_6 : cmp_polar_return_wit_6.
-Proof.
-  unfold cmp_polar_return_wit_6.
-  intros.
-  entailer!.
-  unfold point_cmp_polar.
-  match goal with H : ?cr = point_cross _ _ _ |- _ => rewrite <- H end.
-  destruct (Z_gt_dec cr 0); [nia |].
-  destruct (Z_lt_dec cr 0); [nia |].
-  match goal with H : ?mid = point_at_mid _ _ _ |- _ => rewrite <- H end.
-  destruct (Z_gt_dec mid 0); [nia |].
-  destruct (Z_lt_dec mid 0); nia.
-Qed.
-
-Lemma proof_of_cmp_polar_return_wit_7 : cmp_polar_return_wit_7.
-Proof.
-  unfold cmp_polar_return_wit_7.
-  intros.
-  entailer!.
-  unfold point_cmp_polar.
-  match goal with H : ?cr = point_cross _ _ _ |- _ => rewrite <- H end.
-  destruct (Z_gt_dec cr 0); [nia |].
-  destruct (Z_lt_dec cr 0); [nia |].
-  match goal with H : ?mid = point_at_mid _ _ _ |- _ => rewrite <- H end.
-  destruct (Z_gt_dec mid 0); nia.
-Qed.
-
-Lemma proof_of_cmp_polar_return_wit_8 : cmp_polar_return_wit_8.
-Proof.
-  unfold cmp_polar_return_wit_8.
-  intros.
-  entailer!.
-  unfold point_cmp_polar.
   replace (point_cross (point_mk gp_x_pre gp_y_pre)
              (point_mk a_x_pre a_y_pre) (point_mk b_x_pre b_y_pre))
     with retval.
@@ -531,9 +462,9 @@ Proof.
     nia.
 Qed.
 
-Lemma proof_of_cmp_polar_return_wit_9 : cmp_polar_return_wit_9.
+Lemma proof_of_cmp_polar_return_wit_5 : cmp_polar_return_wit_5.
 Proof.
-  unfold cmp_polar_return_wit_9.
+  unfold cmp_polar_return_wit_5.
   intros.
   entailer!.
   unfold point_cmp_polar.
@@ -562,6 +493,8 @@ Proof.
   unfold build_hull_from_sorted_tail_entail_wit_1.
   intros.
   Exists (pivot0_low_level_spec :: nil).
+  simpl.
+  unfold store_point.
   entailer!.
   - simpl.
     replace (hull_pre + 0 * 8) with hull_pre.
@@ -641,8 +574,8 @@ Proof.
     split_pure_spatial.
     + change (rev (t :: s :: T)) with (rev (s :: T) ++ t :: nil).
       replace (top - 1 + 1) with top by lia.
-      cancel (&( pivot_pre # "Point" ->ₛ "x") # Int |-> pivot0_low_level_spec.(x)).
-      cancel (&( pivot_pre # "Point" ->ₛ "y") # Int |-> pivot0_low_level_spec.(y)).
+      sep_apply_l_atomic (store_point_fold pivot_pre pivot0_low_level_spec).
+      cancel (store_point pivot_pre pivot0_low_level_spec).
       cancel (PointArray.full sorted_tail_pre tail_n_pre l_low_level_spec).
       assert (Htail_hi : top + 1 <= tail_n_pre + 1) by lia.
       apply (point_array_seg_pop_tail hull_pre top (tail_n_pre + 1)
@@ -687,8 +620,8 @@ Proof.
     split_pure_spatial.
     + change (rev (Znth i l_low_level_spec __default_Point :: t :: s :: T))
         with (rev (t :: s :: T) ++ Znth i l_low_level_spec __default_Point :: nil).
-      cancel (&( pivot_pre # "Point" ->ₛ "x") # Int |-> pivot0_low_level_spec.(x)).
-      cancel (&( pivot_pre # "Point" ->ₛ "y") # Int |-> pivot0_low_level_spec.(y)).
+      sep_apply_l_atomic (store_point_fold pivot_pre pivot0_low_level_spec).
+      cancel (store_point pivot_pre pivot0_low_level_spec).
       cancel (PointArray.full sorted_tail_pre tail_n_pre l_low_level_spec).
       sep_apply_l_atomic
         (store_point_fold
@@ -743,8 +676,8 @@ Proof.
         with (rev nil ++ Znth i l_low_level_spec __default_Point :: nil).
       assert (Hhi_nonneg : 0 <= top + 1) by lia.
       assert (Hhi_bound : top + 1 + 1 <= tail_n_pre + 1) by lia.
-      cancel (&( pivot_pre # "Point" ->ₛ "x") # Int |-> pivot0_low_level_spec.(x)).
-      cancel (&( pivot_pre # "Point" ->ₛ "y") # Int |-> pivot0_low_level_spec.(y)).
+      sep_apply_l_atomic (store_point_fold pivot_pre pivot0_low_level_spec).
+      cancel (store_point pivot_pre pivot0_low_level_spec).
       cancel (PointArray.full sorted_tail_pre tail_n_pre l_low_level_spec).
       sep_apply_l_atomic
         (store_point_fold
@@ -786,8 +719,8 @@ Proof.
         with (rev (t :: nil) ++ Znth i l_low_level_spec __default_Point :: nil).
       assert (Hhi_nonneg : 0 <= top + 1) by lia.
       assert (Hhi_bound : top + 1 + 1 <= tail_n_pre + 1) by lia.
-      cancel (&( pivot_pre # "Point" ->ₛ "x") # Int |-> pivot0_low_level_spec.(x)).
-      cancel (&( pivot_pre # "Point" ->ₛ "y") # Int |-> pivot0_low_level_spec.(y)).
+      sep_apply_l_atomic (store_point_fold pivot_pre pivot0_low_level_spec).
+      cancel (store_point pivot_pre pivot0_low_level_spec).
       cancel (PointArray.full sorted_tail_pre tail_n_pre l_low_level_spec).
       sep_apply_l_atomic
         (store_point_fold
@@ -853,9 +786,9 @@ Proof.
   end.
 Qed.
 
-Lemma proof_of_build_hull_from_sorted_tail_partial_solve_wit_8_pure : build_hull_from_sorted_tail_partial_solve_wit_8_pure.
+Lemma proof_of_build_hull_from_sorted_tail_partial_solve_wit_9_pure : build_hull_from_sorted_tail_partial_solve_wit_9_pure.
 Proof.
-  unfold build_hull_from_sorted_tail_partial_solve_wit_8_pure.
+  unfold build_hull_from_sorted_tail_partial_solve_wit_9_pure.
   intros.
   entailer!.
   all: unfold points_in_bound in *.
@@ -1395,7 +1328,6 @@ Proof.
       subst pivot0.
       simpl.
       cancel.
-      apply derivable1_refl.
   - rewrite (Znth_indep pts_out 0 __default_Point default_point) by lia.
     rewrite (Znth_indep pts_pivot 0 __default_Point default_point)
       by (subst pts_pivot; rewrite Zlength_point_swap; lia).
@@ -1511,7 +1443,6 @@ Proof.
       subst pivot0.
       simpl.
       cancel.
-      apply derivable1_refl.
   - rewrite (Znth_indep pts_out 0 __default_Point default_point) by lia.
     rewrite (Znth_indep pts_l 0 __default_Point default_point) by lia.
     rewrite Hpivot_out.
@@ -1623,7 +1554,6 @@ Proof.
     | Htail : tail = pts_pre + sizeof("Point") |- _ =>
         rewrite Htail
     end.
-    sep_apply_l_atomic (store_point_fold pts_pre pivot0).
     sep_apply_l_atomic (point_array_cons_full pts_pre n_pre pivot0 tail_sorted).
     + dump_pre_spatial. lia.
     + cancel.
@@ -1697,16 +1627,14 @@ Proof.
     (fun _ stk => is_convex_hull
        (pivot0_high_level_spec :: l_high_level_spec) (rev stk)).
   split_pure_spatial.
-  - cancel (&( pivot_pre # "Point" ->ₛ "x") # Int |-> pivot0_high_level_spec.(x)).
-    cancel (&( pivot_pre # "Point" ->ₛ "y") # Int |-> pivot0_high_level_spec.(y)).
+  - cancel (store_point pivot_pre pivot0_high_level_spec).
     cancel (PointArray.full sorted_tail_pre tail_n_pre l_high_level_spec).
     cancel (PointArray.undef_full hull_pre (tail_n_pre + 1)).
     apply derivable1_wand_sepcon_adjoint.
     Intros stk. Intros retval_2.
     Exists (rev stk) retval_2.
     repeat (split_pure_spatial || split_pures).
-    + cancel (&( pivot_pre # "Point" ->ₛ "x") # Int |-> pivot0_high_level_spec.(x)).
-      cancel (&( pivot_pre # "Point" ->ₛ "y") # Int |-> pivot0_high_level_spec.(y)).
+    + cancel (store_point pivot_pre pivot0_high_level_spec).
       cancel (PointArray.full sorted_tail_pre tail_n_pre l_high_level_spec).
       cancel (PointArray.seg hull_pre 0 retval_2 (rev stk)).
       cancel (PointArray.undef_seg hull_pre retval_2 (tail_n_pre + 1)).

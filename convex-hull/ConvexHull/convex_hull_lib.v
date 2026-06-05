@@ -13,11 +13,11 @@ From AUXLib Require Import int_auto Feq Idents ListLib VMap relations Axioms.
 Require Import SetsClass.SetsClass. Import SetsNotation.
 From SimpleC.SL Require Import Mem SeparationLogic ArrayLib.
 From ConvexHull Require Export Record_Geo_Point.
-From ConvexHull Require Import Record_Geo_Vec Point_Order Graham_Scan Hull_Equiv Graham_Scan_M.
+From ConvexHull Require Import Record_Geo_Vec Point_Order Graham_Scan Hull_Equiv Graham_Scan_M Reversal.
 From FP Require Import PartialOrder_Setoid.
 Require Import MonadLib.Monad.
 From MonadLib.StateRelMonad Require StateRelBasic StateRelMonad.
-From MonadLib.StateRelMonad Require Import StateRelHoare.
+From MonadLib.StateRelMonad Require Import StateRelHoare safeexec_lib FixpointLib.
 Require Import Logic.LogicGenerator.demo932.Interface.
 
 Local Open Scope Z_scope.
@@ -520,14 +520,46 @@ Definition point_weak_polar_sorted (pivot : Point) (l : list Point) : Prop :=
 Definition build_hull : Point -> list Point -> program (list Point) unit :=
   Graham_Scan_M.build_hull.
 
-Definition is_convex_hull : list Point -> list Point -> Prop :=
-  Graham_Scan_M.is_convex_hull.
+Definition is_convex_hull (base hull : list Point) : Prop :=
+  Graham_Scan_M.is_convex_hull base hull \/
+  Graham_Scan_M.is_convex_hull base (rev hull).
+
+Lemma is_convex_hull_direct : forall base hull,
+  Graham_Scan_M.is_convex_hull base hull ->
+  is_convex_hull base hull.
+Proof.
+  intros base hull H.
+  left.
+  exact H.
+Qed.
+
+Lemma is_convex_hull_rev_stack : forall base hull,
+  is_convex_hull base hull ->
+  is_convex_hull base (rev hull).
+Proof.
+  intros base hull [H | H].
+  - right.
+    rewrite rev_involutive.
+    exact H.
+  - left.
+    exact H.
+Qed.
 
 Definition PointCoordsBound (l : list Point) : Prop :=
   Forall (fun p => point_in_bound p) l.
 
 Definition points_in_bound : list Point -> Prop :=
   PointCoordsBound.
+
+Lemma points_in_bound_app_l : forall l1 l2,
+  points_in_bound (l1 ++ l2) ->
+  points_in_bound l1.
+Proof.
+  unfold points_in_bound, PointCoordsBound.
+  intros l1 l2 H.
+  apply Forall_app in H.
+  tauto.
+Qed.
 
 Definition point_swap (l : list Point) (i j : Z) : list Point :=
   replace_Znth j (Znth i l default_point)
@@ -898,6 +930,385 @@ Definition build_hull_c_push (l : list Point) (i : Z)
   update' (fun _ => Znth i l default_point :: T) ;;
   build_hull_c_iter l (i + 1).
 
+Lemma pop_fun_continue_hseval : forall p t s T,
+  ~ ccw s t p ->
+  equiv (t :: s :: T) -@ pop_fun p -⥅ equiv (s :: T) ♯ by_continue tt.
+Proof.
+  intros p t s T Hnccw.
+  unfold hs_eval.
+  intros st Hst.
+  hnf in Hst. subst st.
+  unfold pop_fun.
+  exists (s :: T).
+  split.
+  - unfold_monad; sets_unfold; simpl.
+    exists (t :: s :: T), (t :: s :: T).
+    split; [split; reflexivity |].
+    right.
+    exists tt, (t :: s :: T).
+    split; [split; [exact Hnccw | reflexivity] |].
+    exists tt, (s :: T).
+    split; [reflexivity |].
+    split; reflexivity.
+  - reflexivity.
+Qed.
+
+Lemma pop_fun_ccw_break_hseval : forall p t s T,
+  ccw s t p ->
+  equiv (t :: s :: T) -@ pop_fun p -⥅ equiv (t :: s :: T) ♯ by_break tt.
+Proof.
+  intros p t s T Hccw.
+  unfold hs_eval.
+  intros st Hst.
+  hnf in Hst. subst st.
+  unfold pop_fun.
+  exists (t :: s :: T).
+  split.
+  - unfold_monad; sets_unfold; simpl.
+    exists (t :: s :: T), (t :: s :: T).
+    split; [split; reflexivity |].
+    left.
+    exists tt, (t :: s :: T).
+    split; [split; [exact Hccw | reflexivity] |].
+    split; reflexivity.
+  - reflexivity.
+Qed.
+
+Lemma pop_fun_nil_break_hseval : forall p,
+  equiv nil -@ pop_fun p -⥅ equiv nil ♯ by_break tt.
+Proof.
+  intros p.
+  unfold hs_eval.
+  intros st Hst.
+  hnf in Hst. subst st.
+  unfold pop_fun.
+  exists nil.
+  split.
+  - unfold_monad; sets_unfold; simpl.
+    exists nil, nil.
+    split; [split; reflexivity |].
+    split; reflexivity.
+  - reflexivity.
+Qed.
+
+Lemma pop_fun_single_break_hseval : forall p t,
+  equiv (t :: nil) -@ pop_fun p -⥅ equiv (t :: nil) ♯ by_break tt.
+Proof.
+  intros p t.
+  unfold hs_eval.
+  intros st Hst.
+  hnf in Hst. subst st.
+  unfold pop_fun.
+  exists (t :: nil).
+  split.
+  - unfold_monad; sets_unfold; simpl.
+    exists (t :: nil), (t :: nil).
+    split; [split; reflexivity |].
+    split; reflexivity.
+  - reflexivity.
+Qed.
+
+Lemma repeat_pop_fun_ccw_break_hseval : forall p t s T,
+  ccw s t p ->
+  equiv (t :: s :: T) -@
+    repeat_break (fun _ : unit => pop_fun p) tt
+    -⥅ equiv (t :: s :: T) ♯ tt.
+Proof.
+  intros p t s T Hccw.
+  unfold_loop.
+  eapply (hsevalbind_derive'
+            (pop_fun p)
+            (fun x =>
+               match x with
+               | by_continue a0 => repeat_break (fun _ : unit => pop_fun p) a0
+               | by_break b0 => ret b0
+               end)
+            (equiv (t :: s :: T)) (equiv (t :: s :: T))
+            (by_break tt) (equiv (t :: s :: T)) tt).
+  - apply pop_fun_ccw_break_hseval.
+    exact Hccw.
+  - simpl.
+    apply highret_eval2.
+Qed.
+
+Lemma repeat_pop_fun_nil_break_hseval : forall p,
+  equiv nil -@
+    repeat_break (fun _ : unit => pop_fun p) tt
+    -⥅ equiv nil ♯ tt.
+Proof.
+  intros p.
+  unfold_loop.
+  eapply (hsevalbind_derive'
+            (pop_fun p)
+            (fun x =>
+               match x with
+               | by_continue a0 => repeat_break (fun _ : unit => pop_fun p) a0
+               | by_break b0 => ret b0
+               end)
+            (equiv nil) (equiv nil) (by_break tt) (equiv nil) tt).
+  - apply pop_fun_nil_break_hseval.
+  - simpl.
+    apply highret_eval2.
+Qed.
+
+Lemma repeat_pop_fun_single_break_hseval : forall p t,
+  equiv (t :: nil) -@
+    repeat_break (fun _ : unit => pop_fun p) tt
+    -⥅ equiv (t :: nil) ♯ tt.
+Proof.
+  intros p t.
+  unfold_loop.
+  eapply (hsevalbind_derive'
+            (pop_fun p)
+            (fun x =>
+               match x with
+               | by_continue a0 => repeat_break (fun _ : unit => pop_fun p) a0
+               | by_break b0 => ret b0
+               end)
+            (equiv (t :: nil)) (equiv (t :: nil)) (by_break tt)
+            (equiv (t :: nil)) tt).
+  - apply pop_fun_single_break_hseval.
+  - simpl.
+    apply highret_eval2.
+Qed.
+
+Lemma get_update_push_hseval : forall p stk,
+  equiv stk -@
+    (T <- get' id;; update' (fun _ : list Point => p :: T))
+    -⥅ equiv (p :: stk) ♯ tt.
+Proof.
+  intros p stk.
+  unfold hs_eval.
+  intros st Hst.
+  hnf in Hst. subst st.
+  exists (p :: stk).
+  split.
+  - unfold_monad; sets_unfold; simpl.
+    exists stk, stk.
+    split; [split; reflexivity |].
+    reflexivity.
+  - reflexivity.
+Qed.
+
+Lemma step_fun_ccw_push_hseval : forall p t s T,
+  ccw s t p ->
+  equiv (t :: s :: T) -@ step_fun p
+    -⥅ equiv (p :: t :: s :: T) ♯ tt.
+Proof.
+  intros p t s T Hccw.
+  unfold Graham_Scan_M.step_fun.
+  eapply (hsevalbind_derive'
+            (repeat_break (fun _ : unit => pop_fun p) tt)
+            (fun _ => T0 <- get' id;;
+                      update' (fun _ : list Point => p :: T0))
+            (equiv (t :: s :: T)) (equiv (t :: s :: T)) tt
+            (equiv (p :: t :: s :: T)) tt).
+  - apply repeat_pop_fun_ccw_break_hseval.
+    exact Hccw.
+  - apply get_update_push_hseval.
+Qed.
+
+Lemma step_fun_nil_push_hseval : forall p,
+  equiv nil -@ step_fun p -⥅ equiv (p :: nil) ♯ tt.
+Proof.
+  intros p.
+  unfold Graham_Scan_M.step_fun.
+  eapply (hsevalbind_derive'
+            (repeat_break (fun _ : unit => pop_fun p) tt)
+            (fun _ => T0 <- get' id;;
+                      update' (fun _ : list Point => p :: T0))
+            (equiv nil) (equiv nil) tt
+            (equiv (p :: nil)) tt).
+  - apply repeat_pop_fun_nil_break_hseval.
+  - apply get_update_push_hseval.
+Qed.
+
+Lemma step_fun_single_push_hseval : forall p t,
+  equiv (t :: nil) -@ step_fun p -⥅ equiv (p :: t :: nil) ♯ tt.
+Proof.
+  intros p t.
+  unfold Graham_Scan_M.step_fun.
+  eapply (hsevalbind_derive'
+            (repeat_break (fun _ : unit => pop_fun p) tt)
+            (fun _ => T0 <- get' id;;
+                      update' (fun _ : list Point => p :: T0))
+            (equiv (t :: nil)) (equiv (t :: nil)) tt
+            (equiv (p :: t :: nil)) tt).
+  - apply repeat_pop_fun_single_break_hseval.
+  - apply get_update_push_hseval.
+Qed.
+
+Lemma safeExec_bind_assoc_forward :
+  forall {A B C : Type} (P : list Point -> Prop)
+         (c0 : program (list Point) A)
+         (c1 : A -> program (list Point) B)
+         (c2 : B -> program (list Point) C) X,
+    safeExec P (bind (bind c0 c1) c2) X ->
+    safeExec P (bind c0 (fun x => bind (c1 x) c2)) X.
+Proof.
+  intros.
+  eapply safeExec_proequiv.
+  - apply bind_assoc.
+  - exact H.
+Qed.
+
+Lemma safeExec_build_hull_c_step_ccw_push : forall l i t s T X,
+  ccw s t (Znth i l default_point) ->
+  safeExec (equiv (t :: s :: T)) (build_hull_c_step l i) X ->
+  safeExec (equiv (Znth i l default_point :: t :: s :: T))
+           (build_hull_c_iter l (i + 1)) X.
+Proof.
+  intros l i t s T X Hccw Hsafe.
+  unfold build_hull_c_step in Hsafe at 1.
+  unfold build_hull_c_next in Hsafe.
+  eapply (highstepbind_derive
+            (Graham_Scan_M.step_fun (Znth i l default_point))
+            (fun _ : unit => build_hull_c_iter l (i + 1))
+            (equiv (t :: s :: T)) tt
+            (equiv (Znth i l default_point :: t :: s :: T))).
+  - apply step_fun_ccw_push_hseval.
+    exact Hccw.
+  - exact Hsafe.
+Qed.
+
+Lemma safeExec_build_hull_c_step_nil_push : forall l i X,
+  safeExec (equiv nil) (build_hull_c_step l i) X ->
+  safeExec (equiv (Znth i l default_point :: nil))
+           (build_hull_c_iter l (i + 1)) X.
+Proof.
+  intros l i X Hsafe.
+  unfold build_hull_c_step in Hsafe at 1.
+  unfold build_hull_c_next in Hsafe.
+  eapply (highstepbind_derive
+            (Graham_Scan_M.step_fun (Znth i l default_point))
+            (fun _ : unit => build_hull_c_iter l (i + 1))
+            (equiv nil) tt
+            (equiv (Znth i l default_point :: nil))).
+  - apply step_fun_nil_push_hseval.
+  - exact Hsafe.
+Qed.
+
+Lemma safeExec_build_hull_c_step_single_push : forall l i t X,
+  safeExec (equiv (t :: nil)) (build_hull_c_step l i) X ->
+  safeExec (equiv (Znth i l default_point :: t :: nil))
+           (build_hull_c_iter l (i + 1)) X.
+Proof.
+  intros l i t X Hsafe.
+  unfold build_hull_c_step in Hsafe at 1.
+  unfold build_hull_c_next in Hsafe.
+  eapply (highstepbind_derive
+            (Graham_Scan_M.step_fun (Znth i l default_point))
+            (fun _ : unit => build_hull_c_iter l (i + 1))
+            (equiv (t :: nil)) tt
+            (equiv (Znth i l default_point :: t :: nil))).
+  - apply step_fun_single_push_hseval.
+  - exact Hsafe.
+Qed.
+
+Lemma safeExec_build_hull_c_step_pop : forall l i t s T X,
+  ~ ccw s t (Znth i l default_point) ->
+  safeExec (equiv (t :: s :: T)) (build_hull_c_step l i) X ->
+  safeExec (equiv (s :: T)) (build_hull_c_step l i) X.
+Proof.
+  intros l i t s T X Hnccw Hsafe.
+  unfold build_hull_c_step in Hsafe at 1.
+  unfold build_hull_c_next in Hsafe.
+  unfold Graham_Scan_M.step_fun in Hsafe at 1.
+  prog_nf in Hsafe.
+  unfold_loop in Hsafe.
+  prog_nf in Hsafe.
+  eapply (safeExec_proequiv
+            (bind
+               (H <- repeat_break
+                       (fun _ : unit =>
+                          Graham_Scan_M.pop_fun (Znth i l default_point)) tt;;
+                T0 <- get' id;;
+                update' (fun _ : list Point => Znth i l default_point :: T0))
+               (fun _ : unit => build_hull_c_iter l (i + 1)))
+            (build_hull_c_step l i)
+            (equiv (s :: T)) X).
+  - unfold build_hull_c_step, build_hull_c_next, Graham_Scan_M.step_fun.
+    reflexivity.
+  - eapply safeExec_bind_assoc_forward in Hsafe.
+    eapply (highstepbind_derive
+              (Graham_Scan_M.pop_fun (Znth i l default_point))
+              (fun x =>
+                 bind
+                   (match x with
+                    | by_continue a0 =>
+                        repeat_break
+                          (fun _ : unit =>
+                             Graham_Scan_M.pop_fun (Znth i l default_point)) a0
+                    | by_break b0 => ret b0
+                    end;;
+                    T0 <- get' id;;
+                    update' (fun _ : list Point =>
+                                Znth i l default_point :: T0))
+                   (fun _ : unit => build_hull_c_iter l (i + 1)))
+              (equiv (t :: s :: T)) (by_continue tt) (equiv (s :: T))).
+    + apply pop_fun_continue_hseval.
+      exact Hnccw.
+    + exact Hsafe.
+Qed.
+
+Lemma Znth_rev_stack_prev : forall (d t s : Point) (T : list Point) top,
+  top + 1 = Zlength (rev (t :: s :: T)) ->
+  Znth (top - 1 - 0) (rev (t :: s :: T)) d = s.
+Proof.
+  intros.
+  simpl in H |- *.
+  rewrite !Zlength_app, !Zlength_cons, !Zlength_nil in H.
+  pose proof (Zlength_nonneg (rev T)) as Hrev_nonneg.
+  assert (Htop : top = Zlength (rev T) + 1) by lia.
+  subst top.
+  replace (Zlength (rev T) + 1 - 1 - 0) with (Zlength (rev T)) by lia.
+  rewrite app_Znth1.
+  - rewrite app_Znth2.
+    + replace (Zlength (rev T) - Zlength (rev T)) with 0 by lia.
+      reflexivity.
+    + lia.
+  - rewrite Zlength_app, Zlength_cons, Zlength_nil. lia.
+Qed.
+
+Lemma Znth_rev_stack_top : forall (d t s : Point) (T : list Point) top,
+  top + 1 = Zlength (rev (t :: s :: T)) ->
+  Znth (top - 0) (rev (t :: s :: T)) d = t.
+Proof.
+  intros.
+  simpl in H |- *.
+  rewrite !Zlength_app, !Zlength_cons, !Zlength_nil in H.
+  pose proof (Zlength_nonneg (rev T)) as Hrev_nonneg.
+  assert (Htop : top = Zlength (rev T) + 1) by lia.
+  subst top.
+  replace (Zlength (rev T) + 1 - 0) with (Zlength (rev T ++ [s]))
+    by (rewrite Zlength_app, Zlength_cons, Zlength_nil; lia).
+  rewrite app_Znth2.
+  - replace (Zlength (rev T ++ [s]) - Zlength (rev T ++ [s])) with 0 by lia.
+    reflexivity.
+  - lia.
+Qed.
+
+Lemma rev_stack_pop_top : forall (t s : Point) (T : list Point) top,
+  top + 1 = Zlength (rev (t :: s :: T)) ->
+  top = Zlength (rev (s :: T)).
+Proof.
+  intros.
+  simpl in H |- *.
+  rewrite !Zlength_app, !Zlength_cons, !Zlength_nil in H.
+  rewrite Zlength_app, Zlength_cons, Zlength_nil.
+  lia.
+Qed.
+
+Lemma rev_stack_two_len_ge : forall (t s : Point) (T : list Point),
+  2 <= Zlength (rev (t :: s :: T)).
+Proof.
+  intros.
+  simpl.
+  rewrite !Zlength_app, !Zlength_cons, !Zlength_nil.
+  pose proof (Zlength_nonneg (rev T)).
+  lia.
+Qed.
+
 Lemma point_cross_unfold : forall a b c,
   point_cross a b c =
   (x b - x a) * (y c - y a) - (y b - y a) * (x c - x a).
@@ -968,6 +1379,15 @@ Proof.
   unfold point_cross, ccw, left_than, cross_prod, build_vec in *.
   simpl in *.
   lia.
+Qed.
+
+Lemma point_cross_le_0_not_ccw_local : forall a b c,
+  point_cross a b c <= 0 ->
+  ~ ccw a b c.
+Proof.
+  intros a b c H.
+  apply Point_Order.point_cross_le_0_not_ccw.
+  exact H.
 Qed.
 
 Lemma point_cross_zero_point_colinear_swap : forall gp pa pb,
@@ -1240,6 +1660,7 @@ Lemma point_weak_polar_sorted_graham_scan_convex_hull : forall pivot l,
   is_convex_hull (pivot :: l) (graham_scan (rev (pivot :: l))).
 Proof.
   intros pivot l Hleft Hne Hsorted.
+  apply is_convex_hull_direct.
   apply graham_scan_closed_convex_hull_final.
   - apply point_weak_polar_sorted_pure_sort_rev; assumption.
   - exact Hne.
@@ -1268,17 +1689,123 @@ Lemma point_weak_polar_sorted_build_hull_convex_hull : forall pivot l,
         (fun _ T => is_convex_hull (pivot :: l) T).
 Proof.
   intros pivot l Hleft Hne Hsorted.
-  unfold build_hull, is_convex_hull.
+  unfold build_hull.
   eapply Hoare_conseq_pre.
   2: {
-    apply Graham_Scan_M.build_hull_convex_hull_final.
-    - apply point_weak_polar_sorted_pure_sort_rev; assumption.
-    - exact Hne.
+    eapply Hoare_conseq_post.
+    2: {
+      apply Graham_Scan_M.build_hull_convex_hull_final.
+      - apply point_weak_polar_sorted_pure_sort_rev; assumption.
+      - exact Hne.
+    }
+    intros [] T HT.
+    apply is_convex_hull_direct.
+    exact HT.
   }
   intros T HT.
   unfold empty_point_stack in HT.
   symmetry.
   exact HT.
+Qed.
+
+Lemma point_weak_polar_sorted_build_hull_convex_hull_rev_stack : forall pivot l,
+  leftmost pivot (rev l) ->
+  l <> [] ->
+  point_weak_polar_sorted pivot l ->
+  Hoare (equiv empty_point_stack)
+        (build_hull pivot l)
+        (fun _ T => is_convex_hull (pivot :: l) (rev T)).
+Proof.
+  intros pivot l Hleft Hne Hsorted.
+  eapply Hoare_conseq_post.
+  2: {
+    apply point_weak_polar_sorted_build_hull_convex_hull.
+    - exact Hleft.
+    - exact Hne.
+    - exact Hsorted.
+  }
+  intros [] T HT.
+  apply is_convex_hull_rev_stack.
+  exact HT.
+Qed.
+
+Lemma point_polar_sorted_build_hull_convex_hull_rev_stack : forall pivot l,
+  leftmost pivot (rev l) ->
+  l <> [] ->
+  point_polar_sorted pivot l ->
+  Hoare (equiv empty_point_stack)
+        (build_hull pivot l)
+        (fun _ T => is_convex_hull (pivot :: l) (rev T)).
+Proof.
+  intros pivot l Hleft Hne Hsorted.
+  apply point_weak_polar_sorted_build_hull_convex_hull_rev_stack.
+  - exact Hleft.
+  - exact Hne.
+  - apply point_polar_sorted_point_weak_polar_sorted.
+    exact Hsorted.
+Qed.
+
+Lemma graham_is_convex_hull_base_permutation : forall base1 base2 hull,
+  point_permutation base1 base2 ->
+  Graham_Scan_M.is_convex_hull base2 hull ->
+  Graham_Scan_M.is_convex_hull base1 hull.
+Proof.
+  intros base1 base2 hull Hperm Hhull.
+  unfold point_permutation, PointPermutation in Hperm.
+  unfold Graham_Scan_M.is_convex_hull in *.
+  destruct Hhull as [Hconv Hmax].
+  split; [exact Hconv |].
+  unfold is_max_hull'_edges in *.
+  rewrite Forall_forall in *.
+  intros q Hq.
+  apply Hmax.
+  eapply Permutation_in; eauto.
+Qed.
+
+Lemma graham_is_convex_hull_base_nonempty_hull_nonempty : forall base hull p,
+  In p base ->
+  Graham_Scan_M.is_convex_hull base hull ->
+  1 <= Zlength hull.
+Proof.
+  intros base hull p Hin Hhull.
+  destruct hull as [| h hull_tail].
+  - unfold Graham_Scan_M.is_convex_hull in Hhull.
+    destruct Hhull as [_ Hmax].
+    unfold is_max_hull'_edges in Hmax.
+    rewrite Forall_forall in Hmax.
+    specialize (Hmax p Hin).
+    simpl in Hmax.
+    contradiction.
+  - rewrite Zlength_cons.
+    pose proof (Zlength_nonneg hull_tail).
+    lia.
+Qed.
+
+Lemma is_convex_hull_base_permutation : forall base1 base2 hull,
+  point_permutation base1 base2 ->
+  is_convex_hull base2 hull ->
+  is_convex_hull base1 hull.
+Proof.
+  intros base1 base2 hull Hperm [Hhull | Hhull].
+  - left.
+    eapply graham_is_convex_hull_base_permutation; eauto.
+  - right.
+    eapply graham_is_convex_hull_base_permutation; eauto.
+Qed.
+
+Lemma is_convex_hull_base_nonempty_hull_nonempty : forall base hull p,
+  In p base ->
+  is_convex_hull base hull ->
+  1 <= Zlength hull.
+Proof.
+  intros base hull p Hin [Hhull | Hhull].
+  - eapply graham_is_convex_hull_base_nonempty_hull_nonempty; eauto.
+  - pose proof
+      (graham_is_convex_hull_base_nonempty_hull_nonempty
+         base (rev hull) p Hin Hhull) as Hlen.
+    rewrite !Zlength_correct in *.
+    rewrite length_rev in Hlen.
+    exact Hlen.
 Qed.
 
 Lemma point_polar_sorted_build_hull_convex_hull : forall pivot l,
@@ -1295,42 +1822,6 @@ Proof.
   - exact Hne.
   - apply point_polar_sorted_point_weak_polar_sorted.
     exact Hsorted.
-Qed.
-
-Lemma is_convex_hull_base_permutation : forall base1 base2 hull,
-  point_permutation base1 base2 ->
-  is_convex_hull base2 hull ->
-  is_convex_hull base1 hull.
-Proof.
-  intros base1 base2 hull Hperm Hhull.
-  unfold point_permutation, PointPermutation in Hperm.
-  unfold is_convex_hull, Graham_Scan_M.is_convex_hull in *.
-  destruct Hhull as [Hconv Hmax].
-  split; [exact Hconv |].
-  unfold is_max_hull'_edges in *.
-  rewrite Forall_forall in *.
-  intros q Hq.
-  apply Hmax.
-  eapply Permutation_in; eauto.
-Qed.
-
-Lemma is_convex_hull_base_nonempty_hull_nonempty : forall base hull p,
-  In p base ->
-  is_convex_hull base hull ->
-  1 <= Zlength hull.
-Proof.
-  intros base hull p Hin Hhull.
-  destruct hull as [| h hull_tail].
-  - unfold is_convex_hull, Graham_Scan_M.is_convex_hull in Hhull.
-    destruct Hhull as [_ Hmax].
-    unfold is_max_hull'_edges in Hmax.
-    rewrite Forall_forall in Hmax.
-    specialize (Hmax p Hin).
-    simpl in Hmax.
-    contradiction.
-  - rewrite Zlength_cons.
-    pose proof (Zlength_nonneg hull_tail).
-    lia.
 Qed.
 
 Lemma store_point_fold : forall p pt,
@@ -1662,6 +2153,43 @@ Proof.
 	      * apply (PointArray.undef_seg_merge_to_undef_seg base lo (lo + 1) hi); lia.
 Qed.
 
+Lemma point_array_seg_snoc_store_undef :
+  forall (base : addr) (hi bound : Z) (l : list Point) (a : Point),
+  0 <= hi ->
+  hi + 1 <= bound ->
+  store_point (base + hi * sizeof("Point")) a **
+  (PointArray.undef_seg base (hi + 1) bound **
+   PointArray.seg base 0 hi l) |--
+  PointArray.seg base 0 (hi + 1) (l ++ a :: nil) **
+  PointArray.undef_seg base (hi + 1) bound.
+Proof.
+  intros.
+  sep_apply (point_array_seg_snoc_store base 0 hi l a); try lia.
+  entailer!.
+Qed.
+
+Lemma point_array_seg_pop_tail : forall base top hi prefix last,
+  top = Zlength prefix ->
+  top + 1 <= hi ->
+  PointArray.seg base 0 (top + 1) (prefix ++ last :: nil) **
+  PointArray.undef_seg base (top + 1) hi |--
+  PointArray.seg base 0 top prefix **
+  PointArray.undef_seg base top hi.
+Proof.
+  intros.
+  sep_apply (PointArray.seg_split_to_seg base 0 top (top + 1)
+               (prefix ++ last :: nil));
+    try (pose proof (Zlength_nonneg prefix); lia).
+  replace (sublist 0 (top - 0) (prefix ++ last :: nil)) with prefix by
+    (replace (top - 0) with (Zlength prefix) by lia;
+     rewrite sublist_app_exact1; reflexivity).
+  sep_apply (PointArray.seg_to_undef_seg base top (top + 1)
+               (sublist (top - 0) (top + 1 - 0) (prefix ++ last :: nil))).
+  sep_apply (PointArray.undef_seg_merge_to_undef_seg base top (top + 1) hi);
+    try lia.
+  entailer!.
+Qed.
+
 Lemma point_array_cons_full : forall base n p tail,
   1 <= n ->
   store_point base p **
@@ -1694,6 +2222,21 @@ Proof.
     apply nth_In.
     rewrite Zlength_correct in Hi.
     lia.
+Qed.
+
+Lemma points_in_bound_snoc_Znth : forall prefix l i d,
+  points_in_bound prefix ->
+  points_in_bound l ->
+  0 <= i < Zlength l ->
+  points_in_bound (prefix ++ Znth i l d :: nil).
+Proof.
+  unfold points_in_bound, PointCoordsBound.
+  intros prefix l i d Hprefix Hl Hi.
+  apply Forall_app.
+  split; [exact Hprefix |].
+  constructor.
+  - eapply PointCoordsBound_Znth; eauto.
+  - constructor.
 Qed.
 
 Lemma point_in_bound_point_mk_fields : forall p,
@@ -1932,4 +2475,936 @@ Proof.
   destruct (Z_gt_dec 0 0); [lia |].
   destruct (Z_lt_dec 0 0); [lia |].
   apply point_cmp_xy_eq; reflexivity.
+Qed.
+
+Lemma point_cmp_xy_gt_flip : forall a b,
+  point_cmp_xy a b > 0 ->
+  point_cmp_xy b a < 0.
+Proof.
+  intros a b Hcmp.
+  unfold point_cmp_xy, x, y in *.
+  repeat
+    match goal with
+    | |- context [Z_lt_dec ?a ?b] => destruct (Z_lt_dec a b)
+    | |- context [Z_gt_dec ?a ?b] => destruct (Z_gt_dec a b)
+    | H : context [Z_lt_dec ?a ?b] |- _ => destruct (Z_lt_dec a b)
+    | H : context [Z_gt_dec ?a ?b] |- _ => destruct (Z_gt_dec a b)
+    end;
+    lia.
+Qed.
+
+Lemma Znth_In_range : forall {A : Type} (l : list A) i d,
+  0 <= i < Zlength l ->
+  In (Znth i l d) l.
+Proof.
+  intros A l i d Hi.
+  unfold Znth.
+  apply nth_In.
+  rewrite Zlength_correct in Hi.
+  lia.
+Qed.
+
+Lemma point_cross_swap : forall gp a b,
+  point_cross gp b a = - point_cross gp a b.
+Proof.
+  intros gp a b.
+  unfold point_cross, cross_prod, build_vec, x, y.
+  simpl.
+  ring.
+Qed.
+
+Lemma point_cmp_polar_mid_pos_flip_under_leftdown : forall gp a b,
+  point_leftdown gp a ->
+  point_leftdown gp b ->
+  point_cross gp a b = 0 ->
+  point_at_mid gp a b > 0 ->
+  point_cmp_polar gp b a < 0.
+Proof.
+  intros [gx gy] [ax ay] [bx by0] Hga Hgb Hcr Hmid.
+  unfold point_cmp_polar, point_leftdown, point_cross, point_at_mid,
+    point_dot, cross_prod, dot_prod, build_vec, point_cmp_xy, x, y in *.
+  simpl in *.
+  destruct Hga as [Hgax | [Hgax Hgay]];
+  destruct Hgb as [Hgbx | [Hgbx Hgby]].
+  - repeat
+      match goal with
+      | |- context [Z_gt_dec ?a ?b] => destruct (Z_gt_dec a b)
+      | |- context [Z_lt_dec ?a ?b] => destruct (Z_lt_dec a b)
+      end;
+      try lia.
+    all:
+      assert (Hid :
+        (ax - gx) * ((ax - bx) * (gx - bx) + (ay - by0) * (gy - by0)) +
+        (bx - gx) * ((bx - ax) * (gx - ax) + (by0 - ay) * (gy - ay)) = 0);
+      [ transitivity ((by0 - ay) *
+          ((ax - gx) * (by0 - gy) - (bx - gx) * (ay - gy)));
+        [ ring | rewrite Hcr; ring ]
+      | nia ].
+  - subst bx.
+    assert (by0 = gy) by nia.
+    subst by0.
+    repeat
+      match goal with
+      | |- context [Z_gt_dec ?a ?b] => destruct (Z_gt_dec a b)
+      | |- context [Z_lt_dec ?a ?b] => destruct (Z_lt_dec a b)
+      end;
+      nia.
+  - subst ax.
+    assert (ay = gy) by nia.
+    subst ay.
+    nia.
+  - subst ax bx.
+    repeat
+      match goal with
+      | |- context [Z_gt_dec ?a ?b] => destruct (Z_gt_dec a b)
+      | |- context [Z_lt_dec ?a ?b] => destruct (Z_lt_dec a b)
+      end;
+      try lia.
+    all:
+      try solve [
+        assert (gy < ay) by
+          (destruct (Z_lt_ge_dec gy ay);
+           [ lia | assert (gy = ay) by lia; subst; nia ]);
+        try assert (gy < by0) by
+          (destruct (Z_lt_ge_dec gy by0);
+           [ lia | assert (gy = by0) by lia; subst; nia ]);
+        nia ].
+Qed.
+
+Lemma point_cmp_polar_mid_zero_xy_gt_flip_under_leftdown : forall gp a b,
+  point_leftdown gp a ->
+  point_leftdown gp b ->
+  point_cross gp a b = 0 ->
+  point_at_mid gp a b = 0 ->
+  point_cmp_xy a b > 0 ->
+  point_cmp_polar gp b a < 0.
+Proof.
+  intros [gx gy] [ax ay] [bx by0] Hga Hgb Hcr Hmid Hxy.
+  unfold point_cmp_polar, point_leftdown, point_cross, point_at_mid,
+    point_dot, cross_prod, dot_prod, build_vec, point_cmp_xy, x, y in *.
+  simpl in *.
+  destruct Hga as [Hgax | [Hgax Hgay]];
+  destruct Hgb as [Hgbx | [Hgbx Hgby]].
+  - repeat
+      match goal with
+      | H : context [Z_lt_dec ?a ?b] |- _ => destruct (Z_lt_dec a b)
+      | H : context [Z_gt_dec ?a ?b] |- _ => destruct (Z_gt_dec a b)
+      | |- context [Z_gt_dec ?a ?b] => destruct (Z_gt_dec a b)
+      | |- context [Z_lt_dec ?a ?b] => destruct (Z_lt_dec a b)
+      end;
+      try lia.
+    all:
+      assert (Hid :
+        (ax - gx) * ((ax - bx) * (gx - bx) + (ay - by0) * (gy - by0)) +
+        (bx - gx) * ((bx - ax) * (gx - ax) + (by0 - ay) * (gy - ay)) = 0);
+      [ transitivity ((by0 - ay) *
+          ((ax - gx) * (by0 - gy) - (bx - gx) * (ay - gy)));
+        [ ring | rewrite Hcr; ring ]
+      | nia ].
+  - subst bx.
+    assert (by0 = gy) by nia.
+    subst by0.
+    repeat
+      match goal with
+      | H : context [Z_lt_dec ?a ?b] |- _ => destruct (Z_lt_dec a b)
+      | H : context [Z_gt_dec ?a ?b] |- _ => destruct (Z_gt_dec a b)
+      | |- context [Z_gt_dec ?a ?b] => destruct (Z_gt_dec a b)
+      | |- context [Z_lt_dec ?a ?b] => destruct (Z_lt_dec a b)
+      end;
+      nia.
+  - subst ax.
+    assert (ay = gy) by nia.
+    subst ay.
+    repeat
+      match goal with
+      | H : context [Z_lt_dec ?a ?b] |- _ => destruct (Z_lt_dec a b)
+      | H : context [Z_gt_dec ?a ?b] |- _ => destruct (Z_gt_dec a b)
+      | |- context [Z_gt_dec ?a ?b] => destruct (Z_gt_dec a b)
+      | |- context [Z_lt_dec ?a ?b] => destruct (Z_lt_dec a b)
+      end;
+      nia.
+  - subst ax bx.
+    repeat
+      match goal with
+      | H : context [Z_lt_dec ?a ?b] |- _ => destruct (Z_lt_dec a b)
+      | H : context [Z_gt_dec ?a ?b] |- _ => destruct (Z_gt_dec a b)
+      | |- context [Z_gt_dec ?a ?b] => destruct (Z_gt_dec a b)
+      | |- context [Z_lt_dec ?a ?b] => destruct (Z_lt_dec a b)
+      end;
+      try lia.
+    all:
+      try solve [
+        assert (gy < ay) by
+          (destruct (Z_lt_ge_dec gy ay);
+           [ lia | assert (gy = ay) by lia; subst; nia ]);
+        nia ].
+Qed.
+
+Lemma point_cmp_polar_gt_flip_under_leftdown : forall gp a b,
+  point_leftdown gp a ->
+  point_leftdown gp b ->
+  point_cmp_polar gp a b > 0 ->
+  point_cmp_polar gp b a < 0.
+Proof.
+  intros gp a b Hga Hgb Hcmp.
+  unfold point_cmp_polar in Hcmp.
+  destruct (Z_gt_dec (point_cross gp a b) 0) as [Hcr_pos | Hcr_not_pos].
+  - lia.
+  - destruct (Z_lt_dec (point_cross gp a b) 0) as [Hcr_neg | Hcr_not_neg].
+    + unfold point_cmp_polar.
+      rewrite point_cross_swap.
+      destruct (Z_gt_dec (- point_cross gp a b) 0); lia.
+    + assert (Hcr_zero : point_cross gp a b = 0) by lia.
+      destruct (Z_gt_dec (point_at_mid gp a b) 0) as [Hmid_pos | Hmid_not_pos].
+      * eapply point_cmp_polar_mid_pos_flip_under_leftdown; eauto.
+      * destruct (Z_lt_dec (point_at_mid gp a b) 0) as [Hmid_neg | Hmid_not_neg].
+        -- lia.
+        -- assert (Hmid_zero : point_at_mid gp a b = 0) by lia.
+           eapply point_cmp_polar_mid_zero_xy_gt_flip_under_leftdown; eauto.
+Qed.
+
+Lemma point_cmp_polar_gt_flip_under_leftmost : forall gp l a b,
+  leftmost gp l ->
+  In a l ->
+  In b l ->
+  point_cmp_polar gp a b > 0 ->
+  point_cmp_polar gp b a < 0.
+Proof.
+  intros gp l a b Hleft Ha Hb Hcmp.
+  unfold leftmost in Hleft.
+  rewrite Forall_forall in Hleft.
+  eapply point_cmp_polar_gt_flip_under_leftdown.
+  - unfold point_leftdown.
+    apply Hleft.
+    exact Ha.
+  - unfold point_leftdown.
+    apply Hleft.
+    exact Hb.
+  - exact Hcmp.
+Qed.
+
+Lemma Forall_permutation_point :
+  forall (P : Point -> Prop) l l1,
+    PointPermutation l l1 ->
+    Forall P l ->
+    Forall P l1.
+Proof.
+  intros P l l1 Hperm Hforall.
+  unfold PointPermutation in Hperm.
+  rewrite Forall_forall in *.
+  intros x Hin.
+  apply Hforall.
+  eapply Permutation_in.
+  - apply Permutation_sym. exact Hperm.
+  - exact Hin.
+Qed.
+
+Lemma Forall_Znth_point :
+  forall (P : Point -> Prop) l i,
+    Forall P l ->
+    0 <= i < Zlength l ->
+    P (Znth i l default_point).
+Proof.
+  intros P l i Hforall Hrange.
+  rewrite Forall_forall in Hforall.
+  apply Hforall.
+  apply Znth_In_range.
+  exact Hrange.
+Qed.
+
+Lemma sublist_eq_from_Znth_point :
+  forall l1 l2 lo hi,
+    Zlength l1 = Zlength l2 ->
+    0 <= lo <= hi ->
+    hi <= Zlength l1 ->
+    (forall k, lo <= k < hi ->
+       Znth k l1 default_point = Znth k l2 default_point) ->
+    sublist lo hi l1 = sublist lo hi l2.
+Proof.
+  intros l1 l2 lo hi Hlen Hlohi Hhi Hpoint.
+  apply (proj2 (list_eq_ext (sublist lo hi l1)
+                            (sublist lo hi l2) default_point)).
+  split.
+  - rewrite Zlength_sublist by lia.
+    rewrite Zlength_sublist by (rewrite <- Hlen; lia).
+    lia.
+  - intros i Hi.
+    assert (Hi' : 0 <= i < hi - lo).
+    { rewrite Zlength_sublist in Hi by lia. exact Hi. }
+    rewrite (@Znth_sublist_lt Point default_point lo hi l1 i) by lia.
+    rewrite (@Znth_sublist_lt Point default_point lo hi l2 i)
+      by (try rewrite <- Hlen; lia).
+    apply Hpoint.
+    lia.
+Qed.
+
+Lemma list_decompose_sublist_point :
+  forall (l : list Point) lo hi,
+    0 <= lo <= hi ->
+    hi <= Zlength l ->
+    l = sublist 0 lo l ++ sublist lo hi l ++ sublist hi (Zlength l) l.
+Proof.
+  intros l lo hi Hlohi Hhi.
+  rewrite <- (sublist_self l (Zlength l)) at 1 by reflexivity.
+  rewrite (sublist_split 0 (Zlength l) lo l) by lia.
+  rewrite (sublist_split lo (Zlength l) hi l) by lia.
+  reflexivity.
+Qed.
+
+Lemma PointSameOutsideRange_refl :
+  forall l left right,
+    PointSameOutsideRange l l left right.
+Proof.
+  intros l left right.
+  split.
+  - reflexivity.
+  - intros; reflexivity.
+Qed.
+
+Lemma PointSameOutsideRange_trans :
+  forall l l1 l2 left right,
+    PointSameOutsideRange l l1 left right ->
+    PointSameOutsideRange l1 l2 left right ->
+    PointSameOutsideRange l l2 left right.
+Proof.
+  intros l l1 l2 left right [Hlen1 Heq1] [Hlen2 Heq2].
+  split.
+  - rewrite Hlen1. exact Hlen2.
+  - intros k Hk Hout.
+    assert (Hk1 : 0 <= k < Zlength l1) by (rewrite <- Hlen1; exact Hk).
+    rewrite (Heq2 k Hk1 Hout).
+    apply Heq1; assumption.
+Qed.
+
+Lemma PointSameOutsideRange_weaken :
+  forall l l1 left1 right1 left2 right2,
+    left2 <= left1 ->
+    right1 <= right2 ->
+    PointSameOutsideRange l l1 left1 right1 ->
+    PointSameOutsideRange l l1 left2 right2.
+Proof.
+  intros l l1 left1 right1 left2 right2 Hleft Hright [Hlen Heq].
+  split.
+  - exact Hlen.
+  - intros k Hk Hout.
+    apply Heq; try assumption.
+    destruct Hout as [Hout | Hout].
+    + left. lia.
+    + right. lia.
+Qed.
+
+Lemma PointSameOutsideRange_prefix :
+  forall l l1 left right,
+    PointSameOutsideRange l l1 left right ->
+    0 <= left <= Zlength l ->
+    sublist 0 left l1 = sublist 0 left l.
+Proof.
+  intros l l1 left right [Hlen Heq] Hrange.
+  apply sublist_eq_from_Znth_point.
+  - symmetry. exact Hlen.
+  - lia.
+  - lia.
+  - intros k Hk.
+    apply Heq.
+    + lia.
+    + left. lia.
+Qed.
+
+Lemma PointSameOutsideRange_suffix :
+  forall l l1 left right,
+    PointSameOutsideRange l l1 left right ->
+    0 <= right + 1 <= Zlength l ->
+    sublist (right + 1) (Zlength l1) l1 =
+    sublist (right + 1) (Zlength l) l.
+Proof.
+  intros l l1 left right [Hlen Heq] Hrange.
+  rewrite <- Hlen.
+  apply sublist_eq_from_Znth_point.
+  - symmetry. exact Hlen.
+  - lia.
+  - lia.
+  - intros k Hk.
+    apply Heq.
+    + rewrite Hlen. lia.
+    + right. lia.
+Qed.
+
+Lemma PointPermutation_middle_of_same_outside :
+  forall l l1 left right,
+    PointPermutation l l1 ->
+    PointSameOutsideRange l l1 left right ->
+    0 <= left <= right + 1 ->
+    right + 1 <= Zlength l ->
+    PointPermutation (sublist left (right + 1) l)
+                     (sublist left (right + 1) l1).
+Proof.
+  intros l l1 left right Hperm Hsame Hlr Hright.
+  pose proof Hsame as Hsame0.
+  destruct Hsame as [Hlen _].
+  pose proof (PointSameOutsideRange_prefix _ _ _ _ Hsame0 ltac:(lia))
+    as Hpre.
+  pose proof (PointSameOutsideRange_suffix _ _ _ _ Hsame0 ltac:(lia))
+    as Hsuf.
+  rewrite (list_decompose_sublist_point l left (right + 1)) in Hperm
+    by lia.
+  assert (Hright1 : right + 1 <= Zlength l1) by (rewrite <- Hlen; lia).
+  rewrite (list_decompose_sublist_point l1 left (right + 1)) in Hperm
+    by lia.
+  rewrite Hpre, Hsuf in Hperm.
+  apply Permutation_app_inv_l in Hperm.
+  apply Permutation_app_inv_r in Hperm.
+  exact Hperm.
+Qed.
+
+Lemma Forall_sublist_by_Znth_point :
+  forall (P : Point -> Prop) l lo hi,
+    0 <= lo <= hi ->
+    hi <= Zlength l ->
+    (forall k, lo <= k < hi -> P (Znth k l default_point)) ->
+    Forall P (sublist lo hi l).
+Proof.
+  intros P l lo hi Hlohi Hhi Hpoint.
+  remember (Z.to_nat (hi - lo)) as n eqn:Hn.
+  revert lo hi Hlohi Hhi Hpoint Hn.
+  induction n; intros lo hi Hlohi Hhi Hpoint Hn.
+  - assert (hi = lo) by lia.
+    subst hi.
+    rewrite (@Zsublist_nil Point l lo lo) by lia.
+    constructor.
+  - assert (lo < hi) by lia.
+    rewrite (sublist_split lo hi (lo + 1) l) by lia.
+    rewrite (@sublist_single Point default_point lo l) by lia.
+    constructor.
+    + simpl. apply Hpoint. lia.
+    + apply IHn with (lo := lo + 1) (hi := hi).
+      * lia.
+      * exact Hhi.
+      * intros k Hk. apply Hpoint. lia.
+      * assert (Z.to_nat (hi - (lo + 1)) = n) as Hn' by lia.
+        symmetry. exact Hn'.
+Qed.
+
+Lemma Forall_sublist_lookup_point :
+  forall (P : Point -> Prop) l lo hi k,
+    0 <= lo <= hi ->
+    hi <= Zlength l ->
+    Forall P (sublist lo hi l) ->
+    lo <= k < hi ->
+    P (Znth k l default_point).
+Proof.
+  intros P l lo hi k Hlohi Hhi Hforall Hk.
+  pose proof (Forall_Znth_point P (sublist lo hi l) (k - lo) Hforall)
+    as Hz.
+  assert (Hrange : 0 <= k - lo < Zlength (sublist lo hi l)).
+  { rewrite Zlength_sublist by lia. lia. }
+  specialize (Hz Hrange).
+  rewrite (@Znth_sublist_lt Point default_point lo hi l (k - lo)) in Hz
+    by lia.
+  replace (lo + (k - lo)) with k in Hz by lia.
+  exact Hz.
+Qed.
+
+Lemma PointPartitionedAt_preserved_by_left :
+  forall gp l l1 left right p,
+    PointPermutation l l1 ->
+    0 <= left ->
+    PointSameOutsideRange l l1 left (p - 1) ->
+    right < Zlength l ->
+    PointPolarPartitionedAt gp l left right p ->
+    PointPolarPartitionedAt gp l1 left right p.
+Proof.
+  intros gp l l1 left right p Hperm Hleft0 Hsame Hrightlen Hpart.
+  destruct Hsame as [Hlen Heq].
+  destruct Hpart as [Hrange [Hleft Hright]].
+  assert (Hpiv : Znth p l1 default_point = Znth p l default_point).
+  {
+    apply Heq.
+    - lia.
+    - right. lia.
+  }
+  split; [lia|].
+  split.
+  - rewrite Hpiv.
+    eapply (Forall_permutation_point
+              (fun x => point_cmp_polar gp x (Znth p l default_point) <= 0)
+              (sublist left p l)
+              (sublist left p l1)).
+    + assert (Hmid :
+          PointPermutation (sublist left (p - 1 + 1) l)
+                           (sublist left (p - 1 + 1) l1)).
+      {
+        eapply PointPermutation_middle_of_same_outside
+          with (left := left) (right := p - 1).
+        - exact Hperm.
+        - exact (conj Hlen Heq).
+        - lia.
+        - lia.
+      }
+      replace (p - 1 + 1) with p in Hmid by lia.
+      exact Hmid.
+    + exact Hleft.
+  - rewrite Hpiv.
+    apply Forall_sublist_by_Znth_point; try lia.
+    intros k Hk.
+    rewrite Heq by (try lia; right; lia).
+    eapply (Forall_sublist_lookup_point
+              (fun x => point_cmp_polar gp (Znth p l default_point) x < 0)
+              l (p + 1) (right + 1) k); try eassumption; lia.
+Qed.
+
+Lemma PointPartitionedAt_preserved_by_right :
+  forall gp l l1 left right p,
+    PointPermutation l l1 ->
+    0 <= left ->
+    PointSameOutsideRange l l1 (p + 1) right ->
+    right < Zlength l ->
+    PointPolarPartitionedAt gp l left right p ->
+    PointPolarPartitionedAt gp l1 left right p.
+Proof.
+  intros gp l l1 left right p Hperm Hleft0 Hsame Hrightlen Hpart.
+  destruct Hsame as [Hlen Heq].
+  destruct Hpart as [Hrange [Hleft Hright]].
+  assert (Hpiv : Znth p l1 default_point = Znth p l default_point).
+  {
+    apply Heq.
+    - lia.
+    - left. lia.
+  }
+  split; [lia|].
+  split.
+  - rewrite Hpiv.
+    assert (Hsub : sublist left p l1 = sublist left p l).
+    {
+      apply sublist_eq_from_Znth_point.
+      - symmetry. exact Hlen.
+      - lia.
+      - lia.
+      - intros k Hk.
+        apply Heq.
+        + lia.
+        + left. lia.
+    }
+    rewrite Hsub.
+    exact Hleft.
+  - rewrite Hpiv.
+    eapply (Forall_permutation_point
+              (fun x => point_cmp_polar gp (Znth p l default_point) x < 0)
+              (sublist (p + 1) (right + 1) l)
+              (sublist (p + 1) (right + 1) l1)).
+    + eapply PointPermutation_middle_of_same_outside
+        with (left := p + 1) (right := right).
+      * exact Hperm.
+      * exact (conj Hlen Heq).
+      * lia.
+      * lia.
+    + exact Hright.
+Qed.
+
+Lemma point_cmp_polar_lt_le : forall gp a b,
+  point_cmp_polar gp a b < 0 ->
+  point_cmp_polar gp a b <= 0.
+Proof.
+  intros; lia.
+Qed.
+
+Lemma PointSortedRange_degenerate :
+  forall gp l left right,
+    left >= right ->
+    PointSortedRange_Point gp l left right.
+Proof.
+  intros gp l left right Hge i j Hi Hij Hj.
+  assert (i = j) by lia.
+  subst j.
+  rewrite point_cmp_polar_refl.
+  lia.
+Qed.
+
+Lemma PointSortedRange_from_left_boundary :
+  forall gp l left right p,
+    0 <= left ->
+    p >= right ->
+    right < Zlength l ->
+    PointPolarPartitionedAt gp l left right p ->
+    PointSortedRange_Point gp l left (p - 1) ->
+    PointSortedRange_Point gp l left right.
+Proof.
+  intros gp l left right p Hleft0 Hp Hrightlen Hpart Hsorted.
+  intros i j Hi Hij Hj.
+  destruct Hpart as [Hbounds [Hleftpart _]].
+  assert (p = right) by lia.
+  subst p.
+  destruct (Z.eq_dec j right) as [-> | Hjneq].
+  - destruct (Z.eq_dec i right) as [-> | Hineq].
+    + rewrite point_cmp_polar_refl. lia.
+    + eapply Forall_sublist_lookup_point
+        with (lo := left) (hi := right); try eassumption; lia.
+  - apply Hsorted; lia.
+Qed.
+
+Lemma PointSortedRange_from_right_boundary :
+  forall gp l left right p,
+    0 <= left ->
+    p <= left ->
+    right < Zlength l ->
+    PointPolarPartitionedAt gp l left right p ->
+    PointSortedRange_Point gp l (p + 1) right ->
+    PointSortedRange_Point gp l left right.
+Proof.
+  intros gp l left right p Hleft0 Hp Hrightlen Hpart Hsorted.
+  intros i j Hi Hij Hj.
+  destruct Hpart as [Hbounds [_ Hrightpart]].
+  assert (p = left) by lia.
+  subst p.
+  destruct (Z.eq_dec i left) as [-> | Hineq].
+  - destruct (Z.eq_dec j left) as [-> | Hjneq].
+    + rewrite point_cmp_polar_refl. lia.
+    + apply point_cmp_polar_lt_le.
+      eapply (Forall_sublist_lookup_point
+                (fun x => point_cmp_polar gp (Znth left l default_point) x < 0)
+                l (left + 1) (right + 1) j); try eassumption; lia.
+  - apply Hsorted; lia.
+Qed.
+
+Lemma PointSortedRange_ext :
+  forall gp l l1 left right,
+    0 <= left ->
+    right < Zlength l ->
+    Zlength l = Zlength l1 ->
+    (forall k, left <= k <= right ->
+       Znth k l1 default_point = Znth k l default_point) ->
+    PointSortedRange_Point gp l left right ->
+    PointSortedRange_Point gp l1 left right.
+Proof.
+  intros gp l l1 left right Hleft0 Hrightlen Hlen Heq Hsorted i j Hi Hij Hj.
+  rewrite (Heq i) by lia.
+  rewrite (Heq j) by lia.
+  apply Hsorted; lia.
+Qed.
+
+Lemma point_cmp_xy_le_colinear_mid_leftdown :
+  forall gp a b,
+    point_leftdown gp a ->
+    point_leftdown gp b ->
+    point_cross gp a b = 0 ->
+    point_at_mid gp a b = 0 ->
+    point_cmp_xy a b <= 0.
+Proof.
+  intros gp a b Ha Hb Hcross Hmid.
+  unfold point_leftdown in *.
+  unfold point_cmp_xy.
+  unfold point_cross, point_at_mid, point_dot, cross_prod, dot_prod,
+    build_vec, x, y in *.
+  simpl in *.
+  destruct Ha as [Ha | [Ha_x Ha_y]];
+  destruct Hb as [Hb | [Hb_x Hb_y]];
+  repeat match goal with
+  | H : context [Z_gt_dec ?a ?b] |- _ => destruct (Z_gt_dec a b); simpl in H
+  | H : context [Z_lt_dec ?a ?b] |- _ => destruct (Z_lt_dec a b); simpl in H
+  | |- context [Z_gt_dec ?a ?b] => destruct (Z_gt_dec a b); simpl
+  | |- context [Z_lt_dec ?a ?b] => destruct (Z_lt_dec a b); simpl
+  end; try nia.
+  - assert (Hid :
+      (a.(x) - gp.(x)) *
+        ((b.(x) - a.(x)) * (gp.(x) - a.(x)) +
+         (b.(y) - a.(y)) * (gp.(y) - a.(y))) =
+      ((a.(x) - gp.(x)) - (b.(x) - gp.(x))) *
+        ((a.(x) - gp.(x)) * (a.(x) - gp.(x)) +
+         (a.(y) - gp.(y)) * (a.(y) - gp.(y))) -
+      (a.(y) - gp.(y)) *
+        ((a.(x) - gp.(x)) * (b.(y) - gp.(y)) -
+         (b.(x) - gp.(x)) * (a.(y) - gp.(y)))) by ring.
+    rewrite Hmid in Hid.
+    rewrite Hcross in Hid.
+    pose proof (Z.square_nonneg (a.(x) - gp.(x))).
+    pose proof (Z.square_nonneg (a.(y) - gp.(y))).
+    nia.
+  - assert (Hid :
+      (a.(y) - gp.(y)) *
+        ((b.(x) - a.(x)) * (gp.(x) - a.(x)) +
+         (b.(y) - a.(y)) * (gp.(y) - a.(y))) =
+      ((a.(y) - gp.(y)) - (b.(y) - gp.(y))) *
+        ((a.(x) - gp.(x)) * (a.(x) - gp.(x)) +
+         (a.(y) - gp.(y)) * (a.(y) - gp.(y))) +
+      (a.(x) - gp.(x)) *
+        ((a.(x) - gp.(x)) * (b.(y) - gp.(y)) -
+         (b.(x) - gp.(x)) * (a.(y) - gp.(y)))) by ring.
+    rewrite Hmid in Hid.
+    rewrite Hcross in Hid.
+    pose proof (Z.square_nonneg (a.(x) - gp.(x))).
+    pose proof (Z.square_nonneg (a.(y) - gp.(y))).
+    nia.
+  - assert (b.(y) = gp.(y)) by nia.
+    pose proof (Z.square_nonneg (a.(x) - gp.(x))).
+    pose proof (Z.square_nonneg (a.(y) - gp.(y))).
+    nia.
+Qed.
+
+Lemma point_weak_polar_le_point_cmp_polar_le_under_leftdown :
+  forall gp a b,
+    point_leftdown gp a ->
+    point_leftdown gp b ->
+    point_weak_polar_le gp a b ->
+    point_cmp_polar gp a b <= 0.
+Proof.
+  intros gp a b Ha Hb Hab.
+  unfold point_weak_polar_le, point_weak_rev_ccw in Hab.
+  destruct Hab as [Hccw | [Hcol Hmid]].
+  - unfold point_cmp_polar.
+    unfold ccw, left_than, point_cross, cross_prod, build_vec,
+      point_at_mid, point_dot, point_cmp_xy, x, y in *.
+    simpl in *.
+    repeat match goal with
+    | H : context [Z_gt_dec ?a ?b] |- _ => destruct (Z_gt_dec a b); simpl in H
+    | H : context [Z_lt_dec ?a ?b] |- _ => destruct (Z_lt_dec a b); simpl in H
+    | |- context [Z_gt_dec ?a ?b] => destruct (Z_gt_dec a b); simpl
+    | |- context [Z_lt_dec ?a ?b] => destruct (Z_lt_dec a b); simpl
+    end; nia.
+  - assert (Hcross : point_cross gp a b = 0).
+    {
+      unfold point_colinear, point_cross in Hcol.
+      unfold point_cross.
+      rewrite cross_prod_comm.
+      lia.
+    }
+    assert (Hmid_le : point_at_mid gp a b <= 0).
+    {
+      unfold at_mid, backward_or_perp in Hmid.
+      unfold dot_prod, build_vec in Hmid.
+      unfold point_at_mid, point_dot, dot_prod, build_vec, x, y.
+      simpl in *.
+      lia.
+    }
+    unfold point_cmp_polar.
+    rewrite Hcross.
+    destruct (Z_gt_dec 0 0); [lia |].
+    destruct (Z_lt_dec 0 0); [lia |].
+    destruct (Z_gt_dec (point_at_mid gp a b) 0); [lia |].
+    destruct (Z_lt_dec (point_at_mid gp a b) 0); [lia |].
+    apply (point_cmp_xy_le_colinear_mid_leftdown gp); try assumption.
+    lia.
+Qed.
+
+Lemma point_weak_polar_le_trans_under_leftdown :
+  forall gp a b c,
+    point_leftdown gp a ->
+    point_leftdown gp b ->
+    point_leftdown gp c ->
+    point_weak_polar_le gp a b ->
+    point_weak_polar_le gp b c ->
+    point_weak_polar_le gp a c.
+Proof.
+  intros gp a b c Ha Hb Hc Hab Hbc.
+  unfold point_leftdown in *.
+  unfold point_weak_polar_le, point_weak_rev_ccw in *.
+  destruct Hab as [Hab_ccw | [Hab_col Hab_mid]];
+  destruct Hbc as [Hbc_ccw | [Hbc_col Hbc_mid]].
+  - repeat match goal with
+    | H : _ \/ _ |- _ => destruct H as [? | [? ?]]
+    | H : _ /\ _ |- _ => destruct H as [? ?]
+    end;
+    try solve
+      [ left;
+        set (s := {| point_x := gp.(x); point_y := gp.(y) - 1 |});
+        assert (Hsa : ccw gp s a)
+          by (subst s; unfold ccw, left_than, cross_prod, build_vec; simpl; nia);
+        assert (Hsb : ccw gp s b)
+          by (subst s; unfold ccw, left_than, cross_prod, build_vec; simpl; nia);
+        assert (Hsc : ccw gp s c)
+          by (subst s; unfold ccw, left_than, cross_prod, build_vec; simpl; nia);
+        assert (Hgab : ccw gp a b) by (apply ccw_cyclicity; exact Hab_ccw);
+        assert (Hgbc : ccw gp b c) by (apply ccw_cyclicity; exact Hbc_ccw);
+        apply ccw_cyclicity_2;
+        eapply (ccw_transitivity a b c s gp);
+        eauto
+      | unfold point_colinear, point_cross, at_mid, point_dot,
+          ccw, left_than, colinear, parallel, backward_or_perp,
+          build_vec, cross_prod, dot_prod, x, y in *;
+        simpl in *; left; nia
+      | unfold point_colinear, point_cross, at_mid, point_dot,
+          ccw, left_than, colinear, parallel, backward_or_perp,
+          build_vec, cross_prod, dot_prod, x, y in *;
+        simpl in *; right; split; nia
+      | unfold point_colinear, point_cross, at_mid, point_dot,
+          ccw, left_than, colinear, parallel, backward_or_perp,
+          build_vec, cross_prod, dot_prod, x, y in *;
+        simpl in *; assert (a.(y) = gp.(y)) by nia; left; nia
+      | unfold point_colinear, point_cross, at_mid, point_dot,
+          ccw, left_than, colinear, parallel, backward_or_perp,
+          build_vec, cross_prod, dot_prod, x, y in *;
+        simpl in *; assert (b.(y) = gp.(y)) by nia; left; nia
+      | unfold point_colinear, point_cross, at_mid, point_dot,
+          ccw, left_than, colinear, parallel, backward_or_perp,
+          build_vec, cross_prod, dot_prod, x, y in *;
+        simpl in *; assert (c.(y) = gp.(y)) by nia; left; nia
+      | unfold point_colinear, point_cross, at_mid, point_dot,
+          ccw, left_than, colinear, parallel, backward_or_perp,
+          build_vec, cross_prod, dot_prod, x, y in *;
+        simpl in *; exfalso; nia ].
+  - unfold point_colinear, point_cross, at_mid, point_dot,
+      ccw, left_than, colinear, parallel, backward_or_perp,
+      build_vec, cross_prod, dot_prod, x, y in *;
+    simpl in *;
+    repeat match goal with
+    | H : _ \/ _ |- _ => destruct H as [? | [? ?]]
+    | H : _ /\ _ |- _ => destruct H as [? ?]
+    end;
+    try solve
+      [ left; nia
+      | right; split; nia
+      | assert (a.(y) = gp.(y)) by nia; right; split; nia
+      | assert (b.(y) = gp.(y)) by nia; right; split; nia
+      | assert (c.(y) = gp.(y)) by nia; right; split; nia
+      | assert (a.(y) = gp.(y)) by nia; left; nia
+      | assert (b.(y) = gp.(y)) by nia; left; nia
+      | assert (c.(y) = gp.(y)) by nia; left; nia
+      | assert (gp.(y) < b.(y)) by nia;
+        assert (b.(y) <= c.(y)) by nia;
+        left; nia
+      | assert (c.(y) = gp.(y)) by nia;
+        assert ((gp.(x) - b.(x)) * (gp.(x) - b.(x)) > 0) by nia;
+        pose proof (Z.square_nonneg (gp.(y) - b.(y)));
+        exfalso; nia
+      | exfalso; nia ].
+  - unfold point_colinear, point_cross, at_mid, point_dot,
+      ccw, left_than, colinear, parallel, backward_or_perp,
+      build_vec, cross_prod, dot_prod, x, y in *;
+    simpl in *;
+    repeat match goal with
+    | H : _ \/ _ |- _ => destruct H as [? | [? ?]]
+    | H : _ /\ _ |- _ => destruct H as [? ?]
+    end;
+    try solve
+      [ left; nia
+      | right; split; nia
+      | assert (a.(y) = gp.(y)) by nia; right; split; nia
+      | assert (b.(y) = gp.(y)) by nia; right; split; nia
+      | assert (c.(y) = gp.(y)) by nia; right; split; nia
+      | assert (a.(y) = gp.(y)) by nia; left; nia
+      | assert (b.(y) = gp.(y)) by nia; left; nia
+      | assert (c.(y) = gp.(y)) by nia; left; nia
+      | assert (gp.(y) < b.(y)) by nia;
+        assert (b.(y) <= a.(y)) by nia;
+        left; nia
+      | assert (a.(y) = gp.(y)) by nia;
+        assert ((gp.(x) - b.(x)) * (gp.(x) - b.(x)) > 0) by nia;
+        pose proof (Z.square_nonneg (gp.(y) - b.(y)));
+        exfalso; nia
+      | exfalso; nia ].
+  - right.
+    assert (Hbca_col : colinear b c gp).
+    { apply colinear_perm321.
+      apply point_colinear_colinear. exact Hbc_col. }
+    assert (Habg_col : colinear a b gp).
+    { apply colinear_perm321.
+      apply point_colinear_colinear. exact Hab_col. }
+    pose proof (segment_mid_trans_right a b c gp
+                  Hbca_col Hbc_mid Habg_col Hab_mid)
+      as [Hacg_col Hacg_mid].
+    split.
+    + apply point_colinear_colinear.
+      apply colinear_perm321. exact Hacg_col.
+    + exact Hacg_mid.
+Qed.
+
+Lemma point_cmp_polar_le_lt_trans_under_leftdown :
+  forall gp a b c,
+    point_leftdown gp a ->
+    point_leftdown gp b ->
+    point_leftdown gp c ->
+    point_cmp_polar gp a b <= 0 ->
+    point_cmp_polar gp b c < 0 ->
+    point_cmp_polar gp a c <= 0.
+Proof.
+  intros gp a b c Ha Hb Hc Hab Hbc.
+  apply (point_weak_polar_le_point_cmp_polar_le_under_leftdown gp a c);
+    try assumption.
+  eapply (point_weak_polar_le_trans_under_leftdown gp a b c);
+    try eassumption.
+  - apply point_cmp_polar_le_point_weak_polar_le.
+    exact Hab.
+  - apply point_cmp_polar_le_point_weak_polar_le.
+    lia.
+Qed.
+
+Lemma point_cmp_polar_le_lt_trans_under_leftmost :
+  forall gp l a b c,
+    leftmost gp l ->
+    In a l ->
+    In b l ->
+    In c l ->
+    point_cmp_polar gp a b <= 0 ->
+    point_cmp_polar gp b c < 0 ->
+    point_cmp_polar gp a c <= 0.
+Proof.
+  intros gp l a b c Hleft Ha Hb Hc Hab Hbc.
+  eapply point_cmp_polar_le_lt_trans_under_leftdown; try eassumption.
+  - unfold leftmost in Hleft.
+    rewrite Forall_forall in Hleft.
+    unfold point_leftdown.
+    apply Hleft; exact Ha.
+  - unfold leftmost in Hleft.
+    rewrite Forall_forall in Hleft.
+    unfold point_leftdown.
+    apply Hleft; exact Hb.
+  - unfold leftmost in Hleft.
+    rewrite Forall_forall in Hleft.
+    unfold point_leftdown.
+    apply Hleft; exact Hc.
+Qed.
+
+Lemma PointSortedRange_partition_merge :
+  forall gp l left right p,
+    0 <= left ->
+    right < Zlength l ->
+    left <= p <= right ->
+    leftmost gp l ->
+    PointPolarPartitionedAt gp l left right p ->
+    PointSortedRange_Point gp l left (p - 1) ->
+    PointSortedRange_Point gp l (p + 1) right ->
+    PointSortedRange_Point gp l left right.
+Proof.
+  intros gp l left right p Hleft0 Hrightlen Hp_range Hleftmost Hpart
+    Hsorted_left Hsorted_right.
+  intros i j Hi Hij Hj.
+  destruct (Z_lt_ge_dec j p) as [Hj_left | Hj_not_left].
+  - apply Hsorted_left; lia.
+  - destruct (Z_le_gt_dec i p) as [Hi_not_right | Hi_right].
+    + destruct Hpart as [_ [Hleftpart Hrightpart]].
+      destruct (Z.eq_dec i p) as [-> | Hi_neq].
+      * destruct (Z.eq_dec j p) as [-> | Hj_neq].
+        -- rewrite point_cmp_polar_refl. lia.
+        -- apply point_cmp_polar_lt_le.
+           eapply (Forall_sublist_lookup_point
+                     (fun x => point_cmp_polar gp (Znth p l default_point) x < 0)
+                     l (p + 1) (right + 1) j);
+             try eassumption; lia.
+      * assert (Hip :
+          point_cmp_polar gp (Znth i l default_point)
+            (Znth p l default_point) <= 0).
+        {
+          eapply (Forall_sublist_lookup_point
+                    (fun x => point_cmp_polar gp x
+                       (Znth p l default_point) <= 0)
+                    l left p i);
+            try eassumption; lia.
+        }
+        destruct (Z.eq_dec j p) as [-> | Hj_neq].
+        -- exact Hip.
+        -- assert (Hpj :
+             point_cmp_polar gp (Znth p l default_point)
+               (Znth j l default_point) < 0).
+           {
+             eapply (Forall_sublist_lookup_point
+                       (fun x =>
+                          point_cmp_polar gp (Znth p l default_point) x < 0)
+                       l (p + 1) (right + 1) j);
+               try eassumption; lia.
+           }
+           eapply point_cmp_polar_le_lt_trans_under_leftmost
+             with (l := l) (b := Znth p l default_point);
+             try eassumption.
+           ++ apply Znth_In_range. lia.
+           ++ apply Znth_In_range. lia.
+           ++ apply Znth_In_range. lia.
+    + apply Hsorted_right; lia.
 Qed.

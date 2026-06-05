@@ -22,10 +22,10 @@ Local Open Scope monad.
 From AUXLib Require Import int_auto Axioms Feq Idents ListLib VMap relations.
 From FP Require Import PartialOrder_Setoid BourbakiWitt.
 Local Open Scope sac.
-Require Import point_array_strategy_goal.
-Require Import point_array_strategy_proof.
-Require Import safeexec_strategy_goal.
-Require Import safeexec_strategy_proof.
+From SimpleC.EE.convex_hull Require Import point_array_strategy_goal.
+From SimpleC.EE.convex_hull Require Import point_array_strategy_proof.
+From SimpleC.EE.convex_hull Require Import safeexec_strategy_goal.
+From SimpleC.EE.convex_hull Require Import safeexec_strategy_proof.
 
 (*----- Function leftdown -----*)
 
@@ -3089,7 +3089,8 @@ forall (gy_pre: Z) (gx_pre: Z) (high_pre: Z) (low_pre: Z) (n_pre: Z) (pts_pre: Z
   &&  “ (n_pre <= 50000) ” 
   &&  “ ((Zlength (pts_l)) = n_pre) ” 
   &&  “ (points_in_bound pts_l ) ” 
-  &&  “ (point_in_bound (point_mk (gx_pre) (gy_pre)) ) ”
+  &&  “ (point_in_bound (point_mk (gx_pre) (gy_pre)) ) ” 
+  &&  “ (leftmost (point_mk (gx_pre) (gy_pre)) pts_l ) ”
   &&  ((( &( "i" ) )) # Int  |->_)
   **  (PointArray.full pts_pre n_pre pts_l )
   **  ((( &( "pivot_y" ) )) # Int  |-> (point_y ((Znth high_pre pts_l __default_Point))))
@@ -3114,7 +3115,8 @@ forall (gy_pre: Z) (gx_pre: Z) (high_pre: Z) (low_pre: Z) (n_pre: Z) (pts_pre: Z
   &&  “ (n_pre <= 50000) ” 
   &&  “ ((Zlength (pts_l)) = n_pre) ” 
   &&  “ (points_in_bound pts_l ) ” 
-  &&  “ (point_in_bound (point_mk (gx_pre) (gy_pre)) ) ”
+  &&  “ (point_in_bound (point_mk (gx_pre) (gy_pre)) ) ” 
+  &&  “ (leftmost (point_mk (gx_pre) (gy_pre)) pts_l ) ”
   &&  ((( &( "i" ) )) # Int  |->_)
   **  (PointArray.full pts_pre n_pre pts_l )
   **  ((( &( "pivot_y" ) )) # Int  |-> (point_y ((Znth high_pre pts_l __default_Point))))
@@ -3148,6 +3150,8 @@ forall (gy_pre: Z) (gx_pre: Z) (high_pre: Z) (low_pre: Z) (n_pre: Z) (pts_pre: Z
   &&  “ (points_in_bound pts_cur ) ” 
   &&  “ (point_in_bound (point_mk (gx_pre) (gy_pre)) ) ” 
   &&  “ (point_in_bound (point_mk (pivot_x) (pivot_y)) ) ” 
+  &&  “ (leftmost (point_mk (gx_pre) (gy_pre)) pts_l ) ” 
+  &&  “ (leftmost (point_mk (gx_pre) (gy_pre)) pts_cur ) ” 
   &&  “ (point_polar_partition_scan_inv (point_mk (gx_pre) (gy_pre)) pts_l pts_cur low_pre high_pre (point_mk (pivot_x) (pivot_y)) i j ) ”
   &&  ((( &( "c" ) )) # Int  |-> retval)
   **  (PointArray.full pts_pre n_pre pts_cur )
@@ -3187,6 +3191,8 @@ forall (gy_pre: Z) (gx_pre: Z) (high_pre: Z) (low_pre: Z) (n_pre: Z) (pts_pre: Z
   &&  “ (points_in_bound pts_cur ) ” 
   &&  “ (point_in_bound (point_mk (gx_pre) (gy_pre)) ) ” 
   &&  “ (point_in_bound (point_mk (pivot_x) (pivot_y)) ) ” 
+  &&  “ (leftmost (point_mk (gx_pre) (gy_pre)) pts_l ) ” 
+  &&  “ (leftmost (point_mk (gx_pre) (gy_pre)) pts_cur ) ” 
   &&  “ (point_polar_partition_scan_inv (point_mk (gx_pre) (gy_pre)) pts_l pts_cur low_pre high_pre (point_mk (pivot_x) (pivot_y)) i j ) ”
   &&  ((( &( "c" ) )) # Int  |-> retval)
   **  (PointArray.full pts_pre n_pre pts_cur )
@@ -3226,6 +3232,8 @@ forall (gy_pre: Z) (gx_pre: Z) (high_pre: Z) (low_pre: Z) (n_pre: Z) (pts_pre: Z
   &&  “ (points_in_bound pts_cur ) ” 
   &&  “ (point_in_bound (point_mk (gx_pre) (gy_pre)) ) ” 
   &&  “ (point_in_bound (point_mk (pivot_x) (pivot_y)) ) ” 
+  &&  “ (leftmost (point_mk (gx_pre) (gy_pre)) pts_l ) ” 
+  &&  “ (leftmost (point_mk (gx_pre) (gy_pre)) pts_cur ) ” 
   &&  “ (point_polar_partition_scan_inv (point_mk (gx_pre) (gy_pre)) pts_l pts_cur low_pre high_pre (point_mk (pivot_x) (pivot_y)) i j ) ”
   &&  (PointArray.full pts_pre n_pre pts_cur )
   **  ((( &( "n" ) )) # Int  |-> n_pre)
@@ -3263,6 +3271,8 @@ forall (gy_pre: Z) (gx_pre: Z) (high_pre: Z) (low_pre: Z) (n_pre: Z) (pts_pre: Z
   &&  “ (points_in_bound pts_cur ) ” 
   &&  “ (point_in_bound (point_mk (gx_pre) (gy_pre)) ) ” 
   &&  “ (point_in_bound (point_mk (pivot_x) (pivot_y)) ) ” 
+  &&  “ (leftmost (point_mk (gx_pre) (gy_pre)) pts_l ) ” 
+  &&  “ (leftmost (point_mk (gx_pre) (gy_pre)) pts_cur ) ” 
   &&  “ (point_polar_partition_scan_inv (point_mk (gx_pre) (gy_pre)) pts_l pts_cur low_pre high_pre (point_mk (pivot_x) (pivot_y)) i j ) ”
   &&  (PointArray.full pts_pre n_pre pts_cur )
   **  ((( &( "n" ) )) # Int  |-> n_pre)
@@ -3301,6 +3311,8 @@ forall (gy_pre: Z) (gx_pre: Z) (high_pre: Z) (low_pre: Z) (n_pre: Z) (pts_pre: Z
   &&  “ (points_in_bound pts_cur ) ” 
   &&  “ (point_in_bound (point_mk (gx_pre) (gy_pre)) ) ” 
   &&  “ (point_in_bound (point_mk (pivot_x) (pivot_y)) ) ” 
+  &&  “ (leftmost (point_mk (gx_pre) (gy_pre)) pts_l ) ” 
+  &&  “ (leftmost (point_mk (gx_pre) (gy_pre)) pts_cur ) ” 
   &&  “ (point_polar_partition_scan_inv (point_mk (gx_pre) (gy_pre)) pts_l pts_cur low_pre high_pre (point_mk (pivot_x) (pivot_y)) i j ) ”
   &&  (PointArray.full pts_pre n_pre (point_swap (pts_cur) ((i + 1 )) (j)) )
   **  ((( &( "n" ) )) # Int  |-> n_pre)
@@ -3335,6 +3347,8 @@ forall (gy_pre: Z) (gx_pre: Z) (high_pre: Z) (low_pre: Z) (n_pre: Z) (pts_pre: Z
   &&  “ (points_in_bound pts_cur ) ” 
   &&  “ (point_in_bound (point_mk (gx_pre) (gy_pre)) ) ” 
   &&  “ (point_in_bound (point_mk (pivot_x) (pivot_y)) ) ” 
+  &&  “ (leftmost (point_mk (gx_pre) (gy_pre)) pts_l ) ” 
+  &&  “ (leftmost (point_mk (gx_pre) (gy_pre)) pts_cur ) ” 
   &&  “ (point_polar_partition_scan_inv (point_mk (gx_pre) (gy_pre)) pts_l pts_cur low_pre high_pre (point_mk (pivot_x) (pivot_y)) i j ) ”
   &&  ((( &( "n" ) )) # Int  |-> n_pre)
   **  ((( &( "pts" ) )) # Ptr  |-> pts_pre)
@@ -3368,6 +3382,8 @@ forall (gy_pre: Z) (gx_pre: Z) (high_pre: Z) (low_pre: Z) (n_pre: Z) (pts_pre: Z
   &&  “ (points_in_bound pts_cur ) ” 
   &&  “ (point_in_bound (point_mk (gx_pre) (gy_pre)) ) ” 
   &&  “ (point_in_bound (point_mk (pivot_x) (pivot_y)) ) ” 
+  &&  “ (leftmost (point_mk (gx_pre) (gy_pre)) pts_l ) ” 
+  &&  “ (leftmost (point_mk (gx_pre) (gy_pre)) pts_cur ) ” 
   &&  “ (point_polar_partition_scan_inv (point_mk (gx_pre) (gy_pre)) pts_l pts_cur low_pre high_pre (point_mk (pivot_x) (pivot_y)) i j ) ”
   &&  ((( &( "n" ) )) # Int  |-> n_pre)
   **  ((( &( "pts" ) )) # Ptr  |-> pts_pre)
@@ -3402,6 +3418,8 @@ forall (gy_pre: Z) (gx_pre: Z) (high_pre: Z) (low_pre: Z) (n_pre: Z) (pts_pre: Z
   &&  “ (points_in_bound pts_cur ) ” 
   &&  “ (point_in_bound (point_mk (gx_pre) (gy_pre)) ) ” 
   &&  “ (point_in_bound (point_mk (pivot_x) (pivot_y)) ) ” 
+  &&  “ (leftmost (point_mk (gx_pre) (gy_pre)) pts_l ) ” 
+  &&  “ (leftmost (point_mk (gx_pre) (gy_pre)) pts_cur ) ” 
   &&  “ (point_polar_partition_scan_inv (point_mk (gx_pre) (gy_pre)) pts_l pts_cur low_pre high_pre (point_mk (pivot_x) (pivot_y)) i j ) ”
   &&  ((( &( "n" ) )) # Int  |-> n_pre)
   **  ((( &( "pts" ) )) # Ptr  |-> pts_pre)
@@ -3436,6 +3454,8 @@ forall (gy_pre: Z) (gx_pre: Z) (high_pre: Z) (low_pre: Z) (n_pre: Z) (pts_pre: Z
   &&  “ (points_in_bound pts_cur ) ” 
   &&  “ (point_in_bound (point_mk (gx_pre) (gy_pre)) ) ” 
   &&  “ (point_in_bound (point_mk (pivot_x) (pivot_y)) ) ” 
+  &&  “ (leftmost (point_mk (gx_pre) (gy_pre)) pts_l ) ” 
+  &&  “ (leftmost (point_mk (gx_pre) (gy_pre)) pts_cur ) ” 
   &&  “ (point_polar_partition_scan_inv (point_mk (gx_pre) (gy_pre)) pts_l pts_cur low_pre high_pre (point_mk (pivot_x) (pivot_y)) i j ) ”
   &&  ((( &( "n" ) )) # Int  |-> n_pre)
   **  ((( &( "pts" ) )) # Ptr  |-> pts_pre)
@@ -3471,6 +3491,8 @@ forall (gy_pre: Z) (gx_pre: Z) (high_pre: Z) (low_pre: Z) (n_pre: Z) (pts_pre: Z
   &&  “ (points_in_bound pts_cur ) ” 
   &&  “ (point_in_bound (point_mk (gx_pre) (gy_pre)) ) ” 
   &&  “ (point_in_bound (point_mk (pivot_x) (pivot_y)) ) ” 
+  &&  “ (leftmost (point_mk (gx_pre) (gy_pre)) pts_l ) ” 
+  &&  “ (leftmost (point_mk (gx_pre) (gy_pre)) pts_cur ) ” 
   &&  “ (point_polar_partition_scan_inv (point_mk (gx_pre) (gy_pre)) pts_l pts_cur low_pre high_pre (point_mk (pivot_x) (pivot_y)) i j ) ”
   &&  (PointArray.full pts_pre n_pre (point_swap (pts_cur) ((i + 1 )) (high_pre)) )
   **  ((( &( "n" ) )) # Int  |-> n_pre)
@@ -3505,6 +3527,8 @@ forall (gy_pre: Z) (gx_pre: Z) (high_pre: Z) (low_pre: Z) (n_pre: Z) (pts_pre: Z
   &&  “ (points_in_bound pts_cur ) ” 
   &&  “ (point_in_bound (point_mk (gx_pre) (gy_pre)) ) ” 
   &&  “ (point_in_bound (point_mk (pivot_x) (pivot_y)) ) ” 
+  &&  “ (leftmost (point_mk (gx_pre) (gy_pre)) pts_l ) ” 
+  &&  “ (leftmost (point_mk (gx_pre) (gy_pre)) pts_cur ) ” 
   &&  “ (point_polar_partition_scan_inv (point_mk (gx_pre) (gy_pre)) pts_l pts_cur low_pre high_pre (point_mk (pivot_x) (pivot_y)) i j ) ”
   &&  ((( &( "n" ) )) # Int  |-> n_pre)
   **  ((( &( "pts" ) )) # Ptr  |-> pts_pre)
@@ -3539,6 +3563,8 @@ forall (gy_pre: Z) (gx_pre: Z) (high_pre: Z) (low_pre: Z) (n_pre: Z) (pts_pre: Z
   &&  “ (points_in_bound pts_cur ) ” 
   &&  “ (point_in_bound (point_mk (gx_pre) (gy_pre)) ) ” 
   &&  “ (point_in_bound (point_mk (pivot_x) (pivot_y)) ) ” 
+  &&  “ (leftmost (point_mk (gx_pre) (gy_pre)) pts_l ) ” 
+  &&  “ (leftmost (point_mk (gx_pre) (gy_pre)) pts_cur ) ” 
   &&  “ (point_polar_partition_scan_inv (point_mk (gx_pre) (gy_pre)) pts_l pts_cur low_pre high_pre (point_mk (pivot_x) (pivot_y)) i j ) ”
   &&  ((( &( "n" ) )) # Int  |-> n_pre)
   **  ((( &( "pts" ) )) # Ptr  |-> pts_pre)
@@ -3574,6 +3600,8 @@ forall (gy_pre: Z) (gx_pre: Z) (high_pre: Z) (low_pre: Z) (n_pre: Z) (pts_pre: Z
   &&  “ (points_in_bound pts_cur ) ” 
   &&  “ (point_in_bound (point_mk (gx_pre) (gy_pre)) ) ” 
   &&  “ (point_in_bound (point_mk (pivot_x) (pivot_y)) ) ” 
+  &&  “ (leftmost (point_mk (gx_pre) (gy_pre)) pts_l ) ” 
+  &&  “ (leftmost (point_mk (gx_pre) (gy_pre)) pts_cur ) ” 
   &&  “ (point_polar_partition_scan_inv (point_mk (gx_pre) (gy_pre)) pts_l pts_cur low_pre high_pre (point_mk (pivot_x) (pivot_y)) i j ) ”
   &&  (PointArray.full pts_pre n_pre (point_swap (pts_cur) ((i + 1 )) (high_pre)) )
   **  ((( &( "n" ) )) # Int  |-> n_pre)
@@ -3599,7 +3627,8 @@ forall (gy_pre: Z) (gx_pre: Z) (high_pre: Z) (low_pre: Z) (n_pre: Z) (pts_pre: Z
   &&  “ (n_pre <= 50000) ” 
   &&  “ ((Zlength (pts_l)) = n_pre) ” 
   &&  “ (points_in_bound pts_l ) ” 
-  &&  “ (point_in_bound (point_mk (gx_pre) (gy_pre)) ) ”
+  &&  “ (point_in_bound (point_mk (gx_pre) (gy_pre)) ) ” 
+  &&  “ (leftmost (point_mk (gx_pre) (gy_pre)) pts_l ) ”
   &&  (PointArray.full pts_pre n_pre pts_l )
 |--
   EX (pts_cur: (@list Point)) ,
@@ -3617,6 +3646,8 @@ forall (gy_pre: Z) (gx_pre: Z) (high_pre: Z) (low_pre: Z) (n_pre: Z) (pts_pre: Z
   &&  “ (points_in_bound pts_cur ) ” 
   &&  “ (point_in_bound (point_mk (gx_pre) (gy_pre)) ) ” 
   &&  “ (point_in_bound (point_mk ((point_x ((Znth high_pre pts_l __default_Point)))) ((point_y ((Znth high_pre pts_l __default_Point))))) ) ” 
+  &&  “ (leftmost (point_mk (gx_pre) (gy_pre)) pts_l ) ” 
+  &&  “ (leftmost (point_mk (gx_pre) (gy_pre)) pts_cur ) ” 
   &&  “ (point_polar_partition_scan_inv (point_mk (gx_pre) (gy_pre)) pts_l pts_cur low_pre high_pre (point_mk ((point_x ((Znth high_pre pts_l __default_Point)))) ((point_y ((Znth high_pre pts_l __default_Point))))) (low_pre - 1 ) low_pre ) ”
   &&  (PointArray.full pts_pre n_pre pts_cur )
 .
@@ -3642,6 +3673,8 @@ forall (gy_pre: Z) (gx_pre: Z) (high_pre: Z) (low_pre: Z) (n_pre: Z) (pts_pre: Z
   &&  “ (points_in_bound pts_cur_2 ) ” 
   &&  “ (point_in_bound (point_mk (gx_pre) (gy_pre)) ) ” 
   &&  “ (point_in_bound (point_mk (pivot_x) (pivot_y)) ) ” 
+  &&  “ (leftmost (point_mk (gx_pre) (gy_pre)) pts_l ) ” 
+  &&  “ (leftmost (point_mk (gx_pre) (gy_pre)) pts_cur_2 ) ” 
   &&  “ (point_polar_partition_scan_inv (point_mk (gx_pre) (gy_pre)) pts_l pts_cur_2 low_pre high_pre (point_mk (pivot_x) (pivot_y)) i j ) ”
   &&  (PointArray.full pts_pre n_pre (point_swap (pts_cur_2) ((i + 1 )) (j)) )
 |--
@@ -3660,6 +3693,8 @@ forall (gy_pre: Z) (gx_pre: Z) (high_pre: Z) (low_pre: Z) (n_pre: Z) (pts_pre: Z
   &&  “ (points_in_bound pts_cur ) ” 
   &&  “ (point_in_bound (point_mk (gx_pre) (gy_pre)) ) ” 
   &&  “ (point_in_bound (point_mk (pivot_x) (pivot_y)) ) ” 
+  &&  “ (leftmost (point_mk (gx_pre) (gy_pre)) pts_l ) ” 
+  &&  “ (leftmost (point_mk (gx_pre) (gy_pre)) pts_cur ) ” 
   &&  “ (point_polar_partition_scan_inv (point_mk (gx_pre) (gy_pre)) pts_l pts_cur low_pre high_pre (point_mk (pivot_x) (pivot_y)) (i + 1 ) (j + 1 ) ) ”
   &&  (PointArray.full pts_pre n_pre pts_cur )
 .
@@ -3684,6 +3719,8 @@ forall (gy_pre: Z) (gx_pre: Z) (high_pre: Z) (low_pre: Z) (n_pre: Z) (pts_pre: Z
   &&  “ (points_in_bound pts_cur_2 ) ” 
   &&  “ (point_in_bound (point_mk (gx_pre) (gy_pre)) ) ” 
   &&  “ (point_in_bound (point_mk (pivot_x) (pivot_y)) ) ” 
+  &&  “ (leftmost (point_mk (gx_pre) (gy_pre)) pts_l ) ” 
+  &&  “ (leftmost (point_mk (gx_pre) (gy_pre)) pts_cur_2 ) ” 
   &&  “ (point_polar_partition_scan_inv (point_mk (gx_pre) (gy_pre)) pts_l pts_cur_2 low_pre high_pre (point_mk (pivot_x) (pivot_y)) i j ) ”
   &&  (PointArray.full pts_pre n_pre pts_cur_2 )
 |--
@@ -3702,6 +3739,8 @@ forall (gy_pre: Z) (gx_pre: Z) (high_pre: Z) (low_pre: Z) (n_pre: Z) (pts_pre: Z
   &&  “ (points_in_bound pts_cur ) ” 
   &&  “ (point_in_bound (point_mk (gx_pre) (gy_pre)) ) ” 
   &&  “ (point_in_bound (point_mk (pivot_x) (pivot_y)) ) ” 
+  &&  “ (leftmost (point_mk (gx_pre) (gy_pre)) pts_l ) ” 
+  &&  “ (leftmost (point_mk (gx_pre) (gy_pre)) pts_cur ) ” 
   &&  “ (point_polar_partition_scan_inv (point_mk (gx_pre) (gy_pre)) pts_l pts_cur low_pre high_pre (point_mk (pivot_x) (pivot_y)) (i + 1 ) (j + 1 ) ) ”
   &&  (PointArray.full pts_pre n_pre pts_cur )
 .
@@ -3725,6 +3764,8 @@ forall (gy_pre: Z) (gx_pre: Z) (high_pre: Z) (low_pre: Z) (n_pre: Z) (pts_pre: Z
   &&  “ (points_in_bound pts_cur_2 ) ” 
   &&  “ (point_in_bound (point_mk (gx_pre) (gy_pre)) ) ” 
   &&  “ (point_in_bound (point_mk (pivot_x) (pivot_y)) ) ” 
+  &&  “ (leftmost (point_mk (gx_pre) (gy_pre)) pts_l ) ” 
+  &&  “ (leftmost (point_mk (gx_pre) (gy_pre)) pts_cur_2 ) ” 
   &&  “ (point_polar_partition_scan_inv (point_mk (gx_pre) (gy_pre)) pts_l pts_cur_2 low_pre high_pre (point_mk (pivot_x) (pivot_y)) i j ) ”
   &&  (PointArray.full pts_pre n_pre pts_cur_2 )
 |--
@@ -3743,6 +3784,8 @@ forall (gy_pre: Z) (gx_pre: Z) (high_pre: Z) (low_pre: Z) (n_pre: Z) (pts_pre: Z
   &&  “ (points_in_bound pts_cur ) ” 
   &&  “ (point_in_bound (point_mk (gx_pre) (gy_pre)) ) ” 
   &&  “ (point_in_bound (point_mk (pivot_x) (pivot_y)) ) ” 
+  &&  “ (leftmost (point_mk (gx_pre) (gy_pre)) pts_l ) ” 
+  &&  “ (leftmost (point_mk (gx_pre) (gy_pre)) pts_cur ) ” 
   &&  “ (point_polar_partition_scan_inv (point_mk (gx_pre) (gy_pre)) pts_l pts_cur low_pre high_pre (point_mk (pivot_x) (pivot_y)) i (j + 1 ) ) ”
   &&  (PointArray.full pts_pre n_pre pts_cur )
 .
@@ -3766,6 +3809,8 @@ forall (gy_pre: Z) (gx_pre: Z) (high_pre: Z) (low_pre: Z) (n_pre: Z) (pts_pre: Z
   &&  “ (points_in_bound pts_cur ) ” 
   &&  “ (point_in_bound (point_mk (gx_pre) (gy_pre)) ) ” 
   &&  “ (point_in_bound (point_mk (pivot_x) (pivot_y)) ) ” 
+  &&  “ (leftmost (point_mk (gx_pre) (gy_pre)) pts_l ) ” 
+  &&  “ (leftmost (point_mk (gx_pre) (gy_pre)) pts_cur ) ” 
   &&  “ (point_polar_partition_scan_inv (point_mk (gx_pre) (gy_pre)) pts_l pts_cur low_pre high_pre (point_mk (pivot_x) (pivot_y)) i j ) ”
   &&  (PointArray.full pts_pre n_pre (point_swap (pts_cur) ((i + 1 )) (high_pre)) )
 |--
@@ -3774,6 +3819,7 @@ forall (gy_pre: Z) (gx_pre: Z) (high_pre: Z) (low_pre: Z) (n_pre: Z) (pts_pre: Z
   &&  “ ((i + 1 ) <= high_pre) ” 
   &&  “ ((Zlength (pts_out)) = n_pre) ” 
   &&  “ (points_in_bound pts_out ) ” 
+  &&  “ (leftmost (point_mk (gx_pre) (gy_pre)) pts_out ) ” 
   &&  “ (point_permutation pts_l pts_out ) ” 
   &&  “ (point_same_outside_range pts_l pts_out low_pre high_pre ) ” 
   &&  “ (point_polar_partitioned_at (point_mk (gx_pre) (gy_pre)) pts_out low_pre high_pre (i + 1 ) ) ”
@@ -3798,6 +3844,8 @@ forall (gy_pre: Z) (gx_pre: Z) (high_pre: Z) (low_pre: Z) (n_pre: Z) (pts_pre: Z
   &&  “ (points_in_bound pts_cur ) ” 
   &&  “ (point_in_bound (point_mk (gx_pre) (gy_pre)) ) ” 
   &&  “ (point_in_bound (point_mk (pivot_x) (pivot_y)) ) ” 
+  &&  “ (leftmost (point_mk (gx_pre) (gy_pre)) pts_l ) ” 
+  &&  “ (leftmost (point_mk (gx_pre) (gy_pre)) pts_cur ) ” 
   &&  “ (point_polar_partition_scan_inv (point_mk (gx_pre) (gy_pre)) pts_l pts_cur low_pre high_pre (point_mk (pivot_x) (pivot_y)) i j ) ”
   &&  (PointArray.full pts_pre n_pre pts_cur )
 |--
@@ -3806,6 +3854,7 @@ forall (gy_pre: Z) (gx_pre: Z) (high_pre: Z) (low_pre: Z) (n_pre: Z) (pts_pre: Z
   &&  “ ((i + 1 ) <= high_pre) ” 
   &&  “ ((Zlength (pts_out)) = n_pre) ” 
   &&  “ (points_in_bound pts_out ) ” 
+  &&  “ (leftmost (point_mk (gx_pre) (gy_pre)) pts_out ) ” 
   &&  “ (point_permutation pts_l pts_out ) ” 
   &&  “ (point_same_outside_range pts_l pts_out low_pre high_pre ) ” 
   &&  “ (point_polar_partitioned_at (point_mk (gx_pre) (gy_pre)) pts_out low_pre high_pre (i + 1 ) ) ”
@@ -3821,7 +3870,8 @@ forall (gy_pre: Z) (gx_pre: Z) (high_pre: Z) (low_pre: Z) (n_pre: Z) (pts_pre: Z
   &&  “ (n_pre <= 50000) ” 
   &&  “ ((Zlength (pts_l)) = n_pre) ” 
   &&  “ (points_in_bound pts_l ) ” 
-  &&  “ (point_in_bound (point_mk (gx_pre) (gy_pre)) ) ”
+  &&  “ (point_in_bound (point_mk (gx_pre) (gy_pre)) ) ” 
+  &&  “ (leftmost (point_mk (gx_pre) (gy_pre)) pts_l ) ”
   &&  (PointArray.full pts_pre n_pre pts_l )
 |--
   “ (0 <= low_pre) ” 
@@ -3831,7 +3881,8 @@ forall (gy_pre: Z) (gx_pre: Z) (high_pre: Z) (low_pre: Z) (n_pre: Z) (pts_pre: Z
   &&  “ (n_pre <= 50000) ” 
   &&  “ ((Zlength (pts_l)) = n_pre) ” 
   &&  “ (points_in_bound pts_l ) ” 
-  &&  “ (point_in_bound (point_mk (gx_pre) (gy_pre)) ) ”
+  &&  “ (point_in_bound (point_mk (gx_pre) (gy_pre)) ) ” 
+  &&  “ (leftmost (point_mk (gx_pre) (gy_pre)) pts_l ) ”
   &&  ((&(((pts_pre + (high_pre * sizeof( "Point" ) ) ))  # "Point" ->ₛ "x")) # Int  |-> (point_x ((Znth high_pre pts_l __default_Point))))
   **  (PointArray.missing_i pts_pre high_pre 0 n_pre pts_l )
   **  ((&(((pts_pre + (high_pre * sizeof( "Point" ) ) ))  # "Point" ->ₛ "y")) # Int  |-> (point_y ((Znth high_pre pts_l __default_Point))))
@@ -3846,7 +3897,8 @@ forall (gy_pre: Z) (gx_pre: Z) (high_pre: Z) (low_pre: Z) (n_pre: Z) (pts_pre: Z
   &&  “ (n_pre <= 50000) ” 
   &&  “ ((Zlength (pts_l)) = n_pre) ” 
   &&  “ (points_in_bound pts_l ) ” 
-  &&  “ (point_in_bound (point_mk (gx_pre) (gy_pre)) ) ”
+  &&  “ (point_in_bound (point_mk (gx_pre) (gy_pre)) ) ” 
+  &&  “ (leftmost (point_mk (gx_pre) (gy_pre)) pts_l ) ”
   &&  (PointArray.full pts_pre n_pre pts_l )
 |--
   “ (0 <= low_pre) ” 
@@ -3856,7 +3908,8 @@ forall (gy_pre: Z) (gx_pre: Z) (high_pre: Z) (low_pre: Z) (n_pre: Z) (pts_pre: Z
   &&  “ (n_pre <= 50000) ” 
   &&  “ ((Zlength (pts_l)) = n_pre) ” 
   &&  “ (points_in_bound pts_l ) ” 
-  &&  “ (point_in_bound (point_mk (gx_pre) (gy_pre)) ) ”
+  &&  “ (point_in_bound (point_mk (gx_pre) (gy_pre)) ) ” 
+  &&  “ (leftmost (point_mk (gx_pre) (gy_pre)) pts_l ) ”
   &&  ((&(((pts_pre + (high_pre * sizeof( "Point" ) ) ))  # "Point" ->ₛ "y")) # Int  |-> (point_y ((Znth high_pre pts_l __default_Point))))
   **  (PointArray.missing_i pts_pre high_pre 0 n_pre pts_l )
   **  ((&(((pts_pre + (high_pre * sizeof( "Point" ) ) ))  # "Point" ->ₛ "x")) # Int  |-> (point_x ((Znth high_pre pts_l __default_Point))))
@@ -3879,6 +3932,8 @@ forall (gy_pre: Z) (gx_pre: Z) (high_pre: Z) (low_pre: Z) (n_pre: Z) (pts_pre: Z
   &&  “ (points_in_bound pts_cur ) ” 
   &&  “ (point_in_bound (point_mk (gx_pre) (gy_pre)) ) ” 
   &&  “ (point_in_bound (point_mk (pivot_x) (pivot_y)) ) ” 
+  &&  “ (leftmost (point_mk (gx_pre) (gy_pre)) pts_l ) ” 
+  &&  “ (leftmost (point_mk (gx_pre) (gy_pre)) pts_cur ) ” 
   &&  “ (point_polar_partition_scan_inv (point_mk (gx_pre) (gy_pre)) pts_l pts_cur low_pre high_pre (point_mk (pivot_x) (pivot_y)) i j ) ”
   &&  (PointArray.full pts_pre n_pre pts_cur )
 |--
@@ -3897,6 +3952,8 @@ forall (gy_pre: Z) (gx_pre: Z) (high_pre: Z) (low_pre: Z) (n_pre: Z) (pts_pre: Z
   &&  “ (points_in_bound pts_cur ) ” 
   &&  “ (point_in_bound (point_mk (gx_pre) (gy_pre)) ) ” 
   &&  “ (point_in_bound (point_mk (pivot_x) (pivot_y)) ) ” 
+  &&  “ (leftmost (point_mk (gx_pre) (gy_pre)) pts_l ) ” 
+  &&  “ (leftmost (point_mk (gx_pre) (gy_pre)) pts_cur ) ” 
   &&  “ (point_polar_partition_scan_inv (point_mk (gx_pre) (gy_pre)) pts_l pts_cur low_pre high_pre (point_mk (pivot_x) (pivot_y)) i j ) ”
   &&  ((&(((pts_pre + (j * sizeof( "Point" ) ) ))  # "Point" ->ₛ "x")) # Int  |-> (point_x ((Znth j pts_cur __default_Point))))
   **  (PointArray.missing_i pts_pre j 0 n_pre pts_cur )
@@ -3920,6 +3977,8 @@ forall (gy_pre: Z) (gx_pre: Z) (high_pre: Z) (low_pre: Z) (n_pre: Z) (pts_pre: Z
   &&  “ (points_in_bound pts_cur ) ” 
   &&  “ (point_in_bound (point_mk (gx_pre) (gy_pre)) ) ” 
   &&  “ (point_in_bound (point_mk (pivot_x) (pivot_y)) ) ” 
+  &&  “ (leftmost (point_mk (gx_pre) (gy_pre)) pts_l ) ” 
+  &&  “ (leftmost (point_mk (gx_pre) (gy_pre)) pts_cur ) ” 
   &&  “ (point_polar_partition_scan_inv (point_mk (gx_pre) (gy_pre)) pts_l pts_cur low_pre high_pre (point_mk (pivot_x) (pivot_y)) i j ) ”
   &&  (PointArray.full pts_pre n_pre pts_cur )
 |--
@@ -3938,6 +3997,8 @@ forall (gy_pre: Z) (gx_pre: Z) (high_pre: Z) (low_pre: Z) (n_pre: Z) (pts_pre: Z
   &&  “ (points_in_bound pts_cur ) ” 
   &&  “ (point_in_bound (point_mk (gx_pre) (gy_pre)) ) ” 
   &&  “ (point_in_bound (point_mk (pivot_x) (pivot_y)) ) ” 
+  &&  “ (leftmost (point_mk (gx_pre) (gy_pre)) pts_l ) ” 
+  &&  “ (leftmost (point_mk (gx_pre) (gy_pre)) pts_cur ) ” 
   &&  “ (point_polar_partition_scan_inv (point_mk (gx_pre) (gy_pre)) pts_l pts_cur low_pre high_pre (point_mk (pivot_x) (pivot_y)) i j ) ”
   &&  ((&(((pts_pre + (j * sizeof( "Point" ) ) ))  # "Point" ->ₛ "y")) # Int  |-> (point_y ((Znth j pts_cur __default_Point))))
   **  (PointArray.missing_i pts_pre j 0 n_pre pts_cur )
@@ -3961,6 +4022,8 @@ forall (gy_pre: Z) (gx_pre: Z) (high_pre: Z) (low_pre: Z) (n_pre: Z) (pts_pre: Z
   &&  “ (points_in_bound pts_cur ) ” 
   &&  “ (point_in_bound (point_mk (gx_pre) (gy_pre)) ) ” 
   &&  “ (point_in_bound (point_mk (pivot_x) (pivot_y)) ) ” 
+  &&  “ (leftmost (point_mk (gx_pre) (gy_pre)) pts_l ) ” 
+  &&  “ (leftmost (point_mk (gx_pre) (gy_pre)) pts_cur ) ” 
   &&  “ (point_polar_partition_scan_inv (point_mk (gx_pre) (gy_pre)) pts_l pts_cur low_pre high_pre (point_mk (pivot_x) (pivot_y)) i j ) ”
   &&  ((( &( "c" ) )) # Int  |->_)
   **  (PointArray.full pts_pre n_pre pts_cur )
@@ -3999,6 +4062,8 @@ forall (gy_pre: Z) (gx_pre: Z) (high_pre: Z) (low_pre: Z) (n_pre: Z) (pts_pre: Z
   &&  “ (points_in_bound pts_cur ) ” 
   &&  “ (point_in_bound (point_mk (gx_pre) (gy_pre)) ) ” 
   &&  “ (point_in_bound (point_mk (pivot_x) (pivot_y)) ) ” 
+  &&  “ (leftmost (point_mk (gx_pre) (gy_pre)) pts_l ) ” 
+  &&  “ (leftmost (point_mk (gx_pre) (gy_pre)) pts_cur ) ” 
   &&  “ (point_polar_partition_scan_inv (point_mk (gx_pre) (gy_pre)) pts_l pts_cur low_pre high_pre (point_mk (pivot_x) (pivot_y)) i j ) ”
   &&  (PointArray.full pts_pre n_pre pts_cur )
 |--
@@ -4020,6 +4085,8 @@ forall (gy_pre: Z) (gx_pre: Z) (high_pre: Z) (low_pre: Z) (n_pre: Z) (pts_pre: Z
   &&  “ (points_in_bound pts_cur ) ” 
   &&  “ (point_in_bound (point_mk (gx_pre) (gy_pre)) ) ” 
   &&  “ (point_in_bound (point_mk (pivot_x) (pivot_y)) ) ” 
+  &&  “ (leftmost (point_mk (gx_pre) (gy_pre)) pts_l ) ” 
+  &&  “ (leftmost (point_mk (gx_pre) (gy_pre)) pts_cur ) ” 
   &&  “ (point_polar_partition_scan_inv (point_mk (gx_pre) (gy_pre)) pts_l pts_cur low_pre high_pre (point_mk (pivot_x) (pivot_y)) i j ) ”
   &&  (PointArray.full pts_pre n_pre pts_cur )
 .
@@ -4046,6 +4113,8 @@ forall (gy_pre: Z) (gx_pre: Z) (high_pre: Z) (low_pre: Z) (n_pre: Z) (pts_pre: Z
   &&  “ (points_in_bound pts_cur ) ” 
   &&  “ (point_in_bound (point_mk (gx_pre) (gy_pre)) ) ” 
   &&  “ (point_in_bound (point_mk (pivot_x) (pivot_y)) ) ” 
+  &&  “ (leftmost (point_mk (gx_pre) (gy_pre)) pts_l ) ” 
+  &&  “ (leftmost (point_mk (gx_pre) (gy_pre)) pts_cur ) ” 
   &&  “ (point_polar_partition_scan_inv (point_mk (gx_pre) (gy_pre)) pts_l pts_cur low_pre high_pre (point_mk (pivot_x) (pivot_y)) i j ) ”
   &&  ((( &( "c" ) )) # Int  |-> retval)
   **  (PointArray.full pts_pre n_pre pts_cur )
@@ -4090,6 +4159,8 @@ forall (gy_pre: Z) (gx_pre: Z) (high_pre: Z) (low_pre: Z) (n_pre: Z) (pts_pre: Z
   &&  “ (points_in_bound pts_cur ) ” 
   &&  “ (point_in_bound (point_mk (gx_pre) (gy_pre)) ) ” 
   &&  “ (point_in_bound (point_mk (pivot_x) (pivot_y)) ) ” 
+  &&  “ (leftmost (point_mk (gx_pre) (gy_pre)) pts_l ) ” 
+  &&  “ (leftmost (point_mk (gx_pre) (gy_pre)) pts_cur ) ” 
   &&  “ (point_polar_partition_scan_inv (point_mk (gx_pre) (gy_pre)) pts_l pts_cur low_pre high_pre (point_mk (pivot_x) (pivot_y)) i j ) ”
   &&  (PointArray.full pts_pre n_pre pts_cur )
 |--
@@ -4117,6 +4188,8 @@ forall (gy_pre: Z) (gx_pre: Z) (high_pre: Z) (low_pre: Z) (n_pre: Z) (pts_pre: Z
   &&  “ (points_in_bound pts_cur ) ” 
   &&  “ (point_in_bound (point_mk (gx_pre) (gy_pre)) ) ” 
   &&  “ (point_in_bound (point_mk (pivot_x) (pivot_y)) ) ” 
+  &&  “ (leftmost (point_mk (gx_pre) (gy_pre)) pts_l ) ” 
+  &&  “ (leftmost (point_mk (gx_pre) (gy_pre)) pts_cur ) ” 
   &&  “ (point_polar_partition_scan_inv (point_mk (gx_pre) (gy_pre)) pts_l pts_cur low_pre high_pre (point_mk (pivot_x) (pivot_y)) i j ) ”
   &&  (PointArray.full pts_pre n_pre pts_cur )
 .
@@ -4141,6 +4214,8 @@ forall (gy_pre: Z) (gx_pre: Z) (high_pre: Z) (low_pre: Z) (n_pre: Z) (pts_pre: Z
   &&  “ (points_in_bound pts_cur ) ” 
   &&  “ (point_in_bound (point_mk (gx_pre) (gy_pre)) ) ” 
   &&  “ (point_in_bound (point_mk (pivot_x) (pivot_y)) ) ” 
+  &&  “ (leftmost (point_mk (gx_pre) (gy_pre)) pts_l ) ” 
+  &&  “ (leftmost (point_mk (gx_pre) (gy_pre)) pts_cur ) ” 
   &&  “ (point_polar_partition_scan_inv (point_mk (gx_pre) (gy_pre)) pts_l pts_cur low_pre high_pre (point_mk (pivot_x) (pivot_y)) i j ) ”
   &&  ((( &( "n" ) )) # Int  |-> n_pre)
   **  ((( &( "pts" ) )) # Ptr  |-> pts_pre)
@@ -4179,6 +4254,8 @@ forall (gy_pre: Z) (gx_pre: Z) (high_pre: Z) (low_pre: Z) (n_pre: Z) (pts_pre: Z
   &&  “ (points_in_bound pts_cur ) ” 
   &&  “ (point_in_bound (point_mk (gx_pre) (gy_pre)) ) ” 
   &&  “ (point_in_bound (point_mk (pivot_x) (pivot_y)) ) ” 
+  &&  “ (leftmost (point_mk (gx_pre) (gy_pre)) pts_l ) ” 
+  &&  “ (leftmost (point_mk (gx_pre) (gy_pre)) pts_cur ) ” 
   &&  “ (point_polar_partition_scan_inv (point_mk (gx_pre) (gy_pre)) pts_l pts_cur low_pre high_pre (point_mk (pivot_x) (pivot_y)) i j ) ”
   &&  (PointArray.full pts_pre n_pre pts_cur )
 |--
@@ -4204,6 +4281,8 @@ forall (gy_pre: Z) (gx_pre: Z) (high_pre: Z) (low_pre: Z) (n_pre: Z) (pts_pre: Z
   &&  “ (points_in_bound pts_cur ) ” 
   &&  “ (point_in_bound (point_mk (gx_pre) (gy_pre)) ) ” 
   &&  “ (point_in_bound (point_mk (pivot_x) (pivot_y)) ) ” 
+  &&  “ (leftmost (point_mk (gx_pre) (gy_pre)) pts_l ) ” 
+  &&  “ (leftmost (point_mk (gx_pre) (gy_pre)) pts_cur ) ” 
   &&  “ (point_polar_partition_scan_inv (point_mk (gx_pre) (gy_pre)) pts_l pts_cur low_pre high_pre (point_mk (pivot_x) (pivot_y)) i j ) ”
   &&  (PointArray.full pts_pre n_pre pts_cur )
 .
@@ -4219,6 +4298,7 @@ forall (gy_pre: Z) (gx_pre: Z) (right_pre: Z) (left_pre: Z) (n_pre: Z) (pts_pre:
   &&  “ (retval <= right_pre) ” 
   &&  “ ((Zlength (pts_out)) = n_pre) ” 
   &&  “ (points_in_bound pts_out ) ” 
+  &&  “ (leftmost (point_mk (gx_pre) (gy_pre)) pts_out ) ” 
   &&  “ (point_permutation pts_l pts_out ) ” 
   &&  “ (point_same_outside_range pts_l pts_out left_pre right_pre ) ” 
   &&  “ (point_polar_partitioned_at (point_mk (gx_pre) (gy_pre)) pts_out left_pre right_pre retval ) ” 
@@ -4230,7 +4310,8 @@ forall (gy_pre: Z) (gx_pre: Z) (right_pre: Z) (left_pre: Z) (n_pre: Z) (pts_pre:
   &&  “ (right_pre < n_pre) ” 
   &&  “ ((Zlength (pts_l)) = n_pre) ” 
   &&  “ (points_in_bound pts_l ) ” 
-  &&  “ (point_in_bound (point_mk (gx_pre) (gy_pre)) ) ”
+  &&  “ (point_in_bound (point_mk (gx_pre) (gy_pre)) ) ” 
+  &&  “ (leftmost (point_mk (gx_pre) (gy_pre)) pts_l ) ”
   &&  (PointArray.full pts_pre n_pre pts_out )
   **  ((( &( "p" ) )) # Int  |-> retval)
   **  ((( &( "gy" ) )) # Int  |-> gy_pre)
@@ -4251,6 +4332,7 @@ forall (gy_pre: Z) (gx_pre: Z) (right_pre: Z) (left_pre: Z) (n_pre: Z) (pts_pre:
   &&  “ (retval <= right_pre) ” 
   &&  “ ((Zlength (pts_out)) = n_pre) ” 
   &&  “ (points_in_bound pts_out ) ” 
+  &&  “ (leftmost (point_mk (gx_pre) (gy_pre)) pts_out ) ” 
   &&  “ (point_permutation pts_l pts_out ) ” 
   &&  “ (point_same_outside_range pts_l pts_out left_pre right_pre ) ” 
   &&  “ (point_polar_partitioned_at (point_mk (gx_pre) (gy_pre)) pts_out left_pre right_pre retval ) ” 
@@ -4262,7 +4344,8 @@ forall (gy_pre: Z) (gx_pre: Z) (right_pre: Z) (left_pre: Z) (n_pre: Z) (pts_pre:
   &&  “ (right_pre < n_pre) ” 
   &&  “ ((Zlength (pts_l)) = n_pre) ” 
   &&  “ (points_in_bound pts_l ) ” 
-  &&  “ (point_in_bound (point_mk (gx_pre) (gy_pre)) ) ”
+  &&  “ (point_in_bound (point_mk (gx_pre) (gy_pre)) ) ” 
+  &&  “ (leftmost (point_mk (gx_pre) (gy_pre)) pts_l ) ”
   &&  (PointArray.full pts_pre n_pre pts_out )
   **  ((( &( "p" ) )) # Int  |-> retval)
   **  ((( &( "gy" ) )) # Int  |-> gy_pre)
@@ -4284,6 +4367,7 @@ forall (gy_pre: Z) (gx_pre: Z) (right_pre: Z) (left_pre: Z) (n_pre: Z) (pts_pre:
   &&  “ (retval <= right_pre) ” 
   &&  “ ((Zlength (pts_out)) = n_pre) ” 
   &&  “ (points_in_bound pts_out ) ” 
+  &&  “ (leftmost (point_mk (gx_pre) (gy_pre)) pts_out ) ” 
   &&  “ (point_permutation pts_l pts_out ) ” 
   &&  “ (point_same_outside_range pts_l pts_out left_pre right_pre ) ” 
   &&  “ (point_polar_partitioned_at (point_mk (gx_pre) (gy_pre)) pts_out left_pre right_pre retval ) ” 
@@ -4295,7 +4379,8 @@ forall (gy_pre: Z) (gx_pre: Z) (right_pre: Z) (left_pre: Z) (n_pre: Z) (pts_pre:
   &&  “ (right_pre < n_pre) ” 
   &&  “ ((Zlength (pts_l)) = n_pre) ” 
   &&  “ (points_in_bound pts_l ) ” 
-  &&  “ (point_in_bound (point_mk (gx_pre) (gy_pre)) ) ”
+  &&  “ (point_in_bound (point_mk (gx_pre) (gy_pre)) ) ” 
+  &&  “ (leftmost (point_mk (gx_pre) (gy_pre)) pts_l ) ”
   &&  (PointArray.full pts_pre n_pre pts_out )
   **  ((( &( "p" ) )) # Int  |-> retval)
   **  ((( &( "gy" ) )) # Int  |-> gy_pre)
@@ -4313,6 +4398,7 @@ forall (gy_pre: Z) (gx_pre: Z) (right_pre: Z) (left_pre: Z) (n_pre: Z) (pts_pre:
   “ (retval < right_pre) ” 
   &&  “ ((Zlength (pts_out_2)) = n_pre) ” 
   &&  “ (points_in_bound pts_out_2 ) ” 
+  &&  “ (leftmost (point_mk (gx_pre) (gy_pre)) pts_out_2 ) ” 
   &&  “ (point_permutation pts_out pts_out_2 ) ” 
   &&  “ (point_same_outside_range pts_out pts_out_2 left_pre (retval - 1 ) ) ” 
   &&  “ (point_sorted_range (point_mk (gx_pre) (gy_pre)) pts_out_2 left_pre (retval - 1 ) ) ” 
@@ -4321,6 +4407,7 @@ forall (gy_pre: Z) (gx_pre: Z) (right_pre: Z) (left_pre: Z) (n_pre: Z) (pts_pre:
   &&  “ (retval <= right_pre) ” 
   &&  “ ((Zlength (pts_out)) = n_pre) ” 
   &&  “ (points_in_bound pts_out ) ” 
+  &&  “ (leftmost (point_mk (gx_pre) (gy_pre)) pts_out ) ” 
   &&  “ (point_permutation pts_l pts_out ) ” 
   &&  “ (point_same_outside_range pts_l pts_out left_pre right_pre ) ” 
   &&  “ (point_polar_partitioned_at (point_mk (gx_pre) (gy_pre)) pts_out left_pre right_pre retval ) ” 
@@ -4332,7 +4419,8 @@ forall (gy_pre: Z) (gx_pre: Z) (right_pre: Z) (left_pre: Z) (n_pre: Z) (pts_pre:
   &&  “ (right_pre < n_pre) ” 
   &&  “ ((Zlength (pts_l)) = n_pre) ” 
   &&  “ (points_in_bound pts_l ) ” 
-  &&  “ (point_in_bound (point_mk (gx_pre) (gy_pre)) ) ”
+  &&  “ (point_in_bound (point_mk (gx_pre) (gy_pre)) ) ” 
+  &&  “ (leftmost (point_mk (gx_pre) (gy_pre)) pts_l ) ”
   &&  (PointArray.full pts_pre n_pre pts_out_2 )
   **  ((( &( "p" ) )) # Int  |-> retval)
   **  ((( &( "gy" ) )) # Int  |-> gy_pre)
@@ -4351,6 +4439,7 @@ forall (gy_pre: Z) (gx_pre: Z) (right_pre: Z) (left_pre: Z) (n_pre: Z) (pts_pre:
   “ (retval < right_pre) ” 
   &&  “ ((Zlength (pts_out_2)) = n_pre) ” 
   &&  “ (points_in_bound pts_out_2 ) ” 
+  &&  “ (leftmost (point_mk (gx_pre) (gy_pre)) pts_out_2 ) ” 
   &&  “ (point_permutation pts_out pts_out_2 ) ” 
   &&  “ (point_same_outside_range pts_out pts_out_2 left_pre (retval - 1 ) ) ” 
   &&  “ (point_sorted_range (point_mk (gx_pre) (gy_pre)) pts_out_2 left_pre (retval - 1 ) ) ” 
@@ -4359,6 +4448,7 @@ forall (gy_pre: Z) (gx_pre: Z) (right_pre: Z) (left_pre: Z) (n_pre: Z) (pts_pre:
   &&  “ (retval <= right_pre) ” 
   &&  “ ((Zlength (pts_out)) = n_pre) ” 
   &&  “ (points_in_bound pts_out ) ” 
+  &&  “ (leftmost (point_mk (gx_pre) (gy_pre)) pts_out ) ” 
   &&  “ (point_permutation pts_l pts_out ) ” 
   &&  “ (point_same_outside_range pts_l pts_out left_pre right_pre ) ” 
   &&  “ (point_polar_partitioned_at (point_mk (gx_pre) (gy_pre)) pts_out left_pre right_pre retval ) ” 
@@ -4370,7 +4460,8 @@ forall (gy_pre: Z) (gx_pre: Z) (right_pre: Z) (left_pre: Z) (n_pre: Z) (pts_pre:
   &&  “ (right_pre < n_pre) ” 
   &&  “ ((Zlength (pts_l)) = n_pre) ” 
   &&  “ (points_in_bound pts_l ) ” 
-  &&  “ (point_in_bound (point_mk (gx_pre) (gy_pre)) ) ”
+  &&  “ (point_in_bound (point_mk (gx_pre) (gy_pre)) ) ” 
+  &&  “ (leftmost (point_mk (gx_pre) (gy_pre)) pts_l ) ”
   &&  (PointArray.full pts_pre n_pre pts_out_2 )
   **  ((( &( "p" ) )) # Int  |-> retval)
   **  ((( &( "gy" ) )) # Int  |-> gy_pre)
@@ -4392,6 +4483,7 @@ forall (gy_pre: Z) (gx_pre: Z) (right_pre: Z) (left_pre: Z) (n_pre: Z) (pts_pre:
   &&  “ (retval <= right_pre) ” 
   &&  “ ((Zlength (pts_out)) = n_pre) ” 
   &&  “ (points_in_bound pts_out ) ” 
+  &&  “ (leftmost (point_mk (gx_pre) (gy_pre)) pts_out ) ” 
   &&  “ (point_permutation pts_l pts_out ) ” 
   &&  “ (point_same_outside_range pts_l pts_out left_pre right_pre ) ” 
   &&  “ (point_polar_partitioned_at (point_mk (gx_pre) (gy_pre)) pts_out left_pre right_pre retval ) ” 
@@ -4403,7 +4495,8 @@ forall (gy_pre: Z) (gx_pre: Z) (right_pre: Z) (left_pre: Z) (n_pre: Z) (pts_pre:
   &&  “ (right_pre < n_pre) ” 
   &&  “ ((Zlength (pts_l)) = n_pre) ” 
   &&  “ (points_in_bound pts_l ) ” 
-  &&  “ (point_in_bound (point_mk (gx_pre) (gy_pre)) ) ”
+  &&  “ (point_in_bound (point_mk (gx_pre) (gy_pre)) ) ” 
+  &&  “ (leftmost (point_mk (gx_pre) (gy_pre)) pts_l ) ”
   &&  (PointArray.full pts_pre n_pre pts_out )
   **  ((( &( "p" ) )) # Int  |-> retval)
   **  ((( &( "gy" ) )) # Int  |-> gy_pre)
@@ -4425,6 +4518,7 @@ forall (gy_pre: Z) (gx_pre: Z) (right_pre: Z) (left_pre: Z) (n_pre: Z) (pts_pre:
   &&  “ (retval <= right_pre) ” 
   &&  “ ((Zlength (pts_out)) = n_pre) ” 
   &&  “ (points_in_bound pts_out ) ” 
+  &&  “ (leftmost (point_mk (gx_pre) (gy_pre)) pts_out ) ” 
   &&  “ (point_permutation pts_l pts_out ) ” 
   &&  “ (point_same_outside_range pts_l pts_out left_pre right_pre ) ” 
   &&  “ (point_polar_partitioned_at (point_mk (gx_pre) (gy_pre)) pts_out left_pre right_pre retval ) ” 
@@ -4436,7 +4530,8 @@ forall (gy_pre: Z) (gx_pre: Z) (right_pre: Z) (left_pre: Z) (n_pre: Z) (pts_pre:
   &&  “ (right_pre < n_pre) ” 
   &&  “ ((Zlength (pts_l)) = n_pre) ” 
   &&  “ (points_in_bound pts_l ) ” 
-  &&  “ (point_in_bound (point_mk (gx_pre) (gy_pre)) ) ”
+  &&  “ (point_in_bound (point_mk (gx_pre) (gy_pre)) ) ” 
+  &&  “ (leftmost (point_mk (gx_pre) (gy_pre)) pts_l ) ”
   &&  (PointArray.full pts_pre n_pre pts_out )
   **  ((( &( "p" ) )) # Int  |-> retval)
   **  ((( &( "gy" ) )) # Int  |-> gy_pre)
@@ -4454,12 +4549,14 @@ Definition quicksort_polar_points_return_wit_1 :=
 forall (gy_pre: Z) (gx_pre: Z) (right_pre: Z) (left_pre: Z) (n_pre: Z) (pts_pre: Z) (pts_l: (@list Point)) (pts_out_2: (@list Point)) (retval: Z) (pts_out_3: (@list Point)) (pts_out_4: (@list Point)) ,
   “ ((Zlength (pts_out_4)) = n_pre) ” 
   &&  “ (points_in_bound pts_out_4 ) ” 
+  &&  “ (leftmost (point_mk (gx_pre) (gy_pre)) pts_out_4 ) ” 
   &&  “ (point_permutation pts_out_3 pts_out_4 ) ” 
   &&  “ (point_same_outside_range pts_out_3 pts_out_4 (retval + 1 ) right_pre ) ” 
   &&  “ (point_sorted_range (point_mk (gx_pre) (gy_pre)) pts_out_4 (retval + 1 ) right_pre ) ” 
   &&  “ (retval < right_pre) ” 
   &&  “ ((Zlength (pts_out_3)) = n_pre) ” 
   &&  “ (points_in_bound pts_out_3 ) ” 
+  &&  “ (leftmost (point_mk (gx_pre) (gy_pre)) pts_out_3 ) ” 
   &&  “ (point_permutation pts_out_2 pts_out_3 ) ” 
   &&  “ (point_same_outside_range pts_out_2 pts_out_3 left_pre (retval - 1 ) ) ” 
   &&  “ (point_sorted_range (point_mk (gx_pre) (gy_pre)) pts_out_3 left_pre (retval - 1 ) ) ” 
@@ -4468,6 +4565,7 @@ forall (gy_pre: Z) (gx_pre: Z) (right_pre: Z) (left_pre: Z) (n_pre: Z) (pts_pre:
   &&  “ (retval <= right_pre) ” 
   &&  “ ((Zlength (pts_out_2)) = n_pre) ” 
   &&  “ (points_in_bound pts_out_2 ) ” 
+  &&  “ (leftmost (point_mk (gx_pre) (gy_pre)) pts_out_2 ) ” 
   &&  “ (point_permutation pts_l pts_out_2 ) ” 
   &&  “ (point_same_outside_range pts_l pts_out_2 left_pre right_pre ) ” 
   &&  “ (point_polar_partitioned_at (point_mk (gx_pre) (gy_pre)) pts_out_2 left_pre right_pre retval ) ” 
@@ -4479,12 +4577,14 @@ forall (gy_pre: Z) (gx_pre: Z) (right_pre: Z) (left_pre: Z) (n_pre: Z) (pts_pre:
   &&  “ (right_pre < n_pre) ” 
   &&  “ ((Zlength (pts_l)) = n_pre) ” 
   &&  “ (points_in_bound pts_l ) ” 
-  &&  “ (point_in_bound (point_mk (gx_pre) (gy_pre)) ) ”
+  &&  “ (point_in_bound (point_mk (gx_pre) (gy_pre)) ) ” 
+  &&  “ (leftmost (point_mk (gx_pre) (gy_pre)) pts_l ) ”
   &&  (PointArray.full pts_pre n_pre pts_out_4 )
 |--
   EX (pts_out: (@list Point)) ,
   “ ((Zlength (pts_out)) = n_pre) ” 
   &&  “ (points_in_bound pts_out ) ” 
+  &&  “ (leftmost (point_mk (gx_pre) (gy_pre)) pts_out ) ” 
   &&  “ (point_permutation pts_l pts_out ) ” 
   &&  “ (point_same_outside_range pts_l pts_out left_pre right_pre ) ” 
   &&  “ (point_sorted_range (point_mk (gx_pre) (gy_pre)) pts_out left_pre right_pre ) ”
@@ -4495,6 +4595,7 @@ Definition quicksort_polar_points_return_wit_2 :=
 forall (gy_pre: Z) (gx_pre: Z) (right_pre: Z) (left_pre: Z) (n_pre: Z) (pts_pre: Z) (pts_l: (@list Point)) (pts_out_2: (@list Point)) (retval: Z) (pts_out_3: (@list Point)) ,
   “ ((Zlength (pts_out_3)) = n_pre) ” 
   &&  “ (points_in_bound pts_out_3 ) ” 
+  &&  “ (leftmost (point_mk (gx_pre) (gy_pre)) pts_out_3 ) ” 
   &&  “ (point_permutation pts_out_2 pts_out_3 ) ” 
   &&  “ (point_same_outside_range pts_out_2 pts_out_3 (retval + 1 ) right_pre ) ” 
   &&  “ (point_sorted_range (point_mk (gx_pre) (gy_pre)) pts_out_3 (retval + 1 ) right_pre ) ” 
@@ -4504,6 +4605,7 @@ forall (gy_pre: Z) (gx_pre: Z) (right_pre: Z) (left_pre: Z) (n_pre: Z) (pts_pre:
   &&  “ (retval <= right_pre) ” 
   &&  “ ((Zlength (pts_out_2)) = n_pre) ” 
   &&  “ (points_in_bound pts_out_2 ) ” 
+  &&  “ (leftmost (point_mk (gx_pre) (gy_pre)) pts_out_2 ) ” 
   &&  “ (point_permutation pts_l pts_out_2 ) ” 
   &&  “ (point_same_outside_range pts_l pts_out_2 left_pre right_pre ) ” 
   &&  “ (point_polar_partitioned_at (point_mk (gx_pre) (gy_pre)) pts_out_2 left_pre right_pre retval ) ” 
@@ -4515,12 +4617,14 @@ forall (gy_pre: Z) (gx_pre: Z) (right_pre: Z) (left_pre: Z) (n_pre: Z) (pts_pre:
   &&  “ (right_pre < n_pre) ” 
   &&  “ ((Zlength (pts_l)) = n_pre) ” 
   &&  “ (points_in_bound pts_l ) ” 
-  &&  “ (point_in_bound (point_mk (gx_pre) (gy_pre)) ) ”
+  &&  “ (point_in_bound (point_mk (gx_pre) (gy_pre)) ) ” 
+  &&  “ (leftmost (point_mk (gx_pre) (gy_pre)) pts_l ) ”
   &&  (PointArray.full pts_pre n_pre pts_out_3 )
 |--
   EX (pts_out: (@list Point)) ,
   “ ((Zlength (pts_out)) = n_pre) ” 
   &&  “ (points_in_bound pts_out ) ” 
+  &&  “ (leftmost (point_mk (gx_pre) (gy_pre)) pts_out ) ” 
   &&  “ (point_permutation pts_l pts_out ) ” 
   &&  “ (point_same_outside_range pts_l pts_out left_pre right_pre ) ” 
   &&  “ (point_sorted_range (point_mk (gx_pre) (gy_pre)) pts_out left_pre right_pre ) ”
@@ -4532,6 +4636,7 @@ forall (gy_pre: Z) (gx_pre: Z) (right_pre: Z) (left_pre: Z) (n_pre: Z) (pts_pre:
   “ (retval >= right_pre) ” 
   &&  “ ((Zlength (pts_out_3)) = n_pre) ” 
   &&  “ (points_in_bound pts_out_3 ) ” 
+  &&  “ (leftmost (point_mk (gx_pre) (gy_pre)) pts_out_3 ) ” 
   &&  “ (point_permutation pts_out_2 pts_out_3 ) ” 
   &&  “ (point_same_outside_range pts_out_2 pts_out_3 left_pre (retval - 1 ) ) ” 
   &&  “ (point_sorted_range (point_mk (gx_pre) (gy_pre)) pts_out_3 left_pre (retval - 1 ) ) ” 
@@ -4540,6 +4645,7 @@ forall (gy_pre: Z) (gx_pre: Z) (right_pre: Z) (left_pre: Z) (n_pre: Z) (pts_pre:
   &&  “ (retval <= right_pre) ” 
   &&  “ ((Zlength (pts_out_2)) = n_pre) ” 
   &&  “ (points_in_bound pts_out_2 ) ” 
+  &&  “ (leftmost (point_mk (gx_pre) (gy_pre)) pts_out_2 ) ” 
   &&  “ (point_permutation pts_l pts_out_2 ) ” 
   &&  “ (point_same_outside_range pts_l pts_out_2 left_pre right_pre ) ” 
   &&  “ (point_polar_partitioned_at (point_mk (gx_pre) (gy_pre)) pts_out_2 left_pre right_pre retval ) ” 
@@ -4551,12 +4657,14 @@ forall (gy_pre: Z) (gx_pre: Z) (right_pre: Z) (left_pre: Z) (n_pre: Z) (pts_pre:
   &&  “ (right_pre < n_pre) ” 
   &&  “ ((Zlength (pts_l)) = n_pre) ” 
   &&  “ (points_in_bound pts_l ) ” 
-  &&  “ (point_in_bound (point_mk (gx_pre) (gy_pre)) ) ”
+  &&  “ (point_in_bound (point_mk (gx_pre) (gy_pre)) ) ” 
+  &&  “ (leftmost (point_mk (gx_pre) (gy_pre)) pts_l ) ”
   &&  (PointArray.full pts_pre n_pre pts_out_3 )
 |--
   EX (pts_out: (@list Point)) ,
   “ ((Zlength (pts_out)) = n_pre) ” 
   &&  “ (points_in_bound pts_out ) ” 
+  &&  “ (leftmost (point_mk (gx_pre) (gy_pre)) pts_out ) ” 
   &&  “ (point_permutation pts_l pts_out ) ” 
   &&  “ (point_same_outside_range pts_l pts_out left_pre right_pre ) ” 
   &&  “ (point_sorted_range (point_mk (gx_pre) (gy_pre)) pts_out left_pre right_pre ) ”
@@ -4573,12 +4681,14 @@ forall (gy_pre: Z) (gx_pre: Z) (right_pre: Z) (left_pre: Z) (n_pre: Z) (pts_pre:
   &&  “ (right_pre < n_pre) ” 
   &&  “ ((Zlength (pts_l)) = n_pre) ” 
   &&  “ (points_in_bound pts_l ) ” 
-  &&  “ (point_in_bound (point_mk (gx_pre) (gy_pre)) ) ”
+  &&  “ (point_in_bound (point_mk (gx_pre) (gy_pre)) ) ” 
+  &&  “ (leftmost (point_mk (gx_pre) (gy_pre)) pts_l ) ”
   &&  (PointArray.full pts_pre n_pre pts_l )
 |--
   EX (pts_out: (@list Point)) ,
   “ ((Zlength (pts_out)) = n_pre) ” 
   &&  “ (points_in_bound pts_out ) ” 
+  &&  “ (leftmost (point_mk (gx_pre) (gy_pre)) pts_out ) ” 
   &&  “ (point_permutation pts_l pts_out ) ” 
   &&  “ (point_same_outside_range pts_l pts_out left_pre right_pre ) ” 
   &&  “ (point_sorted_range (point_mk (gx_pre) (gy_pre)) pts_out left_pre right_pre ) ”
@@ -4595,7 +4705,8 @@ forall (gy_pre: Z) (gx_pre: Z) (right_pre: Z) (left_pre: Z) (n_pre: Z) (pts_pre:
   &&  “ (right_pre < n_pre) ” 
   &&  “ ((Zlength (pts_l)) = n_pre) ” 
   &&  “ (points_in_bound pts_l ) ” 
-  &&  “ (point_in_bound (point_mk (gx_pre) (gy_pre)) ) ”
+  &&  “ (point_in_bound (point_mk (gx_pre) (gy_pre)) ) ” 
+  &&  “ (leftmost (point_mk (gx_pre) (gy_pre)) pts_l ) ”
   &&  ((( &( "p" ) )) # Int  |->_)
   **  ((( &( "gy" ) )) # Int  |-> gy_pre)
   **  ((( &( "gx" ) )) # Int  |-> gx_pre)
@@ -4612,7 +4723,8 @@ forall (gy_pre: Z) (gx_pre: Z) (right_pre: Z) (left_pre: Z) (n_pre: Z) (pts_pre:
   &&  “ (n_pre <= 50000) ” 
   &&  “ ((Zlength (pts_l)) = n_pre) ” 
   &&  “ (points_in_bound pts_l ) ” 
-  &&  “ (point_in_bound (point_mk (gx_pre) (gy_pre)) ) ”
+  &&  “ (point_in_bound (point_mk (gx_pre) (gy_pre)) ) ” 
+  &&  “ (leftmost (point_mk (gx_pre) (gy_pre)) pts_l ) ”
 .
 
 Definition quicksort_polar_points_partial_solve_wit_1_aux := 
@@ -4625,7 +4737,8 @@ forall (gy_pre: Z) (gx_pre: Z) (right_pre: Z) (left_pre: Z) (n_pre: Z) (pts_pre:
   &&  “ (right_pre < n_pre) ” 
   &&  “ ((Zlength (pts_l)) = n_pre) ” 
   &&  “ (points_in_bound pts_l ) ” 
-  &&  “ (point_in_bound (point_mk (gx_pre) (gy_pre)) ) ”
+  &&  “ (point_in_bound (point_mk (gx_pre) (gy_pre)) ) ” 
+  &&  “ (leftmost (point_mk (gx_pre) (gy_pre)) pts_l ) ”
   &&  (PointArray.full pts_pre n_pre pts_l )
 |--
   “ (0 <= left_pre) ” 
@@ -4636,6 +4749,7 @@ forall (gy_pre: Z) (gx_pre: Z) (right_pre: Z) (left_pre: Z) (n_pre: Z) (pts_pre:
   &&  “ ((Zlength (pts_l)) = n_pre) ” 
   &&  “ (points_in_bound pts_l ) ” 
   &&  “ (point_in_bound (point_mk (gx_pre) (gy_pre)) ) ” 
+  &&  “ (leftmost (point_mk (gx_pre) (gy_pre)) pts_l ) ” 
   &&  “ (left_pre < right_pre) ” 
   &&  “ (0 <= n_pre) ” 
   &&  “ (n_pre <= 50000) ” 
@@ -4644,7 +4758,8 @@ forall (gy_pre: Z) (gx_pre: Z) (right_pre: Z) (left_pre: Z) (n_pre: Z) (pts_pre:
   &&  “ (right_pre < n_pre) ” 
   &&  “ ((Zlength (pts_l)) = n_pre) ” 
   &&  “ (points_in_bound pts_l ) ” 
-  &&  “ (point_in_bound (point_mk (gx_pre) (gy_pre)) ) ”
+  &&  “ (point_in_bound (point_mk (gx_pre) (gy_pre)) ) ” 
+  &&  “ (leftmost (point_mk (gx_pre) (gy_pre)) pts_l ) ”
   &&  (PointArray.full pts_pre n_pre pts_l )
 .
 
@@ -4657,6 +4772,7 @@ forall (gy_pre: Z) (gx_pre: Z) (right_pre: Z) (left_pre: Z) (n_pre: Z) (pts_pre:
   &&  “ (retval <= right_pre) ” 
   &&  “ ((Zlength (pts_out)) = n_pre) ” 
   &&  “ (points_in_bound pts_out ) ” 
+  &&  “ (leftmost (point_mk (gx_pre) (gy_pre)) pts_out ) ” 
   &&  “ (point_permutation pts_l pts_out ) ” 
   &&  “ (point_same_outside_range pts_l pts_out left_pre right_pre ) ” 
   &&  “ (point_polar_partitioned_at (point_mk (gx_pre) (gy_pre)) pts_out left_pre right_pre retval ) ” 
@@ -4668,7 +4784,8 @@ forall (gy_pre: Z) (gx_pre: Z) (right_pre: Z) (left_pre: Z) (n_pre: Z) (pts_pre:
   &&  “ (right_pre < n_pre) ” 
   &&  “ ((Zlength (pts_l)) = n_pre) ” 
   &&  “ (points_in_bound pts_l ) ” 
-  &&  “ (point_in_bound (point_mk (gx_pre) (gy_pre)) ) ”
+  &&  “ (point_in_bound (point_mk (gx_pre) (gy_pre)) ) ” 
+  &&  “ (leftmost (point_mk (gx_pre) (gy_pre)) pts_l ) ”
   &&  (PointArray.full pts_pre n_pre pts_out )
   **  ((( &( "p" ) )) # Int  |-> retval)
   **  ((( &( "gy" ) )) # Int  |-> gy_pre)
@@ -4685,7 +4802,8 @@ forall (gy_pre: Z) (gx_pre: Z) (right_pre: Z) (left_pre: Z) (n_pre: Z) (pts_pre:
   &&  “ ((retval - 1 ) < n_pre) ” 
   &&  “ ((Zlength (pts_out)) = n_pre) ” 
   &&  “ (points_in_bound pts_out ) ” 
-  &&  “ (point_in_bound (point_mk (gx_pre) (gy_pre)) ) ”
+  &&  “ (point_in_bound (point_mk (gx_pre) (gy_pre)) ) ” 
+  &&  “ (leftmost (point_mk (gx_pre) (gy_pre)) pts_out ) ”
 .
 
 Definition quicksort_polar_points_partial_solve_wit_2_aux := 
@@ -4695,6 +4813,7 @@ forall (gy_pre: Z) (gx_pre: Z) (right_pre: Z) (left_pre: Z) (n_pre: Z) (pts_pre:
   &&  “ (retval <= right_pre) ” 
   &&  “ ((Zlength (pts_out)) = n_pre) ” 
   &&  “ (points_in_bound pts_out ) ” 
+  &&  “ (leftmost (point_mk (gx_pre) (gy_pre)) pts_out ) ” 
   &&  “ (point_permutation pts_l pts_out ) ” 
   &&  “ (point_same_outside_range pts_l pts_out left_pre right_pre ) ” 
   &&  “ (point_polar_partitioned_at (point_mk (gx_pre) (gy_pre)) pts_out left_pre right_pre retval ) ” 
@@ -4706,7 +4825,8 @@ forall (gy_pre: Z) (gx_pre: Z) (right_pre: Z) (left_pre: Z) (n_pre: Z) (pts_pre:
   &&  “ (right_pre < n_pre) ” 
   &&  “ ((Zlength (pts_l)) = n_pre) ” 
   &&  “ (points_in_bound pts_l ) ” 
-  &&  “ (point_in_bound (point_mk (gx_pre) (gy_pre)) ) ”
+  &&  “ (point_in_bound (point_mk (gx_pre) (gy_pre)) ) ” 
+  &&  “ (leftmost (point_mk (gx_pre) (gy_pre)) pts_l ) ”
   &&  (PointArray.full pts_pre n_pre pts_out )
 |--
   “ (0 <= n_pre) ” 
@@ -4717,11 +4837,13 @@ forall (gy_pre: Z) (gx_pre: Z) (right_pre: Z) (left_pre: Z) (n_pre: Z) (pts_pre:
   &&  “ ((Zlength (pts_out)) = n_pre) ” 
   &&  “ (points_in_bound pts_out ) ” 
   &&  “ (point_in_bound (point_mk (gx_pre) (gy_pre)) ) ” 
+  &&  “ (leftmost (point_mk (gx_pre) (gy_pre)) pts_out ) ” 
   &&  “ (retval > left_pre) ” 
   &&  “ (left_pre <= retval) ” 
   &&  “ (retval <= right_pre) ” 
   &&  “ ((Zlength (pts_out)) = n_pre) ” 
   &&  “ (points_in_bound pts_out ) ” 
+  &&  “ (leftmost (point_mk (gx_pre) (gy_pre)) pts_out ) ” 
   &&  “ (point_permutation pts_l pts_out ) ” 
   &&  “ (point_same_outside_range pts_l pts_out left_pre right_pre ) ” 
   &&  “ (point_polar_partitioned_at (point_mk (gx_pre) (gy_pre)) pts_out left_pre right_pre retval ) ” 
@@ -4733,7 +4855,8 @@ forall (gy_pre: Z) (gx_pre: Z) (right_pre: Z) (left_pre: Z) (n_pre: Z) (pts_pre:
   &&  “ (right_pre < n_pre) ” 
   &&  “ ((Zlength (pts_l)) = n_pre) ” 
   &&  “ (points_in_bound pts_l ) ” 
-  &&  “ (point_in_bound (point_mk (gx_pre) (gy_pre)) ) ”
+  &&  “ (point_in_bound (point_mk (gx_pre) (gy_pre)) ) ” 
+  &&  “ (leftmost (point_mk (gx_pre) (gy_pre)) pts_l ) ”
   &&  (PointArray.full pts_pre n_pre pts_out )
 .
 
@@ -4744,6 +4867,7 @@ forall (gy_pre: Z) (gx_pre: Z) (right_pre: Z) (left_pre: Z) (n_pre: Z) (pts_pre:
   “ (retval < right_pre) ” 
   &&  “ ((Zlength (pts_out)) = n_pre) ” 
   &&  “ (points_in_bound pts_out ) ” 
+  &&  “ (leftmost (point_mk (gx_pre) (gy_pre)) pts_out ) ” 
   &&  “ (point_permutation pts_out_2 pts_out ) ” 
   &&  “ (point_same_outside_range pts_out_2 pts_out left_pre (retval - 1 ) ) ” 
   &&  “ (point_sorted_range (point_mk (gx_pre) (gy_pre)) pts_out left_pre (retval - 1 ) ) ” 
@@ -4752,6 +4876,7 @@ forall (gy_pre: Z) (gx_pre: Z) (right_pre: Z) (left_pre: Z) (n_pre: Z) (pts_pre:
   &&  “ (retval <= right_pre) ” 
   &&  “ ((Zlength (pts_out_2)) = n_pre) ” 
   &&  “ (points_in_bound pts_out_2 ) ” 
+  &&  “ (leftmost (point_mk (gx_pre) (gy_pre)) pts_out_2 ) ” 
   &&  “ (point_permutation pts_l pts_out_2 ) ” 
   &&  “ (point_same_outside_range pts_l pts_out_2 left_pre right_pre ) ” 
   &&  “ (point_polar_partitioned_at (point_mk (gx_pre) (gy_pre)) pts_out_2 left_pre right_pre retval ) ” 
@@ -4763,7 +4888,8 @@ forall (gy_pre: Z) (gx_pre: Z) (right_pre: Z) (left_pre: Z) (n_pre: Z) (pts_pre:
   &&  “ (right_pre < n_pre) ” 
   &&  “ ((Zlength (pts_l)) = n_pre) ” 
   &&  “ (points_in_bound pts_l ) ” 
-  &&  “ (point_in_bound (point_mk (gx_pre) (gy_pre)) ) ”
+  &&  “ (point_in_bound (point_mk (gx_pre) (gy_pre)) ) ” 
+  &&  “ (leftmost (point_mk (gx_pre) (gy_pre)) pts_l ) ”
   &&  (PointArray.full pts_pre n_pre pts_out )
   **  ((( &( "p" ) )) # Int  |-> retval)
   **  ((( &( "gy" ) )) # Int  |-> gy_pre)
@@ -4780,7 +4906,8 @@ forall (gy_pre: Z) (gx_pre: Z) (right_pre: Z) (left_pre: Z) (n_pre: Z) (pts_pre:
   &&  “ (right_pre < n_pre) ” 
   &&  “ ((Zlength (pts_out)) = n_pre) ” 
   &&  “ (points_in_bound pts_out ) ” 
-  &&  “ (point_in_bound (point_mk (gx_pre) (gy_pre)) ) ”
+  &&  “ (point_in_bound (point_mk (gx_pre) (gy_pre)) ) ” 
+  &&  “ (leftmost (point_mk (gx_pre) (gy_pre)) pts_out ) ”
 .
 
 Definition quicksort_polar_points_partial_solve_wit_3_aux := 
@@ -4788,6 +4915,7 @@ forall (gy_pre: Z) (gx_pre: Z) (right_pre: Z) (left_pre: Z) (n_pre: Z) (pts_pre:
   “ (retval < right_pre) ” 
   &&  “ ((Zlength (pts_out)) = n_pre) ” 
   &&  “ (points_in_bound pts_out ) ” 
+  &&  “ (leftmost (point_mk (gx_pre) (gy_pre)) pts_out ) ” 
   &&  “ (point_permutation pts_out_2 pts_out ) ” 
   &&  “ (point_same_outside_range pts_out_2 pts_out left_pre (retval - 1 ) ) ” 
   &&  “ (point_sorted_range (point_mk (gx_pre) (gy_pre)) pts_out left_pre (retval - 1 ) ) ” 
@@ -4796,6 +4924,7 @@ forall (gy_pre: Z) (gx_pre: Z) (right_pre: Z) (left_pre: Z) (n_pre: Z) (pts_pre:
   &&  “ (retval <= right_pre) ” 
   &&  “ ((Zlength (pts_out_2)) = n_pre) ” 
   &&  “ (points_in_bound pts_out_2 ) ” 
+  &&  “ (leftmost (point_mk (gx_pre) (gy_pre)) pts_out_2 ) ” 
   &&  “ (point_permutation pts_l pts_out_2 ) ” 
   &&  “ (point_same_outside_range pts_l pts_out_2 left_pre right_pre ) ” 
   &&  “ (point_polar_partitioned_at (point_mk (gx_pre) (gy_pre)) pts_out_2 left_pre right_pre retval ) ” 
@@ -4807,7 +4936,8 @@ forall (gy_pre: Z) (gx_pre: Z) (right_pre: Z) (left_pre: Z) (n_pre: Z) (pts_pre:
   &&  “ (right_pre < n_pre) ” 
   &&  “ ((Zlength (pts_l)) = n_pre) ” 
   &&  “ (points_in_bound pts_l ) ” 
-  &&  “ (point_in_bound (point_mk (gx_pre) (gy_pre)) ) ”
+  &&  “ (point_in_bound (point_mk (gx_pre) (gy_pre)) ) ” 
+  &&  “ (leftmost (point_mk (gx_pre) (gy_pre)) pts_l ) ”
   &&  (PointArray.full pts_pre n_pre pts_out )
 |--
   “ (0 <= n_pre) ” 
@@ -4818,9 +4948,11 @@ forall (gy_pre: Z) (gx_pre: Z) (right_pre: Z) (left_pre: Z) (n_pre: Z) (pts_pre:
   &&  “ ((Zlength (pts_out)) = n_pre) ” 
   &&  “ (points_in_bound pts_out ) ” 
   &&  “ (point_in_bound (point_mk (gx_pre) (gy_pre)) ) ” 
+  &&  “ (leftmost (point_mk (gx_pre) (gy_pre)) pts_out ) ” 
   &&  “ (retval < right_pre) ” 
   &&  “ ((Zlength (pts_out)) = n_pre) ” 
   &&  “ (points_in_bound pts_out ) ” 
+  &&  “ (leftmost (point_mk (gx_pre) (gy_pre)) pts_out ) ” 
   &&  “ (point_permutation pts_out_2 pts_out ) ” 
   &&  “ (point_same_outside_range pts_out_2 pts_out left_pre (retval - 1 ) ) ” 
   &&  “ (point_sorted_range (point_mk (gx_pre) (gy_pre)) pts_out left_pre (retval - 1 ) ) ” 
@@ -4829,6 +4961,7 @@ forall (gy_pre: Z) (gx_pre: Z) (right_pre: Z) (left_pre: Z) (n_pre: Z) (pts_pre:
   &&  “ (retval <= right_pre) ” 
   &&  “ ((Zlength (pts_out_2)) = n_pre) ” 
   &&  “ (points_in_bound pts_out_2 ) ” 
+  &&  “ (leftmost (point_mk (gx_pre) (gy_pre)) pts_out_2 ) ” 
   &&  “ (point_permutation pts_l pts_out_2 ) ” 
   &&  “ (point_same_outside_range pts_l pts_out_2 left_pre right_pre ) ” 
   &&  “ (point_polar_partitioned_at (point_mk (gx_pre) (gy_pre)) pts_out_2 left_pre right_pre retval ) ” 
@@ -4840,7 +4973,8 @@ forall (gy_pre: Z) (gx_pre: Z) (right_pre: Z) (left_pre: Z) (n_pre: Z) (pts_pre:
   &&  “ (right_pre < n_pre) ” 
   &&  “ ((Zlength (pts_l)) = n_pre) ” 
   &&  “ (points_in_bound pts_l ) ” 
-  &&  “ (point_in_bound (point_mk (gx_pre) (gy_pre)) ) ”
+  &&  “ (point_in_bound (point_mk (gx_pre) (gy_pre)) ) ” 
+  &&  “ (leftmost (point_mk (gx_pre) (gy_pre)) pts_l ) ”
   &&  (PointArray.full pts_pre n_pre pts_out )
 .
 
@@ -4854,6 +4988,7 @@ forall (gy_pre: Z) (gx_pre: Z) (right_pre: Z) (left_pre: Z) (n_pre: Z) (pts_pre:
   &&  “ (retval <= right_pre) ” 
   &&  “ ((Zlength (pts_out)) = n_pre) ” 
   &&  “ (points_in_bound pts_out ) ” 
+  &&  “ (leftmost (point_mk (gx_pre) (gy_pre)) pts_out ) ” 
   &&  “ (point_permutation pts_l pts_out ) ” 
   &&  “ (point_same_outside_range pts_l pts_out left_pre right_pre ) ” 
   &&  “ (point_polar_partitioned_at (point_mk (gx_pre) (gy_pre)) pts_out left_pre right_pre retval ) ” 
@@ -4865,7 +5000,8 @@ forall (gy_pre: Z) (gx_pre: Z) (right_pre: Z) (left_pre: Z) (n_pre: Z) (pts_pre:
   &&  “ (right_pre < n_pre) ” 
   &&  “ ((Zlength (pts_l)) = n_pre) ” 
   &&  “ (points_in_bound pts_l ) ” 
-  &&  “ (point_in_bound (point_mk (gx_pre) (gy_pre)) ) ”
+  &&  “ (point_in_bound (point_mk (gx_pre) (gy_pre)) ) ” 
+  &&  “ (leftmost (point_mk (gx_pre) (gy_pre)) pts_l ) ”
   &&  (PointArray.full pts_pre n_pre pts_out )
   **  ((( &( "p" ) )) # Int  |-> retval)
   **  ((( &( "gy" ) )) # Int  |-> gy_pre)
@@ -4882,7 +5018,8 @@ forall (gy_pre: Z) (gx_pre: Z) (right_pre: Z) (left_pre: Z) (n_pre: Z) (pts_pre:
   &&  “ (right_pre < n_pre) ” 
   &&  “ ((Zlength (pts_out)) = n_pre) ” 
   &&  “ (points_in_bound pts_out ) ” 
-  &&  “ (point_in_bound (point_mk (gx_pre) (gy_pre)) ) ”
+  &&  “ (point_in_bound (point_mk (gx_pre) (gy_pre)) ) ” 
+  &&  “ (leftmost (point_mk (gx_pre) (gy_pre)) pts_out ) ”
 .
 
 Definition quicksort_polar_points_partial_solve_wit_4_aux := 
@@ -4893,6 +5030,7 @@ forall (gy_pre: Z) (gx_pre: Z) (right_pre: Z) (left_pre: Z) (n_pre: Z) (pts_pre:
   &&  “ (retval <= right_pre) ” 
   &&  “ ((Zlength (pts_out)) = n_pre) ” 
   &&  “ (points_in_bound pts_out ) ” 
+  &&  “ (leftmost (point_mk (gx_pre) (gy_pre)) pts_out ) ” 
   &&  “ (point_permutation pts_l pts_out ) ” 
   &&  “ (point_same_outside_range pts_l pts_out left_pre right_pre ) ” 
   &&  “ (point_polar_partitioned_at (point_mk (gx_pre) (gy_pre)) pts_out left_pre right_pre retval ) ” 
@@ -4904,7 +5042,8 @@ forall (gy_pre: Z) (gx_pre: Z) (right_pre: Z) (left_pre: Z) (n_pre: Z) (pts_pre:
   &&  “ (right_pre < n_pre) ” 
   &&  “ ((Zlength (pts_l)) = n_pre) ” 
   &&  “ (points_in_bound pts_l ) ” 
-  &&  “ (point_in_bound (point_mk (gx_pre) (gy_pre)) ) ”
+  &&  “ (point_in_bound (point_mk (gx_pre) (gy_pre)) ) ” 
+  &&  “ (leftmost (point_mk (gx_pre) (gy_pre)) pts_l ) ”
   &&  (PointArray.full pts_pre n_pre pts_out )
 |--
   “ (0 <= n_pre) ” 
@@ -4915,12 +5054,14 @@ forall (gy_pre: Z) (gx_pre: Z) (right_pre: Z) (left_pre: Z) (n_pre: Z) (pts_pre:
   &&  “ ((Zlength (pts_out)) = n_pre) ” 
   &&  “ (points_in_bound pts_out ) ” 
   &&  “ (point_in_bound (point_mk (gx_pre) (gy_pre)) ) ” 
+  &&  “ (leftmost (point_mk (gx_pre) (gy_pre)) pts_out ) ” 
   &&  “ (retval < right_pre) ” 
   &&  “ (retval <= left_pre) ” 
   &&  “ (left_pre <= retval) ” 
   &&  “ (retval <= right_pre) ” 
   &&  “ ((Zlength (pts_out)) = n_pre) ” 
   &&  “ (points_in_bound pts_out ) ” 
+  &&  “ (leftmost (point_mk (gx_pre) (gy_pre)) pts_out ) ” 
   &&  “ (point_permutation pts_l pts_out ) ” 
   &&  “ (point_same_outside_range pts_l pts_out left_pre right_pre ) ” 
   &&  “ (point_polar_partitioned_at (point_mk (gx_pre) (gy_pre)) pts_out left_pre right_pre retval ) ” 
@@ -4932,7 +5073,8 @@ forall (gy_pre: Z) (gx_pre: Z) (right_pre: Z) (left_pre: Z) (n_pre: Z) (pts_pre:
   &&  “ (right_pre < n_pre) ” 
   &&  “ ((Zlength (pts_l)) = n_pre) ” 
   &&  “ (points_in_bound pts_l ) ” 
-  &&  “ (point_in_bound (point_mk (gx_pre) (gy_pre)) ) ”
+  &&  “ (point_in_bound (point_mk (gx_pre) (gy_pre)) ) ” 
+  &&  “ (leftmost (point_mk (gx_pre) (gy_pre)) pts_l ) ”
   &&  (PointArray.full pts_pre n_pre pts_out )
 .
 
@@ -5385,6 +5527,7 @@ Definition graham_scan_safety_wit_18 :=
 forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (pts_l: (@list Point)) (pivot_idx: Z) (i: Z) (pts_out: (@list Point))  __default_Point ,
   “ ((Zlength (pts_out)) = n_pre) ” 
   &&  “ (points_in_bound pts_out ) ” 
+  &&  “ (leftmost (point_mk ((point_x ((Znth 0 (point_swap (pts_l) (0) (pivot_idx)) __default_Point)))) ((point_y ((Znth 0 (point_swap (pts_l) (0) (pivot_idx)) __default_Point))))) pts_out ) ” 
   &&  “ (point_permutation (point_swap (pts_l) (0) (pivot_idx)) pts_out ) ” 
   &&  “ (point_same_outside_range (point_swap (pts_l) (0) (pivot_idx)) pts_out 1 (n_pre - 1 ) ) ” 
   &&  “ (point_sorted_range (point_mk ((point_x ((Znth 0 (point_swap (pts_l) (0) (pivot_idx)) __default_Point)))) ((point_y ((Znth 0 (point_swap (pts_l) (0) (pivot_idx)) __default_Point))))) pts_out 1 (n_pre - 1 ) ) ” 
@@ -5419,6 +5562,7 @@ Definition graham_scan_safety_wit_19 :=
 forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (pts_l: (@list Point)) (pivot_idx: Z) (i: Z) (pts_out: (@list Point))  __default_Point ,
   “ ((Zlength (pts_out)) = n_pre) ” 
   &&  “ (points_in_bound pts_out ) ” 
+  &&  “ (leftmost (point_mk ((point_x ((Znth 0 pts_l __default_Point)))) ((point_y ((Znth 0 pts_l __default_Point))))) pts_out ) ” 
   &&  “ (point_permutation pts_l pts_out ) ” 
   &&  “ (point_same_outside_range pts_l pts_out 1 (n_pre - 1 ) ) ” 
   &&  “ (point_sorted_range (point_mk ((point_x ((Znth 0 pts_l __default_Point)))) ((point_y ((Znth 0 pts_l __default_Point))))) pts_out 1 (n_pre - 1 ) ) ” 
@@ -5462,6 +5606,7 @@ forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (pts_l: (@list Point)) (pts_pivot: 
   &&  “ (points_in_bound tail_sorted ) ” 
   &&  “ (point_in_bound pivot0 ) ” 
   &&  “ (point_leftmost_prefix pts_l pivot_idx n_pre ) ” 
+  &&  “ (leftmost pivot0 pts_sorted ) ” 
   &&  “ (point_permutation pts_pivot pts_sorted ) ” 
   &&  “ (point_sorted_range (point_mk (gx) (gy)) pts_sorted 1 (n_pre - 1 ) ) ” 
   &&  “ (point_polar_sorted pivot0 tail_sorted ) ” 
@@ -5499,6 +5644,7 @@ forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (pts_l: (@list Point)) (pts_pivot: 
   &&  “ (points_in_bound tail_sorted ) ” 
   &&  “ (point_in_bound pivot0 ) ” 
   &&  “ (point_leftmost_prefix pts_l pivot_idx n_pre ) ” 
+  &&  “ (leftmost pivot0 pts_sorted ) ” 
   &&  “ (point_permutation pts_pivot pts_sorted ) ” 
   &&  “ (point_sorted_range (point_mk (gx) (gy)) pts_sorted 1 (n_pre - 1 ) ) ” 
   &&  “ (point_polar_sorted pivot0 tail_sorted ) ” 
@@ -5613,6 +5759,7 @@ Definition graham_scan_entail_wit_3_1 :=
 forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (pts_l: (@list Point)) (pivot_idx: Z) (i: Z) (pts_out: (@list Point))  __default_Point ,
   “ ((Zlength (pts_out)) = n_pre) ” 
   &&  “ (points_in_bound pts_out ) ” 
+  &&  “ (leftmost (point_mk ((point_x ((Znth 0 (point_swap (pts_l) (0) (pivot_idx)) __default_Point)))) ((point_y ((Znth 0 (point_swap (pts_l) (0) (pivot_idx)) __default_Point))))) pts_out ) ” 
   &&  “ (point_permutation (point_swap (pts_l) (0) (pivot_idx)) pts_out ) ” 
   &&  “ (point_same_outside_range (point_swap (pts_l) (0) (pivot_idx)) pts_out 1 (n_pre - 1 ) ) ” 
   &&  “ (point_sorted_range (point_mk ((point_x ((Znth 0 (point_swap (pts_l) (0) (pivot_idx)) __default_Point)))) ((point_y ((Znth 0 (point_swap (pts_l) (0) (pivot_idx)) __default_Point))))) pts_out 1 (n_pre - 1 ) ) ” 
@@ -5645,6 +5792,7 @@ forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (pts_l: (@list Point)) (pivot_idx: 
   &&  “ (points_in_bound tail_sorted ) ” 
   &&  “ (point_in_bound pivot0 ) ” 
   &&  “ (point_leftmost_prefix pts_l pivot_idx n_pre ) ” 
+  &&  “ (leftmost pivot0 pts_sorted ) ” 
   &&  “ (point_permutation pts_pivot pts_sorted ) ” 
   &&  “ (point_sorted_range (point_mk ((point_x ((Znth 0 (point_swap (pts_l) (0) (pivot_idx)) __default_Point)))) ((point_y ((Znth 0 (point_swap (pts_l) (0) (pivot_idx)) __default_Point))))) pts_sorted 1 (n_pre - 1 ) ) ” 
   &&  “ (point_polar_sorted pivot0 tail_sorted ) ” 
@@ -5661,6 +5809,7 @@ Definition graham_scan_entail_wit_3_2 :=
 forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (pts_l: (@list Point)) (pivot_idx: Z) (i: Z) (pts_out: (@list Point))  __default_Point ,
   “ ((Zlength (pts_out)) = n_pre) ” 
   &&  “ (points_in_bound pts_out ) ” 
+  &&  “ (leftmost (point_mk ((point_x ((Znth 0 pts_l __default_Point)))) ((point_y ((Znth 0 pts_l __default_Point))))) pts_out ) ” 
   &&  “ (point_permutation pts_l pts_out ) ” 
   &&  “ (point_same_outside_range pts_l pts_out 1 (n_pre - 1 ) ) ” 
   &&  “ (point_sorted_range (point_mk ((point_x ((Znth 0 pts_l __default_Point)))) ((point_y ((Znth 0 pts_l __default_Point))))) pts_out 1 (n_pre - 1 ) ) ” 
@@ -5692,6 +5841,7 @@ forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (pts_l: (@list Point)) (pivot_idx: 
   &&  “ (points_in_bound tail_sorted ) ” 
   &&  “ (point_in_bound pivot0 ) ” 
   &&  “ (point_leftmost_prefix pts_l pivot_idx n_pre ) ” 
+  &&  “ (leftmost pivot0 pts_sorted ) ” 
   &&  “ (point_permutation pts_pivot pts_sorted ) ” 
   &&  “ (point_sorted_range (point_mk ((point_x ((Znth 0 pts_l __default_Point)))) ((point_y ((Znth 0 pts_l __default_Point))))) pts_sorted 1 (n_pre - 1 ) ) ” 
   &&  “ (point_polar_sorted pivot0 tail_sorted ) ” 
@@ -5722,6 +5872,7 @@ forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (pts_l: (@list Point)) (pts_pivot: 
   &&  “ (points_in_bound tail_sorted ) ” 
   &&  “ (point_in_bound pivot0 ) ” 
   &&  “ (point_leftmost_prefix pts_l pivot_idx n_pre ) ” 
+  &&  “ (leftmost pivot0 pts_sorted ) ” 
   &&  “ (point_permutation pts_pivot pts_sorted ) ” 
   &&  “ (point_sorted_range (point_mk (gx) (gy)) pts_sorted 1 (n_pre - 1 ) ) ” 
   &&  “ (point_polar_sorted pivot0 tail_sorted ) ” 
@@ -6154,6 +6305,7 @@ forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (pts_l: (@list Point)) (pivot_idx: 
   &&  “ ((n_pre - 1 ) < n_pre) ” 
   &&  “ ((Zlength (pts_l)) = n_pre) ” 
   &&  “ (points_in_bound pts_l ) ” 
+  &&  “ (leftmost (point_mk ((point_x ((Znth 0 pts_l __default_Point)))) ((point_y ((Znth 0 pts_l __default_Point))))) pts_l ) ” 
   &&  “ (point_in_bound (point_mk ((point_x ((Znth 0 pts_l __default_Point)))) ((point_y ((Znth 0 pts_l __default_Point))))) ) ”
 .
 
@@ -6181,6 +6333,7 @@ forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (pts_l: (@list Point)) (pivot_idx: 
   &&  “ ((n_pre - 1 ) < n_pre) ” 
   &&  “ ((Zlength (pts_l)) = n_pre) ” 
   &&  “ (points_in_bound pts_l ) ” 
+  &&  “ (leftmost (point_mk ((point_x ((Znth 0 pts_l __default_Point)))) ((point_y ((Znth 0 pts_l __default_Point))))) pts_l ) ” 
   &&  “ (point_in_bound (point_mk ((point_x ((Znth 0 pts_l __default_Point)))) ((point_y ((Znth 0 pts_l __default_Point))))) ) ” 
   &&  “ (pivot_idx = 0) ” 
   &&  “ (i >= n_pre) ” 
@@ -6229,6 +6382,7 @@ forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (pts_l: (@list Point)) (pivot_idx: 
   &&  “ (0 <= 1) ” 
   &&  “ ((-1) <= (n_pre - 1 )) ” 
   &&  “ ((n_pre - 1 ) < n_pre) ” 
+  &&  “ (leftmost (point_mk ((point_x ((Znth 0 (point_swap (pts_l) (0) (pivot_idx)) __default_Point)))) ((point_y ((Znth 0 (point_swap (pts_l) (0) (pivot_idx)) __default_Point))))) (point_swap (pts_l) (0) (pivot_idx)) ) ” 
   &&  “ (point_in_bound (point_mk ((point_x ((Znth 0 (point_swap (pts_l) (0) (pivot_idx)) __default_Point)))) ((point_y ((Znth 0 (point_swap (pts_l) (0) (pivot_idx)) __default_Point))))) ) ” 
   &&  “ (points_in_bound (point_swap (pts_l) (0) (pivot_idx)) ) ” 
   &&  “ ((Zlength ((point_swap (pts_l) (0) (pivot_idx)))) = n_pre) ”
@@ -6257,6 +6411,7 @@ forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (pts_l: (@list Point)) (pivot_idx: 
   &&  “ (0 <= 1) ” 
   &&  “ ((-1) <= (n_pre - 1 )) ” 
   &&  “ ((n_pre - 1 ) < n_pre) ” 
+  &&  “ (leftmost (point_mk ((point_x ((Znth 0 (point_swap (pts_l) (0) (pivot_idx)) __default_Point)))) ((point_y ((Znth 0 (point_swap (pts_l) (0) (pivot_idx)) __default_Point))))) (point_swap (pts_l) (0) (pivot_idx)) ) ” 
   &&  “ (point_in_bound (point_mk ((point_x ((Znth 0 (point_swap (pts_l) (0) (pivot_idx)) __default_Point)))) ((point_y ((Znth 0 (point_swap (pts_l) (0) (pivot_idx)) __default_Point))))) ) ” 
   &&  “ (points_in_bound (point_swap (pts_l) (0) (pivot_idx)) ) ” 
   &&  “ ((Zlength ((point_swap (pts_l) (0) (pivot_idx)))) = n_pre) ” 
@@ -6293,6 +6448,7 @@ forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (pts_l: (@list Point)) (pts_pivot: 
   &&  “ (points_in_bound tail_sorted ) ” 
   &&  “ (point_in_bound pivot0 ) ” 
   &&  “ (point_leftmost_prefix pts_l pivot_idx n_pre ) ” 
+  &&  “ (leftmost pivot0 pts_sorted ) ” 
   &&  “ (point_permutation pts_pivot pts_sorted ) ” 
   &&  “ (point_sorted_range (point_mk (gx) (gy)) pts_sorted 1 (n_pre - 1 ) ) ” 
   &&  “ (point_polar_sorted pivot0 tail_sorted ) ” 
@@ -6336,6 +6492,7 @@ forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (pts_l: (@list Point)) (pts_pivot: 
   &&  “ (points_in_bound tail_sorted ) ” 
   &&  “ (point_in_bound pivot0 ) ” 
   &&  “ (point_leftmost_prefix pts_l pivot_idx n_pre ) ” 
+  &&  “ (leftmost pivot0 pts_sorted ) ” 
   &&  “ (point_permutation pts_pivot pts_sorted ) ” 
   &&  “ (point_sorted_range (point_mk (gx) (gy)) pts_sorted 1 (n_pre - 1 ) ) ” 
   &&  “ (point_polar_sorted pivot0 tail_sorted ) ” 
@@ -6367,6 +6524,7 @@ forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (pts_l: (@list Point)) (pts_pivot: 
   &&  “ (points_in_bound tail_sorted ) ” 
   &&  “ (point_in_bound pivot0 ) ” 
   &&  “ (point_leftmost_prefix pts_l pivot_idx n_pre ) ” 
+  &&  “ (leftmost pivot0 pts_sorted ) ” 
   &&  “ (point_permutation pts_pivot pts_sorted ) ” 
   &&  “ (point_sorted_range (point_mk (gx) (gy)) pts_sorted 1 (n_pre - 1 ) ) ” 
   &&  “ (point_polar_sorted pivot0 tail_sorted ) ” 

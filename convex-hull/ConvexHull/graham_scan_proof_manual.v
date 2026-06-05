@@ -22,6 +22,7 @@ Require Import SimpleC.EE.QCP_demos_LLM.sll_merge_rel_lib.
 Local Open Scope monad.
 From AUXLib Require Import int_auto Axioms Feq Idents ListLib VMap relations.
 From FP Require Import PartialOrder_Setoid BourbakiWitt.
+From MonadLib.StateRelMonad Require Import StateRelBasic safeexec_lib FixpointLib.
 Local Open Scope sac.
 
 Lemma proof_of_leftdown_return_wit_1 : leftdown_return_wit_1.
@@ -628,13 +629,204 @@ Proof.
 Qed.
 
 Lemma proof_of_build_hull_from_sorted_tail_entail_wit_3 : build_hull_from_sorted_tail_entail_wit_3.
-Proof. Admitted. 
+Proof.
+  unfold build_hull_from_sorted_tail_entail_wit_3.
+  intros.
+  pre_process.
+  destruct stk_2 as [| t [| s T]].
+  - simpl in H8. rewrite Zlength_nil in H8. lia.
+  - simpl in H8. rewrite Zlength_cons, Zlength_nil in H8. lia.
+  - pose proof (rev_stack_pop_top t s T top H8) as Htop_pop.
+    Exists (s :: T).
+    split_pure_spatial.
+    + change (rev (t :: s :: T)) with (rev (s :: T) ++ t :: nil).
+      replace (top - 1 + 1) with top by lia.
+      cancel (&( pivot_pre # "Point" ->ₛ "x") # Int |-> pivot0_low_level_spec.(x)).
+      cancel (&( pivot_pre # "Point" ->ₛ "y") # Int |-> pivot0_low_level_spec.(y)).
+      cancel (PointArray.full sorted_tail_pre tail_n_pre l_low_level_spec).
+      assert (Htail_hi : top + 1 <= tail_n_pre + 1) by lia.
+      apply (point_array_seg_pop_tail hull_pre top (tail_n_pre + 1)
+               (rev (s :: T)) t Htop_pop Htail_hi).
+    + repeat split_pures.
+      * dump_pre_spatial. lia.
+      * dump_pre_spatial. lia.
+      * dump_pre_spatial. lia.
+      * dump_pre_spatial. lia.
+      * dump_pre_spatial. lia.
+      * dump_pre_spatial. exact H7.
+      * dump_pre_spatial. lia.
+      * dump_pre_spatial. exact H9.
+      * dump_pre_spatial. exact H10.
+      * dump_pre_spatial. exact H11.
+      * dump_pre_spatial.
+        apply points_in_bound_app_l with (l2 := t :: nil).
+        change (rev (t :: s :: T)) with (rev (s :: T) ++ t :: nil) in H12.
+        exact H12.
+      * dump_pre_spatial.
+      assert (Hnccw : ~ ccw s t (Znth i l_low_level_spec default_point)).
+      { rewrite (Znth_rev_stack_prev __default_Point t s T top H8) in H0.
+        rewrite (Znth_rev_stack_top __default_Point t s T top H8) in H0.
+        rewrite (Znth_indep l_low_level_spec i __default_Point default_point) in H0 by lia.
+        rewrite point_cross_by_value_point in H0.
+        apply point_cross_le_0_not_ccw_local.
+        lia. }
+      eapply safeExec_build_hull_c_step_pop.
+      -- exact Hnccw.
+      -- exact H13.
+Qed.
 
 Lemma proof_of_build_hull_from_sorted_tail_entail_wit_4_1 : build_hull_from_sorted_tail_entail_wit_4_1.
-Proof. Admitted. 
+Proof.
+  unfold build_hull_from_sorted_tail_entail_wit_4_1.
+  intros.
+  pre_process.
+  destruct stk_2 as [| t [| s T]].
+  - simpl in H8. rewrite Zlength_nil in H8. lia.
+  - simpl in H8. rewrite Zlength_cons, Zlength_nil in H8. lia.
+  - Exists (Znth i l_low_level_spec __default_Point :: t :: s :: T).
+    split_pure_spatial.
+    + change (rev (Znth i l_low_level_spec __default_Point :: t :: s :: T))
+        with (rev (t :: s :: T) ++ Znth i l_low_level_spec __default_Point :: nil).
+      cancel (&( pivot_pre # "Point" ->ₛ "x") # Int |-> pivot0_low_level_spec.(x)).
+      cancel (&( pivot_pre # "Point" ->ₛ "y") # Int |-> pivot0_low_level_spec.(y)).
+      cancel (PointArray.full sorted_tail_pre tail_n_pre l_low_level_spec).
+      sep_apply_l_atomic
+        (store_point_fold
+           (hull_pre + (top + 1) * sizeof("Point"))
+           (Znth i l_low_level_spec __default_Point)).
+      apply (point_array_seg_snoc_store_undef hull_pre (top + 1)
+               (tail_n_pre + 1) (rev (t :: s :: T))
+               (Znth i l_low_level_spec __default_Point)); lia.
+    + repeat split_pures.
+      * dump_pre_spatial. lia.
+      * dump_pre_spatial. lia.
+      * dump_pre_spatial. lia.
+      * dump_pre_spatial. lia.
+      * dump_pre_spatial. lia.
+      * dump_pre_spatial. exact H7.
+      * dump_pre_spatial.
+        change (rev (Znth i l_low_level_spec __default_Point :: t :: s :: T))
+          with (rev (t :: s :: T) ++ Znth i l_low_level_spec __default_Point :: nil).
+        rewrite Zlength_app, Zlength_cons, Zlength_nil.
+        lia.
+      * dump_pre_spatial. exact H9.
+      * dump_pre_spatial. exact H10.
+      * dump_pre_spatial. exact H11.
+      * dump_pre_spatial.
+        change (rev (Znth i l_low_level_spec __default_Point :: t :: s :: T))
+          with (rev (t :: s :: T) ++ Znth i l_low_level_spec __default_Point :: nil).
+        apply points_in_bound_snoc_Znth; try exact H12; try exact H11; lia.
+      * dump_pre_spatial.
+        assert (Hccw : ccw s t (Znth i l_low_level_spec default_point)).
+        { rewrite (Znth_rev_stack_prev __default_Point t s T top H8) in H0.
+          rewrite (Znth_rev_stack_top __default_Point t s T top H8) in H0.
+          rewrite (Znth_indep l_low_level_spec i __default_Point default_point) in H0 by lia.
+          rewrite point_cross_by_value_point in H0.
+          apply point_cross_gt_0_ccw_local.
+          lia. }
+        rewrite (Znth_indep l_low_level_spec i __default_Point default_point) by lia.
+        eapply safeExec_build_hull_c_step_ccw_push.
+        -- exact Hccw.
+        -- exact H13.
+Qed.
 
 Lemma proof_of_build_hull_from_sorted_tail_entail_wit_4_2 : build_hull_from_sorted_tail_entail_wit_4_2.
-Proof. Admitted. 
+Proof.
+  unfold build_hull_from_sorted_tail_entail_wit_4_2.
+  intros.
+  pre_process.
+  destruct stk_2 as [| t [| s T]].
+  - change (Zlength (rev nil)) with 0 in H6.
+    Exists (Znth i l_low_level_spec __default_Point :: nil).
+    split_pure_spatial.
+    + change (rev (Znth i l_low_level_spec __default_Point :: nil))
+        with (rev nil ++ Znth i l_low_level_spec __default_Point :: nil).
+      assert (Hhi_nonneg : 0 <= top + 1) by lia.
+      assert (Hhi_bound : top + 1 + 1 <= tail_n_pre + 1) by lia.
+      cancel (&( pivot_pre # "Point" ->ₛ "x") # Int |-> pivot0_low_level_spec.(x)).
+      cancel (&( pivot_pre # "Point" ->ₛ "y") # Int |-> pivot0_low_level_spec.(y)).
+      cancel (PointArray.full sorted_tail_pre tail_n_pre l_low_level_spec).
+      sep_apply_l_atomic
+        (store_point_fold
+           (hull_pre + (top + 1) * sizeof("Point"))
+           (Znth i l_low_level_spec __default_Point)).
+      eapply (point_array_seg_snoc_store_undef hull_pre (top + 1)
+               (tail_n_pre + 1) (rev nil)
+               (Znth i l_low_level_spec __default_Point));
+        [exact Hhi_nonneg | exact Hhi_bound].
+    + repeat split_pures.
+      * dump_pre_spatial. lia.
+      * dump_pre_spatial. lia.
+      * dump_pre_spatial. lia.
+      * dump_pre_spatial. lia.
+      * dump_pre_spatial. lia.
+      * dump_pre_spatial. exact H5.
+      * dump_pre_spatial.
+        change (rev (Znth i l_low_level_spec __default_Point :: nil))
+          with (rev nil ++ Znth i l_low_level_spec __default_Point :: nil).
+        rewrite Zlength_app, Zlength_cons, Zlength_nil.
+        rewrite H6.
+        change (Zlength nil) with 0.
+        lia.
+      * dump_pre_spatial. exact H7.
+      * dump_pre_spatial. exact H8.
+      * dump_pre_spatial. exact H9.
+      * dump_pre_spatial.
+        change (rev (Znth i l_low_level_spec __default_Point :: nil))
+          with (rev nil ++ Znth i l_low_level_spec __default_Point :: nil).
+        apply points_in_bound_snoc_Znth; try exact H10; try exact H9; lia.
+      * dump_pre_spatial.
+        rewrite (Znth_indep l_low_level_spec i __default_Point default_point) by lia.
+        apply safeExec_build_hull_c_step_nil_push.
+        exact H11.
+  - change (Zlength (rev (t :: nil))) with 1 in H6.
+    Exists (Znth i l_low_level_spec __default_Point :: t :: nil).
+    split_pure_spatial.
+    + change (rev (Znth i l_low_level_spec __default_Point :: t :: nil))
+        with (rev (t :: nil) ++ Znth i l_low_level_spec __default_Point :: nil).
+      assert (Hhi_nonneg : 0 <= top + 1) by lia.
+      assert (Hhi_bound : top + 1 + 1 <= tail_n_pre + 1) by lia.
+      cancel (&( pivot_pre # "Point" ->ₛ "x") # Int |-> pivot0_low_level_spec.(x)).
+      cancel (&( pivot_pre # "Point" ->ₛ "y") # Int |-> pivot0_low_level_spec.(y)).
+      cancel (PointArray.full sorted_tail_pre tail_n_pre l_low_level_spec).
+      sep_apply_l_atomic
+        (store_point_fold
+           (hull_pre + (top + 1) * sizeof("Point"))
+           (Znth i l_low_level_spec __default_Point)).
+      eapply (point_array_seg_snoc_store_undef hull_pre (top + 1)
+               (tail_n_pre + 1) (rev (t :: nil))
+               (Znth i l_low_level_spec __default_Point));
+        [exact Hhi_nonneg | exact Hhi_bound].
+    + repeat split_pures.
+      * dump_pre_spatial. lia.
+      * dump_pre_spatial. lia.
+      * dump_pre_spatial. lia.
+      * dump_pre_spatial. lia.
+      * dump_pre_spatial. lia.
+      * dump_pre_spatial. exact H5.
+      * dump_pre_spatial.
+        change (rev (Znth i l_low_level_spec __default_Point :: t :: nil))
+          with (rev (t :: nil) ++ Znth i l_low_level_spec __default_Point :: nil).
+        rewrite Zlength_app.
+        change (Zlength (rev (t :: nil))) with 1.
+        rewrite Zlength_cons, Zlength_nil.
+        rewrite H6.
+        change (Zlength nil) with 0.
+        lia.
+      * dump_pre_spatial. exact H7.
+      * dump_pre_spatial. exact H8.
+      * dump_pre_spatial. exact H9.
+      * dump_pre_spatial.
+        change (rev (Znth i l_low_level_spec __default_Point :: t :: nil))
+          with (rev (t :: nil) ++ Znth i l_low_level_spec __default_Point :: nil).
+        apply points_in_bound_snoc_Znth; try exact H10; try exact H9; lia.
+      * dump_pre_spatial.
+        rewrite (Znth_indep l_low_level_spec i __default_Point default_point) by lia.
+        apply safeExec_build_hull_c_step_single_push.
+        exact H11.
+  - pose proof (rev_stack_two_len_ge t s T).
+    lia.
+Qed.
 
 Lemma proof_of_build_hull_from_sorted_tail_return_wit_1 : build_hull_from_sorted_tail_return_wit_1.
 Proof.
@@ -726,7 +918,10 @@ Proof.
   Exists (point_swap pts_cur_2 (i + 1) j).
   entailer!.
   - unfold point_polar_partition_scan_inv, PointPolarPartitionScanInv in *.
-    destruct H18 as [Hperm [Hsame [Hpivot [Hle Hgt]]]].
+    match goal with
+    | Hscan : PointPermutation _ _ /\ _ |- _ =>
+        destruct Hscan as [Hperm [Hsame [Hpivot [Hle Hgt]]]]
+    end.
     split.
     + eapply Permutation_trans.
       * exact Hperm.
@@ -759,6 +954,9 @@ Proof.
                  apply Hgt. lia.
               ** rewrite point_swap_Znth_other_index by lia.
                  apply Hgt. lia.
+  - eapply leftmost_permutation.
+    + eapply point_swap_permutation; lia.
+    + exact H19.
   - eapply PointCoordsBound_point_swap; eauto; lia.
   - rewrite (Znth_indep (point_swap pts_cur_2 (i + 1) j)
               high_pre __default_Point default_point)
@@ -775,7 +973,7 @@ Proof.
       by lia.
     exact H13.
   - rewrite Zlength_point_swap. exact H0.
-Qed. 
+Qed.
 
 Lemma proof_of_partition_polar_points_entail_wit_2_2 : partition_polar_points_entail_wit_2_2.
 Proof.
@@ -807,17 +1005,56 @@ Proof.
         rewrite (Znth_indep pts_cur_2 j __default_Point default_point) by lia.
         destruct (Znth j pts_cur_2 default_point); reflexivity.
       }
-      match goal with
-      | Hretval : retval = point_cmp_polar _ _ _,
-        Hcmp : retval <= 0 |- _ =>
-          rewrite <- Hretval; exact Hcmp
-      end.
+      rewrite <- H1.
+      exact H0.
   - intros k Hk.
     lia.
 Qed.
 
 Lemma proof_of_partition_polar_points_entail_wit_2_3 : partition_polar_points_entail_wit_2_3.
-Proof. Admitted. 
+Proof.
+  unfold partition_polar_points_entail_wit_2_3.
+  intros.
+  Exists pts_cur_2.
+  entailer!.
+  unfold point_polar_partition_scan_inv, PointPolarPartitionScanInv in *.
+  match goal with
+  | Hscan : PointPermutation _ _ /\ _ |- _ =>
+      destruct Hscan as [Hperm [Hsame [Hpivot [Hle Hgt]]]]
+  end.
+  split; [exact Hperm|].
+  split; [exact Hsame|].
+  split; [exact Hpivot|].
+  split.
+  - intros k Hk.
+    apply Hle. lia.
+  - intros k Hk.
+    destruct (Z.eq_dec k j) as [Hkj | Hkj].
+    + subst k.
+      rewrite <- Hpivot.
+      replace (Znth j pts_cur_2 default_point)
+        with (point_mk (point_x (Znth j pts_cur_2 __default_Point))
+                       (point_y (Znth j pts_cur_2 __default_Point))).
+      2:{
+        rewrite (Znth_indep pts_cur_2 j __default_Point default_point) by lia.
+        destruct (Znth j pts_cur_2 default_point); reflexivity.
+      }
+      eapply point_cmp_polar_gt_flip_under_leftmost
+        with (l := pts_cur_2).
+      * eassumption.
+      * replace (point_mk (point_x (Znth j pts_cur_2 __default_Point))
+                         (point_y (Znth j pts_cur_2 __default_Point)))
+          with (Znth j pts_cur_2 default_point).
+        -- apply Znth_In_range. lia.
+        -- rewrite (Znth_indep pts_cur_2 j __default_Point default_point)
+             by lia.
+           destruct (Znth j pts_cur_2 default_point); reflexivity.
+      * apply Znth_In_range. lia.
+      * rewrite Hpivot.
+        rewrite <- H0.
+        exact H.
+    + apply Hgt. lia.
+Qed.
 
 Lemma proof_of_partition_polar_points_return_wit_1 : partition_polar_points_return_wit_1.
 Proof.
@@ -832,6 +1069,7 @@ Proof.
     end;
     try (eapply PointSameOutsideRange_point_swap_inside; eauto; lia);
     try (eapply Permutation_trans; [exact Hperm | eapply point_swap_permutation; lia]);
+    try (eapply leftmost_permutation; [eapply point_swap_permutation; lia | eauto]);
     try (eapply PointCoordsBound_point_swap; eauto; lia);
     try (rewrite Zlength_point_swap; exact H0).
   unfold point_polar_partitioned_at, PointPolarPartitionedAt.
@@ -856,7 +1094,7 @@ Proof.
       apply Hgt. lia.
     + rewrite point_swap_Znth_other_index by lia.
       apply Hgt. lia.
-Qed. 
+Qed.
 
 Lemma proof_of_partition_polar_points_return_wit_2 : partition_polar_points_return_wit_2.
 Proof.
@@ -896,13 +1134,130 @@ Proof.
 Qed.
 
 Lemma proof_of_quicksort_polar_points_return_wit_1 : quicksort_polar_points_return_wit_1.
-Proof. Admitted. 
+Proof.
+  unfold quicksort_polar_points_return_wit_1.
+  intros.
+  Exists pts_out_4.
+  entailer!.
+  - assert (Hpart3 :
+      PointPolarPartitionedAt (point_mk gx_pre gy_pre)
+        pts_out_3 left_pre right_pre retval).
+    {
+      eapply PointPartitionedAt_preserved_by_left;
+        [ exact H9 | lia | exact H10 | lia | exact H20 ].
+    }
+    assert (Hpart4 :
+      PointPolarPartitionedAt (point_mk gx_pre gy_pre)
+        pts_out_4 left_pre right_pre retval).
+    {
+      eapply PointPartitionedAt_preserved_by_right;
+        [ exact H2 | lia | exact H3 | lia | exact Hpart3 ].
+    }
+    assert (Hleft_sorted4 :
+      PointSortedRange_Point (point_mk gx_pre gy_pre)
+        pts_out_4 left_pre (retval - 1)).
+    {
+      eapply PointSortedRange_ext with (l := pts_out_3).
+      - lia.
+      - lia.
+      - destruct H3 as [Hlen34 _].
+        exact Hlen34.
+      - intros k Hk.
+        destruct H3 as [_ Hsame34].
+        apply Hsame34; [lia | left; lia].
+      - exact H11.
+    }
+    eapply PointSortedRange_partition_merge with (p := retval);
+      try eassumption; lia.
+  - assert (Hsame23_full :
+      PointSameOutsideRange pts_out_2 pts_out_3 left_pre right_pre).
+    {
+      eapply (PointSameOutsideRange_weaken
+                pts_out_2 pts_out_3 left_pre (retval - 1)
+        left_pre right_pre);
+        [lia | lia | exact H10].
+    }
+    assert (Hsame34_full :
+      PointSameOutsideRange pts_out_3 pts_out_4 left_pre right_pre).
+    {
+      eapply (PointSameOutsideRange_weaken
+                pts_out_3 pts_out_4 (retval + 1) right_pre
+        left_pre right_pre);
+        [lia | lia | exact H3].
+    }
+    change (PointSameOutsideRange pts_l pts_out_4 left_pre right_pre).
+    eapply (PointSameOutsideRange_trans
+              pts_l pts_out_3 pts_out_4 left_pre right_pre);
+      [| exact Hsame34_full].
+    eapply (PointSameOutsideRange_trans
+              pts_l pts_out_2 pts_out_3 left_pre right_pre);
+      [exact H19 | exact Hsame23_full].
+  - unfold point_permutation, PointPermutation in *.
+    eapply Permutation_trans; [exact H18 |].
+    eapply Permutation_trans; [exact H9 | exact H2].
+Qed.
 
 Lemma proof_of_quicksort_polar_points_return_wit_2 : quicksort_polar_points_return_wit_2.
-Proof. Admitted. 
+Proof.
+  unfold quicksort_polar_points_return_wit_2.
+  intros.
+  Exists pts_out_3.
+  entailer!.
+  - assert (Hpart3 :
+      PointPolarPartitionedAt (point_mk gx_pre gy_pre)
+        pts_out_3 left_pre right_pre retval).
+    {
+      eapply PointPartitionedAt_preserved_by_right;
+        [ exact H2 | lia | exact H3 | lia | exact H14 ].
+    }
+    eapply PointSortedRange_from_right_boundary with (p := retval);
+      [ lia | lia | lia | exact Hpart3 | exact H4 ].
+  - assert (Hsame1_full :
+      PointSameOutsideRange pts_out_2 pts_out_3 left_pre right_pre).
+    {
+      eapply (PointSameOutsideRange_weaken
+                pts_out_2 pts_out_3 (retval + 1) right_pre
+        left_pre right_pre);
+        [lia | lia | exact H3].
+    }
+    change (PointSameOutsideRange pts_l pts_out_3 left_pre right_pre).
+    eapply (PointSameOutsideRange_trans
+              pts_l pts_out_2 pts_out_3 left_pre right_pre);
+      [exact H13 | exact Hsame1_full].
+  - unfold point_permutation, PointPermutation in *.
+    eapply Permutation_trans; [exact H12 | exact H2].
+Qed.
 
 Lemma proof_of_quicksort_polar_points_return_wit_3 : quicksort_polar_points_return_wit_3.
-Proof. Admitted. 
+Proof.
+  unfold quicksort_polar_points_return_wit_3.
+  intros.
+  Exists pts_out_3.
+  entailer!.
+  - assert (Hpart3 :
+      PointPolarPartitionedAt (point_mk gx_pre gy_pre)
+        pts_out_3 left_pre right_pre retval).
+    {
+      eapply PointPartitionedAt_preserved_by_left;
+        [ exact H3 | lia | exact H4 | lia | exact H14 ].
+    }
+    eapply PointSortedRange_from_left_boundary with (p := retval);
+      [ lia | lia | lia | exact Hpart3 | exact H5 ].
+  - assert (Hsame1_full :
+      PointSameOutsideRange pts_out_2 pts_out_3 left_pre right_pre).
+    {
+      eapply (PointSameOutsideRange_weaken
+                pts_out_2 pts_out_3 left_pre (retval - 1)
+        left_pre right_pre);
+        [lia | lia | exact H4].
+    }
+    change (PointSameOutsideRange pts_l pts_out_3 left_pre right_pre).
+    eapply (PointSameOutsideRange_trans
+              pts_l pts_out_2 pts_out_3 left_pre right_pre);
+      [exact H13 | exact Hsame1_full].
+  - unfold point_permutation, PointPermutation in *.
+    eapply Permutation_trans; [exact H12 | exact H3].
+Qed.
 
 Lemma proof_of_quicksort_polar_points_return_wit_4 : quicksort_polar_points_return_wit_4.
 Proof.
@@ -1071,7 +1426,11 @@ Proof.
     + reflexivity.
     + lia.
     + lia.
-    + subst pivot0. exact H3.
+    + subst pivot0.
+      match goal with
+      | Hsorted : point_sorted_range _ pts_out 1 (n_pre - 1) |- _ =>
+          exact Hsorted
+      end.
   - match goal with
     | Hprefix : point_leftmost_prefix pts_l pivot_idx i |- _ =>
         unfold point_leftmost_prefix in Hprefix;
@@ -1185,7 +1544,11 @@ Proof.
     + reflexivity.
     + lia.
     + lia.
-    + subst pivot0. exact H3.
+    + subst pivot0.
+      match goal with
+      | Hsorted : point_sorted_range _ pts_out 1 (n_pre - 1) |- _ =>
+          exact Hsorted
+      end.
   - match goal with
     | Hprefix : point_leftmost_prefix pts_l pivot_idx i |- _ =>
         unfold point_leftmost_prefix in Hprefix;
@@ -1271,22 +1634,52 @@ Proof.
   unfold graham_scan_partial_solve_wit_11_pure.
   intros.
   entailer!.
-  unfold points_in_bound in *.
-  eapply PointCoordsBound_Znth_point_mk; eauto; lia.
+  - unfold points_in_bound in *.
+    eapply PointCoordsBound_Znth_point_mk; eauto; lia.
+  - replace (point_mk (point_x (Znth 0 pts_l __default_Point))
+                      (point_y (Znth 0 pts_l __default_Point)))
+      with (Znth pivot_idx pts_l default_point).
+    + apply PointLeftmostPrefix_leftmost.
+      match goal with
+      | Hprefix : point_leftmost_prefix pts_l pivot_idx i |- _ =>
+          unfold point_leftmost_prefix in Hprefix;
+          replace i with (Zlength pts_l) in Hprefix by lia;
+          exact Hprefix
+      end.
+    + replace pivot_idx with 0 by lia.
+      rewrite (Znth_indep pts_l 0 __default_Point default_point) by lia.
+      destruct (Znth 0 pts_l default_point); reflexivity.
 Qed.
 
 Lemma proof_of_graham_scan_partial_solve_wit_12_pure : graham_scan_partial_solve_wit_12_pure.
 Proof.
   unfold graham_scan_partial_solve_wit_12_pure.
   intros.
-  entailer!.
-  - rewrite Zlength_point_swap; lia.
-  - unfold points_in_bound in *.
-    apply PointCoordsBound_point_swap; eauto; lia.
-  - eapply PointCoordsBound_Znth_point_mk.
-    + unfold points_in_bound in *.
-      apply PointCoordsBound_point_swap; eauto; lia.
-    + rewrite Zlength_point_swap; lia.
+  entailer!;
+    try (rewrite Zlength_point_swap; lia);
+    try (unfold points_in_bound in *;
+         apply PointCoordsBound_point_swap; eauto; lia);
+    try (eapply PointCoordsBound_Znth_point_mk;
+         [unfold points_in_bound in *;
+          apply PointCoordsBound_point_swap; eauto; lia
+         |rewrite Zlength_point_swap; lia]);
+    try (
+      replace (point_mk (point_x (Znth 0 (point_swap pts_l 0 pivot_idx) __default_Point))
+                        (point_y (Znth 0 (point_swap pts_l 0 pivot_idx) __default_Point)))
+        with (Znth 0 (point_swap pts_l 0 pivot_idx) default_point);
+      [eapply PointLeftmostPrefix_leftmost_point_swap with (n := n_pre);
+       [lia
+       |match goal with
+        | Hprefix : point_leftmost_prefix pts_l pivot_idx i |- _ =>
+            unfold point_leftmost_prefix in Hprefix;
+            replace i with n_pre in Hprefix by lia;
+            exact Hprefix
+        end]
+      |rewrite (Znth_indep (point_swap pts_l 0 pivot_idx) 0
+                 __default_Point default_point)
+         by (rewrite Zlength_point_swap; lia);
+       destruct (Znth 0 (point_swap pts_l 0 pivot_idx) default_point);
+       reflexivity]).
 Qed.
 
 Lemma proof_of_graham_scan_partial_solve_wit_13_pure : graham_scan_partial_solve_wit_13_pure.
@@ -1298,4 +1691,51 @@ Proof.
 Qed.
 
 Lemma proof_of_build_hull_from_sorted_tail_derive_high_level_spec_by_low_level_spec : build_hull_from_sorted_tail_derive_high_level_spec_by_low_level_spec.
-Proof. Admitted. 
+Proof.
+  pre_process.
+  Exists pivot0_high_level_spec l_high_level_spec
+    (fun _ stk => is_convex_hull
+       (pivot0_high_level_spec :: l_high_level_spec) (rev stk)).
+  split_pure_spatial.
+  - cancel (&( pivot_pre # "Point" ->ₛ "x") # Int |-> pivot0_high_level_spec.(x)).
+    cancel (&( pivot_pre # "Point" ->ₛ "y") # Int |-> pivot0_high_level_spec.(y)).
+    cancel (PointArray.full sorted_tail_pre tail_n_pre l_high_level_spec).
+    cancel (PointArray.undef_full hull_pre (tail_n_pre + 1)).
+    apply derivable1_wand_sepcon_adjoint.
+    Intros stk. Intros retval_2.
+    Exists (rev stk) retval_2.
+    repeat (split_pure_spatial || split_pures).
+    + cancel (&( pivot_pre # "Point" ->ₛ "x") # Int |-> pivot0_high_level_spec.(x)).
+      cancel (&( pivot_pre # "Point" ->ₛ "y") # Int |-> pivot0_high_level_spec.(y)).
+      cancel (PointArray.full sorted_tail_pre tail_n_pre l_high_level_spec).
+      cancel (PointArray.seg hull_pre 0 retval_2 (rev stk)).
+      cancel (PointArray.undef_seg hull_pre retval_2 (tail_n_pre + 1)).
+    + dump_pre_spatial. exact H6.
+    + dump_pre_spatial. exact H7.
+    + dump_pre_spatial. exact H8.
+    + dump_pre_spatial.
+      apply safeExec_ret in H10 as (stk_final & Hstk & Hpost).
+      sets_unfold in Hpost.
+      hnf in Hstk. subst stk_final.
+      exact Hpost.
+  - repeat (split_pure_spatial || split_pures).
+    + dump_pre_spatial. exact H.
+    + dump_pre_spatial. exact H0.
+    + dump_pre_spatial. exact H1.
+    + dump_pre_spatial. exact H2.
+    + dump_pre_spatial. exact H3.
+    + dump_pre_spatial. exact H4.
+    + dump_pre_spatial. exact H5.
+    + dump_pre_spatial.
+      eapply safeExec_X_subset.
+      * apply Hoare_result_state.
+        apply point_polar_sorted_build_hull_convex_hull_rev_stack;
+          try exact H2; try exact H3.
+        destruct l_high_level_spec.
+        -- rewrite Zlength_nil in H1. lia.
+        -- discriminate.
+      * apply safeExec_result_state.
+        exists empty_point_stack.
+        unfold empty_point_stack.
+        reflexivity.
+Qed.

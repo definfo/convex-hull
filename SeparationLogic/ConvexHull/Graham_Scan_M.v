@@ -218,31 +218,6 @@ Proof.
   apply fold_left_graham_scan_inc_cons.
 Qed.
 
-Lemma gs_rev_ccw_list_rev_ccw_list : forall p l,
-  rev_ccw_list p l ->
-  ccw_list p (rev l).
-Proof.
-  intros p l.
-  induction l as [| a l IH]; simpl; intros Hrev.
-  - exact I.
-  - destruct Hrev as [Ha Htail].
-    rewrite ccw_list_app_iff.
-    repeat split.
-    + apply IH.
-      exact Htail.
-    + rewrite Forall_ccw_nil_iff.
-      exact I.
-    + intros q r Hq Hr.
-      simpl in Hr.
-      destruct Hr as [Hr | []].
-      subst r.
-      rewrite Forall_ccw_forall in Ha.
-      apply ccw_cyclicity.
-      apply Ha.
-      rewrite in_rev.
-      exact Hq.
-Qed.
-
 Definition first_anchor_strict (p : point) (l : list point) : Prop :=
   match l with
   | a :: b :: _ => ccw p a b

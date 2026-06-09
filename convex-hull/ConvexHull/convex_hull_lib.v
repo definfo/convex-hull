@@ -38,7 +38,17 @@ Definition y : Point -> Z := point_y.
 
 Notation "p '.(x)'" := (point_x p) (at level 1).
 Notation "p '.(y)'" := (point_y p) (at level 1).
-Notation "'sizeof' ( ""Point"" )" := (8%Z) (at level 1).
+
+Definition sizeof_Point : Z := sizeof(INT) + sizeof(INT).
+
+Notation "'sizeof' ( ""Point"" )" := (sizeof_Point) (at level 1).
+
+Lemma sizeof_Point_eq : sizeof_Point = 8.
+Proof.
+  unfold sizeof_Point.
+  rewrite sizeof_int.
+  lia.
+Qed.
 
 Definition store_point (p : addr) (pt : Point) : Assertion :=
   (&((p) # "Point" ->ₛ "x") # Int |-> pt.(x)) **
@@ -69,16 +79,13 @@ Definition point_cmp_leftdown (a b : Point) : Z :=
 
 Definition default_point : Point := {| point_x := 0; point_y := 0 |}.
 
-Definition PointLeftmostPrefix (l : list Point) (pivot_idx i : Z) : Prop :=
+Definition point_leftmost_prefix (l : list Point) (pivot_idx i : Z) : Prop :=
   0 <= pivot_idx < i /\
   i <= Zlength l /\
   forall k,
     0 <= k < i ->
     point_leftdown (Znth pivot_idx l default_point)
                    (Znth k l default_point).
-
-Definition point_leftmost_prefix : list Point -> Z -> Z -> Prop :=
-  PointLeftmostPrefix.
 
 Definition empty_point_stack : list Point := nil.
 
@@ -223,12 +230,12 @@ Proof.
         -- right; split; lia.
 Qed.
 
-Lemma PointLeftmostPrefix_init : forall l,
+Lemma point_leftmost_prefix_init : forall l,
   1 <= Zlength l ->
-  PointLeftmostPrefix l 0 1.
+  point_leftmost_prefix l 0 1.
 Proof.
   intros l Hlen.
-  unfold PointLeftmostPrefix.
+  unfold point_leftmost_prefix.
   split; [lia |].
   split; [lia |].
   intros k Hk.
@@ -236,15 +243,15 @@ Proof.
   apply point_leftdown_refl.
 Qed.
 
-Lemma PointLeftmostPrefix_step_keep : forall l pivot_idx i,
-  PointLeftmostPrefix l pivot_idx i ->
+Lemma point_leftmost_prefix_step_keep : forall l pivot_idx i,
+  point_leftmost_prefix l pivot_idx i ->
   i < Zlength l ->
   point_leftdown (Znth pivot_idx l default_point)
                  (Znth i l default_point) ->
-  PointLeftmostPrefix l pivot_idx (i + 1).
+  point_leftmost_prefix l pivot_idx (i + 1).
 Proof.
   intros l pivot_idx i Hprefix Hlen Hcur.
-  unfold PointLeftmostPrefix in *.
+  unfold point_leftmost_prefix in *.
   destruct Hprefix as [Hidx [Hi Hmin]].
   split; [lia |].
   split; [lia |].
@@ -255,15 +262,15 @@ Proof.
     lia.
 Qed.
 
-Lemma PointLeftmostPrefix_step_update : forall l pivot_idx i,
-  PointLeftmostPrefix l pivot_idx i ->
+Lemma point_leftmost_prefix_step_update : forall l pivot_idx i,
+  point_leftmost_prefix l pivot_idx i ->
   i < Zlength l ->
   point_leftdown (Znth i l default_point)
                  (Znth pivot_idx l default_point) ->
-  PointLeftmostPrefix l i (i + 1).
+  point_leftmost_prefix l i (i + 1).
 Proof.
   intros l pivot_idx i Hprefix Hlen Hnew.
-  unfold PointLeftmostPrefix in *.
+  unfold point_leftmost_prefix in *.
   destruct Hprefix as [Hidx [Hi Hmin]].
   split; [lia |].
   split; [lia |].
@@ -500,14 +507,6 @@ Definition point_weak_rev_ccw (pivot a b : Point) : Prop :=
   ccw a pivot b \/
   (point_colinear pivot a b /\ at_mid b a pivot).
 
-Fixpoint point_weak_rev_ccw_list (pivot : Point) (l : list Point) : Prop :=
-  match l with
-  | a :: rest =>
-      Forall (point_weak_rev_ccw pivot a) rest /\
-      point_weak_rev_ccw_list pivot rest
-  | nil => True
-  end.
-
 Definition point_weak_polar_le (pivot a b : Point) : Prop :=
   point_weak_rev_ccw pivot b a.
 
@@ -545,17 +544,14 @@ Proof.
     exact H.
 Qed.
 
-Definition PointCoordsBound (l : list Point) : Prop :=
+Definition points_in_bound (l : list Point) : Prop :=
   Forall (fun p => point_in_bound p) l.
-
-Definition points_in_bound : list Point -> Prop :=
-  PointCoordsBound.
 
 Lemma points_in_bound_app_l : forall l1 l2,
   points_in_bound (l1 ++ l2) ->
   points_in_bound l1.
 Proof.
-  unfold points_in_bound, PointCoordsBound.
+  unfold points_in_bound.
   intros l1 l2 H.
   apply Forall_app in H.
   tauto.
@@ -575,11 +571,8 @@ Proof.
   reflexivity.
 Qed.
 
-Definition PointPermutation : list Point -> list Point -> Prop :=
-  @Permutation Point.
-
 Definition point_permutation : list Point -> list Point -> Prop :=
-  PointPermutation.
+  @Permutation Point.
 
 Lemma replace_znth_swap_form : forall {A : Type} (l1 l2 l3 : list A) (xi xj : A),
   replace_Znth (Zlength l1 + 1 + Zlength l2) xi
@@ -780,20 +773,16 @@ Lemma point_swap_permutation : forall l i j,
   point_permutation l (point_swap l i j).
 Proof.
   intros l i j Hi Hj.
-  unfold point_permutation, PointPermutation, point_swap.
+  unfold point_permutation, point_swap.
   apply permutation_swap_znth; assumption.
 Qed.
 
-Definition PointSameOutsideRange (l l1 : list Point) (left right : Z) : Prop :=
+Definition point_same_outside_range (l l1 : list Point) (left right : Z) : Prop :=
   Zlength l = Zlength l1 /\
   forall k,
     0 <= k < Zlength l ->
     k < left \/ right < k ->
     Znth k l1 default_point = Znth k l default_point.
-
-Definition point_same_outside_range
-    (l l1 : list Point) (left right : Z) : Prop :=
-  PointSameOutsideRange l l1 left right.
 
 Lemma point_swap_Znth_left_index : forall l i j,
   0 <= i < Zlength l ->
@@ -839,13 +828,13 @@ Proof.
   reflexivity.
 Qed.
 
-Lemma PointSameOutsideRange_point_swap_inside : forall base cur left right i j,
-  PointSameOutsideRange base cur left right ->
+Lemma point_same_outside_range_point_swap_inside : forall base cur left right i j,
+  point_same_outside_range base cur left right ->
   0 <= i < Zlength cur ->
   0 <= j < Zlength cur ->
   left <= i <= right ->
   left <= j <= right ->
-  PointSameOutsideRange base (point_swap cur i j) left right.
+  point_same_outside_range base (point_swap cur i j) left right.
 Proof.
   intros base cur left right i j Hsame Hi_range Hj_range Hi Hj.
   destruct Hsame as [Hlen Hsame].
@@ -856,34 +845,13 @@ Proof.
     apply Hsame; assumption.
 Qed.
 
-Definition PointSortedRange_Point
+Definition point_sorted_range
     (gp : Point) (l : list Point) (left right : Z) : Prop :=
   forall i j,
     left <= i -> i <= j -> j <= right ->
     point_cmp_polar gp (Znth i l default_point) (Znth j l default_point) <= 0.
 
-Definition point_sorted_range
-    (gp : Point) (l : list Point) (left right : Z) : Prop :=
-  PointSortedRange_Point gp l left right.
-
-Definition PointTailReverseState
-    (before cur : list Point) (n rev_i rev_j : Z) : Prop :=
-  Zlength cur = Zlength before /\
-  0 <= n <= Zlength before /\
-  1 <= rev_i <= n /\
-  0 <= rev_j < n /\
-  rev_j = n - rev_i /\
-  rev_i <= rev_j + 1 /\
-  (forall k, 0 <= k < Zlength before -> (k = 0 \/ n <= k) ->
-     Znth k cur default_point = Znth k before default_point) /\
-  (forall k, 1 <= k < rev_i ->
-     Znth k cur default_point = Znth (n - k) before default_point) /\
-  (forall k, rev_i <= k <= rev_j ->
-     Znth k cur default_point = Znth k before default_point) /\
-  (forall k, rev_j < k < n ->
-     Znth k cur default_point = Znth (n - k) before default_point).
-
-Definition PointPolarPartitionedAt
+Definition point_polar_partitioned_at
     (gp : Point) (l : list Point) (low high p : Z) : Prop :=
   low <= p <= high /\
   Forall (fun x => point_cmp_polar gp x (Znth p l default_point) <= 0)
@@ -891,25 +859,16 @@ Definition PointPolarPartitionedAt
   Forall (fun x => point_cmp_polar gp (Znth p l default_point) x < 0)
          (sublist (p + 1) (high + 1) l).
 
-Definition point_polar_partitioned_at
-    (gp : Point) (l : list Point) (low high p : Z) : Prop :=
-  PointPolarPartitionedAt gp l low high p.
-
-Definition PointPolarPartitionScanInv
+Definition point_polar_partition_scan_inv
     (gp : Point) (before cur : list Point)
     (low high : Z) (pivot : Point) (i j : Z) : Prop :=
-  PointPermutation before cur /\
-  PointSameOutsideRange before cur low high /\
+  point_permutation before cur /\
+  point_same_outside_range before cur low high /\
   Znth high cur default_point = pivot /\
   (forall k, low <= k <= i ->
      point_cmp_polar gp (Znth k cur default_point) pivot <= 0) /\
   (forall k, i < k < j ->
      point_cmp_polar gp pivot (Znth k cur default_point) < 0).
-
-Definition point_polar_partition_scan_inv
-    (gp : Point) (before cur : list Point)
-    (low high : Z) (pivot : Point) (i j : Z) : Prop :=
-  PointPolarPartitionScanInv gp before cur low high pivot i j.
 
 Definition build_hull_c_iter (l : list Point) (i : Z)
   : program (list Point) unit :=
@@ -1477,24 +1436,6 @@ Proof.
     + exact Hmid.
 Qed.
 
-Lemma point_weak_rev_ccw_list_g_rev_ccw_list : forall pivot l,
-  point_weak_rev_ccw_list pivot l ->
-  g_rev_ccw_list pivot l.
-Proof.
-  intros pivot l.
-  induction l as [| a l IH]; simpl; intros Hweak.
-  - exact I.
-  - destruct Hweak as [Hall Htail].
-    split.
-    + rewrite Forall_g_rev_ccw_forall.
-      intros b Hb.
-      apply point_weak_rev_ccw_g_rev_ccw.
-      rewrite Forall_forall in Hall.
-      exact (Hall b Hb).
-    + apply IH.
-      exact Htail.
-Qed.
-
 Lemma In_Znth_Zlength : forall {A : Type} (l : list A) (x d : A),
   In x l ->
   exists i, 0 <= i < Zlength l /\ Znth i l d = x.
@@ -1523,12 +1464,12 @@ Proof.
   exact Hi.
 Qed.
 
-Lemma PointLeftmostPrefix_leftmost : forall l pivot_idx,
-  PointLeftmostPrefix l pivot_idx (Zlength l) ->
+Lemma point_leftmost_prefix_leftmost : forall l pivot_idx,
+  point_leftmost_prefix l pivot_idx (Zlength l) ->
   leftmost (Znth pivot_idx l default_point) l.
 Proof.
   intros l pivot_idx Hprefix.
-  unfold PointLeftmostPrefix in Hprefix.
+  unfold point_leftmost_prefix in Hprefix.
   destruct Hprefix as [_ [_ Hmin]].
   unfold leftmost.
   apply Forall_Znth_intro with (d := default_point).
@@ -1751,7 +1692,7 @@ Lemma graham_is_convex_hull_base_permutation : forall base1 base2 hull,
   Graham_Scan_M.is_convex_hull base1 hull.
 Proof.
   intros base1 base2 hull Hperm Hhull.
-  unfold point_permutation, PointPermutation in Hperm.
+  unfold point_permutation in Hperm.
   unfold Graham_Scan_M.is_convex_hull in *.
   destruct Hhull as [Hconv Hmax].
   split; [exact Hconv |].
@@ -2005,12 +1946,12 @@ Module StorePointAsElement <: ELEMENT_STORE.
   Definition A := Point.
 
   Definition storeA (base : addr) (lo : Z) (a : Point) : Assertion :=
-    store_point (base + lo * 8) a.
+    store_point (base + lo * sizeof_Point) a.
 
   Definition undefstoreA (base : addr) (lo : Z) : Assertion :=
-    undef_point (base + lo * 8).
+    undef_point (base + lo * sizeof_Point).
 
-  Definition sizeA := 8%Z.
+  Definition sizeA := sizeof_Point.
 
   Lemma store_point_to_align : forall p pt,
     store_point p pt |-- store_align_n sizeA.
@@ -2024,6 +1965,7 @@ Module StorePointAsElement <: ELEMENT_STORE.
     sep_apply (store_align4_merge 1 1).
     replace (1 + 1) with 2 by lia.
     sep_apply (store_align4_to_store_align 2).
+    rewrite sizeof_Point_eq.
     replace (4 * 2) with 8 by lia.
     reflexivity.
   Qed.
@@ -2040,6 +1982,7 @@ Module StorePointAsElement <: ELEMENT_STORE.
     sep_apply (store_align4_merge 1 1).
     replace (1 + 1) with 2 by lia.
     sep_apply (store_align4_to_store_align 2).
+    rewrite sizeof_Point_eq.
     replace (4 * 2) with 8 by lia.
     reflexivity.
   Qed.
@@ -2056,7 +1999,8 @@ Module StorePointAsElement <: ELEMENT_STORE.
   Proof.
     intros.
     unfold storeA, sizeA.
-    replace (base + n * 8 + lo * 8) with (base + (lo + n) * 8) by lia.
+    replace (base + n * sizeof_Point + lo * sizeof_Point)
+      with (base + (lo + n) * sizeof_Point) by lia.
     split; apply derivable1_refl.
   Qed.
 
@@ -2065,7 +2009,8 @@ Module StorePointAsElement <: ELEMENT_STORE.
   Proof.
     intros.
     unfold undefstoreA, sizeA.
-    replace (base + n * 8 + lo * 8) with (base + (lo + n) * 8) by lia.
+    replace (base + n * sizeof_Point + lo * sizeof_Point)
+      with (base + (lo + n) * sizeof_Point) by lia.
     split; apply derivable1_refl.
   Qed.
 
@@ -2086,6 +2031,7 @@ Module StorePointAsElement <: ELEMENT_STORE.
   Lemma sizeA_valid : 0 < sizeA < Int.max_unsigned.
   Proof.
     unfold sizeA.
+    rewrite sizeof_Point_eq.
     replace Int.max_unsigned with 4294967295 by reflexivity.
     lia.
   Qed.
@@ -2193,28 +2139,29 @@ Qed.
 Lemma point_array_cons_full : forall base n p tail,
   1 <= n ->
   store_point base p **
-  PointArray.full (base + 8) (n - 1) tail |--
+  PointArray.full (base + sizeof("Point")) (n - 1) tail |--
   PointArray.full base n (p :: tail).
 Proof.
   intros base n p tail Hn.
-  replace base with (base + 0 * 8) at 1 by lia.
-  change (store_point (base + 0 * 8) p)
+  replace base with (base + 0 * sizeof("Point")) at 1 by lia.
+  change (store_point (base + 0 * sizeof("Point")) p)
     with (StorePointAsElement.storeA base 0 p).
   sep_apply (PointArray.seg_single base 0 p).
   sep_apply (PointArray.seg_to_full base 0 1 (p :: nil)).
-  replace (base + 0 * 8) with base by lia.
-  replace (base + 1 * 8) with (base + 8) by lia.
+  replace (base + 0 * sizeof("Point")) with base by lia.
+  replace (1 - 0) with 1 by lia.
+  replace (base + sizeof("Point")) with (base + 1 * sizeof("Point")) by lia.
   sep_apply (PointArray.full_merge_to_full base 1 n (p :: nil) tail).
   - simpl. apply derivable1_refl.
   - lia.
 Qed.
 
-Lemma PointCoordsBound_Znth : forall l i d,
-  PointCoordsBound l ->
+Lemma points_in_bound_Znth : forall l i d,
+  points_in_bound l ->
   0 <= i < Zlength l ->
   point_in_bound (Znth i l d).
 Proof.
-  unfold PointCoordsBound.
+  unfold points_in_bound.
   intros l i d Hbound Hi.
   apply Forall_forall with (x := Znth i l d) in Hbound.
   - exact Hbound.
@@ -2230,12 +2177,12 @@ Lemma points_in_bound_snoc_Znth : forall prefix l i d,
   0 <= i < Zlength l ->
   points_in_bound (prefix ++ Znth i l d :: nil).
 Proof.
-  unfold points_in_bound, PointCoordsBound.
+  unfold points_in_bound.
   intros prefix l i d Hprefix Hl Hi.
   apply Forall_app.
   split; [exact Hprefix |].
   constructor.
-  - eapply PointCoordsBound_Znth; eauto.
+  - eapply points_in_bound_Znth; eauto.
   - constructor.
 Qed.
 
@@ -2247,14 +2194,14 @@ Proof.
   exact H.
 Qed.
 
-Lemma PointCoordsBound_Znth_point_mk : forall l i d,
-  PointCoordsBound l ->
+Lemma points_in_bound_Znth_point_mk : forall l i d,
+  points_in_bound l ->
   0 <= i < Zlength l ->
   point_in_bound (point_mk (point_x (Znth i l d)) (point_y (Znth i l d))).
 Proof.
   intros.
   apply point_in_bound_point_mk_fields.
-  eapply PointCoordsBound_Znth; eauto.
+  eapply points_in_bound_Znth; eauto.
 Qed.
 
 Lemma points_in_bound_sublist : forall l lo hi,
@@ -2264,12 +2211,12 @@ Lemma points_in_bound_sublist : forall l lo hi,
   points_in_bound (sublist lo hi l).
 Proof.
   intros l lo hi Hbound Hlohi Hhi.
-  unfold points_in_bound, PointCoordsBound in *.
+  unfold points_in_bound in *.
   apply Forall_Znth_intro with (d := default_point).
   intros i Hi.
   rewrite Zlength_sublist in Hi by lia.
   rewrite Znth_sublist by lia.
-  eapply PointCoordsBound_Znth; eauto.
+  eapply points_in_bound_Znth; eauto.
   lia.
 Qed.
 
@@ -2288,7 +2235,7 @@ Proof.
   rewrite !Znth_sublist by lia.
   rewrite (Znth_indep l (i + lo) d default_point) by lia.
   rewrite (Znth_indep l (j + lo) d default_point) by lia.
-  unfold point_sorted_range, PointSortedRange_Point in Hsorted.
+  unfold point_sorted_range in Hsorted.
   apply Hsorted; lia.
 Qed.
 
@@ -2329,19 +2276,19 @@ Proof.
   reflexivity.
 Qed.
 
-Lemma PointCoordsBound_point_swap : forall l i j,
-  PointCoordsBound l ->
+Lemma points_in_bound_point_swap : forall l i j,
+  points_in_bound l ->
   0 <= i < Zlength l ->
   0 <= j < Zlength l ->
-  PointCoordsBound (point_swap l i j).
+  points_in_bound (point_swap l i j).
 Proof.
-  unfold PointCoordsBound, point_swap.
+  unfold points_in_bound, point_swap.
   intros l i j Hbound Hi Hj.
   apply Forall_replace_Znth_preserve.
   - apply Forall_replace_Znth_preserve.
     + exact Hbound.
-    + eapply PointCoordsBound_Znth; eauto.
-  - eapply PointCoordsBound_Znth; eauto.
+    + eapply points_in_bound_Znth; eauto.
+  - eapply points_in_bound_Znth; eauto.
 Qed.
 
 Lemma point_swap_Znth_left : forall l j,
@@ -2401,14 +2348,14 @@ Proof.
   - lia.
 Qed.
 
-Lemma PointLeftmostPrefix_leftmost_point_swap : forall l pivot_idx n,
+Lemma point_leftmost_prefix_leftmost_point_swap : forall l pivot_idx n,
   Zlength l = n ->
-  PointLeftmostPrefix l pivot_idx n ->
+  point_leftmost_prefix l pivot_idx n ->
   leftmost (Znth 0 (point_swap l 0 pivot_idx) default_point)
            (point_swap l 0 pivot_idx).
 Proof.
   intros l pivot_idx n Hlen Hprefix.
-  unfold PointLeftmostPrefix in Hprefix.
+  unfold point_leftmost_prefix in Hprefix.
   destruct Hprefix as [Hidx [Hin Hmin]].
   assert (Hpivot : 0 <= pivot_idx < Zlength l) by lia.
   rewrite point_swap_Znth_left by exact Hpivot.
@@ -2435,28 +2382,28 @@ Proof.
       lia.
 Qed.
 
-Lemma PointLeftmostPrefix_sorted_tail_leftmost : forall l pivot_idx n pts_pivot pts_sorted tail_sorted pivot0,
+Lemma point_leftmost_prefix_sorted_tail_leftmost : forall l pivot_idx n pts_pivot pts_sorted tail_sorted pivot0,
   Zlength l = n ->
-  PointLeftmostPrefix l pivot_idx n ->
+  point_leftmost_prefix l pivot_idx n ->
   pts_pivot = point_swap l 0 pivot_idx ->
   pivot0 = Znth 0 pts_pivot default_point ->
   Zlength pts_sorted = n ->
   tail_sorted = sublist 1 n pts_sorted ->
-  PointPermutation pts_pivot pts_sorted ->
+  point_permutation pts_pivot pts_sorted ->
   leftmost pivot0 (rev tail_sorted).
 Proof.
   intros l pivot_idx n pts_pivot pts_sorted tail_sorted pivot0
          Hlen Hprefix Hpivot_list Hpivot0 Hsorted_len Htail Hperm.
   subst pts_pivot pivot0 tail_sorted.
   assert (Hn_pos : 1 <= n).
-  { unfold PointLeftmostPrefix in Hprefix; lia. }
+  { unfold point_leftmost_prefix in Hprefix; lia. }
   apply leftmost_rev.
   apply leftmost_sublist.
   - lia.
   - lia.
   - eapply leftmost_permutation.
     + exact Hperm.
-    + eapply PointLeftmostPrefix_leftmost_point_swap; eauto.
+    + eapply point_leftmost_prefix_leftmost_point_swap; eauto.
 Qed.
 
 Lemma point_cmp_polar_refl : forall gp a,
@@ -2685,12 +2632,12 @@ Qed.
 
 Lemma Forall_permutation_point :
   forall (P : Point -> Prop) l l1,
-    PointPermutation l l1 ->
+    point_permutation l l1 ->
     Forall P l ->
     Forall P l1.
 Proof.
   intros P l l1 Hperm Hforall.
-  unfold PointPermutation in Hperm.
+  unfold point_permutation in Hperm.
   rewrite Forall_forall in *.
   intros x Hin.
   apply Hforall.
@@ -2751,9 +2698,9 @@ Proof.
   reflexivity.
 Qed.
 
-Lemma PointSameOutsideRange_refl :
+Lemma point_same_outside_range_refl :
   forall l left right,
-    PointSameOutsideRange l l left right.
+    point_same_outside_range l l left right.
 Proof.
   intros l left right.
   split.
@@ -2761,11 +2708,11 @@ Proof.
   - intros; reflexivity.
 Qed.
 
-Lemma PointSameOutsideRange_trans :
+Lemma point_same_outside_range_trans :
   forall l l1 l2 left right,
-    PointSameOutsideRange l l1 left right ->
-    PointSameOutsideRange l1 l2 left right ->
-    PointSameOutsideRange l l2 left right.
+    point_same_outside_range l l1 left right ->
+    point_same_outside_range l1 l2 left right ->
+    point_same_outside_range l l2 left right.
 Proof.
   intros l l1 l2 left right [Hlen1 Heq1] [Hlen2 Heq2].
   split.
@@ -2776,12 +2723,12 @@ Proof.
     apply Heq1; assumption.
 Qed.
 
-Lemma PointSameOutsideRange_weaken :
+Lemma point_same_outside_range_weaken :
   forall l l1 left1 right1 left2 right2,
     left2 <= left1 ->
     right1 <= right2 ->
-    PointSameOutsideRange l l1 left1 right1 ->
-    PointSameOutsideRange l l1 left2 right2.
+    point_same_outside_range l l1 left1 right1 ->
+    point_same_outside_range l l1 left2 right2.
 Proof.
   intros l l1 left1 right1 left2 right2 Hleft Hright [Hlen Heq].
   split.
@@ -2793,9 +2740,9 @@ Proof.
     + right. lia.
 Qed.
 
-Lemma PointSameOutsideRange_prefix :
+Lemma point_same_outside_range_prefix :
   forall l l1 left right,
-    PointSameOutsideRange l l1 left right ->
+    point_same_outside_range l l1 left right ->
     0 <= left <= Zlength l ->
     sublist 0 left l1 = sublist 0 left l.
 Proof.
@@ -2810,9 +2757,9 @@ Proof.
     + left. lia.
 Qed.
 
-Lemma PointSameOutsideRange_suffix :
+Lemma point_same_outside_range_suffix :
   forall l l1 left right,
-    PointSameOutsideRange l l1 left right ->
+    point_same_outside_range l l1 left right ->
     0 <= right + 1 <= Zlength l ->
     sublist (right + 1) (Zlength l1) l1 =
     sublist (right + 1) (Zlength l) l.
@@ -2829,21 +2776,21 @@ Proof.
     + right. lia.
 Qed.
 
-Lemma PointPermutation_middle_of_same_outside :
+Lemma point_permutation_middle_of_same_outside :
   forall l l1 left right,
-    PointPermutation l l1 ->
-    PointSameOutsideRange l l1 left right ->
+    point_permutation l l1 ->
+    point_same_outside_range l l1 left right ->
     0 <= left <= right + 1 ->
     right + 1 <= Zlength l ->
-    PointPermutation (sublist left (right + 1) l)
+    point_permutation (sublist left (right + 1) l)
                      (sublist left (right + 1) l1).
 Proof.
   intros l l1 left right Hperm Hsame Hlr Hright.
   pose proof Hsame as Hsame0.
   destruct Hsame as [Hlen _].
-  pose proof (PointSameOutsideRange_prefix _ _ _ _ Hsame0 ltac:(lia))
+  pose proof (point_same_outside_range_prefix _ _ _ _ Hsame0 ltac:(lia))
     as Hpre.
-  pose proof (PointSameOutsideRange_suffix _ _ _ _ Hsame0 ltac:(lia))
+  pose proof (point_same_outside_range_suffix _ _ _ _ Hsame0 ltac:(lia))
     as Hsuf.
   rewrite (list_decompose_sublist_point l left (right + 1)) in Hperm
     by lia.
@@ -2904,14 +2851,14 @@ Proof.
   exact Hz.
 Qed.
 
-Lemma PointPartitionedAt_preserved_by_left :
+Lemma point_polar_partitioned_at_preserved_by_left :
   forall gp l l1 left right p,
-    PointPermutation l l1 ->
+    point_permutation l l1 ->
     0 <= left ->
-    PointSameOutsideRange l l1 left (p - 1) ->
+    point_same_outside_range l l1 left (p - 1) ->
     right < Zlength l ->
-    PointPolarPartitionedAt gp l left right p ->
-    PointPolarPartitionedAt gp l1 left right p.
+    point_polar_partitioned_at gp l left right p ->
+    point_polar_partitioned_at gp l1 left right p.
 Proof.
   intros gp l l1 left right p Hperm Hleft0 Hsame Hrightlen Hpart.
   destruct Hsame as [Hlen Heq].
@@ -2930,10 +2877,10 @@ Proof.
               (sublist left p l)
               (sublist left p l1)).
     + assert (Hmid :
-          PointPermutation (sublist left (p - 1 + 1) l)
+          point_permutation (sublist left (p - 1 + 1) l)
                            (sublist left (p - 1 + 1) l1)).
       {
-        eapply PointPermutation_middle_of_same_outside
+        eapply point_permutation_middle_of_same_outside
           with (left := left) (right := p - 1).
         - exact Hperm.
         - exact (conj Hlen Heq).
@@ -2952,14 +2899,14 @@ Proof.
               l (p + 1) (right + 1) k); try eassumption; lia.
 Qed.
 
-Lemma PointPartitionedAt_preserved_by_right :
+Lemma point_polar_partitioned_at_preserved_by_right :
   forall gp l l1 left right p,
-    PointPermutation l l1 ->
+    point_permutation l l1 ->
     0 <= left ->
-    PointSameOutsideRange l l1 (p + 1) right ->
+    point_same_outside_range l l1 (p + 1) right ->
     right < Zlength l ->
-    PointPolarPartitionedAt gp l left right p ->
-    PointPolarPartitionedAt gp l1 left right p.
+    point_polar_partitioned_at gp l left right p ->
+    point_polar_partitioned_at gp l1 left right p.
 Proof.
   intros gp l l1 left right p Hperm Hleft0 Hsame Hrightlen Hpart.
   destruct Hsame as [Hlen Heq].
@@ -2991,7 +2938,7 @@ Proof.
               (fun x => point_cmp_polar gp (Znth p l default_point) x < 0)
               (sublist (p + 1) (right + 1) l)
               (sublist (p + 1) (right + 1) l1)).
-    + eapply PointPermutation_middle_of_same_outside
+    + eapply point_permutation_middle_of_same_outside
         with (left := p + 1) (right := right).
       * exact Hperm.
       * exact (conj Hlen Heq).
@@ -3007,10 +2954,10 @@ Proof.
   intros; lia.
 Qed.
 
-Lemma PointSortedRange_degenerate :
+Lemma point_sorted_range_degenerate :
   forall gp l left right,
     left >= right ->
-    PointSortedRange_Point gp l left right.
+    point_sorted_range gp l left right.
 Proof.
   intros gp l left right Hge i j Hi Hij Hj.
   assert (i = j) by lia.
@@ -3019,14 +2966,14 @@ Proof.
   lia.
 Qed.
 
-Lemma PointSortedRange_from_left_boundary :
+Lemma point_sorted_range_from_left_boundary :
   forall gp l left right p,
     0 <= left ->
     p >= right ->
     right < Zlength l ->
-    PointPolarPartitionedAt gp l left right p ->
-    PointSortedRange_Point gp l left (p - 1) ->
-    PointSortedRange_Point gp l left right.
+    point_polar_partitioned_at gp l left right p ->
+    point_sorted_range gp l left (p - 1) ->
+    point_sorted_range gp l left right.
 Proof.
   intros gp l left right p Hleft0 Hp Hrightlen Hpart Hsorted.
   intros i j Hi Hij Hj.
@@ -3041,14 +2988,14 @@ Proof.
   - apply Hsorted; lia.
 Qed.
 
-Lemma PointSortedRange_from_right_boundary :
+Lemma point_sorted_range_from_right_boundary :
   forall gp l left right p,
     0 <= left ->
     p <= left ->
     right < Zlength l ->
-    PointPolarPartitionedAt gp l left right p ->
-    PointSortedRange_Point gp l (p + 1) right ->
-    PointSortedRange_Point gp l left right.
+    point_polar_partitioned_at gp l left right p ->
+    point_sorted_range gp l (p + 1) right ->
+    point_sorted_range gp l left right.
 Proof.
   intros gp l left right p Hleft0 Hp Hrightlen Hpart Hsorted.
   intros i j Hi Hij Hj.
@@ -3065,15 +3012,15 @@ Proof.
   - apply Hsorted; lia.
 Qed.
 
-Lemma PointSortedRange_ext :
+Lemma point_sorted_range_ext :
   forall gp l l1 left right,
     0 <= left ->
     right < Zlength l ->
     Zlength l = Zlength l1 ->
     (forall k, left <= k <= right ->
        Znth k l1 default_point = Znth k l default_point) ->
-    PointSortedRange_Point gp l left right ->
-    PointSortedRange_Point gp l1 left right.
+    point_sorted_range gp l left right ->
+    point_sorted_range gp l1 left right.
 Proof.
   intros gp l l1 left right Hleft0 Hrightlen Hlen Heq Hsorted i j Hi Hij Hj.
   rewrite (Heq i) by lia.
@@ -3352,16 +3299,16 @@ Proof.
     apply Hleft; exact Hc.
 Qed.
 
-Lemma PointSortedRange_partition_merge :
+Lemma point_sorted_range_partition_merge :
   forall gp l left right p,
     0 <= left ->
     right < Zlength l ->
     left <= p <= right ->
     leftmost gp l ->
-    PointPolarPartitionedAt gp l left right p ->
-    PointSortedRange_Point gp l left (p - 1) ->
-    PointSortedRange_Point gp l (p + 1) right ->
-    PointSortedRange_Point gp l left right.
+    point_polar_partitioned_at gp l left right p ->
+    point_sorted_range gp l left (p - 1) ->
+    point_sorted_range gp l (p + 1) right ->
+    point_sorted_range gp l left right.
 Proof.
   intros gp l left right p Hleft0 Hrightlen Hp_range Hleftmost Hpart
     Hsorted_left Hsorted_right.

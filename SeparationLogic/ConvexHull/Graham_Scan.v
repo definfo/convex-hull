@@ -86,21 +86,6 @@ Definition graham_scan' (l : list point) : list point :=
   | _ => nil
   end.
 
-(** Simple case *)
-(*  After init,
-the vertices on T are the vertices of C_2
-in clockwise order. *)
-Theorem graham_convex_0 : forall (p q r : point),
-  rev_ccw_list p [p ; q ; r] -> is_convex p (graham_scan [p ; q ; r]).
-Proof.
-  simpl; intros.
-  rewrite !Forall_ccw_cons_iff in H.
-  destruct H as [[H _] [_ _]].
-  destruct (ccw_dec r q p); simpl.
-  + elim_ccw_rep H.
-  + tauto.
-Qed.
-
 (** Proof *)
 (*  After the i’th iteration,
 the vertices on the stack are the vertices of C_i
@@ -185,29 +170,6 @@ Proof.
     tauto.
 Qed.
 
-Theorem rev_ccw_list_conv : forall (p : point) (T : list point),
-  rev_ccw_list p T -> rev_ccw_list p (graham_scan T).
-Proof.
-  intros.
-  induction T; simpl; try eauto.
-  pose proof rev_ccw_list_ind p a [] T H.
-  specialize (IHT H0).
-  pose proof succ_stack a (graham_scan T).
-  destruct H1 as [T0 [T' [H1 H2]]].
-  induction T0; simpl in H1; rewrite H1 in *; rewrite H2;
-  destruct H; split.
-  - pose proof Forall_ccw_conv a p T H.
-    rewrite <- H1. assumption.
-  - assumption.
-  - pose proof Forall_ccw_conv a p T H.
-    rewrite H1 in H4.
-    pose proof Forall_ccw_ind' a p (a0 :: T0) T'.
-    apply (H5 H4).
-  - destruct IHT.
-    pose proof rev_ccw_list_ind' p T0 T'.
-    apply (H6 H5).
-Qed.
-
 Theorem g_rev_ccw_list_conv : forall (p : point) (T : list point),
   g_rev_ccw_list p T -> g_rev_ccw_list p (graham_scan T).
 Proof.
@@ -229,26 +191,6 @@ Proof.
   - destruct IHT.
     pose proof g_rev_ccw_list_ind' p T0 T'.
     apply (H6 H5).
-Qed.
-
-Theorem rev_ccw_list_convex_ind : forall (p q : point) (T : list point),
-  rev_ccw_list p (q :: T) -> is_convex p T -> is_convex p (graham_scan_inc q T).
-Proof.
-  intros. destruct H.
-  destruct T; try eauto.
-  generalize dependent p0.
-  induction T; intros; simpl; try eauto.
-  destruct (ccw_dec a p0 q).
-  - rewrite Forall_ccw_cons_iff in H.
-    destruct H as [H _].
-    repeat split; try assumption;
-    try (apply ccw_cyclicity; assumption);
-    try (apply ccw_cyclicity_2; assumption).
-  - pose proof IHT a.
-    pose proof Forall_ccw_ind q p p0 [] (a :: T) H.
-    pose proof rev_ccw_list_ind p p0 [] (a :: T) H1.
-    pose proof convex_ind p p0 (a :: T) H0.
-    specialize (H2 H3 H4 H5). assumption.
 Qed.
 
 Theorem g_rev_ccw_list_convex_ind : forall (p q : point) (T : list point),
@@ -347,103 +289,6 @@ Proof.
   apply (is_convex_rev_consec p (graham_scan T)).
   apply graham_convex_1.
   exact Hsort.
-Qed.
-
-(* TODO *)
-Lemma is_max_hull'_pop : forall p a b c l T,
-  rev_ccw_list p (c :: b :: a :: l) -> (** well formed *)
-  rev_consec_ccw (b :: a :: l) -> (** convex *)
-  ~ ccw a b c ->
-  is_max_hull' p (b :: a :: l) T ->
-  is_max_hull' p (c :: a :: l) T.
-Proof.
-  unfold is_max_hull'; intros.
-  simpl; simpl in H2.
-  assert (point_in_triangle b c a p).
-  {
-    pose proof rev_ccw_list_remove_middle p [c] [b] (a :: l) H as [Hac _].
-    destruct H as [Hbc [Hab _]]. unfold Forall_ccw in Hbc, Hab, Hac. simpl in Hac.
-    rewrite !Forall_cons_iff in Hbc, Hab, Hac. destruct Hbc, Hab, Hac.
-    clear H3 H5.
-    assert (point_in_triangle b p c a). { apply point_in_tri_general; tauto. }
-    do 2 apply point_in_tri_cyclicity in H3. tauto.
-  }
-  assert (forall q, point_in_triangle q b a p ->
-                    point_in_triangle q c a p).
-  {
-    intros.
-    destruct H as [Hbc [Hab _]].
-    rewrite Forall_ccw_forall in Hbc, Hab.
-    assert (ccw c p a) as Hcpa.
-    { apply Hbc. simpl. tauto. }
-    assert (ccw b p a) as Hbpa.
-    { apply Hab. simpl. tauto. }
-    pose proof (point_in_tri_incl p a b c H3
-      (ccw_cyclicity _ _ _ Hcpa) Hbpa q H4).
-    tauto.
-  }
-  rewrite Forall_forall in H2. rewrite Forall_forall.
-  intros. specialize (H2 x H5).
-  destruct H2.
-  - left. apply (H4 x). tauto.
-  - right. tauto.
-Qed.
-
-Lemma is_max_hull'_pop' : forall p a b c l T,
-  (** should `rev_ccw_list` be included in `is_max_hull'` ? *)
-  rev_ccw_list p (c :: b :: a :: l) ->
-  rev_consec_ccw (b :: a :: l) ->
-  ~ ccw a b c ->
-  is_max_hull' p (c :: b :: a :: l) T ->
-  is_max_hull' p (c :: a :: l) T.
-Proof.
-  unfold is_max_hull' in *; intros.
-  assert (point_in_triangle b c a p).
-  {
-    pose proof rev_ccw_list_remove_middle p [c] [b] (a :: l) H as [Hac _].
-    destruct H as [Hbc [Hab _]]. unfold Forall_ccw in Hbc, Hab, Hac. simpl in Hac.
-    rewrite !Forall_cons_iff in Hbc, Hab, Hac. destruct Hbc, Hab, Hac.
-    clear H3 H5.
-    assert (point_in_triangle b p c a). { apply point_in_tri_general; tauto. }
-    do 2 apply point_in_tri_cyclicity in H3. tauto.
-  }
-  assert (forall q, point_in_triangle q b a p ->
-                    point_in_triangle q c a p).
-  {
-    intros.
-    destruct H as [Hbc [Hab _]].
-    rewrite Forall_ccw_forall in Hbc, Hab.
-    assert (ccw c p a) as Hcpa.
-    { apply Hbc. simpl. tauto. }
-    assert (ccw b p a) as Hbpa.
-    { apply Hab. simpl. tauto. }
-    pose proof (point_in_tri_incl p a b c H3
-      (ccw_cyclicity _ _ _ Hcpa) Hbpa q H4).
-    tauto.
-  }
-  assert (forall q, point_in_triangle q c b p ->
-                    point_in_triangle q c a p).
-  {
-    intros.
-    destruct H as [Hbc [_ _]].
-    rewrite Forall_ccw_forall in Hbc.
-    assert (ccw c p a) as Hcpa.
-    { apply Hbc. simpl. tauto. }
-    assert (ccw c p b) as Hcpb.
-    { apply Hbc. simpl. tauto. }
-    eapply point_in_tri_incl'; eauto.
-  }
-  rewrite Forall_forall in H2; rewrite Forall_forall.
-  intros x _H; specialize (H2 x _H); clear _H.
-  destruct H2 as [? | [? | ?]].
-  - (** x ∈ Δcbp -> x ∈ Δcap *)
-    left.
-    apply H5. tauto.
-  - (** x ∈ Δbap -> x ∈ Δcap *)
-    left.
-    apply H4. tauto.
-  - (** x ∈ [a :: l] -> x ∈ [a :: l] *)
-    right; tauto.
 Qed.
 
 Lemma is_max_hull'_pop'_g : forall p a b c l T,

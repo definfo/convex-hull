@@ -497,12 +497,12 @@ Proof.
   unfold store_point.
   entailer!.
   - simpl.
-    replace (hull_pre + 0 * 8) with hull_pre.
+    replace (hull_pre + 0 * sizeof("Point")) with hull_pre.
     2: lia.
     change (0 + 1) with 1.
     sep_apply_r_atomic (PointArray.seg_single hull_pre 0 pivot0_low_level_spec).
     unfold StorePointAsElement.storeA, store_point.
-    replace (hull_pre + 0 * 8) with hull_pre.
+    replace (hull_pre + 0 * sizeof("Point")) with hull_pre.
     2: lia.
     repeat match goal with
     | |- context [hull_pre + 0] => replace (hull_pre + 0) with hull_pre; [|lia]
@@ -525,7 +525,7 @@ Proof.
       | Hsafe : safeExec _ _ _ |- _ => exact Hsafe
       end.
     + intros s [s0 [Hs _]]. subst s. reflexivity.
-  - simpl. unfold PointCoordsBound. constructor; auto.
+  - simpl. unfold points_in_bound. constructor; auto.
 Qed.
 
 Lemma proof_of_build_hull_from_sorted_tail_entail_wit_2 : build_hull_from_sorted_tail_entail_wit_2.
@@ -791,10 +791,9 @@ Proof.
   unfold build_hull_from_sorted_tail_partial_solve_wit_9_pure.
   intros.
   entailer!.
-  all: unfold points_in_bound in *.
   all: match goal with
-  | Hbound : PointCoordsBound ?l |- context [Znth ?idx ?l ?d] =>
-      pose proof (PointCoordsBound_Znth l idx d Hbound ltac:(lia)) as H_pt_bound
+  | Hbound : points_in_bound ?l |- context [Znth ?idx ?l ?d] =>
+      pose proof (points_in_bound_Znth l idx d Hbound ltac:(lia)) as H_pt_bound
   end.
   all: unfold point_in_bound, Point_Order.point_in_bound, point_bound, Point_Order.point_bound,
     Point_Order.x, Point_Order.y in *; simpl in *.
@@ -827,9 +826,9 @@ Proof.
   intros.
   Exists pts_l.
   entailer!.
-  - unfold point_polar_partition_scan_inv, PointPolarPartitionScanInv.
-    unfold point_permutation, PointPermutation.
-    unfold point_same_outside_range, PointSameOutsideRange.
+  - unfold point_polar_partition_scan_inv.
+    unfold point_permutation.
+    unfold point_same_outside_range.
     split.
     + apply Permutation_refl.
     + split.
@@ -841,7 +840,7 @@ Proof.
         -- rewrite (Znth_indep pts_l high_pre __default_Point default_point) by lia.
            destruct (Znth high_pre pts_l default_point); reflexivity.
         -- split; intros k Hk; lia.
-  - eapply PointCoordsBound_Znth_point_mk; eauto; lia.
+  - eapply points_in_bound_Znth_point_mk; eauto; lia.
 Qed.
 
 Lemma proof_of_partition_polar_points_entail_wit_2_1 : partition_polar_points_entail_wit_2_1.
@@ -850,9 +849,9 @@ Proof.
   intros.
   Exists (point_swap pts_cur_2 (i + 1) j).
   entailer!.
-  - unfold point_polar_partition_scan_inv, PointPolarPartitionScanInv in *.
+  - unfold point_polar_partition_scan_inv in *.
     match goal with
-    | Hscan : PointPermutation _ _ /\ _ |- _ =>
+    | Hscan : point_permutation _ _ /\ _ |- _ =>
         destruct Hscan as [Hperm [Hsame [Hpivot [Hle Hgt]]]]
     end.
     split.
@@ -860,7 +859,7 @@ Proof.
       * exact Hperm.
       * eapply point_swap_permutation; lia.
     + split.
-      * eapply PointSameOutsideRange_point_swap_inside; eauto; lia.
+      * eapply point_same_outside_range_point_swap_inside; eauto; lia.
       * split.
         -- rewrite point_swap_Znth_other_index by lia.
            exact Hpivot.
@@ -890,7 +889,7 @@ Proof.
   - eapply leftmost_permutation.
     + eapply point_swap_permutation; lia.
     + exact H19.
-  - eapply PointCoordsBound_point_swap; eauto; lia.
+  - eapply points_in_bound_point_swap; eauto; lia.
   - rewrite (Znth_indep (point_swap pts_cur_2 (i + 1) j)
               high_pre __default_Point default_point)
       by (rewrite Zlength_point_swap; lia).
@@ -914,9 +913,9 @@ Proof.
   intros.
   Exists pts_cur_2.
   entailer!.
-  unfold point_polar_partition_scan_inv, PointPolarPartitionScanInv in *.
+  unfold point_polar_partition_scan_inv in *.
   match goal with
-  | Hscan : PointPermutation _ _ /\ _ |- _ =>
+  | Hscan : point_permutation _ _ /\ _ |- _ =>
       destruct Hscan as [Hperm [Hsame [Hpivot [Hle Hgt]]]]
   end.
   split; [exact Hperm|].
@@ -950,9 +949,9 @@ Proof.
   intros.
   Exists pts_cur_2.
   entailer!.
-  unfold point_polar_partition_scan_inv, PointPolarPartitionScanInv in *.
+  unfold point_polar_partition_scan_inv in *.
   match goal with
-  | Hscan : PointPermutation _ _ /\ _ |- _ =>
+  | Hscan : point_permutation _ _ /\ _ |- _ =>
       destruct Hscan as [Hperm [Hsame [Hpivot [Hle Hgt]]]]
   end.
   split; [exact Hperm|].
@@ -995,17 +994,17 @@ Proof.
   intros.
   Exists (point_swap pts_cur (i + 1) high_pre).
   entailer!;
-    unfold point_polar_partition_scan_inv, PointPolarPartitionScanInv in *;
+    unfold point_polar_partition_scan_inv in *;
     match goal with
-    | Hscan : PointPermutation _ _ /\ _ |- _ =>
+    | Hscan : point_permutation _ _ /\ _ |- _ =>
         destruct Hscan as [Hperm [Hsame [Hpivot [Hle Hgt]]]]
     end;
-    try (eapply PointSameOutsideRange_point_swap_inside; eauto; lia);
+    try (eapply point_same_outside_range_point_swap_inside; eauto; lia);
     try (eapply Permutation_trans; [exact Hperm | eapply point_swap_permutation; lia]);
     try (eapply leftmost_permutation; [eapply point_swap_permutation; lia | eauto]);
-    try (eapply PointCoordsBound_point_swap; eauto; lia);
+    try (eapply points_in_bound_point_swap; eauto; lia);
     try (rewrite Zlength_point_swap; exact H0).
-  unfold point_polar_partitioned_at, PointPolarPartitionedAt.
+  unfold point_polar_partitioned_at.
   assert (Hj_high : j = high_pre) by lia.
   subst j.
   rewrite point_swap_Znth_left_index by lia.
@@ -1035,13 +1034,13 @@ Proof.
   intros.
   Exists pts_cur.
   entailer!;
-    unfold point_polar_partition_scan_inv, PointPolarPartitionScanInv in *;
+    unfold point_polar_partition_scan_inv in *;
     match goal with
-    | Hscan : PointPermutation _ _ /\ _ |- _ =>
+    | Hscan : point_permutation _ _ /\ _ |- _ =>
         destruct Hscan as [Hperm [Hsame [Hpivot [Hle Hgt]]]]
     end;
     try exact Hperm; try exact Hsame.
-  unfold point_polar_partitioned_at, PointPolarPartitionedAt.
+  unfold point_polar_partitioned_at.
   assert (Hj_high : j = high_pre) by lia.
   assert (Hpivot_idx : i + 1 = high_pre) by lia.
   rewrite Hpivot_idx.
@@ -1063,7 +1062,7 @@ Proof.
   unfold partition_polar_points_partial_solve_wit_5_pure.
   intros.
   entailer!.
-  eapply PointCoordsBound_Znth_point_mk; eauto; lia.
+  eapply points_in_bound_Znth_point_mk; eauto; lia.
 Qed.
 
 Lemma proof_of_quicksort_polar_points_return_wit_1 : quicksort_polar_points_return_wit_1.
@@ -1073,24 +1072,24 @@ Proof.
   Exists pts_out_4.
   entailer!.
   - assert (Hpart3 :
-      PointPolarPartitionedAt (point_mk gx_pre gy_pre)
+      point_polar_partitioned_at (point_mk gx_pre gy_pre)
         pts_out_3 left_pre right_pre retval).
     {
-      eapply PointPartitionedAt_preserved_by_left;
+      eapply point_polar_partitioned_at_preserved_by_left;
         [ exact H9 | lia | exact H10 | lia | exact H20 ].
     }
     assert (Hpart4 :
-      PointPolarPartitionedAt (point_mk gx_pre gy_pre)
+      point_polar_partitioned_at (point_mk gx_pre gy_pre)
         pts_out_4 left_pre right_pre retval).
     {
-      eapply PointPartitionedAt_preserved_by_right;
+      eapply point_polar_partitioned_at_preserved_by_right;
         [ exact H2 | lia | exact H3 | lia | exact Hpart3 ].
     }
     assert (Hleft_sorted4 :
-      PointSortedRange_Point (point_mk gx_pre gy_pre)
+      point_sorted_range (point_mk gx_pre gy_pre)
         pts_out_4 left_pre (retval - 1)).
     {
-      eapply PointSortedRange_ext with (l := pts_out_3).
+      eapply point_sorted_range_ext with (l := pts_out_3).
       - lia.
       - lia.
       - destruct H3 as [Hlen34 _].
@@ -1100,32 +1099,32 @@ Proof.
         apply Hsame34; [lia | left; lia].
       - exact H11.
     }
-    eapply PointSortedRange_partition_merge with (p := retval);
+    eapply point_sorted_range_partition_merge with (p := retval);
       try eassumption; lia.
   - assert (Hsame23_full :
-      PointSameOutsideRange pts_out_2 pts_out_3 left_pre right_pre).
+      point_same_outside_range pts_out_2 pts_out_3 left_pre right_pre).
     {
-      eapply (PointSameOutsideRange_weaken
+      eapply (point_same_outside_range_weaken
                 pts_out_2 pts_out_3 left_pre (retval - 1)
         left_pre right_pre);
         [lia | lia | exact H10].
     }
     assert (Hsame34_full :
-      PointSameOutsideRange pts_out_3 pts_out_4 left_pre right_pre).
+      point_same_outside_range pts_out_3 pts_out_4 left_pre right_pre).
     {
-      eapply (PointSameOutsideRange_weaken
+      eapply (point_same_outside_range_weaken
                 pts_out_3 pts_out_4 (retval + 1) right_pre
         left_pre right_pre);
         [lia | lia | exact H3].
     }
-    change (PointSameOutsideRange pts_l pts_out_4 left_pre right_pre).
-    eapply (PointSameOutsideRange_trans
+    change (point_same_outside_range pts_l pts_out_4 left_pre right_pre).
+    eapply (point_same_outside_range_trans
               pts_l pts_out_3 pts_out_4 left_pre right_pre);
       [| exact Hsame34_full].
-    eapply (PointSameOutsideRange_trans
+    eapply (point_same_outside_range_trans
               pts_l pts_out_2 pts_out_3 left_pre right_pre);
       [exact H19 | exact Hsame23_full].
-  - unfold point_permutation, PointPermutation in *.
+  - unfold point_permutation in *.
     eapply Permutation_trans; [exact H18 |].
     eapply Permutation_trans; [exact H9 | exact H2].
 Qed.
@@ -1137,27 +1136,27 @@ Proof.
   Exists pts_out_3.
   entailer!.
   - assert (Hpart3 :
-      PointPolarPartitionedAt (point_mk gx_pre gy_pre)
+      point_polar_partitioned_at (point_mk gx_pre gy_pre)
         pts_out_3 left_pre right_pre retval).
     {
-      eapply PointPartitionedAt_preserved_by_right;
+      eapply point_polar_partitioned_at_preserved_by_right;
         [ exact H2 | lia | exact H3 | lia | exact H14 ].
     }
-    eapply PointSortedRange_from_right_boundary with (p := retval);
+    eapply point_sorted_range_from_right_boundary with (p := retval);
       [ lia | lia | lia | exact Hpart3 | exact H4 ].
   - assert (Hsame1_full :
-      PointSameOutsideRange pts_out_2 pts_out_3 left_pre right_pre).
+      point_same_outside_range pts_out_2 pts_out_3 left_pre right_pre).
     {
-      eapply (PointSameOutsideRange_weaken
+      eapply (point_same_outside_range_weaken
                 pts_out_2 pts_out_3 (retval + 1) right_pre
         left_pre right_pre);
         [lia | lia | exact H3].
     }
-    change (PointSameOutsideRange pts_l pts_out_3 left_pre right_pre).
-    eapply (PointSameOutsideRange_trans
+    change (point_same_outside_range pts_l pts_out_3 left_pre right_pre).
+    eapply (point_same_outside_range_trans
               pts_l pts_out_2 pts_out_3 left_pre right_pre);
       [exact H13 | exact Hsame1_full].
-  - unfold point_permutation, PointPermutation in *.
+  - unfold point_permutation in *.
     eapply Permutation_trans; [exact H12 | exact H2].
 Qed.
 
@@ -1168,27 +1167,27 @@ Proof.
   Exists pts_out_3.
   entailer!.
   - assert (Hpart3 :
-      PointPolarPartitionedAt (point_mk gx_pre gy_pre)
+      point_polar_partitioned_at (point_mk gx_pre gy_pre)
         pts_out_3 left_pre right_pre retval).
     {
-      eapply PointPartitionedAt_preserved_by_left;
+      eapply point_polar_partitioned_at_preserved_by_left;
         [ exact H3 | lia | exact H4 | lia | exact H14 ].
     }
-    eapply PointSortedRange_from_left_boundary with (p := retval);
+    eapply point_sorted_range_from_left_boundary with (p := retval);
       [ lia | lia | lia | exact Hpart3 | exact H5 ].
   - assert (Hsame1_full :
-      PointSameOutsideRange pts_out_2 pts_out_3 left_pre right_pre).
+      point_same_outside_range pts_out_2 pts_out_3 left_pre right_pre).
     {
-      eapply (PointSameOutsideRange_weaken
+      eapply (point_same_outside_range_weaken
                 pts_out_2 pts_out_3 left_pre (retval - 1)
         left_pre right_pre);
         [lia | lia | exact H4].
     }
-    change (PointSameOutsideRange pts_l pts_out_3 left_pre right_pre).
-    eapply (PointSameOutsideRange_trans
+    change (point_same_outside_range pts_l pts_out_3 left_pre right_pre).
+    eapply (point_same_outside_range_trans
               pts_l pts_out_2 pts_out_3 left_pre right_pre);
       [exact H13 | exact Hsame1_full].
-  - unfold point_permutation, PointPermutation in *.
+  - unfold point_permutation in *.
     eapply Permutation_trans; [exact H12 | exact H3].
 Qed.
 
@@ -1198,12 +1197,12 @@ Proof.
   intros.
   Exists pts_l.
   entailer!.
-  - unfold point_sorted_range, PointSortedRange_Point. intros.
+  - unfold point_sorted_range. intros.
     assert (i = j) as Hij.
     { lia. }
     subst.
     rewrite point_cmp_polar_refl. lia.
-  - unfold point_same_outside_range, PointSameOutsideRange.
+  - unfold point_same_outside_range.
     split; [reflexivity|]. intros; reflexivity.
 Qed.
 
@@ -1213,7 +1212,7 @@ Proof.
   intros.
   entailer!.
   unfold point_leftmost_prefix.
-  apply PointLeftmostPrefix_init.
+  apply point_leftmost_prefix_init.
   lia.
 Qed.
 
@@ -1223,7 +1222,7 @@ Proof.
   intros.
   entailer!.
   unfold point_leftmost_prefix in *.
-  eapply PointLeftmostPrefix_step_update; eauto; try lia.
+  eapply point_leftmost_prefix_step_update; eauto; try lia.
   apply point_cmp_leftdown_lt_point_leftdown.
   rewrite <- (point_mk_eta (Znth i pts_l default_point)).
   rewrite <- (point_mk_eta (Znth pivot_idx pts_l default_point)).
@@ -1242,7 +1241,7 @@ Proof.
   intros.
   entailer!.
   unfold point_leftmost_prefix in *.
-  eapply PointLeftmostPrefix_step_keep; eauto; try lia.
+  eapply point_leftmost_prefix_step_keep; eauto; try lia.
   apply point_cmp_leftdown_nonneg_point_leftdown_flip.
   rewrite <- (point_mk_eta (Znth i pts_l default_point)).
   rewrite <- (point_mk_eta (Znth pivot_idx pts_l default_point)).
@@ -1280,7 +1279,7 @@ Proof.
     subst pts_pivot.
     match goal with
     | Hsame : point_same_outside_range _ pts_out 1 (n_pre - 1) |- _ =>
-        unfold point_same_outside_range, PointSameOutsideRange in Hsame;
+        unfold point_same_outside_range in Hsame;
         destruct Hsame as [_ Hsame];
         apply Hsame
     end.
@@ -1304,7 +1303,7 @@ Proof.
     - subst pivot0. rewrite <- Hpivot0_out. reflexivity.
     - subst pivot0. rewrite <- Hpivot0_out. reflexivity.
   }
-  assert (Hperm_point : PointPermutation pts_pivot pts_out).
+  assert (Hperm_point : point_permutation pts_pivot pts_out).
   {
     subst pts_pivot.
     match goal with
@@ -1323,9 +1322,12 @@ Proof.
       sep_apply_l_atomic (PointArray.seg_to_full pts_pre 1 n_pre tail_sorted).
       replace ((n_pre - 1) + 1) with n_pre by lia.
       unfold StorePointAsElement.storeA, store_point.
-      replace (pts_pre + 0) with pts_pre by lia.
-      replace (pts_pre + 1 * 8) with (pts_pre + 8) by lia.
+      replace (pts_pre + 0 * sizeof("Point")) with pts_pre by lia.
+      replace (pts_pre + 1 * sizeof("Point")) with (pts_pre + sizeof("Point")) by lia.
       subst pivot0.
+      simpl.
+      replace (pts_pre + 0) with pts_pre by lia.
+      rewrite sizeof_Point_eq.
       simpl.
       cancel.
   - rewrite (Znth_indep pts_out 0 __default_Point default_point) by lia.
@@ -1338,7 +1340,7 @@ Proof.
       by (subst pts_pivot; rewrite Zlength_point_swap; lia).
     rewrite Hpivot_out.
     reflexivity.
-  - eapply PointLeftmostPrefix_sorted_tail_leftmost
+  - eapply point_leftmost_prefix_sorted_tail_leftmost
       with (l := pts_l) (pivot_idx := pivot_idx) (n := n_pre)
            (pts_pivot := pts_pivot) (pts_sorted := pts_out).
     + lia.
@@ -1370,8 +1372,7 @@ Proof.
         exact Hprefix
     end.
   - rewrite Hpivot0_out.
-    unfold points_in_bound in *.
-    eapply PointCoordsBound_Znth; eauto; lia.
+    eapply points_in_bound_Znth; eauto; lia.
   - subst tail_sorted.
     eapply points_in_bound_sublist; eauto; lia.
   - subst tail_sorted. rewrite Zlength_sublist; lia.
@@ -1399,7 +1400,7 @@ Proof.
   {
     match goal with
     | Hsame : point_same_outside_range pts_l pts_out 1 (n_pre - 1) |- _ =>
-        unfold point_same_outside_range, PointSameOutsideRange in Hsame;
+        unfold point_same_outside_range in Hsame;
         destruct Hsame as [_ Hsame];
         apply Hsame
     end.
@@ -1418,7 +1419,7 @@ Proof.
       rewrite (Znth_indep pts_l 0 __default_Point default_point) by lia.
       reflexivity.
   }
-  assert (Hperm_point : PointPermutation pts_pivot pts_out).
+  assert (Hperm_point : point_permutation pts_pivot pts_out).
   {
     subst pts_pivot.
     match goal with
@@ -1438,9 +1439,12 @@ Proof.
       sep_apply_l_atomic (PointArray.seg_to_full pts_pre 1 n_pre tail_sorted).
       replace ((n_pre - 1) + 1) with n_pre by lia.
       unfold StorePointAsElement.storeA, store_point.
-      replace (pts_pre + 0) with pts_pre by lia.
-      replace (pts_pre + 1 * 8) with (pts_pre + 8) by lia.
+      replace (pts_pre + 0 * sizeof("Point")) with pts_pre by lia.
+      replace (pts_pre + 1 * sizeof("Point")) with (pts_pre + sizeof("Point")) by lia.
       subst pivot0.
+      simpl.
+      replace (pts_pre + 0) with pts_pre by lia.
+      rewrite sizeof_Point_eq.
       simpl.
       cancel.
   - rewrite (Znth_indep pts_out 0 __default_Point default_point) by lia.
@@ -1451,7 +1455,7 @@ Proof.
     rewrite (Znth_indep pts_l 0 __default_Point default_point) by lia.
     rewrite Hpivot_out.
     reflexivity.
-  - eapply PointLeftmostPrefix_sorted_tail_leftmost
+  - eapply point_leftmost_prefix_sorted_tail_leftmost
       with (l := pts_l) (pivot_idx := pivot_idx) (n := n_pre)
            (pts_pivot := pts_pivot) (pts_sorted := pts_out).
     + lia.
@@ -1487,8 +1491,7 @@ Proof.
         exact Hprefix
     end.
   - rewrite Hpivot0.
-    unfold points_in_bound in *.
-    eapply PointCoordsBound_Znth; eauto; lia.
+    eapply points_in_bound_Znth; eauto; lia.
   - subst tail_sorted.
     eapply points_in_bound_sublist; eauto; lia.
   - subst tail_sorted. rewrite Zlength_sublist; lia.
@@ -1521,11 +1524,11 @@ Proof.
   {
     subst pts_pivot.
     apply point_swap_permutation;
-      unfold point_leftmost_prefix, PointLeftmostPrefix in *; lia.
+      unfold point_leftmost_prefix in *; lia.
   }
   assert (Hperm_l_sorted : point_permutation pts_l pts_sorted).
   {
-    unfold point_permutation, PointPermutation in *.
+    unfold point_permutation in *.
     eapply Permutation_trans; eauto.
   }
   assert (Hhull_l : is_convex_hull pts_l hull_out_2).
@@ -1564,12 +1567,11 @@ Proof.
   unfold graham_scan_partial_solve_wit_11_pure.
   intros.
   entailer!.
-  - unfold points_in_bound in *.
-    eapply PointCoordsBound_Znth_point_mk; eauto; lia.
+  - eapply points_in_bound_Znth_point_mk; eauto; lia.
   - replace (point_mk (point_x (Znth 0 pts_l __default_Point))
                       (point_y (Znth 0 pts_l __default_Point)))
       with (Znth pivot_idx pts_l default_point).
-    + apply PointLeftmostPrefix_leftmost.
+    + apply point_leftmost_prefix_leftmost.
       match goal with
       | Hprefix : point_leftmost_prefix pts_l pivot_idx i |- _ =>
           unfold point_leftmost_prefix in Hprefix;
@@ -1587,17 +1589,15 @@ Proof.
   intros.
   entailer!;
     try (rewrite Zlength_point_swap; lia);
-    try (unfold points_in_bound in *;
-         apply PointCoordsBound_point_swap; eauto; lia);
-    try (eapply PointCoordsBound_Znth_point_mk;
-         [unfold points_in_bound in *;
-          apply PointCoordsBound_point_swap; eauto; lia
+    try (apply points_in_bound_point_swap; eauto; lia);
+    try (eapply points_in_bound_Znth_point_mk;
+         [apply points_in_bound_point_swap; eauto; lia
          |rewrite Zlength_point_swap; lia]);
     try (
       replace (point_mk (point_x (Znth 0 (point_swap pts_l 0 pivot_idx) __default_Point))
                         (point_y (Znth 0 (point_swap pts_l 0 pivot_idx) __default_Point)))
         with (Znth 0 (point_swap pts_l 0 pivot_idx) default_point);
-      [eapply PointLeftmostPrefix_leftmost_point_swap with (n := n_pre);
+      [eapply point_leftmost_prefix_leftmost_point_swap with (n := n_pre);
        [lia
        |match goal with
         | Hprefix : point_leftmost_prefix pts_l pivot_idx i |- _ =>

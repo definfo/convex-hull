@@ -93,7 +93,25 @@ Proof.
   exact Hall.
 Qed.
 
-(** ** Main reversal theorem *)
+(** base reversal theorem *)
+Theorem is_convex_hull'_rev_base : forall base T,
+  is_convex_hull' base T ->
+  is_convex_hull' (rev base) T.
+Proof.
+  intros base T [H | H].
+  - (* Case 1: ccw_convex T /\ is_max_hull'_edges T base *)
+    destruct H as [Hconv Hmax].
+    left; split.
+    + exact Hconv.
+    + apply is_max_hull'_edges_rev_base. exact Hmax.
+  - (* Case 2: rev_ccw_convex T /\ is_max_hull'_edges (rev T) base *)
+    destruct H as [Hrev Hmax].
+    right; split.
+    + exact Hrev.
+    + apply is_max_hull'_edges_rev_base. exact Hmax.
+Qed.
+
+(** double reversal theorem *)
 Theorem is_convex_hull'_rev : forall base T,
   is_convex_hull' base T ->
   is_convex_hull' (rev base) (rev T).
@@ -109,4 +127,22 @@ Proof.
     left; split.
     + apply rev_ccw_convex_rev; exact Hrev.
     + apply is_max_hull'_edges_rev_base; exact Hmax.
+Qed.
+
+(** hull reversal theorem *)
+Theorem is_convex_hull'_rev_ : forall base T,
+  is_convex_hull' base T ->
+  is_convex_hull' base (rev T).
+Proof.
+  intros base T [H | H].
+  - (* Case 1: ccw_convex T /\ is_max_hull'_edges T base *)
+    destruct H as [Hconv Hmax].
+    right; split.
+    + apply ccw_convex_rev. exact Hconv.
+    + rewrite rev_involutive. exact Hmax.
+  - (* Case 2: rev_ccw_convex T /\ is_max_hull'_edges (rev T) base *)
+    destruct H as [Hrev Hmax].
+    left; split.
+    + apply rev_ccw_convex_rev. exact Hrev.
+    + exact Hmax.
 Qed.

@@ -1050,13 +1050,6 @@ Proof.
     + apply IHl'.
 Qed.
 
-(** ccw_list with reverse order *)
-Fixpoint rev_ccw_list (p: point) (l: list point): Prop :=
-  match l with
-  | cons q l0 => Forall_ccw q p l0 /\ rev_ccw_list p l0
-  | nil => True
-  end.
-
 Definition weak_rev_ccw (p q r: point): Prop :=
   ccw q p r \/ colinear p q r /\ at_mid r q p.
 
@@ -1350,52 +1343,6 @@ Proof.
   exact H.
 Qed.
 
-Lemma rev_ccw_list_app_iff: forall p l1 l2,
-  rev_ccw_list p (l1 ++ l2) <->
-    rev_ccw_list p l1 /\
-    rev_ccw_list p l2 /\
-    (forall q r, In q l1 -> In r l2 -> ccw q p r).
-Proof.
-  intros.
-  split; induction l1; simpl.
-  + tauto.
-  + intros.
-    specialize (IHl1 ltac:(tauto)).
-    rewrite Forall_ccw_app in H.
-    destruct IHl1 as [? [? ?]], H as [[? ?] ?].
-    repeat split; try tauto.
-    intros.
-    destruct H5; [| apply H2; tauto].
-    subst q.
-    rewrite Forall_ccw_forall in H3.
-    apply H3; tauto.
-  + tauto.
-  + intros [[? ?] [? ?]].
-    assert (forall q r, In q l1 -> In r l2 -> ccw q p r)
-      by (intros; apply H2; tauto).
-    specialize (IHl1 ltac:(tauto)).
-    rewrite Forall_ccw_app.
-    repeat split; try tauto.
-    rewrite Forall_ccw_forall.
-    intros; apply H2; tauto.
-Qed.
-
-Lemma rev_ccw_list_remove_middle: forall p l1 l2 l3,
-  rev_ccw_list p (l1 ++ l2 ++ l3) ->
-  rev_ccw_list p (l1 ++ l3).
-Proof.
-  intros.
-  rewrite rev_ccw_list_app_iff.
-  rewrite !rev_ccw_list_app_iff in H.
-  destruct H as [? [? ?]].
-  destruct H0 as [? [? ?]].
-  split; [| split]; try tauto.
-  intros.
-  apply H1; try tauto.
-  rewrite in_app_iff.
-  tauto.
-Qed.
-
 Fixpoint rev_consec_ccw (l: list point) : Prop :=
   match l with
   | p :: _l =>
@@ -1564,26 +1511,6 @@ Proof.
   destruct T; intros; try eauto.
   destruct T; intros; try eauto.
   destruct H as [_ [_ H]]. assumption.
-Qed.
-
-(** Lemma for assistance **)
-Lemma rev_ccw_list_ind : forall (p q : point) (P P' : list point),
-  rev_ccw_list p (P ++ q :: P') -> rev_ccw_list p (P ++ P').
-Proof.
-  induction P; simpl; intros.
-  - destruct H. assumption.
-  - destruct H as [Hr H];
-    pose proof Forall_ccw_ind as IHr.
-    specialize (IHr a p q P P' Hr).
-    specialize (IHP P' H).
-    tauto.
-Qed.
-
-Lemma rev_ccw_list_ind' : forall (p : point) (T0 T : list point),
-  rev_ccw_list p (T0 ++ T) -> rev_ccw_list p T.
-Proof.
-  induction T0; intros; try assumption.
-  specialize (IHT0 T). destruct H. apply (IHT0 H0).
 Qed.
 
 Lemma weak_rev_ccw_list_ind' : forall (p : point) (T0 T : list point),
@@ -2490,32 +2417,6 @@ Proof.
   tauto.
 Qed.
 
-Lemma point_in_hull_cons_iff : forall q p a b l,
-  rev_ccw_list p (b :: a :: l) ->
-  (
-    point_in_hull q (p :: b :: a :: l) <->
-    point_in_hull q (p :: a :: l) \/
-    point_in_triangle q b a p
-  ).
-Proof.
-  intros. induction l; intros.
-  - simpl; split; intros.
-    + right. tauto.
-    + destruct H as [? _];
-      rewrite Forall_ccw_cons_iff in H;
-      destruct H as [? _].
-      destruct H0; [|tauto].
-      left. apply (point_in_tri_col_mid' q b a p).
-      * tauto.
-      * apply colinear_perm132. tauto.
-      * apply at_mid_comm; tauto.
-  - split; intros.
-    + pose proof rev_ccw_list_remove_middle p [b; a] [a0] l H as _H.
-      specialize (IHl _H); clear _H.
-      simpl in H0. simpl. tauto.
-    + simpl in H0. simpl. tauto.
-Qed.
-
 Lemma point_in_hull_cons_iff_weak : forall q p a b l,
   weak_rev_ccw_list p (b :: a :: l) ->
   (
@@ -2545,42 +2446,6 @@ Proof.
     + simpl in H.
       simpl.
       tauto.
-Qed.
-
-Lemma point_in_hull_cons : forall p q p0 T,
-  rev_ccw_list p (p0 :: T) ->
-  point_in_hull q (p :: T) ->
-  point_in_hull q (p :: p0 :: T).
-Proof.
-  intros; revert p0 H.
-  induction T.
-  - intros. simpl in H0; tauto.
-  - intros.
-    destruct T.
-    + simpl. simpl in H0.
-      left.
-      simpl in H; destruct H as [H _]; apply Forall_ccw_cons_iff in H as [H _].
-      pose proof point_in_tri_col_mid' q p0 a p H.
-      destruct H0 as [Hcol Hmid]; rewrite colinear_comm in Hcol; rewrite at_mid_comm in Hmid.
-      tauto.
-    + pose proof point_in_hull_cons_iff q p a p0 (p1 :: T) H as [_ H1].
-      apply H1. left; tauto.
-Qed.
-
-Lemma is_max_hull'_cons_iff : forall p a b l T,
-  rev_ccw_list p (b :: a :: l) ->
-  (
-    is_max_hull' p (b :: a :: l) T <->
-    Forall (fun q : point => point_in_hull q (p :: a :: l) \/
-                             point_in_triangle q b a p) T
-  ).
-Proof.
-  unfold is_max_hull'. intros.
-  induction T.
-  - rewrite !Forall_nil_iff. tauto.
-  - rewrite !Forall_cons_iff.
-    pose proof point_in_hull_cons_iff a0 p a b l H.
-    tauto.
 Qed.
 
 Lemma is_max_hull'_cons_iff_weak : forall p a b l T,

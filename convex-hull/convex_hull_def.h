@@ -7,6 +7,7 @@ struct Point {
   x : Z;
   y : Z;
 } */
+
 /*@ Extern Coq (nil : {A} -> list A)
                (cons : {A} -> A -> list A -> list A)
                (app : {A} -> list A -> list A -> list A)
@@ -33,13 +34,6 @@ struct Point {
                (PointArray::undef_missing_i: Z -> Z -> Z -> Z -> Assertion)
                (Znth: {A} -> Z -> list A -> A -> A)
                (replace_Znth: {A} -> Z -> A -> list A -> list A)
-               (PointCoordsBound : list Point -> Prop)
-               (PointPermutation : list Point -> list Point -> Prop)
-               (PointSameOutsideRange : list Point -> list Point -> Z -> Z -> Prop)
-               (PointSortedRange_Point : Point -> list Point -> Z -> Z -> Prop)
-               (PointPolarPartitionedAt : Point -> list Point -> Z -> Z -> Z -> Prop)
-               (PointPolarPartitionScanInv : Point -> list Point -> list Point -> Z -> Z -> Point -> Z -> Z -> Prop)
-               (PointTailReverseState : list Point -> list Point -> Z -> Z -> Z -> Prop)
 */
 
 /*@ Import Coq Require Import SimpleC.EE.convex_hull.convex_hull_lib */

@@ -2,6 +2,7 @@ COQMAKEFILE := CoqMakefile
 
 C_FILE := convex-hull/graham_scan.c
 BASEDIR := convex-hull/ConvexHull
+COQ_DEF_FILE := $(BASEDIR)/convex_hull_lib.v
 
 COQ_LIB_FLAGS := \
 	-R SeparationLogic/SeparationLogic SimpleC.SL \
@@ -35,8 +36,9 @@ STRATEGIES_PROOF_V := \
 	$(BASEDIR)/safeexec_strategy_proof.v
 
 COQ_VFILES := \
-	$(BASEDIR)/convex_hull_lib.v \
-	$(STRATEGIES_V) \
+	$(COQ_DEF_FILE) \
+	$(STRATEGIES_GOAL_V) \
+	$(STRATEGIES_PROOF_V) \
 	$(GOAL_V) \
 	$(PROOF_AUTO_V) \
 	$(PROOF_MANUAL_V) \
@@ -49,32 +51,60 @@ VC_TARGETS := \
 	$(PROOF_MANUAL_V:.v=.vo) \
 	$(GOAL_CHECK_V:.v=.vo)
 
+QUICK_TARGETS := $(VC_TARGETS:.vo=.vos)
+VOK_TARGETS := $(VC_TARGETS:.vo=.vok)
+
 .DEFAULT_GOAL := build
 
-.PHONY: all build all-vfiles clean distclean deps symexec
+.PHONY: all build quick vok-check all-vfiles clean distclean deps symexec
 
 all: build
 
 build: symexec deps
 	$(MAKE) -f $(COQMAKEFILE) $(VC_TARGETS)
 
+quick: symexec deps
+	$(MAKE) -f $(COQMAKEFILE) $(QUICK_TARGETS)
+
+vok-check: symexec deps quick
+	$(MAKE) -f $(COQMAKEFILE) $(VOK_TARGETS)
+
 # --- Symexec: regenerate Coq VC files from C source ---
 SYMEXEC := symexec
+SYMEXEC_STRATEGY_DIR := $(abspath convex-hull)/
+SYMEXEC_INPUT_FILE := $(abspath $(C_FILE))
 SYMEXEC_FLAGS := \
 	--coq-logic-path=SimpleC.EE.convex_hull \
-	-slp convex-hull/ SimpleC.EE.convex_hull \
+	-slp $(SYMEXEC_STRATEGY_DIR) SimpleC.EE.convex_hull \
 	--no-exec-info
 
-symexec: $(GOAL_V) $(PROOF_AUTO_V) $(PROOF_MANUAL_V)
+SYMEXEC_OUTPUTS := $(GOAL_V) $(PROOF_AUTO_V) $(PROOF_MANUAL_V) $(GOAL_CHECK_V)
+SYMEXEC_UPDATE_MANUAL ?= 0
+symexec: $(SYMEXEC_OUTPUTS)
 
 # Grouped target (&:)
-$(GOAL_V) $(PROOF_AUTO_V) $(PROOF_MANUAL_V) &: $(C_FILE)
-	$(SYMEXEC) \
-	  --goal-file=$(GOAL_V) \
-	  --proof-auto-file=$(PROOF_AUTO_V) \
-	  --proof-manual-file=$(PROOF_MANUAL_V) \
+$(SYMEXEC_OUTPUTS) &: $(C_FILE)
+	@set -e; \
+	tmprun=$$(mktemp -d "$${TMPDIR:-/tmp}/qcp-symexec.XXXXXX"); \
+	tmprun=$$(cd "$$tmprun" && pwd -P); \
+	trap 'rm -rf "$$tmprun"' EXIT; \
+	(cd "$$tmprun" && $(SYMEXEC) \
+	  --goal-file="$$tmprun/$(notdir $(GOAL_V))" \
+	  --proof-auto-file="$$tmprun/$(notdir $(PROOF_AUTO_V))" \
+	  --proof-manual-file="$$tmprun/$(notdir $(PROOF_MANUAL_V))" \
 	  $(SYMEXEC_FLAGS) \
-	  --input-file=$(C_FILE)
+	  --input-file="$(SYMEXEC_INPUT_FILE)"); \
+	mv "$$tmprun/$(notdir $(GOAL_V))" "$(GOAL_V)"; \
+	mv "$$tmprun/$(notdir $(PROOF_AUTO_V))" "$(PROOF_AUTO_V)"; \
+	if [ "$(SYMEXEC_UPDATE_MANUAL)" = "1" ] || [ ! -f "$(PROOF_MANUAL_V)" ]; then \
+	  mv "$$tmprun/$(notdir $(PROOF_MANUAL_V))" "$(PROOF_MANUAL_V)"; \
+	elif cmp -s "$$tmprun/$(notdir $(PROOF_MANUAL_V))" "$(PROOF_MANUAL_V)"; then \
+	  rm -f "$$tmprun/$(notdir $(PROOF_MANUAL_V))"; \
+	else \
+	  echo 'symexec: keeping existing $(PROOF_MANUAL_V); set SYMEXEC_UPDATE_MANUAL=1 to replace' >&2; \
+	  rm -f "$$tmprun/$(notdir $(PROOF_MANUAL_V))"; \
+	fi; \
+	mv "$$tmprun/$(notdir $(GOAL_CHECK_V))" "$(GOAL_CHECK_V)"
 
 all-vfiles: symexec deps
 
@@ -90,5 +120,5 @@ deps: $(COQMAKEFILE)
 $(COQMAKEFILE): _CoqProject
 	coq_makefile -f _CoqProject -o $(COQMAKEFILE)
 
-_CoqProject:
+_CoqProject: Makefile
 	@echo $(COQ_LIB_FLAGS) $(COQ_VFILES) > _CoqProject

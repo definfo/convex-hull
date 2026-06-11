@@ -33,9 +33,6 @@ Local Open Scope monad_scope.
 
 Notation Point := point.
 
-Definition x : Point -> Z := point_x.
-Definition y : Point -> Z := point_y.
-
 Notation "p '.(x)'" := (point_x p) (at level 1).
 Notation "p '.(y)'" := (point_y p) (at level 1).
 

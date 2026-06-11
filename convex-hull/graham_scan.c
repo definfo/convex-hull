@@ -1,8 +1,7 @@
 #include "convex_hull_def.h"
 #include "safeexec_def.h"
 
-/*@ Extern Coq (point_polar_sorted : Point -> list Point -> Prop)
-               (leftmost : Point -> list Point -> Prop)
+/*@ Extern Coq (leftmost : Point -> list Point -> Prop)
 	             (is_convex_hull : list Point -> list Point -> Prop)
                (point_bound : Z)
                (point_in_bound : Point -> Prop)
@@ -14,6 +13,7 @@
                (point_sorted_range : Point -> list Point -> Z -> Z -> Prop)
                (point_polar_partitioned_at : Point -> list Point -> Z -> Z -> Z -> Prop)
                (point_polar_partition_scan_inv : Point -> list Point -> list Point -> Z -> Z -> Point -> Z -> Z -> Prop)
+               (point_polar_sorted : Point -> list Point -> Prop)
                (point_cmp_leftdown : Point -> Point -> Z)
                (point_cross_by_value : Z -> Z -> Z -> Z -> Z -> Z -> Z)
                (point_dot_by_value : Z -> Z -> Z -> Z -> Z -> Z -> Z)
@@ -171,6 +171,7 @@ static int cmp_polar(int gp_x, int gp_y, int a_x, int a_y, int b_x, int b_y)
   if (mid < 0)
     return -1;
 
+  // Degenerate case: colinear(p, a, b) and at least two colocates.
   return leftdown(a_x, a_y, b_x, b_y);
 }
 

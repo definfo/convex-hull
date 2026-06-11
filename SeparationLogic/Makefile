@@ -172,7 +172,6 @@ LLM_BENCH_Lib_FILES = \
 	Algorithms/quicksort/int_array_quicksort_lib.v \
 	Algorithms/rmq/rmq_lib.v \
 	Algorithms/sliding_window_maximum/sliding_window_maximum_lib.v \
-	Algorithms/sort_point/sort_point_lib.v \
 	Algorithms/split_array_largest_sum/split_array_largest_sum_lib.v \
 	Algorithms/super_piano/super_piano_lib.v \
 	Algorithms/zero_one_knapsack/zero_one_knapsack_lib.v \
@@ -211,7 +210,6 @@ LLM_BENCH_EXAMPLE_FILE_NAME = \
 	Algorithms/quicksort/int_array_quicksort \
 	Algorithms/rmq/rmq \
 	Algorithms/sliding_window_maximum/sliding_window_maximum \
-	Algorithms/sort_point/sort_point \
 	Algorithms/split_array_largest_sum/split_array_largest_sum \
 	Algorithms/super_piano/super_piano \
 	Algorithms/zero_one_knapsack/zero_one_knapsack \

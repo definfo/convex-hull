@@ -36,6 +36,16 @@ STRATEGIES_PROOF_V := \
 	$(BASEDIR)/safeexec_strategy_proof.v
 
 COQ_VFILES := \
+	SeparationLogic/ConvexHull/Record_Geo_Vec.v \
+	SeparationLogic/ConvexHull/Record_Geo_Point.v \
+	SeparationLogic/ConvexHull/Geo_Predicates.v \
+	SeparationLogic/ConvexHull/Point_Order.v \
+	SeparationLogic/ConvexHull/Point_Array_Specs.v \
+	SeparationLogic/ConvexHull/Hull_Equiv.v \
+	SeparationLogic/ConvexHull/Graham_Scan.v \
+	SeparationLogic/ConvexHull/Graham_Scan_M.v \
+	SeparationLogic/ConvexHull/Reversal.v \
+	SeparationLogic/ConvexHull/ConvexHull.v \
 	$(COQ_DEF_FILE) \
 	$(STRATEGIES_GOAL_V) \
 	$(STRATEGIES_PROOF_V) \
@@ -84,27 +94,12 @@ symexec: $(SYMEXEC_OUTPUTS)
 
 # Grouped target (&:)
 $(SYMEXEC_OUTPUTS) &: $(C_FILE)
-	@set -e; \
-	tmprun=$$(mktemp -d "$${TMPDIR:-/tmp}/qcp-symexec.XXXXXX"); \
-	tmprun=$$(cd "$$tmprun" && pwd -P); \
-	trap 'rm -rf "$$tmprun"' EXIT; \
-	(cd "$$tmprun" && $(SYMEXEC) \
-	  --goal-file="$$tmprun/$(notdir $(GOAL_V))" \
-	  --proof-auto-file="$$tmprun/$(notdir $(PROOF_AUTO_V))" \
-	  --proof-manual-file="$$tmprun/$(notdir $(PROOF_MANUAL_V))" \
+	$(SYMEXEC) \
+	  --goal-file=$(GOAL_V) \
+	  --proof-auto-file=$(PROOF_AUTO_V) \
+	  --proof-manual-file=$(PROOF_MANUAL_V) \
 	  $(SYMEXEC_FLAGS) \
-	  --input-file="$(SYMEXEC_INPUT_FILE)"); \
-	mv "$$tmprun/$(notdir $(GOAL_V))" "$(GOAL_V)"; \
-	mv "$$tmprun/$(notdir $(PROOF_AUTO_V))" "$(PROOF_AUTO_V)"; \
-	if [ "$(SYMEXEC_UPDATE_MANUAL)" = "1" ] || [ ! -f "$(PROOF_MANUAL_V)" ]; then \
-	  mv "$$tmprun/$(notdir $(PROOF_MANUAL_V))" "$(PROOF_MANUAL_V)"; \
-	elif cmp -s "$$tmprun/$(notdir $(PROOF_MANUAL_V))" "$(PROOF_MANUAL_V)"; then \
-	  rm -f "$$tmprun/$(notdir $(PROOF_MANUAL_V))"; \
-	else \
-	  echo 'symexec: keeping existing $(PROOF_MANUAL_V); set SYMEXEC_UPDATE_MANUAL=1 to replace' >&2; \
-	  rm -f "$$tmprun/$(notdir $(PROOF_MANUAL_V))"; \
-	fi; \
-	mv "$$tmprun/$(notdir $(GOAL_CHECK_V))" "$(GOAL_CHECK_V)"
+	  --input-file=$(SYMEXEC_INPUT_FILE) \
 
 all-vfiles: symexec deps
 
@@ -114,6 +109,7 @@ clean: deps
 distclean:
 	@if [ -f "$(COQMAKEFILE)" ]; then $(MAKE) -f $(COQMAKEFILE) clean; fi
 	$(RM) $(COQMAKEFILE) $(COQMAKEFILE).conf .$(COQMAKEFILE).d _CoqProject
+	$(RM) **.{vo,vos,vok,glob,aux}
 
 deps: $(COQMAKEFILE)
 

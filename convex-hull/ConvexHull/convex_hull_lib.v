@@ -492,6 +492,81 @@ Definition point_cmp_polar (pivot a b : Point) : Z :=
   if Z_lt_dec mid 0 then -1 else
   point_cmp_xy a b.
 
+Definition point_same (a b : Point) : Prop :=
+  x a = x b /\ y a = y b.
+
+Definition point_no_dup_prefix (l : list Point) (n : Z) : Prop :=
+  0 <= n <= Zlength l /\
+  forall i j,
+    0 <= i < j ->
+    j < n ->
+    ~ point_same (Znth i l default_point) (Znth j l default_point).
+
+Definition point_prefix_has_same (l : list Point) (unique_n read : Z) : Prop :=
+  0 <= unique_n <= Zlength l /\
+  0 <= read < Zlength l /\
+  exists j,
+    0 <= j < unique_n /\
+    point_same (Znth j l default_point) (Znth read l default_point).
+
+Definition point_dedup_inner_scan_inv
+    (l : list Point) (unique_n read scan duplicate : Z) : Prop :=
+  (duplicate = 0 /\
+   forall k,
+     0 <= k < scan ->
+     ~ point_same (Znth k l default_point) (Znth read l default_point)) \/
+  (duplicate <> 0 /\
+   point_prefix_has_same l unique_n read).
+
+Definition point_prefix_represents_range
+    (l : list Point) (unique_n lo hi : Z) : Prop :=
+  0 <= unique_n <= lo /\
+  lo <= hi <= Zlength l /\
+  forall k,
+    lo <= k < hi ->
+    exists j,
+      0 <= j < unique_n /\
+      point_same (Znth j l default_point) (Znth k l default_point).
+
+Definition point_unique_prefix_represents_all
+    (l : list Point) (unique_n : Z) : Prop :=
+  0 <= unique_n <= Zlength l /\
+  forall k,
+    0 <= k < Zlength l ->
+    exists j,
+      0 <= j < unique_n /\
+      point_same (Znth j l default_point) (Znth k l default_point).
+
+Definition point_dedup_scan_inv
+    (before cur : list Point) (read unique_n pivot_idx : Z) : Prop :=
+  Zlength before = Zlength cur /\
+  0 <= unique_n <= read /\
+  read <= Zlength cur /\
+  @Permutation Point before cur /\
+  point_no_dup_prefix cur unique_n /\
+  point_prefix_represents_range cur unique_n unique_n read /\
+  (unique_n = 0 \/ point_leftmost_prefix cur pivot_idx unique_n).
+
+Definition point_dedup_result
+    (before cur : list Point) (unique_n pivot_idx : Z) : Prop :=
+  point_dedup_scan_inv before cur (Zlength cur) unique_n pivot_idx /\
+  1 <= unique_n <= Zlength cur /\
+  point_leftmost_prefix cur pivot_idx unique_n /\
+  point_unique_prefix_represents_all cur unique_n.
+
+Definition point_polar_cmp_safe_pair (gp a b : Point) : Prop :=
+  point_colinear gp a b ->
+  point_at_mid gp a b = 0 ->
+  point_cmp_xy a b = 0.
+
+Definition point_polar_cmp_safe_range
+    (gp : Point) (l : list Point) (lo hi : Z) : Prop :=
+  forall i j,
+    lo <= i <= hi ->
+    lo <= j <= hi ->
+    point_polar_cmp_safe_pair gp
+      (Znth i l default_point) (Znth j l default_point).
+
 Definition point_polar_sorted (pivot : Point) (l : list Point) : Prop :=
   forall i j d,
     0 <= i < j ->
@@ -519,6 +594,12 @@ Definition build_hull : Point -> list Point -> program (list Point) unit :=
 Definition is_convex_hull (base hull : list Point) : Prop :=
   Graham_Scan_M.is_convex_hull base hull \/
   Graham_Scan_M.is_convex_hull base (rev hull).
+
+Definition point_dedup_hull_result (base hull : list Point) : Prop :=
+  is_convex_hull base hull \/
+  exists p,
+    hull = p :: nil /\
+    forall q, In q base -> point_same q p.
 
 Lemma is_convex_hull_direct : forall base hull,
   Graham_Scan_M.is_convex_hull base hull ->
@@ -3351,4 +3432,413 @@ Proof.
            ++ apply Znth_In_range. lia.
            ++ apply Znth_In_range. lia.
     + apply Hsorted_right; lia.
+Qed.
+
+Lemma point_polar_cmp_safe_range_point_swap :
+  forall gp l lo hi i j,
+    point_polar_cmp_safe_range gp l lo hi ->
+    0 <= lo ->
+    lo <= i <= hi ->
+    lo <= j <= hi ->
+    hi < Zlength l ->
+    point_polar_cmp_safe_range gp (point_swap l i j) lo hi.
+Proof.
+  intros gp l lo hi i j Hrange Hlo Hi Hj Hhi.
+  unfold point_polar_cmp_safe_range in *.
+  assert (Hlookup : forall k,
+    lo <= k <= hi ->
+    exists k',
+      lo <= k' <= hi /\
+      Znth k (point_swap l i j) default_point = Znth k' l default_point).
+  {
+    intros k Hk.
+    destruct (Z.eq_dec k i) as [Hki | Hki].
+    - subst k.
+      exists j. split; [lia |].
+      apply point_swap_Znth_left_index; lia.
+    - destruct (Z.eq_dec k j) as [Hkj | Hkj].
+      + subst k.
+        exists i. split; [lia |].
+        apply point_swap_Znth_right_index; lia.
+      + exists k. split; [lia |].
+        apply point_swap_Znth_other_index; lia.
+  }
+  intros p q Hp Hq.
+  destruct (Hlookup p Hp) as [p' [Hp' Hp_eq]].
+  destruct (Hlookup q Hq) as [q' [Hq' Hq_eq]].
+  rewrite Hp_eq, Hq_eq.
+  apply Hrange; assumption.
+Qed.
+
+Lemma point_polar_cmp_safe_range_subrange_permutation :
+  forall gp l l1 lo hi sublo subhi,
+    point_polar_cmp_safe_range gp l lo hi ->
+    point_permutation l l1 ->
+    point_same_outside_range l l1 sublo subhi ->
+    lo <= sublo ->
+    subhi <= hi ->
+    0 <= lo ->
+    0 <= sublo <= subhi + 1 ->
+    hi < Zlength l ->
+    point_polar_cmp_safe_range gp l1 lo hi.
+Proof.
+  intros gp l l1 lo hi sublo subhi Hrange Hperm Hsame
+    Hlo_sub Hsub_hi Hlo0 Hsub_bounds Hhi_len.
+  destruct Hsame as [Hlen Hsame_eq].
+  unfold point_polar_cmp_safe_range in *.
+  assert (Hlookup : forall k,
+    lo <= k <= hi ->
+    exists k',
+      lo <= k' <= hi /\
+      Znth k l1 default_point = Znth k' l default_point).
+  {
+    intros k Hk.
+    assert (Hk_l : 0 <= k < Zlength l) by lia.
+    assert (Hk_l1 : 0 <= k < Zlength l1) by (rewrite <- Hlen; lia).
+    destruct (Z_lt_ge_dec k sublo) as [Hleft | Hge].
+    - exists k. split; [lia |].
+      apply Hsame_eq; [assumption | left; lia].
+    - destruct (Z_le_gt_dec k subhi) as [Hinside | Hright].
+      + assert (Hmidperm :
+          point_permutation (sublist sublo (subhi + 1) l)
+                            (sublist sublo (subhi + 1) l1)).
+        {
+          eapply point_permutation_middle_of_same_outside.
+          - exact Hperm.
+          - split; [exact Hlen | exact Hsame_eq].
+          - exact Hsub_bounds.
+          - lia.
+        }
+        assert (Hsubidx :
+          0 <= k - sublo < Zlength (sublist sublo (subhi + 1) l1)).
+        {
+          rewrite Zlength_sublist by (rewrite <- Hlen; lia).
+          lia.
+        }
+        pose proof (Znth_In_range
+          (sublist sublo (subhi + 1) l1) (k - sublo)
+          default_point Hsubidx) as Hin_l1.
+        rewrite Znth_sublist in Hin_l1 by lia.
+        replace (k - sublo + sublo) with k in Hin_l1 by lia.
+        assert (Hin_l :
+          In (Znth k l1 default_point)
+             (sublist sublo (subhi + 1) l)).
+        {
+          eapply Permutation_in.
+          - apply Permutation_sym. exact Hmidperm.
+          - exact Hin_l1.
+        }
+        destruct (In_Znth_Zlength
+          (sublist sublo (subhi + 1) l)
+          (Znth k l1 default_point) default_point Hin_l)
+          as [off [Hoff Hoff_eq]].
+        assert (Hoff_bound : 0 <= off < subhi + 1 - sublo).
+        {
+          rewrite Zlength_sublist in Hoff by lia.
+          exact Hoff.
+        }
+        exists (sublo + off). split.
+        * lia.
+        * rewrite <- Hoff_eq.
+          rewrite Znth_sublist by lia.
+          replace (off + sublo) with (sublo + off) by lia.
+          reflexivity.
+      + exists k. split; [lia |].
+        apply Hsame_eq; [assumption | right; lia].
+  }
+  intros i j Hi Hj.
+  destruct (Hlookup i Hi) as [i' [Hi' Hi_eq]].
+  destruct (Hlookup j Hj) as [j' [Hj' Hj_eq]].
+  rewrite Hi_eq, Hj_eq.
+  apply Hrange; assumption.
+Qed.
+
+Lemma point_dedup_inner_scan_inv_no_duplicate :
+  forall l unique_n read scan duplicate,
+    point_dedup_inner_scan_inv l unique_n read scan duplicate ->
+    duplicate = 0 ->
+    forall k,
+      0 <= k < scan ->
+      ~ point_same (Znth k l default_point) (Znth read l default_point).
+Proof.
+  intros l unique_n read scan duplicate Hinner Hdup k Hk.
+  unfold point_dedup_inner_scan_inv in Hinner.
+  destruct Hinner as [[_ Hnone] | [Hnz _]].
+  - apply Hnone. exact Hk.
+  - lia.
+Qed.
+
+Lemma point_no_dup_prefix_extend_from_inner :
+  forall before cur read unique_n pivot_idx scan duplicate,
+    point_dedup_scan_inv before cur read unique_n pivot_idx ->
+    point_dedup_inner_scan_inv cur unique_n read scan duplicate ->
+    read = unique_n ->
+    read < Zlength cur ->
+    scan >= unique_n ->
+    duplicate = 0 ->
+    point_no_dup_prefix cur (unique_n + 1).
+Proof.
+  intros before cur read unique_n pivot_idx scan duplicate
+    Hscan Hinner Hread Hread_lt Hscan_ge Hdup.
+  subst read.
+  unfold point_dedup_scan_inv in Hscan.
+  destruct Hscan as [Hlen [Huniq_read [Hread_len
+    [Hperm [Hnodup [Hrepr Hpiv]]]]]].
+  unfold point_no_dup_prefix in *.
+  destruct Hnodup as [Hprefix_bounds Hnodup].
+  split; [lia |].
+  intros i j Hij Hj.
+  destruct (Z_lt_ge_dec j unique_n) as [Hj_old | Hj_new].
+  - apply Hnodup; lia.
+  - assert (j = unique_n) by lia.
+    subst j.
+    apply (point_dedup_inner_scan_inv_no_duplicate
+      cur unique_n unique_n scan duplicate Hinner Hdup i); lia.
+Qed.
+
+Lemma point_no_dup_prefix_point_swap_extend_from_inner :
+  forall before cur read unique_n pivot_idx scan duplicate,
+    point_dedup_scan_inv before cur read unique_n pivot_idx ->
+    point_dedup_inner_scan_inv cur unique_n read scan duplicate ->
+    read <> unique_n ->
+    read < Zlength cur ->
+    scan >= unique_n ->
+    duplicate = 0 ->
+    point_no_dup_prefix (point_swap cur unique_n read) (unique_n + 1).
+Proof.
+  intros before cur read unique_n pivot_idx scan duplicate
+    Hscan Hinner Hread_ne Hread_lt Hscan_ge Hdup.
+  unfold point_dedup_scan_inv in Hscan.
+  destruct Hscan as [Hlen [Huniq_read [Hread_len
+    [Hperm [Hnodup [Hrepr Hpiv]]]]]].
+  unfold point_no_dup_prefix in *.
+  destruct Hnodup as [Hprefix_bounds Hnodup].
+  assert (Huniq_range : 0 <= unique_n < Zlength cur) by lia.
+  assert (Hread_range : 0 <= read < Zlength cur) by lia.
+  split; [rewrite Zlength_point_swap; lia |].
+  intros i j Hij Hj Hsame.
+  assert (Hi_range : 0 <= i < Zlength cur) by lia.
+  assert (Hj_range : 0 <= j < Zlength cur) by lia.
+  destruct (Z.eq_dec j unique_n) as [Hj_unique | Hj_not_unique].
+  - subst j.
+    rewrite point_swap_Znth_left_index in Hsame by lia.
+    destruct (Z.eq_dec i read) as [Hi_read | Hi_not_read].
+    + subst i; lia.
+    + rewrite point_swap_Znth_other_index in Hsame by lia.
+      eapply point_dedup_inner_scan_inv_no_duplicate; eauto; lia.
+  - assert (j < unique_n) by lia.
+    rewrite point_swap_Znth_other_index in Hsame by lia.
+    destruct (Z.eq_dec i read) as [Hi_read | Hi_not_read].
+    + subst i; lia.
+    + rewrite point_swap_Znth_other_index in Hsame by lia.
+      exact ((Hnodup i j ltac:(lia) ltac:(lia)) Hsame).
+Qed.
+
+Lemma point_dedup_accept_transition_scan_inv :
+  forall before cur read unique_n pivot_idx,
+    Zlength before = Zlength cur ->
+    read < Zlength cur ->
+    point_permutation before cur ->
+    point_no_dup_prefix cur (unique_n + 1) ->
+    point_prefix_represents_range cur (unique_n + 1) (unique_n + 1) (read + 1) ->
+    point_leftmost_prefix cur pivot_idx (unique_n + 1) ->
+    point_dedup_scan_inv before cur (read + 1) (unique_n + 1) pivot_idx.
+Proof.
+  intros before cur read unique_n pivot_idx Hlen Hread_lt Hperm Hnodup
+    Hrepr Hleft.
+  unfold point_dedup_scan_inv.
+  unfold point_prefix_represents_range in Hrepr.
+  destruct Hrepr as [Huniq_bounds [Hrange_bounds Hrepr]].
+  split; [exact Hlen |].
+  split; [lia |].
+  split; [lia |].
+  split; [exact Hperm |].
+  split; [exact Hnodup |].
+  split.
+  - unfold point_prefix_represents_range.
+    repeat split; try lia.
+    exact Hrepr.
+  - right. exact Hleft.
+Qed.
+
+Lemma point_dedup_duplicate_advance_scan_inv :
+  forall before cur read unique_n pivot_idx scan duplicate,
+    point_dedup_scan_inv before cur read unique_n pivot_idx ->
+    point_dedup_inner_scan_inv cur unique_n read scan duplicate ->
+    0 <= scan < unique_n ->
+    point_same (Znth scan cur default_point) (Znth read cur default_point) ->
+    read < Zlength cur ->
+    point_dedup_scan_inv before cur (read + 1) unique_n pivot_idx.
+Proof.
+  intros before cur read unique_n pivot_idx scan duplicate Hscan Hinner
+    Hscan_bounds Hsame Hread_lt.
+  unfold point_dedup_scan_inv in Hscan.
+  destruct Hscan as [Hlen [Huniq_read [Hread_len
+    [Hperm [Hnodup [Hrepr Hpiv]]]]]].
+  unfold point_prefix_represents_range in Hrepr.
+  destruct Hrepr as [Huniq_lo [Hlo_hi Hrepr]].
+  unfold point_dedup_scan_inv.
+  split; [exact Hlen |].
+  split; [lia |].
+  split; [lia |].
+  split; [exact Hperm |].
+  split; [exact Hnodup |].
+  split.
+  - unfold point_prefix_represents_range.
+    repeat split; try lia.
+    intros k Hk.
+    destruct (Z.eq_dec k read) as [-> | Hkread].
+    + exists scan.
+      split; [lia | exact Hsame].
+    + apply Hrepr.
+      lia.
+  - exact Hpiv.
+Qed.
+
+Lemma point_dedup_duplicate_seen_advance_scan_inv :
+  forall before cur read unique_n pivot_idx scan duplicate,
+    point_dedup_scan_inv before cur read unique_n pivot_idx ->
+    point_dedup_inner_scan_inv cur unique_n read scan duplicate ->
+    duplicate <> 0 ->
+    read < Zlength cur ->
+    point_dedup_scan_inv before cur (read + 1) unique_n pivot_idx.
+Proof.
+  intros before cur read unique_n pivot_idx scan duplicate Hscan Hinner
+    Hdup Hread_lt.
+  unfold point_dedup_inner_scan_inv in Hinner.
+  destruct Hinner as [[Hzero _] | [_ Hsame_prefix]]; [lia |].
+  unfold point_prefix_has_same in Hsame_prefix.
+  destruct Hsame_prefix as [_ [_ [j [Hj Hsame]]]].
+  unfold point_dedup_scan_inv in Hscan.
+  destruct Hscan as [Hlen [Huniq_read [Hread_len
+    [Hperm [Hnodup [Hrepr Hpiv]]]]]].
+  unfold point_prefix_represents_range in Hrepr.
+  destruct Hrepr as [Huniq_lo [Hlo_hi Hrepr]].
+  unfold point_dedup_scan_inv.
+  split; [exact Hlen |].
+  split; [lia |].
+  split; [lia |].
+  split; [exact Hperm |].
+  split; [exact Hnodup |].
+  split.
+  - unfold point_prefix_represents_range.
+    repeat split; try lia.
+    intros k Hk.
+    destruct (Z.eq_dec k read) as [-> | Hkread].
+    + exists j. split; [lia | exact Hsame].
+    + apply Hrepr. lia.
+  - exact Hpiv.
+Qed.
+
+Lemma point_dedup_scan_inv_finish_result :
+  forall before cur read unique_n pivot_idx,
+    point_dedup_scan_inv before cur read unique_n pivot_idx ->
+    1 <= Zlength cur ->
+    read >= Zlength cur ->
+    point_dedup_result before cur unique_n pivot_idx /\
+    pivot_idx < unique_n /\
+    1 <= unique_n.
+Proof.
+  intros before cur read unique_n pivot_idx Hscan Hlen_pos Hread_ge.
+  unfold point_dedup_scan_inv in Hscan.
+  destruct Hscan as [Hlen [Huniq_read [Hread_len
+    [Hperm [Hnodup [Hrepr Hpiv]]]]]].
+  assert (Hread_eq : read = Zlength cur) by lia.
+  destruct Hpiv as [Hzero | Hleft].
+  - subst unique_n.
+    unfold point_prefix_represents_range in Hrepr.
+    destruct Hrepr as [Huniq_lo [Hlo_hi Hrepr]].
+    assert (Hbad : False).
+    {
+      assert (Hk : 0 <= 0 < read) by lia.
+      specialize (Hrepr 0 Hk).
+      destruct Hrepr as [j [Hj _]].
+      lia.
+    }
+    contradiction.
+  - pose proof Hleft as Hleft_whole.
+    destruct Hleft as [Hpiv_bounds [Huniq_len Hleft_min]].
+    assert (Hunique_all : point_unique_prefix_represents_all cur unique_n).
+    {
+      unfold point_unique_prefix_represents_all.
+      split; [lia |].
+      intros k Hk.
+      destruct (Z_lt_ge_dec k unique_n) as [Hk_prefix | Hk_suffix].
+      - exists k.
+        split; [lia |].
+        unfold point_same; split; reflexivity.
+      - unfold point_prefix_represents_range in Hrepr.
+        destruct Hrepr as [Huniq_lo [Hlo_hi Hrepr]].
+        rewrite Hread_eq in Hrepr.
+        apply Hrepr.
+        lia.
+    }
+    subst read.
+    split.
+    + unfold point_dedup_result.
+      split.
+      * unfold point_dedup_scan_inv.
+        split; [exact Hlen |].
+        split; [lia |].
+        split; [lia |].
+        split; [exact Hperm |].
+        split; [exact Hnodup |].
+        split; [exact Hrepr |].
+        right. exact Hleft_whole.
+      * split; [lia |].
+        split; [exact Hleft_whole | exact Hunique_all].
+    + split; lia.
+Qed.
+
+Lemma point_prefix_represents_range_point_swap_accept :
+  forall before cur read unique_n pivot_idx,
+    point_dedup_scan_inv before cur read unique_n pivot_idx ->
+    read <> unique_n ->
+    read < Zlength cur ->
+    point_prefix_represents_range
+      (point_swap cur unique_n read)
+      (unique_n + 1) (unique_n + 1) (read + 1).
+Proof.
+  intros before cur read unique_n pivot_idx Hscan Hneq Hread_lt.
+  unfold point_dedup_scan_inv in Hscan.
+  destruct Hscan as [Hlen [Huniq_read [Hread_len
+    [Hperm [Hnodup [Hrepr Hpiv]]]]]].
+  assert (Huniq_range : 0 <= unique_n < Zlength cur) by lia.
+  assert (Hread_range : 0 <= read < Zlength cur) by lia.
+  assert (Hlt : unique_n < read) by lia.
+  unfold point_prefix_represents_range in *.
+  destruct Hrepr as [Huniq_lo [Hlo_hi Hrepr]].
+  repeat split; try rewrite Zlength_point_swap; try lia.
+  intros k Hk.
+  destruct (Z.eq_dec k read) as [-> | Hkread].
+  - destruct (Hrepr unique_n ltac:(lia)) as [j [Hj Hsame]].
+    exists j. split; [lia |].
+    rewrite point_swap_Znth_other_index by lia.
+    rewrite point_swap_Znth_right_index by lia.
+    exact Hsame.
+  - destruct (Hrepr k ltac:(lia)) as [j [Hj Hsame]].
+    exists j. split; [lia |].
+    rewrite point_swap_Znth_other_index by lia.
+    rewrite point_swap_Znth_other_index by lia.
+    exact Hsame.
+Qed.
+
+Lemma point_leftmost_prefix_point_swap_preserve_before :
+  forall l pivot_idx n i j,
+    point_leftmost_prefix l pivot_idx n ->
+    n <= i ->
+    n <= j ->
+    0 <= i < Zlength l ->
+    0 <= j < Zlength l ->
+    point_leftmost_prefix (point_swap l i j) pivot_idx n.
+Proof.
+  intros l pivot_idx n i j Hprefix Hni Hnj Hi Hj.
+  unfold point_leftmost_prefix in *.
+  destruct Hprefix as [Hidx [Hn Hmin]].
+  split; [lia |].
+  split; [rewrite Zlength_point_swap; lia |].
+  intros k Hk.
+  rewrite point_swap_Znth_other_index by lia.
+  rewrite point_swap_Znth_other_index by lia.
+  apply Hmin; lia.
 Qed.

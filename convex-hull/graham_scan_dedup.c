@@ -2,23 +2,23 @@
 #include "safeexec_def.h"
 
 /*@ Extern Coq (leftmost : Point -> list Point -> Prop)
-	             (is_convex_hull : list Point -> list Point -> Prop)
-               (point_bound : Z)
-               (point_in_bound : Point -> Prop)
-               (points_in_bound : list Point -> Prop)
-	               (point_leftdown : Point -> Point -> Prop)
-	               (point_leftmost_prefix : list Point -> Z -> Z -> Prop)
-		               (point_same : Point -> Point -> Prop)
-		               (point_no_dup_prefix : list Point -> Z -> Prop)
-		               (point_prefix_has_same : list Point -> Z -> Z -> Prop)
-		               (point_prefix_represents_range : list Point -> Z -> Z -> Z -> Prop)
-		               (point_dedup_inner_scan_inv : list Point -> Z -> Z -> Z -> Z -> Prop)
-		               (point_dedup_scan_inv : list Point -> list Point -> Z -> Z -> Z -> Prop)
-	               (point_dedup_result : list Point -> list Point -> Z -> Z -> Prop)
-	               (point_dedup_hull_result : list Point -> list Point -> Prop)
-	               (point_permutation : list Point -> list Point -> Prop)
-	               (point_same_outside_range : list Point -> list Point -> Z -> Z -> Prop)
-	               (point_sorted_range : Point -> list Point -> Z -> Z -> Prop)
+		             (is_convex_hull : list Point -> list Point -> Prop)
+	               (point_bound : Z)
+	               (point_in_bound : Point -> Prop)
+	               (points_in_bound : list Point -> Prop)
+	               (points_not_all_same : list Point -> Prop)
+		               (point_leftdown : Point -> Point -> Prop)
+		               (point_leftmost_prefix : list Point -> Z -> Z -> Prop)
+			               (point_same : Point -> Point -> Prop)
+			               (point_no_dup_prefix : list Point -> Z -> Prop)
+			               (point_prefix_has_same : list Point -> Z -> Z -> Prop)
+			               (point_prefix_represents_range : list Point -> Z -> Z -> Z -> Prop)
+			               (point_dedup_inner_scan_inv : list Point -> Z -> Z -> Z -> Z -> Prop)
+			               (point_dedup_scan_inv : list Point -> list Point -> Z -> Z -> Z -> Prop)
+		               (point_dedup_result : list Point -> list Point -> Z -> Z -> Prop)
+		               (point_permutation : list Point -> list Point -> Prop)
+		               (point_same_outside_range : list Point -> list Point -> Z -> Z -> Prop)
+		               (point_sorted_range : Point -> list Point -> Z -> Z -> Prop)
 	               (point_polar_partitioned_at : Point -> list Point -> Z -> Z -> Z -> Prop)
 	               (point_polar_partition_scan_inv : Point -> list Point -> list Point -> Z -> Z -> Point -> Z -> Z -> Prop)
 	               (point_polar_cmp_safe_pair : Point -> Point -> Point -> Prop)
@@ -601,9 +601,10 @@ static int dedup_points_and_find_leftmost(struct Point *pts, int n,
 int graham_scan_dedup(struct Point *pts, int n, struct Point *hull)
 /*@ With (pts_l : list Point)
     Require
-      0 <= n && n <= 50000 &&
+      2 <= n && n <= 50000 &&
       Zlength(pts_l) == n &&
       points_in_bound(pts_l) &&
+      points_not_all_same(pts_l) &&
       PointArray::full(pts, n, pts_l) *
       PointArray::undef_full(hull, n)
     Ensure
@@ -612,38 +613,38 @@ int graham_scan_dedup(struct Point *pts, int n, struct Point *hull)
         0 <= __return && __return <= n &&
         Zlength(hull_out) == __return &&
         points_in_bound(pts_out) &&
-        point_dedup_hull_result(pts_l, hull_out) &&
+        is_convex_hull(pts_l, hull_out) &&
         PointArray::full(pts, n, pts_out) *
         PointArray::seg(hull, 0, __return, hull_out) *
         PointArray::undef_seg(hull, __return, n)
 */
 {
-  if (n <= 0) {
+  if (0) {
     return 0;
   }
 
   int pivot_idx = 0;
   int unique_n = dedup_points_and_find_leftmost(pts, n, &pivot_idx);
-  if (unique_n == 1) {
-    hull[0].x = pts[0].x;
-    hull[0].y = pts[0].y;
-    /*@ Assert
-        exists pts_dedup pivot_out pivot0,
-          pts == pts@pre &&
-          hull == hull@pre &&
-          n == n@pre &&
-          1 <= n && n <= 50000 &&
-          unique_n == 1 &&
-          pivot_idx == pivot_out &&
-          pivot0 == pts_dedup[0] &&
-          Zlength(pts_dedup) == n &&
-          points_in_bound(pts_dedup) &&
-          point_dedup_result(pts_l, pts_dedup, unique_n, pivot_out) &&
-          point_dedup_hull_result(pts_l, cons(pivot0, nil)) &&
-          PointArray::full(pts, n, pts_dedup) *
-          PointArray::seg(hull, 0, 1, cons(pivot0, nil)) *
-          PointArray::undef_seg(hull, 1, n)
-    */
+  /*@ Assert
+      exists pts_dedup pivot_out,
+        pts == pts@pre &&
+        hull == hull@pre &&
+        n == n@pre &&
+        pivot_idx == pivot_out &&
+        2 <= n && n <= 50000 &&
+        Zlength(pts_l) == n &&
+        points_in_bound(pts_l) &&
+        points_not_all_same(pts_l) &&
+        Zlength(pts_dedup) == n &&
+        points_in_bound(pts_dedup) &&
+        point_dedup_result(pts_l, pts_dedup, unique_n, pivot_out) &&
+        0 <= pivot_idx && pivot_idx < unique_n &&
+        unique_n <= n &&
+        2 <= unique_n &&
+        PointArray::full(pts, n, pts_dedup) *
+        PointArray::undef_full(hull, n)
+  */
+  if (0) {
     return 1;
   }
 
@@ -732,7 +733,7 @@ int graham_scan_dedup(struct Point *pts, int n, struct Point *hull)
         0 <= ret && ret <= n &&
         Zlength(hull_out) == ret &&
         points_in_bound(pts_out) &&
-        point_dedup_hull_result(pts_l, hull_out) &&
+        is_convex_hull(pts_l, hull_out) &&
         store(&pivot_idx, pivot_idx) *
         store(&unique_n, unique_n) *
         store(&gx, gx) *

@@ -6135,7 +6135,7 @@ forall (pivot_idx_pre: Z) (n_pre: Z) (pts_pre: Z) (pts_l: (@list Point)) (pts_cu
 (*----- Function graham_scan_dedup -----*)
 
 Definition graham_scan_dedup_safety_wit_1 := 
-forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (pts_l: (@list Point)) (PreH1 : (0 <= n_pre)) (PreH2 : (n_pre <= 50000)) (PreH3 : ((Zlength (pts_l)) = n_pre)) (PreH4 : (points_in_bound pts_l )) ,
+forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (pts_l: (@list Point)) (PreH1 : (2 <= n_pre)) (PreH2 : (n_pre <= 50000)) (PreH3 : ((Zlength (pts_l)) = n_pre)) (PreH4 : (points_in_bound pts_l )) (PreH5 : (points_not_all_same pts_l )) ,
   ((( &( "hull" ) )) # Ptr  |-> hull_pre)
   **  ((( &( "n" ) )) # Int  |-> n_pre)
   **  ((( &( "pts" ) )) # Ptr  |-> pts_pre)
@@ -6147,19 +6147,7 @@ forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (pts_l: (@list Point)) (PreH1 : (0 
 .
 
 Definition graham_scan_dedup_safety_wit_2 := 
-forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (pts_l: (@list Point)) (PreH1 : (n_pre <= 0)) (PreH2 : (0 <= n_pre)) (PreH3 : (n_pre <= 50000)) (PreH4 : ((Zlength (pts_l)) = n_pre)) (PreH5 : (points_in_bound pts_l )) ,
-  ((( &( "hull" ) )) # Ptr  |-> hull_pre)
-  **  ((( &( "n" ) )) # Int  |-> n_pre)
-  **  ((( &( "pts" ) )) # Ptr  |-> pts_pre)
-  **  (PointArray.full pts_pre n_pre pts_l )
-  **  (PointArray.undef_full hull_pre n_pre )
-|--
-  “ (0 <= INT_MAX) ” 
-  &&  “ ((INT_MIN) <= 0) ”
-.
-
-Definition graham_scan_dedup_safety_wit_3 := 
-forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (pts_l: (@list Point)) (PreH1 : (n_pre > 0)) (PreH2 : (0 <= n_pre)) (PreH3 : (n_pre <= 50000)) (PreH4 : ((Zlength (pts_l)) = n_pre)) (PreH5 : (points_in_bound pts_l )) ,
+forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (pts_l: (@list Point)) (PreH1 : (2 <= n_pre)) (PreH2 : (n_pre <= 50000)) (PreH3 : ((Zlength (pts_l)) = n_pre)) (PreH4 : (points_in_bound pts_l )) (PreH5 : (points_not_all_same pts_l )) ,
   ((( &( "pivot_idx" ) )) # Int  |->_)
   **  ((( &( "hull" ) )) # Ptr  |-> hull_pre)
   **  ((( &( "n" ) )) # Int  |-> n_pre)
@@ -6171,42 +6159,57 @@ forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (pts_l: (@list Point)) (PreH1 : (n_
   &&  “ ((INT_MIN) <= 0) ”
 .
 
-Definition graham_scan_dedup_safety_wit_4 := 
-forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (pts_l: (@list Point)) (pivot_out: Z) (pts_out: (@list Point)) (retval: Z) (PreH1 : (1 <= retval)) (PreH2 : (retval <= n_pre)) (PreH3 : ((Zlength (pts_out)) = n_pre)) (PreH4 : (0 <= pivot_out)) (PreH5 : (pivot_out < retval)) (PreH6 : (points_in_bound pts_out )) (PreH7 : (point_dedup_result pts_l pts_out retval pivot_out )) (PreH8 : (n_pre > 0)) (PreH9 : (0 <= n_pre)) (PreH10 : (n_pre <= 50000)) (PreH11 : ((Zlength (pts_l)) = n_pre)) (PreH12 : (points_in_bound pts_l )) ,
-  (PointArray.full pts_pre n_pre pts_out )
-  **  ((( &( "pivot_idx" ) )) # Int  |-> pivot_out)
-  **  ((( &( "unique_n" ) )) # Int  |-> retval)
+Definition graham_scan_dedup_safety_wit_3 := 
+forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (pts_l: (@list Point)) (pts_dedup: (@list Point)) (pivot_out: Z) (unique_n: Z) (PreH1 : (2 <= n_pre)) (PreH2 : (n_pre <= 50000)) (PreH3 : ((Zlength (pts_l)) = n_pre)) (PreH4 : (points_in_bound pts_l )) (PreH5 : (points_not_all_same pts_l )) (PreH6 : ((Zlength (pts_dedup)) = n_pre)) (PreH7 : (points_in_bound pts_dedup )) (PreH8 : (point_dedup_result pts_l pts_dedup unique_n pivot_out )) (PreH9 : (0 <= pivot_out)) (PreH10 : (pivot_out < unique_n)) (PreH11 : (unique_n <= n_pre)) (PreH12 : (2 <= unique_n)) ,
+  ((( &( "pts" ) )) # Ptr  |-> pts_pre)
   **  ((( &( "hull" ) )) # Ptr  |-> hull_pre)
   **  ((( &( "n" ) )) # Int  |-> n_pre)
-  **  ((( &( "pts" ) )) # Ptr  |-> pts_pre)
+  **  ((( &( "pivot_idx" ) )) # Int  |-> pivot_out)
+  **  ((( &( "unique_n" ) )) # Int  |-> unique_n)
+  **  (PointArray.full pts_pre n_pre pts_dedup )
   **  (PointArray.undef_full hull_pre n_pre )
 |--
-  “ (1 <= INT_MAX) ” 
-  &&  “ ((INT_MIN) <= 1) ”
+  “ (0 <= INT_MAX) ” 
+  &&  “ ((INT_MIN) <= 0) ”
+.
+
+Definition graham_scan_dedup_safety_wit_4 := 
+forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (pts_l: (@list Point)) (pts_dedup: (@list Point)) (pivot_out: Z) (unique_n: Z) (PreH1 : (2 <= n_pre)) (PreH2 : (n_pre <= 50000)) (PreH3 : ((Zlength (pts_l)) = n_pre)) (PreH4 : (points_in_bound pts_l )) (PreH5 : (points_not_all_same pts_l )) (PreH6 : ((Zlength (pts_dedup)) = n_pre)) (PreH7 : (points_in_bound pts_dedup )) (PreH8 : (point_dedup_result pts_l pts_dedup unique_n pivot_out )) (PreH9 : (0 <= pivot_out)) (PreH10 : (pivot_out < unique_n)) (PreH11 : (unique_n <= n_pre)) (PreH12 : (2 <= unique_n)) ,
+  ((( &( "pts" ) )) # Ptr  |-> pts_pre)
+  **  ((( &( "hull" ) )) # Ptr  |-> hull_pre)
+  **  ((( &( "n" ) )) # Int  |-> n_pre)
+  **  ((( &( "pivot_idx" ) )) # Int  |-> pivot_out)
+  **  ((( &( "unique_n" ) )) # Int  |-> unique_n)
+  **  (PointArray.full pts_pre n_pre pts_dedup )
+  **  (PointArray.undef_full hull_pre n_pre )
+|--
+  “ (0 <= INT_MAX) ” 
+  &&  “ ((INT_MIN) <= 0) ”
 .
 
 Definition graham_scan_dedup_safety_wit_5 := 
-forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (pts_l: (@list Point)) (pivot_out: Z) (pts_out: (@list Point)) (retval: Z) (PreH1 : (retval = 1)) (PreH2 : (1 <= retval)) (PreH3 : (retval <= n_pre)) (PreH4 : ((Zlength (pts_out)) = n_pre)) (PreH5 : (0 <= pivot_out)) (PreH6 : (pivot_out < retval)) (PreH7 : (points_in_bound pts_out )) (PreH8 : (point_dedup_result pts_l pts_out retval pivot_out )) (PreH9 : (n_pre > 0)) (PreH10 : (0 <= n_pre)) (PreH11 : (n_pre <= 50000)) (PreH12 : ((Zlength (pts_l)) = n_pre)) (PreH13 : (points_in_bound pts_l )) ,
-  (PointArray.full pts_pre n_pre pts_out )
-  **  ((( &( "pivot_idx" ) )) # Int  |-> pivot_out)
-  **  ((( &( "unique_n" ) )) # Int  |-> retval)
+forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (pts_l: (@list Point)) (pts_dedup: (@list Point)) (pivot_out: Z) (unique_n: Z) (PreH1 : (pivot_out <> 0)) (PreH2 : (2 <= n_pre)) (PreH3 : (n_pre <= 50000)) (PreH4 : ((Zlength (pts_l)) = n_pre)) (PreH5 : (points_in_bound pts_l )) (PreH6 : (points_not_all_same pts_l )) (PreH7 : ((Zlength (pts_dedup)) = n_pre)) (PreH8 : (points_in_bound pts_dedup )) (PreH9 : (point_dedup_result pts_l pts_dedup unique_n pivot_out )) (PreH10 : (0 <= pivot_out)) (PreH11 : (pivot_out < unique_n)) (PreH12 : (unique_n <= n_pre)) (PreH13 : (2 <= unique_n)) ,
+  ((( &( "pts" ) )) # Ptr  |-> pts_pre)
   **  ((( &( "hull" ) )) # Ptr  |-> hull_pre)
   **  ((( &( "n" ) )) # Int  |-> n_pre)
-  **  ((( &( "pts" ) )) # Ptr  |-> pts_pre)
+  **  ((( &( "pivot_idx" ) )) # Int  |-> pivot_out)
+  **  ((( &( "unique_n" ) )) # Int  |-> unique_n)
+  **  (PointArray.full pts_pre n_pre pts_dedup )
   **  (PointArray.undef_full hull_pre n_pre )
 |--
-  “ (0 <= 9223372036854775807) ” 
-  &&  “ ((-9223372036854775808) <= 0) ”
+  “ (0 <= INT_MAX) ” 
+  &&  “ ((INT_MIN) <= 0) ”
 .
 
 Definition graham_scan_dedup_safety_wit_6 := 
-forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (pts_l: (@list Point)) (pivot_out: Z) (pts_out: (@list Point)) (retval: Z) (PreH1 : (retval = 1)) (PreH2 : (1 <= retval)) (PreH3 : (retval <= n_pre)) (PreH4 : ((Zlength (pts_out)) = n_pre)) (PreH5 : (0 <= pivot_out)) (PreH6 : (pivot_out < retval)) (PreH7 : (points_in_bound pts_out )) (PreH8 : (point_dedup_result pts_l pts_out retval pivot_out )) (PreH9 : (n_pre > 0)) (PreH10 : (0 <= n_pre)) (PreH11 : (n_pre <= 50000)) (PreH12 : ((Zlength (pts_l)) = n_pre)) (PreH13 : (points_in_bound pts_l )) ,
-  (PointArray.full pts_pre n_pre pts_out )
-  **  ((( &( "pivot_idx" ) )) # Int  |-> pivot_out)
-  **  ((( &( "unique_n" ) )) # Int  |-> retval)
+forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (pts_l: (@list Point)) (pts_dedup: (@list Point)) (pivot_out: Z) (unique_n: Z) (PreH1 : ((Zlength (pts_dedup)) = n_pre)) (PreH2 : (pivot_out <> 0)) (PreH3 : (2 <= n_pre)) (PreH4 : (n_pre <= 50000)) (PreH5 : ((Zlength (pts_l)) = n_pre)) (PreH6 : (points_in_bound pts_l )) (PreH7 : (points_not_all_same pts_l )) (PreH8 : ((Zlength (pts_dedup)) = n_pre)) (PreH9 : (points_in_bound pts_dedup )) (PreH10 : (point_dedup_result pts_l pts_dedup unique_n pivot_out )) (PreH11 : (0 <= pivot_out)) (PreH12 : (pivot_out < unique_n)) (PreH13 : (unique_n <= n_pre)) (PreH14 : (2 <= unique_n)) ,
+  ((( &( "gx" ) )) # Int  |->_)
+  **  (PointArray.full pts_pre n_pre (point_swap (pts_dedup) (0) (pivot_out)) )
+  **  ((( &( "pts" ) )) # Ptr  |-> pts_pre)
   **  ((( &( "hull" ) )) # Ptr  |-> hull_pre)
   **  ((( &( "n" ) )) # Int  |-> n_pre)
-  **  ((( &( "pts" ) )) # Ptr  |-> pts_pre)
+  **  ((( &( "pivot_idx" ) )) # Int  |-> pivot_out)
+  **  ((( &( "unique_n" ) )) # Int  |-> unique_n)
   **  (PointArray.undef_full hull_pre n_pre )
 |--
   “ (0 <= INT_MAX) ” 
@@ -6214,143 +6217,53 @@ forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (pts_l: (@list Point)) (pivot_out: 
 .
 
 Definition graham_scan_dedup_safety_wit_7 := 
-forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (pts_l: (@list Point)) (pivot_out: Z) (pts_out: (@list Point)) (retval: Z)  __default_Point (PreH1 : (retval = 1)) (PreH2 : (1 <= retval)) (PreH3 : (retval <= n_pre)) (PreH4 : ((Zlength (pts_out)) = n_pre)) (PreH5 : (0 <= pivot_out)) (PreH6 : (pivot_out < retval)) (PreH7 : (points_in_bound pts_out )) (PreH8 : (point_dedup_result pts_l pts_out retval pivot_out )) (PreH9 : (n_pre > 0)) (PreH10 : (0 <= n_pre)) (PreH11 : (n_pre <= 50000)) (PreH12 : ((Zlength (pts_l)) = n_pre)) (PreH13 : (points_in_bound pts_l )) ,
-  ((&(((hull_pre + (0 * sizeof( "Point" ) ) ))  # "Point" ->ₛ "x")) # Int  |-> (point_x ((Znth 0 pts_out __default_Point))))
-  **  (PointArray.undef_seg hull_pre 1 n_pre )
-  **  ((&(((hull_pre + (0 * sizeof( "Point" ) ) ))  # "Point" ->ₛ "y")) # Int  |->_)
-  **  (PointArray.full pts_pre n_pre pts_out )
-  **  ((( &( "pivot_idx" ) )) # Int  |-> pivot_out)
-  **  ((( &( "unique_n" ) )) # Int  |-> retval)
+forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (pts_l: (@list Point)) (pts_dedup: (@list Point)) (pivot_out: Z) (unique_n: Z) (PreH1 : (pivot_out = 0)) (PreH2 : (2 <= n_pre)) (PreH3 : (n_pre <= 50000)) (PreH4 : ((Zlength (pts_l)) = n_pre)) (PreH5 : (points_in_bound pts_l )) (PreH6 : (points_not_all_same pts_l )) (PreH7 : ((Zlength (pts_dedup)) = n_pre)) (PreH8 : (points_in_bound pts_dedup )) (PreH9 : (point_dedup_result pts_l pts_dedup unique_n pivot_out )) (PreH10 : (0 <= pivot_out)) (PreH11 : (pivot_out < unique_n)) (PreH12 : (unique_n <= n_pre)) (PreH13 : (2 <= unique_n)) ,
+  ((( &( "gx" ) )) # Int  |->_)
+  **  ((( &( "pts" ) )) # Ptr  |-> pts_pre)
   **  ((( &( "hull" ) )) # Ptr  |-> hull_pre)
   **  ((( &( "n" ) )) # Int  |-> n_pre)
-  **  ((( &( "pts" ) )) # Ptr  |-> pts_pre)
+  **  ((( &( "pivot_idx" ) )) # Int  |-> pivot_out)
+  **  ((( &( "unique_n" ) )) # Int  |-> unique_n)
+  **  (PointArray.full pts_pre n_pre pts_dedup )
+  **  (PointArray.undef_full hull_pre n_pre )
 |--
-  “ (0 <= 9223372036854775807) ” 
-  &&  “ ((-9223372036854775808) <= 0) ”
+  “ (0 <= INT_MAX) ” 
+  &&  “ ((INT_MIN) <= 0) ”
 .
 
 Definition graham_scan_dedup_safety_wit_8 := 
-forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (pts_l: (@list Point)) (pivot_out: Z) (pts_out: (@list Point)) (retval: Z)  __default_Point (PreH1 : (retval = 1)) (PreH2 : (1 <= retval)) (PreH3 : (retval <= n_pre)) (PreH4 : ((Zlength (pts_out)) = n_pre)) (PreH5 : (0 <= pivot_out)) (PreH6 : (pivot_out < retval)) (PreH7 : (points_in_bound pts_out )) (PreH8 : (point_dedup_result pts_l pts_out retval pivot_out )) (PreH9 : (n_pre > 0)) (PreH10 : (0 <= n_pre)) (PreH11 : (n_pre <= 50000)) (PreH12 : ((Zlength (pts_l)) = n_pre)) (PreH13 : (points_in_bound pts_l )) ,
-  ((&(((hull_pre + (0 * sizeof( "Point" ) ) ))  # "Point" ->ₛ "x")) # Int  |-> (point_x ((Znth 0 pts_out __default_Point))))
-  **  (PointArray.undef_seg hull_pre 1 n_pre )
-  **  ((&(((hull_pre + (0 * sizeof( "Point" ) ) ))  # "Point" ->ₛ "y")) # Int  |->_)
-  **  (PointArray.full pts_pre n_pre pts_out )
-  **  ((( &( "pivot_idx" ) )) # Int  |-> pivot_out)
-  **  ((( &( "unique_n" ) )) # Int  |-> retval)
+forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (pts_l: (@list Point)) (pts_dedup: (@list Point)) (pivot_out: Z) (unique_n: Z)  __default_Point (PreH1 : ((Zlength (pts_dedup)) = n_pre)) (PreH2 : (pivot_out <> 0)) (PreH3 : (2 <= n_pre)) (PreH4 : (n_pre <= 50000)) (PreH5 : ((Zlength (pts_l)) = n_pre)) (PreH6 : (points_in_bound pts_l )) (PreH7 : (points_not_all_same pts_l )) (PreH8 : ((Zlength (pts_dedup)) = n_pre)) (PreH9 : (points_in_bound pts_dedup )) (PreH10 : (point_dedup_result pts_l pts_dedup unique_n pivot_out )) (PreH11 : (0 <= pivot_out)) (PreH12 : (pivot_out < unique_n)) (PreH13 : (unique_n <= n_pre)) (PreH14 : (2 <= unique_n)) ,
+  ((( &( "gy" ) )) # Int  |->_)
+  **  (PointArray.full pts_pre n_pre (point_swap (pts_dedup) (0) (pivot_out)) )
+  **  ((( &( "gx" ) )) # Int  |-> (point_x ((Znth 0 (point_swap (pts_dedup) (0) (pivot_out)) __default_Point))))
+  **  ((( &( "pts" ) )) # Ptr  |-> pts_pre)
   **  ((( &( "hull" ) )) # Ptr  |-> hull_pre)
   **  ((( &( "n" ) )) # Int  |-> n_pre)
-  **  ((( &( "pts" ) )) # Ptr  |-> pts_pre)
+  **  ((( &( "pivot_idx" ) )) # Int  |-> pivot_out)
+  **  ((( &( "unique_n" ) )) # Int  |-> unique_n)
+  **  (PointArray.undef_full hull_pre n_pre )
 |--
   “ (0 <= INT_MAX) ” 
   &&  “ ((INT_MIN) <= 0) ”
 .
 
 Definition graham_scan_dedup_safety_wit_9 := 
-forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (pts_l: (@list Point)) (pts_dedup: (@list Point)) (pivot_out: Z) (pivot0: Point) (unique_n: Z)  __default_Point (PreH1 : (1 <= n_pre)) (PreH2 : (n_pre <= 50000)) (PreH3 : (unique_n = 1)) (PreH4 : (pivot0 = (Znth 0 pts_dedup __default_Point))) (PreH5 : ((Zlength (pts_dedup)) = n_pre)) (PreH6 : (points_in_bound pts_dedup )) (PreH7 : (point_dedup_result pts_l pts_dedup unique_n pivot_out )) (PreH8 : (point_dedup_hull_result pts_l (cons (pivot0) ((@nil Point))) )) ,
-  ((( &( "pts" ) )) # Ptr  |-> pts_pre)
+forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (pts_l: (@list Point)) (pts_dedup: (@list Point)) (pivot_out: Z) (unique_n: Z)  __default_Point (PreH1 : (pivot_out = 0)) (PreH2 : (2 <= n_pre)) (PreH3 : (n_pre <= 50000)) (PreH4 : ((Zlength (pts_l)) = n_pre)) (PreH5 : (points_in_bound pts_l )) (PreH6 : (points_not_all_same pts_l )) (PreH7 : ((Zlength (pts_dedup)) = n_pre)) (PreH8 : (points_in_bound pts_dedup )) (PreH9 : (point_dedup_result pts_l pts_dedup unique_n pivot_out )) (PreH10 : (0 <= pivot_out)) (PreH11 : (pivot_out < unique_n)) (PreH12 : (unique_n <= n_pre)) (PreH13 : (2 <= unique_n)) ,
+  ((( &( "gy" ) )) # Int  |->_)
+  **  (PointArray.full pts_pre n_pre pts_dedup )
+  **  ((( &( "gx" ) )) # Int  |-> (point_x ((Znth 0 pts_dedup __default_Point))))
+  **  ((( &( "pts" ) )) # Ptr  |-> pts_pre)
   **  ((( &( "hull" ) )) # Ptr  |-> hull_pre)
   **  ((( &( "n" ) )) # Int  |-> n_pre)
-  **  ((( &( "unique_n" ) )) # Int  |-> unique_n)
   **  ((( &( "pivot_idx" ) )) # Int  |-> pivot_out)
-  **  (PointArray.full pts_pre n_pre pts_dedup )
-  **  (PointArray.seg hull_pre 0 1 (cons (pivot0) ((@nil Point))) )
-  **  (PointArray.undef_seg hull_pre 1 n_pre )
+  **  ((( &( "unique_n" ) )) # Int  |-> unique_n)
+  **  (PointArray.undef_full hull_pre n_pre )
 |--
-  “ (1 <= INT_MAX) ” 
-  &&  “ ((INT_MIN) <= 1) ”
+  “ (0 <= INT_MAX) ” 
+  &&  “ ((INT_MIN) <= 0) ”
 .
 
 Definition graham_scan_dedup_safety_wit_10 := 
-forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (pts_l: (@list Point)) (pivot_out: Z) (pts_out: (@list Point)) (retval: Z) (PreH1 : (retval <> 1)) (PreH2 : (1 <= retval)) (PreH3 : (retval <= n_pre)) (PreH4 : ((Zlength (pts_out)) = n_pre)) (PreH5 : (0 <= pivot_out)) (PreH6 : (pivot_out < retval)) (PreH7 : (points_in_bound pts_out )) (PreH8 : (point_dedup_result pts_l pts_out retval pivot_out )) (PreH9 : (n_pre > 0)) (PreH10 : (0 <= n_pre)) (PreH11 : (n_pre <= 50000)) (PreH12 : ((Zlength (pts_l)) = n_pre)) (PreH13 : (points_in_bound pts_l )) ,
-  (PointArray.full pts_pre n_pre pts_out )
-  **  ((( &( "pivot_idx" ) )) # Int  |-> pivot_out)
-  **  ((( &( "unique_n" ) )) # Int  |-> retval)
-  **  ((( &( "hull" ) )) # Ptr  |-> hull_pre)
-  **  ((( &( "n" ) )) # Int  |-> n_pre)
-  **  ((( &( "pts" ) )) # Ptr  |-> pts_pre)
-  **  (PointArray.undef_full hull_pre n_pre )
-|--
-  “ (0 <= INT_MAX) ” 
-  &&  “ ((INT_MIN) <= 0) ”
-.
-
-Definition graham_scan_dedup_safety_wit_11 := 
-forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (pts_l: (@list Point)) (pivot_out: Z) (pts_out: (@list Point)) (retval: Z) (PreH1 : (pivot_out <> 0)) (PreH2 : (retval <> 1)) (PreH3 : (1 <= retval)) (PreH4 : (retval <= n_pre)) (PreH5 : ((Zlength (pts_out)) = n_pre)) (PreH6 : (0 <= pivot_out)) (PreH7 : (pivot_out < retval)) (PreH8 : (points_in_bound pts_out )) (PreH9 : (point_dedup_result pts_l pts_out retval pivot_out )) (PreH10 : (n_pre > 0)) (PreH11 : (0 <= n_pre)) (PreH12 : (n_pre <= 50000)) (PreH13 : ((Zlength (pts_l)) = n_pre)) (PreH14 : (points_in_bound pts_l )) ,
-  (PointArray.full pts_pre n_pre pts_out )
-  **  ((( &( "pivot_idx" ) )) # Int  |-> pivot_out)
-  **  ((( &( "unique_n" ) )) # Int  |-> retval)
-  **  ((( &( "hull" ) )) # Ptr  |-> hull_pre)
-  **  ((( &( "n" ) )) # Int  |-> n_pre)
-  **  ((( &( "pts" ) )) # Ptr  |-> pts_pre)
-  **  (PointArray.undef_full hull_pre n_pre )
-|--
-  “ (0 <= INT_MAX) ” 
-  &&  “ ((INT_MIN) <= 0) ”
-.
-
-Definition graham_scan_dedup_safety_wit_12 := 
-forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (pts_l: (@list Point)) (pivot_out: Z) (pts_out: (@list Point)) (retval: Z) (PreH1 : ((Zlength (pts_out)) = n_pre)) (PreH2 : (pivot_out <> 0)) (PreH3 : (retval <> 1)) (PreH4 : (1 <= retval)) (PreH5 : (retval <= n_pre)) (PreH6 : ((Zlength (pts_out)) = n_pre)) (PreH7 : (0 <= pivot_out)) (PreH8 : (pivot_out < retval)) (PreH9 : (points_in_bound pts_out )) (PreH10 : (point_dedup_result pts_l pts_out retval pivot_out )) (PreH11 : (n_pre > 0)) (PreH12 : (0 <= n_pre)) (PreH13 : (n_pre <= 50000)) (PreH14 : ((Zlength (pts_l)) = n_pre)) (PreH15 : (points_in_bound pts_l )) ,
-  ((( &( "gx" ) )) # Int  |->_)
-  **  (PointArray.full pts_pre n_pre (point_swap (pts_out) (0) (pivot_out)) )
-  **  ((( &( "pivot_idx" ) )) # Int  |-> pivot_out)
-  **  ((( &( "unique_n" ) )) # Int  |-> retval)
-  **  ((( &( "hull" ) )) # Ptr  |-> hull_pre)
-  **  ((( &( "n" ) )) # Int  |-> n_pre)
-  **  ((( &( "pts" ) )) # Ptr  |-> pts_pre)
-  **  (PointArray.undef_full hull_pre n_pre )
-|--
-  “ (0 <= INT_MAX) ” 
-  &&  “ ((INT_MIN) <= 0) ”
-.
-
-Definition graham_scan_dedup_safety_wit_13 := 
-forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (pts_l: (@list Point)) (pivot_out: Z) (pts_out: (@list Point)) (retval: Z) (PreH1 : (pivot_out = 0)) (PreH2 : (retval <> 1)) (PreH3 : (1 <= retval)) (PreH4 : (retval <= n_pre)) (PreH5 : ((Zlength (pts_out)) = n_pre)) (PreH6 : (0 <= pivot_out)) (PreH7 : (pivot_out < retval)) (PreH8 : (points_in_bound pts_out )) (PreH9 : (point_dedup_result pts_l pts_out retval pivot_out )) (PreH10 : (n_pre > 0)) (PreH11 : (0 <= n_pre)) (PreH12 : (n_pre <= 50000)) (PreH13 : ((Zlength (pts_l)) = n_pre)) (PreH14 : (points_in_bound pts_l )) ,
-  ((( &( "gx" ) )) # Int  |->_)
-  **  (PointArray.full pts_pre n_pre pts_out )
-  **  ((( &( "pivot_idx" ) )) # Int  |-> pivot_out)
-  **  ((( &( "unique_n" ) )) # Int  |-> retval)
-  **  ((( &( "hull" ) )) # Ptr  |-> hull_pre)
-  **  ((( &( "n" ) )) # Int  |-> n_pre)
-  **  ((( &( "pts" ) )) # Ptr  |-> pts_pre)
-  **  (PointArray.undef_full hull_pre n_pre )
-|--
-  “ (0 <= INT_MAX) ” 
-  &&  “ ((INT_MIN) <= 0) ”
-.
-
-Definition graham_scan_dedup_safety_wit_14 := 
-forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (pts_l: (@list Point)) (pivot_out: Z) (pts_out: (@list Point)) (retval: Z)  __default_Point (PreH1 : ((Zlength (pts_out)) = n_pre)) (PreH2 : (pivot_out <> 0)) (PreH3 : (retval <> 1)) (PreH4 : (1 <= retval)) (PreH5 : (retval <= n_pre)) (PreH6 : ((Zlength (pts_out)) = n_pre)) (PreH7 : (0 <= pivot_out)) (PreH8 : (pivot_out < retval)) (PreH9 : (points_in_bound pts_out )) (PreH10 : (point_dedup_result pts_l pts_out retval pivot_out )) (PreH11 : (n_pre > 0)) (PreH12 : (0 <= n_pre)) (PreH13 : (n_pre <= 50000)) (PreH14 : ((Zlength (pts_l)) = n_pre)) (PreH15 : (points_in_bound pts_l )) ,
-  ((( &( "gy" ) )) # Int  |->_)
-  **  (PointArray.full pts_pre n_pre (point_swap (pts_out) (0) (pivot_out)) )
-  **  ((( &( "gx" ) )) # Int  |-> (point_x ((Znth 0 (point_swap (pts_out) (0) (pivot_out)) __default_Point))))
-  **  ((( &( "pivot_idx" ) )) # Int  |-> pivot_out)
-  **  ((( &( "unique_n" ) )) # Int  |-> retval)
-  **  ((( &( "hull" ) )) # Ptr  |-> hull_pre)
-  **  ((( &( "n" ) )) # Int  |-> n_pre)
-  **  ((( &( "pts" ) )) # Ptr  |-> pts_pre)
-  **  (PointArray.undef_full hull_pre n_pre )
-|--
-  “ (0 <= INT_MAX) ” 
-  &&  “ ((INT_MIN) <= 0) ”
-.
-
-Definition graham_scan_dedup_safety_wit_15 := 
-forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (pts_l: (@list Point)) (pivot_out: Z) (pts_out: (@list Point)) (retval: Z)  __default_Point (PreH1 : (pivot_out = 0)) (PreH2 : (retval <> 1)) (PreH3 : (1 <= retval)) (PreH4 : (retval <= n_pre)) (PreH5 : ((Zlength (pts_out)) = n_pre)) (PreH6 : (0 <= pivot_out)) (PreH7 : (pivot_out < retval)) (PreH8 : (points_in_bound pts_out )) (PreH9 : (point_dedup_result pts_l pts_out retval pivot_out )) (PreH10 : (n_pre > 0)) (PreH11 : (0 <= n_pre)) (PreH12 : (n_pre <= 50000)) (PreH13 : ((Zlength (pts_l)) = n_pre)) (PreH14 : (points_in_bound pts_l )) ,
-  ((( &( "gy" ) )) # Int  |->_)
-  **  (PointArray.full pts_pre n_pre pts_out )
-  **  ((( &( "gx" ) )) # Int  |-> (point_x ((Znth 0 pts_out __default_Point))))
-  **  ((( &( "pivot_idx" ) )) # Int  |-> pivot_out)
-  **  ((( &( "unique_n" ) )) # Int  |-> retval)
-  **  ((( &( "hull" ) )) # Ptr  |-> hull_pre)
-  **  ((( &( "n" ) )) # Int  |-> n_pre)
-  **  ((( &( "pts" ) )) # Ptr  |-> pts_pre)
-  **  (PointArray.undef_full hull_pre n_pre )
-|--
-  “ (0 <= INT_MAX) ” 
-  &&  “ ((INT_MIN) <= 0) ”
-.
-
-Definition graham_scan_dedup_safety_wit_16 := 
 forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (pts_l: (@list Point)) (pts_dedup: (@list Point)) (pts_pivot: (@list Point)) (unique_prefix: (@list Point)) (suffix: (@list Point)) (pivot0: Point) (unique_n: Z) (gy: Z) (gx: Z) (pivot_idx: Z)  __default_Point (PreH1 : (2 <= unique_n)) (PreH2 : (unique_n <= n_pre)) (PreH3 : (n_pre <= 50000)) (PreH4 : (1 <= (unique_n - 1 ))) (PreH5 : ((unique_n - 1 ) < INT_MAX)) (PreH6 : (((unique_n - 1 ) + 1 ) <= n_pre)) (PreH7 : (pivot0 = (point_mk (gx) (gy)))) (PreH8 : (pts_pivot = (point_swap (pts_dedup) (0) (pivot_idx)))) (PreH9 : ((Zlength (pts_dedup)) = n_pre)) (PreH10 : ((Zlength (pts_pivot)) = n_pre)) (PreH11 : ((Zlength (unique_prefix)) = unique_n)) (PreH12 : (unique_prefix = (sublist (0) (unique_n) (pts_pivot)))) (PreH13 : (suffix = (sublist (unique_n) (n_pre) (pts_pivot)))) (PreH14 : (points_in_bound pts_dedup )) (PreH15 : (points_in_bound pts_pivot )) (PreH16 : (points_in_bound unique_prefix )) (PreH17 : (point_in_bound pivot0 )) (PreH18 : (point_dedup_result pts_l pts_dedup unique_n pivot_idx )) (PreH19 : (point_no_dup_prefix pts_pivot unique_n )) (PreH20 : (leftmost pivot0 unique_prefix )) (PreH21 : (point_polar_cmp_safe_range pivot0 unique_prefix 1 (unique_n - 1 ) )) (PreH22 : (((Znth 0 pts_pivot __default_Point).(x) ) = gx)) (PreH23 : (((Znth 0 pts_pivot __default_Point).(y) ) = gy)) ,
   ((( &( "pts" ) )) # Ptr  |-> pts_pre)
   **  ((( &( "hull" ) )) # Ptr  |-> hull_pre)
@@ -6367,7 +6280,7 @@ forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (pts_l: (@list Point)) (pts_dedup: 
   &&  “ ((INT_MIN) <= (unique_n - 1 )) ”
 .
 
-Definition graham_scan_dedup_safety_wit_17 := 
+Definition graham_scan_dedup_safety_wit_11 := 
 forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (pts_l: (@list Point)) (pts_dedup: (@list Point)) (pts_pivot: (@list Point)) (unique_prefix: (@list Point)) (suffix: (@list Point)) (pivot0: Point) (unique_n: Z) (gy: Z) (gx: Z) (pivot_idx: Z)  __default_Point (PreH1 : (2 <= unique_n)) (PreH2 : (unique_n <= n_pre)) (PreH3 : (n_pre <= 50000)) (PreH4 : (1 <= (unique_n - 1 ))) (PreH5 : ((unique_n - 1 ) < INT_MAX)) (PreH6 : (((unique_n - 1 ) + 1 ) <= n_pre)) (PreH7 : (pivot0 = (point_mk (gx) (gy)))) (PreH8 : (pts_pivot = (point_swap (pts_dedup) (0) (pivot_idx)))) (PreH9 : ((Zlength (pts_dedup)) = n_pre)) (PreH10 : ((Zlength (pts_pivot)) = n_pre)) (PreH11 : ((Zlength (unique_prefix)) = unique_n)) (PreH12 : (unique_prefix = (sublist (0) (unique_n) (pts_pivot)))) (PreH13 : (suffix = (sublist (unique_n) (n_pre) (pts_pivot)))) (PreH14 : (points_in_bound pts_dedup )) (PreH15 : (points_in_bound pts_pivot )) (PreH16 : (points_in_bound unique_prefix )) (PreH17 : (point_in_bound pivot0 )) (PreH18 : (point_dedup_result pts_l pts_dedup unique_n pivot_idx )) (PreH19 : (point_no_dup_prefix pts_pivot unique_n )) (PreH20 : (leftmost pivot0 unique_prefix )) (PreH21 : (point_polar_cmp_safe_range pivot0 unique_prefix 1 (unique_n - 1 ) )) (PreH22 : (((Znth 0 pts_pivot __default_Point).(x) ) = gx)) (PreH23 : (((Znth 0 pts_pivot __default_Point).(y) ) = gy)) ,
   ((( &( "pts" ) )) # Ptr  |-> pts_pre)
   **  ((( &( "hull" ) )) # Ptr  |-> hull_pre)
@@ -6384,7 +6297,7 @@ forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (pts_l: (@list Point)) (pts_dedup: 
   &&  “ ((INT_MIN) <= 1) ”
 .
 
-Definition graham_scan_dedup_safety_wit_18 := 
+Definition graham_scan_dedup_safety_wit_12 := 
 forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (pts_l: (@list Point)) (pts_dedup: (@list Point)) (pts_pivot: (@list Point)) (unique_prefix: (@list Point)) (suffix: (@list Point)) (pivot0: Point) (unique_n: Z) (gy: Z) (gx: Z) (pivot_idx: Z)  __default_Point (PreH1 : (2 <= unique_n)) (PreH2 : (unique_n <= n_pre)) (PreH3 : (n_pre <= 50000)) (PreH4 : (1 <= (unique_n - 1 ))) (PreH5 : ((unique_n - 1 ) < INT_MAX)) (PreH6 : (((unique_n - 1 ) + 1 ) <= n_pre)) (PreH7 : (pivot0 = (point_mk (gx) (gy)))) (PreH8 : (pts_pivot = (point_swap (pts_dedup) (0) (pivot_idx)))) (PreH9 : ((Zlength (pts_dedup)) = n_pre)) (PreH10 : ((Zlength (pts_pivot)) = n_pre)) (PreH11 : ((Zlength (unique_prefix)) = unique_n)) (PreH12 : (unique_prefix = (sublist (0) (unique_n) (pts_pivot)))) (PreH13 : (suffix = (sublist (unique_n) (n_pre) (pts_pivot)))) (PreH14 : (points_in_bound pts_dedup )) (PreH15 : (points_in_bound pts_pivot )) (PreH16 : (points_in_bound unique_prefix )) (PreH17 : (point_in_bound pivot0 )) (PreH18 : (point_dedup_result pts_l pts_dedup unique_n pivot_idx )) (PreH19 : (point_no_dup_prefix pts_pivot unique_n )) (PreH20 : (leftmost pivot0 unique_prefix )) (PreH21 : (point_polar_cmp_safe_range pivot0 unique_prefix 1 (unique_n - 1 ) )) (PreH22 : (((Znth 0 pts_pivot __default_Point).(x) ) = gx)) (PreH23 : (((Znth 0 pts_pivot __default_Point).(y) ) = gy)) ,
   ((( &( "pts" ) )) # Ptr  |-> pts_pre)
   **  ((( &( "hull" ) )) # Ptr  |-> hull_pre)
@@ -6401,7 +6314,7 @@ forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (pts_l: (@list Point)) (pts_dedup: 
   &&  “ ((INT_MIN) <= 1) ”
 .
 
-Definition graham_scan_dedup_safety_wit_19 := 
+Definition graham_scan_dedup_safety_wit_13 := 
 forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (pts_l: (@list Point)) (pts_dedup: (@list Point)) (pts_pivot: (@list Point)) (unique_prefix: (@list Point)) (suffix: (@list Point)) (pivot0: Point) (unique_n: Z) (gy: Z) (gx: Z) (pivot_idx: Z) (pts_out: (@list Point))  __default_Point (PreH1 : ((Zlength (pts_out)) = unique_n)) (PreH2 : (points_in_bound pts_out )) (PreH3 : (leftmost (point_mk (gx) (gy)) pts_out )) (PreH4 : (point_permutation unique_prefix pts_out )) (PreH5 : (point_same_outside_range unique_prefix pts_out 1 (unique_n - 1 ) )) (PreH6 : (point_polar_cmp_safe_range (point_mk (gx) (gy)) pts_out 1 (unique_n - 1 ) )) (PreH7 : (point_sorted_range (point_mk (gx) (gy)) pts_out 1 (unique_n - 1 ) )) (PreH8 : (2 <= unique_n)) (PreH9 : (unique_n <= n_pre)) (PreH10 : (n_pre <= 50000)) (PreH11 : (1 <= (unique_n - 1 ))) (PreH12 : ((unique_n - 1 ) < INT_MAX)) (PreH13 : (((unique_n - 1 ) + 1 ) <= n_pre)) (PreH14 : (pivot0 = (point_mk (gx) (gy)))) (PreH15 : (pts_pivot = (point_swap (pts_dedup) (0) (pivot_idx)))) (PreH16 : ((Zlength (pts_dedup)) = n_pre)) (PreH17 : ((Zlength (pts_pivot)) = n_pre)) (PreH18 : ((Zlength (unique_prefix)) = unique_n)) (PreH19 : (unique_prefix = (sublist (0) (unique_n) (pts_pivot)))) (PreH20 : (suffix = (sublist (unique_n) (n_pre) (pts_pivot)))) (PreH21 : (points_in_bound pts_dedup )) (PreH22 : (points_in_bound pts_pivot )) (PreH23 : (points_in_bound unique_prefix )) (PreH24 : (point_in_bound pivot0 )) (PreH25 : (point_dedup_result pts_l pts_dedup unique_n pivot_idx )) (PreH26 : (point_no_dup_prefix pts_pivot unique_n )) (PreH27 : (leftmost pivot0 unique_prefix )) (PreH28 : (point_polar_cmp_safe_range pivot0 unique_prefix 1 (unique_n - 1 ) )) (PreH29 : (((Znth 0 pts_pivot __default_Point).(x) ) = gx)) (PreH30 : (((Znth 0 pts_pivot __default_Point).(y) ) = gy)) ,
   ((( &( "tail" ) )) # Ptr  |->_)
   **  (PointArray.full pts_pre unique_n pts_out )
@@ -6419,7 +6332,7 @@ forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (pts_l: (@list Point)) (pts_dedup: 
   &&  “ ((INT_MIN) <= 1) ”
 .
 
-Definition graham_scan_dedup_safety_wit_20 := 
+Definition graham_scan_dedup_safety_wit_14 := 
 forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (pts_l: (@list Point)) (pts_dedup: (@list Point)) (pts_pivot: (@list Point)) (pts_sorted: (@list Point)) (unique_prefix: (@list Point)) (tail_sorted: (@list Point)) (suffix: (@list Point)) (pivot0: Point) (tail: Z) (unique_n: Z) (gy: Z) (gx: Z) (pivot_idx: Z)  __default_Point (PreH1 : (tail = (pts_pre + sizeof( "Point" ) ))) (PreH2 : (2 <= unique_n)) (PreH3 : (unique_n <= n_pre)) (PreH4 : (n_pre <= 50000)) (PreH5 : (pivot0 = (point_mk (gx) (gy)))) (PreH6 : (pts_pivot = (point_swap (pts_dedup) (0) (pivot_idx)))) (PreH7 : ((Zlength (pts_dedup)) = n_pre)) (PreH8 : ((Zlength (pts_sorted)) = unique_n)) (PreH9 : ((Zlength (unique_prefix)) = unique_n)) (PreH10 : ((Zlength (tail_sorted)) = (unique_n - 1 ))) (PreH11 : (unique_prefix = (sublist (0) (unique_n) (pts_pivot)))) (PreH12 : (tail_sorted = (sublist (1) (unique_n) (pts_sorted)))) (PreH13 : (suffix = (sublist (unique_n) (n_pre) (pts_pivot)))) (PreH14 : ((unique_n - 1 ) = (Zlength (tail_sorted)))) (PreH15 : (points_in_bound pts_sorted )) (PreH16 : (points_in_bound tail_sorted )) (PreH17 : (point_in_bound pivot0 )) (PreH18 : (point_dedup_result pts_l pts_dedup unique_n pivot_idx )) (PreH19 : (leftmost pivot0 pts_sorted )) (PreH20 : (point_permutation unique_prefix pts_sorted )) (PreH21 : (point_sorted_range (point_mk (gx) (gy)) pts_sorted 1 (unique_n - 1 ) )) (PreH22 : (point_polar_sorted pivot0 tail_sorted )) (PreH23 : (leftmost pivot0 (rev (tail_sorted)) )) (PreH24 : (((Znth 0 pts_sorted __default_Point).(x) ) = gx)) (PreH25 : (((Znth 0 pts_sorted __default_Point).(y) ) = gy)) ,
   ((( &( "ret" ) )) # Int  |->_)
   **  ((( &( "pts" ) )) # Ptr  |-> pts_pre)
@@ -6440,7 +6353,7 @@ forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (pts_l: (@list Point)) (pts_dedup: 
   &&  “ ((INT_MIN) <= (unique_n - 1 )) ”
 .
 
-Definition graham_scan_dedup_safety_wit_21 := 
+Definition graham_scan_dedup_safety_wit_15 := 
 forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (pts_l: (@list Point)) (pts_dedup: (@list Point)) (pts_pivot: (@list Point)) (pts_sorted: (@list Point)) (unique_prefix: (@list Point)) (tail_sorted: (@list Point)) (suffix: (@list Point)) (pivot0: Point) (tail: Z) (unique_n: Z) (gy: Z) (gx: Z) (pivot_idx: Z)  __default_Point (PreH1 : (tail = (pts_pre + sizeof( "Point" ) ))) (PreH2 : (2 <= unique_n)) (PreH3 : (unique_n <= n_pre)) (PreH4 : (n_pre <= 50000)) (PreH5 : (pivot0 = (point_mk (gx) (gy)))) (PreH6 : (pts_pivot = (point_swap (pts_dedup) (0) (pivot_idx)))) (PreH7 : ((Zlength (pts_dedup)) = n_pre)) (PreH8 : ((Zlength (pts_sorted)) = unique_n)) (PreH9 : ((Zlength (unique_prefix)) = unique_n)) (PreH10 : ((Zlength (tail_sorted)) = (unique_n - 1 ))) (PreH11 : (unique_prefix = (sublist (0) (unique_n) (pts_pivot)))) (PreH12 : (tail_sorted = (sublist (1) (unique_n) (pts_sorted)))) (PreH13 : (suffix = (sublist (unique_n) (n_pre) (pts_pivot)))) (PreH14 : ((unique_n - 1 ) = (Zlength (tail_sorted)))) (PreH15 : (points_in_bound pts_sorted )) (PreH16 : (points_in_bound tail_sorted )) (PreH17 : (point_in_bound pivot0 )) (PreH18 : (point_dedup_result pts_l pts_dedup unique_n pivot_idx )) (PreH19 : (leftmost pivot0 pts_sorted )) (PreH20 : (point_permutation unique_prefix pts_sorted )) (PreH21 : (point_sorted_range (point_mk (gx) (gy)) pts_sorted 1 (unique_n - 1 ) )) (PreH22 : (point_polar_sorted pivot0 tail_sorted )) (PreH23 : (leftmost pivot0 (rev (tail_sorted)) )) (PreH24 : (((Znth 0 pts_sorted __default_Point).(x) ) = gx)) (PreH25 : (((Znth 0 pts_sorted __default_Point).(y) ) = gy)) ,
   ((( &( "ret" ) )) # Int  |->_)
   **  ((( &( "pts" ) )) # Ptr  |-> pts_pre)
@@ -6463,180 +6376,173 @@ forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (pts_l: (@list Point)) (pts_dedup: 
 
 Definition graham_scan_dedup_entail_wit_1 := 
 (
-forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (pts_l: (@list Point)) (pivot_out: Z) (pts_out: (@list Point)) (retval: Z)  __default_Point (PreH1 : (retval = 1)) (PreH2 : (1 <= retval)) (PreH3 : (retval <= n_pre)) (PreH4 : ((Zlength (pts_out)) = n_pre)) (PreH5 : (0 <= pivot_out)) (PreH6 : (pivot_out < retval)) (PreH7 : (points_in_bound pts_out )) (PreH8 : (point_dedup_result pts_l pts_out retval pivot_out )) (PreH9 : (n_pre > 0)) (PreH10 : (0 <= n_pre)) (PreH11 : (n_pre <= 50000)) (PreH12 : ((Zlength (pts_l)) = n_pre)) (PreH13 : (points_in_bound pts_l )) ,
-  (PointArray.full pts_pre n_pre pts_out )
-  **  ((&(((hull_pre + (0 * sizeof( "Point" ) ) ))  # "Point" ->ₛ "x")) # Int  |-> (point_x ((Znth 0 pts_out __default_Point))))
-  **  (PointArray.undef_seg hull_pre 1 n_pre )
-  **  ((&(((hull_pre + (0 * sizeof( "Point" ) ) ))  # "Point" ->ₛ "y")) # Int  |-> (point_y ((Znth 0 pts_out __default_Point))))
-|--
-  EX (pts_dedup: (@list Point))  (pivot0: Point) ,
-  “ (1 <= n_pre) ” 
-  &&  “ (n_pre <= 50000) ” 
-  &&  “ (retval = 1) ” 
-  &&  “ (pivot0 = (Znth 0 pts_dedup __default_Point)) ” 
-  &&  “ ((Zlength (pts_dedup)) = n_pre) ” 
-  &&  “ (points_in_bound pts_dedup ) ” 
-  &&  “ (point_dedup_result pts_l pts_dedup retval pivot_out ) ” 
-  &&  “ (point_dedup_hull_result pts_l (cons (pivot0) ((@nil Point))) ) ”
-  &&  (PointArray.full pts_pre n_pre pts_dedup )
-  **  (PointArray.seg hull_pre 0 1 (cons (pivot0) ((@nil Point))) )
-  **  (PointArray.undef_seg hull_pre 1 n_pre )
-) \/
-(
-forall (hull_pre: Z) (n_pre: Z) (pts_l: (@list Point)) (pivot_out: Z) (pts_out: (@list Point)) (retval: Z)  __default_Point (PreH1 : ((point_y ((Znth 0 pts_out __default_Point))) <= INT_MAX)) (PreH2 : ((point_x ((Znth 0 pts_out __default_Point))) <= INT_MAX)) (PreH3 : ((point_y ((Znth 0 pts_out __default_Point))) >= INT_MIN)) (PreH4 : ((point_x ((Znth 0 pts_out __default_Point))) >= INT_MIN)) (PreH5 : (retval = 1)) (PreH6 : (1 <= retval)) (PreH7 : (retval <= n_pre)) (PreH8 : ((Zlength (pts_out)) = n_pre)) (PreH9 : (0 <= pivot_out)) (PreH10 : (pivot_out < retval)) (PreH11 : (points_in_bound pts_out )) (PreH12 : (point_dedup_result pts_l pts_out retval pivot_out )) (PreH13 : (n_pre > 0)) (PreH14 : (0 <= n_pre)) (PreH15 : (n_pre <= 50000)) (PreH16 : ((Zlength (pts_l)) = n_pre)) (PreH17 : (points_in_bound pts_l )) ,
-  ((&(((hull_pre + (0 * sizeof( "Point" ) ) ))  # "Point" ->ₛ "x")) # Int  |-> (point_x ((Znth 0 pts_out __default_Point))))
-  **  (PointArray.undef_seg hull_pre 1 n_pre )
-  **  ((&(((hull_pre + (0 * sizeof( "Point" ) ) ))  # "Point" ->ₛ "y")) # Int  |-> (point_y ((Znth 0 pts_out __default_Point))))
-|--
-  “ (point_dedup_hull_result pts_l (cons ((Znth 0 pts_out __default_Point)) ((@nil Point))) ) ”
-  &&  (PointArray.seg hull_pre 0 1 (cons ((Znth 0 pts_out __default_Point)) ((@nil Point))) )
-  **  (PointArray.undef_seg hull_pre 1 n_pre )
-).
-
-Definition graham_scan_dedup_entail_wit_1_split_goal_1 := 
-forall (hull_pre: Z) (n_pre: Z) (pts_l: (@list Point)) (pivot_out: Z) (pts_out: (@list Point)) (retval: Z)  __default_Point (PreH1 : ((point_y ((Znth 0 pts_out __default_Point))) <= INT_MAX)) (PreH2 : ((point_x ((Znth 0 pts_out __default_Point))) <= INT_MAX)) (PreH3 : ((point_y ((Znth 0 pts_out __default_Point))) >= INT_MIN)) (PreH4 : ((point_x ((Znth 0 pts_out __default_Point))) >= INT_MIN)) (PreH5 : (retval = 1)) (PreH6 : (1 <= retval)) (PreH7 : (retval <= n_pre)) (PreH8 : ((Zlength (pts_out)) = n_pre)) (PreH9 : (0 <= pivot_out)) (PreH10 : (pivot_out < retval)) (PreH11 : (points_in_bound pts_out )) (PreH12 : (point_dedup_result pts_l pts_out retval pivot_out )) (PreH13 : (n_pre > 0)) (PreH14 : (0 <= n_pre)) (PreH15 : (n_pre <= 50000)) (PreH16 : ((Zlength (pts_l)) = n_pre)) (PreH17 : (points_in_bound pts_l )) ,
-  ((&(((hull_pre + (0 * sizeof( "Point" ) ) ))  # "Point" ->ₛ "x")) # Int  |-> (point_x ((Znth 0 pts_out __default_Point))))
-  **  (PointArray.undef_seg hull_pre 1 n_pre )
-  **  ((&(((hull_pre + (0 * sizeof( "Point" ) ) ))  # "Point" ->ₛ "y")) # Int  |-> (point_y ((Znth 0 pts_out __default_Point))))
-|--
-  “ (point_dedup_hull_result pts_l (cons ((Znth 0 pts_out __default_Point)) ((@nil Point))) ) ”
-.
-
-Definition graham_scan_dedup_entail_wit_1_split_goal_spatial := 
-forall (hull_pre: Z) (n_pre: Z) (pts_l: (@list Point)) (pivot_out: Z) (pts_out: (@list Point)) (retval: Z)  __default_Point (PreH1 : ((point_y ((Znth 0 pts_out __default_Point))) <= INT_MAX)) (PreH2 : ((point_x ((Znth 0 pts_out __default_Point))) <= INT_MAX)) (PreH3 : ((point_y ((Znth 0 pts_out __default_Point))) >= INT_MIN)) (PreH4 : ((point_x ((Znth 0 pts_out __default_Point))) >= INT_MIN)) (PreH5 : (retval = 1)) (PreH6 : (1 <= retval)) (PreH7 : (retval <= n_pre)) (PreH8 : ((Zlength (pts_out)) = n_pre)) (PreH9 : (0 <= pivot_out)) (PreH10 : (pivot_out < retval)) (PreH11 : (points_in_bound pts_out )) (PreH12 : (point_dedup_result pts_l pts_out retval pivot_out )) (PreH13 : (n_pre > 0)) (PreH14 : (0 <= n_pre)) (PreH15 : (n_pre <= 50000)) (PreH16 : ((Zlength (pts_l)) = n_pre)) (PreH17 : (points_in_bound pts_l )) ,
-  ((&(((hull_pre + (0 * sizeof( "Point" ) ) ))  # "Point" ->ₛ "x")) # Int  |-> (point_x ((Znth 0 pts_out __default_Point))))
-  **  (PointArray.undef_seg hull_pre 1 n_pre )
-  **  ((&(((hull_pre + (0 * sizeof( "Point" ) ) ))  # "Point" ->ₛ "y")) # Int  |-> (point_y ((Znth 0 pts_out __default_Point))))
-|--
-  (PointArray.seg hull_pre 0 1 (cons ((Znth 0 pts_out __default_Point)) ((@nil Point))) )
-  **  (PointArray.undef_seg hull_pre 1 n_pre )
-.
-
-Definition graham_scan_dedup_entail_wit_2_1 := 
-(
-forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (pts_l: (@list Point)) (pivot_out: Z) (pts_out: (@list Point)) (retval: Z)  __default_Point (PreH1 : (pivot_out = 0)) (PreH2 : (retval <> 1)) (PreH3 : (1 <= retval)) (PreH4 : (retval <= n_pre)) (PreH5 : ((Zlength (pts_out)) = n_pre)) (PreH6 : (0 <= pivot_out)) (PreH7 : (pivot_out < retval)) (PreH8 : (points_in_bound pts_out )) (PreH9 : (point_dedup_result pts_l pts_out retval pivot_out )) (PreH10 : (n_pre > 0)) (PreH11 : (0 <= n_pre)) (PreH12 : (n_pre <= 50000)) (PreH13 : ((Zlength (pts_l)) = n_pre)) (PreH14 : (points_in_bound pts_l )) ,
-  (PointArray.full pts_pre n_pre pts_out )
-  **  (PointArray.undef_full hull_pre n_pre )
-|--
-  EX (suffix: (@list Point))  (unique_prefix: (@list Point))  (pts_dedup: (@list Point))  (pts_pivot: (@list Point))  (pivot0: Point) ,
-  “ (2 <= retval) ” 
-  &&  “ (retval <= n_pre) ” 
-  &&  “ (n_pre <= 50000) ” 
-  &&  “ (1 <= (retval - 1 )) ” 
-  &&  “ ((retval - 1 ) < INT_MAX) ” 
-  &&  “ (((retval - 1 ) + 1 ) <= n_pre) ” 
-  &&  “ (pivot0 = (point_mk ((point_x ((Znth 0 pts_out __default_Point)))) ((point_y ((Znth 0 pts_out __default_Point)))))) ” 
-  &&  “ (pts_pivot = (point_swap (pts_dedup) (0) (pivot_out))) ” 
-  &&  “ ((Zlength (pts_dedup)) = n_pre) ” 
-  &&  “ ((Zlength (pts_pivot)) = n_pre) ” 
-  &&  “ ((Zlength (unique_prefix)) = retval) ” 
-  &&  “ (unique_prefix = (sublist (0) (retval) (pts_pivot))) ” 
-  &&  “ (suffix = (sublist (retval) (n_pre) (pts_pivot))) ” 
-  &&  “ (points_in_bound pts_dedup ) ” 
-  &&  “ (points_in_bound pts_pivot ) ” 
-  &&  “ (points_in_bound unique_prefix ) ” 
-  &&  “ (point_in_bound pivot0 ) ” 
-  &&  “ (point_dedup_result pts_l pts_dedup retval pivot_out ) ” 
-  &&  “ (point_no_dup_prefix pts_pivot retval ) ” 
-  &&  “ (leftmost pivot0 unique_prefix ) ” 
-  &&  “ (point_polar_cmp_safe_range pivot0 unique_prefix 1 (retval - 1 ) ) ” 
-  &&  “ (((Znth 0 pts_pivot __default_Point).(x) ) = (point_x ((Znth 0 pts_out __default_Point)))) ” 
-  &&  “ (((Znth 0 pts_pivot __default_Point).(y) ) = (point_y ((Znth 0 pts_out __default_Point)))) ”
-  &&  (PointArray.full pts_pre retval unique_prefix )
-  **  (PointArray.seg pts_pre retval n_pre suffix )
-  **  (PointArray.undef_full hull_pre n_pre )
-) \/
-(
-forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (pts_l: (@list Point)) (pivot_out: Z) (pts_out: (@list Point)) (retval: Z)  __default_Point (PreH1 : (pivot_out = 0)) (PreH2 : (retval <> 1)) (PreH3 : (1 <= retval)) (PreH4 : (retval <= n_pre)) (PreH5 : ((Zlength (pts_out)) = n_pre)) (PreH6 : (0 <= pivot_out)) (PreH7 : (pivot_out < retval)) (PreH8 : (points_in_bound pts_out )) (PreH9 : (point_dedup_result pts_l pts_out retval pivot_out )) (PreH10 : (n_pre > 0)) (PreH11 : (0 <= n_pre)) (PreH12 : (n_pre <= 50000)) (PreH13 : ((Zlength (pts_l)) = n_pre)) (PreH14 : (points_in_bound pts_l )) ,
+forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (pts_l: (@list Point)) (pivot_out: Z) (pts_out: (@list Point)) (retval: Z) (PreH1 : (1 <= retval)) (PreH2 : (retval <= n_pre)) (PreH3 : ((Zlength (pts_out)) = n_pre)) (PreH4 : (0 <= pivot_out)) (PreH5 : (pivot_out < retval)) (PreH6 : (points_in_bound pts_out )) (PreH7 : (point_dedup_result pts_l pts_out retval pivot_out )) (PreH8 : (2 <= n_pre)) (PreH9 : (n_pre <= 50000)) (PreH10 : ((Zlength (pts_l)) = n_pre)) (PreH11 : (points_in_bound pts_l )) (PreH12 : (points_not_all_same pts_l )) ,
   (PointArray.full pts_pre n_pre pts_out )
   **  (PointArray.undef_full hull_pre n_pre )
 |--
   EX (pts_dedup: (@list Point)) ,
-  “ (2 <= retval) ” 
-  &&  “ (retval <= n_pre) ” 
+  “ (2 <= n_pre) ” 
   &&  “ (n_pre <= 50000) ” 
-  &&  “ (1 <= (retval - 1 )) ” 
-  &&  “ ((retval - 1 ) < INT_MAX) ” 
-  &&  “ (((retval - 1 ) + 1 ) <= n_pre) ” 
+  &&  “ ((Zlength (pts_l)) = n_pre) ” 
+  &&  “ (points_in_bound pts_l ) ” 
+  &&  “ (points_not_all_same pts_l ) ” 
   &&  “ ((Zlength (pts_dedup)) = n_pre) ” 
-  &&  “ ((Zlength ((point_swap (pts_dedup) (0) (pivot_out)))) = n_pre) ” 
-  &&  “ ((Zlength ((sublist (0) (retval) ((point_swap (pts_dedup) (0) (pivot_out)))))) = retval) ” 
   &&  “ (points_in_bound pts_dedup ) ” 
-  &&  “ (points_in_bound (point_swap (pts_dedup) (0) (pivot_out)) ) ” 
-  &&  “ (points_in_bound (sublist (0) (retval) ((point_swap (pts_dedup) (0) (pivot_out)))) ) ” 
-  &&  “ (point_in_bound (point_mk ((point_x ((Znth 0 pts_out __default_Point)))) ((point_y ((Znth 0 pts_out __default_Point))))) ) ” 
   &&  “ (point_dedup_result pts_l pts_dedup retval pivot_out ) ” 
-  &&  “ (point_no_dup_prefix (point_swap (pts_dedup) (0) (pivot_out)) retval ) ” 
-  &&  “ (leftmost (point_mk ((point_x ((Znth 0 pts_out __default_Point)))) ((point_y ((Znth 0 pts_out __default_Point))))) (sublist (0) (retval) ((point_swap (pts_dedup) (0) (pivot_out)))) ) ” 
-  &&  “ (point_polar_cmp_safe_range (point_mk ((point_x ((Znth 0 pts_out __default_Point)))) ((point_y ((Znth 0 pts_out __default_Point))))) (sublist (0) (retval) ((point_swap (pts_dedup) (0) (pivot_out)))) 1 (retval - 1 ) ) ” 
-  &&  “ (((Znth 0 (point_swap (pts_dedup) (0) (pivot_out)) __default_Point).(x) ) = (point_x ((Znth 0 pts_out __default_Point)))) ” 
-  &&  “ (((Znth 0 (point_swap (pts_dedup) (0) (pivot_out)) __default_Point).(y) ) = (point_y ((Znth 0 pts_out __default_Point)))) ”
-  &&  (PointArray.full pts_pre retval (sublist (0) (retval) ((point_swap (pts_dedup) (0) (pivot_out)))) )
-  **  (PointArray.seg pts_pre retval n_pre (sublist (retval) (n_pre) ((point_swap (pts_dedup) (0) (pivot_out)))) )
+  &&  “ (0 <= pivot_out) ” 
+  &&  “ (pivot_out < retval) ” 
+  &&  “ (retval <= n_pre) ” 
+  &&  “ (2 <= retval) ”
+  &&  (PointArray.full pts_pre n_pre pts_dedup )
+  **  (PointArray.undef_full hull_pre n_pre )
+) \/
+(
+forall (hull_pre: Z) (n_pre: Z) (pts_l: (@list Point)) (pivot_out: Z) (pts_out: (@list Point)) (retval: Z) (PreH1 : (1 <= retval)) (PreH2 : (retval <= n_pre)) (PreH3 : ((Zlength (pts_out)) = n_pre)) (PreH4 : (0 <= pivot_out)) (PreH5 : (pivot_out < retval)) (PreH6 : (points_in_bound pts_out )) (PreH7 : (point_dedup_result pts_l pts_out retval pivot_out )) (PreH8 : (2 <= n_pre)) (PreH9 : (n_pre <= 50000)) (PreH10 : ((Zlength (pts_l)) = n_pre)) (PreH11 : (points_in_bound pts_l )) (PreH12 : (points_not_all_same pts_l )) ,
+  (PointArray.undef_full hull_pre n_pre )
+|--
+  “ (2 <= retval) ”
+  &&  (PointArray.undef_full hull_pre n_pre )
+).
+
+Definition graham_scan_dedup_entail_wit_1_split_goal_1 := 
+forall (hull_pre: Z) (n_pre: Z) (pts_l: (@list Point)) (pivot_out: Z) (pts_out: (@list Point)) (retval: Z) (PreH1 : (1 <= retval)) (PreH2 : (retval <= n_pre)) (PreH3 : ((Zlength (pts_out)) = n_pre)) (PreH4 : (0 <= pivot_out)) (PreH5 : (pivot_out < retval)) (PreH6 : (points_in_bound pts_out )) (PreH7 : (point_dedup_result pts_l pts_out retval pivot_out )) (PreH8 : (2 <= n_pre)) (PreH9 : (n_pre <= 50000)) (PreH10 : ((Zlength (pts_l)) = n_pre)) (PreH11 : (points_in_bound pts_l )) (PreH12 : (points_not_all_same pts_l )) ,
+  (PointArray.undef_full hull_pre n_pre )
+|--
+  “ (2 <= retval) ”
+.
+
+Definition graham_scan_dedup_entail_wit_1_split_goal_spatial := 
+forall (hull_pre: Z) (n_pre: Z) (pts_l: (@list Point)) (pivot_out: Z) (pts_out: (@list Point)) (retval: Z) (PreH1 : (1 <= retval)) (PreH2 : (retval <= n_pre)) (PreH3 : ((Zlength (pts_out)) = n_pre)) (PreH4 : (0 <= pivot_out)) (PreH5 : (pivot_out < retval)) (PreH6 : (points_in_bound pts_out )) (PreH7 : (point_dedup_result pts_l pts_out retval pivot_out )) (PreH8 : (2 <= n_pre)) (PreH9 : (n_pre <= 50000)) (PreH10 : ((Zlength (pts_l)) = n_pre)) (PreH11 : (points_in_bound pts_l )) (PreH12 : (points_not_all_same pts_l )) ,
+  (PointArray.undef_full hull_pre n_pre )
+|--
+  (PointArray.undef_full hull_pre n_pre )
+.
+
+Definition graham_scan_dedup_entail_wit_2_1 := 
+(
+forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (pts_l: (@list Point)) (pts_dedup: (@list Point)) (pivot_out: Z) (unique_n: Z)  __default_Point (PreH1 : (pivot_out = 0)) (PreH2 : (2 <= n_pre)) (PreH3 : (n_pre <= 50000)) (PreH4 : ((Zlength (pts_l)) = n_pre)) (PreH5 : (points_in_bound pts_l )) (PreH6 : (points_not_all_same pts_l )) (PreH7 : ((Zlength (pts_dedup)) = n_pre)) (PreH8 : (points_in_bound pts_dedup )) (PreH9 : (point_dedup_result pts_l pts_dedup unique_n pivot_out )) (PreH10 : (0 <= pivot_out)) (PreH11 : (pivot_out < unique_n)) (PreH12 : (unique_n <= n_pre)) (PreH13 : (2 <= unique_n)) ,
+  (PointArray.full pts_pre n_pre pts_dedup )
+  **  (PointArray.undef_full hull_pre n_pre )
+|--
+  EX (suffix: (@list Point))  (unique_prefix: (@list Point))  (pts_dedup_2: (@list Point))  (pts_pivot: (@list Point))  (pivot0: Point) ,
+  “ (2 <= unique_n) ” 
+  &&  “ (unique_n <= n_pre) ” 
+  &&  “ (n_pre <= 50000) ” 
+  &&  “ (1 <= (unique_n - 1 )) ” 
+  &&  “ ((unique_n - 1 ) < INT_MAX) ” 
+  &&  “ (((unique_n - 1 ) + 1 ) <= n_pre) ” 
+  &&  “ (pivot0 = (point_mk ((point_x ((Znth 0 pts_dedup __default_Point)))) ((point_y ((Znth 0 pts_dedup __default_Point)))))) ” 
+  &&  “ (pts_pivot = (point_swap (pts_dedup_2) (0) (pivot_out))) ” 
+  &&  “ ((Zlength (pts_dedup_2)) = n_pre) ” 
+  &&  “ ((Zlength (pts_pivot)) = n_pre) ” 
+  &&  “ ((Zlength (unique_prefix)) = unique_n) ” 
+  &&  “ (unique_prefix = (sublist (0) (unique_n) (pts_pivot))) ” 
+  &&  “ (suffix = (sublist (unique_n) (n_pre) (pts_pivot))) ” 
+  &&  “ (points_in_bound pts_dedup_2 ) ” 
+  &&  “ (points_in_bound pts_pivot ) ” 
+  &&  “ (points_in_bound unique_prefix ) ” 
+  &&  “ (point_in_bound pivot0 ) ” 
+  &&  “ (point_dedup_result pts_l pts_dedup_2 unique_n pivot_out ) ” 
+  &&  “ (point_no_dup_prefix pts_pivot unique_n ) ” 
+  &&  “ (leftmost pivot0 unique_prefix ) ” 
+  &&  “ (point_polar_cmp_safe_range pivot0 unique_prefix 1 (unique_n - 1 ) ) ” 
+  &&  “ (((Znth 0 pts_pivot __default_Point).(x) ) = (point_x ((Znth 0 pts_dedup __default_Point)))) ” 
+  &&  “ (((Znth 0 pts_pivot __default_Point).(y) ) = (point_y ((Znth 0 pts_dedup __default_Point)))) ”
+  &&  (PointArray.full pts_pre unique_n unique_prefix )
+  **  (PointArray.seg pts_pre unique_n n_pre suffix )
+  **  (PointArray.undef_full hull_pre n_pre )
+) \/
+(
+forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (pts_l: (@list Point)) (pts_dedup: (@list Point)) (pivot_out: Z) (unique_n: Z)  __default_Point (PreH1 : (pivot_out = 0)) (PreH2 : (2 <= n_pre)) (PreH3 : (n_pre <= 50000)) (PreH4 : ((Zlength (pts_l)) = n_pre)) (PreH5 : (points_in_bound pts_l )) (PreH6 : (points_not_all_same pts_l )) (PreH7 : ((Zlength (pts_dedup)) = n_pre)) (PreH8 : (points_in_bound pts_dedup )) (PreH9 : (point_dedup_result pts_l pts_dedup unique_n pivot_out )) (PreH10 : (0 <= pivot_out)) (PreH11 : (pivot_out < unique_n)) (PreH12 : (unique_n <= n_pre)) (PreH13 : (2 <= unique_n)) ,
+  (PointArray.full pts_pre n_pre pts_dedup )
+  **  (PointArray.undef_full hull_pre n_pre )
+|--
+  EX (pts_dedup_2: (@list Point)) ,
+  “ (2 <= unique_n) ” 
+  &&  “ (unique_n <= n_pre) ” 
+  &&  “ (n_pre <= 50000) ” 
+  &&  “ (1 <= (unique_n - 1 )) ” 
+  &&  “ ((unique_n - 1 ) < INT_MAX) ” 
+  &&  “ (((unique_n - 1 ) + 1 ) <= n_pre) ” 
+  &&  “ ((Zlength (pts_dedup_2)) = n_pre) ” 
+  &&  “ ((Zlength ((point_swap (pts_dedup_2) (0) (pivot_out)))) = n_pre) ” 
+  &&  “ ((Zlength ((sublist (0) (unique_n) ((point_swap (pts_dedup_2) (0) (pivot_out)))))) = unique_n) ” 
+  &&  “ (points_in_bound pts_dedup_2 ) ” 
+  &&  “ (points_in_bound (point_swap (pts_dedup_2) (0) (pivot_out)) ) ” 
+  &&  “ (points_in_bound (sublist (0) (unique_n) ((point_swap (pts_dedup_2) (0) (pivot_out)))) ) ” 
+  &&  “ (point_in_bound (point_mk ((point_x ((Znth 0 pts_dedup __default_Point)))) ((point_y ((Znth 0 pts_dedup __default_Point))))) ) ” 
+  &&  “ (point_dedup_result pts_l pts_dedup_2 unique_n pivot_out ) ” 
+  &&  “ (point_no_dup_prefix (point_swap (pts_dedup_2) (0) (pivot_out)) unique_n ) ” 
+  &&  “ (leftmost (point_mk ((point_x ((Znth 0 pts_dedup __default_Point)))) ((point_y ((Znth 0 pts_dedup __default_Point))))) (sublist (0) (unique_n) ((point_swap (pts_dedup_2) (0) (pivot_out)))) ) ” 
+  &&  “ (point_polar_cmp_safe_range (point_mk ((point_x ((Znth 0 pts_dedup __default_Point)))) ((point_y ((Znth 0 pts_dedup __default_Point))))) (sublist (0) (unique_n) ((point_swap (pts_dedup_2) (0) (pivot_out)))) 1 (unique_n - 1 ) ) ” 
+  &&  “ (((Znth 0 (point_swap (pts_dedup_2) (0) (pivot_out)) __default_Point).(x) ) = (point_x ((Znth 0 pts_dedup __default_Point)))) ” 
+  &&  “ (((Znth 0 (point_swap (pts_dedup_2) (0) (pivot_out)) __default_Point).(y) ) = (point_y ((Znth 0 pts_dedup __default_Point)))) ”
+  &&  (PointArray.full pts_pre unique_n (sublist (0) (unique_n) ((point_swap (pts_dedup_2) (0) (pivot_out)))) )
+  **  (PointArray.seg pts_pre unique_n n_pre (sublist (unique_n) (n_pre) ((point_swap (pts_dedup_2) (0) (pivot_out)))) )
   **  (PointArray.undef_full hull_pre n_pre )
 ).
 
 Definition graham_scan_dedup_entail_wit_2_2 := 
 (
-forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (pts_l: (@list Point)) (pivot_out: Z) (pts_out: (@list Point)) (retval: Z)  __default_Point (PreH1 : ((Zlength (pts_out)) = n_pre)) (PreH2 : (pivot_out <> 0)) (PreH3 : (retval <> 1)) (PreH4 : (1 <= retval)) (PreH5 : (retval <= n_pre)) (PreH6 : ((Zlength (pts_out)) = n_pre)) (PreH7 : (0 <= pivot_out)) (PreH8 : (pivot_out < retval)) (PreH9 : (points_in_bound pts_out )) (PreH10 : (point_dedup_result pts_l pts_out retval pivot_out )) (PreH11 : (n_pre > 0)) (PreH12 : (0 <= n_pre)) (PreH13 : (n_pre <= 50000)) (PreH14 : ((Zlength (pts_l)) = n_pre)) (PreH15 : (points_in_bound pts_l )) ,
-  (PointArray.full pts_pre n_pre (point_swap (pts_out) (0) (pivot_out)) )
+forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (pts_l: (@list Point)) (pts_dedup: (@list Point)) (pivot_out: Z) (unique_n: Z)  __default_Point (PreH1 : ((Zlength (pts_dedup)) = n_pre)) (PreH2 : (pivot_out <> 0)) (PreH3 : (2 <= n_pre)) (PreH4 : (n_pre <= 50000)) (PreH5 : ((Zlength (pts_l)) = n_pre)) (PreH6 : (points_in_bound pts_l )) (PreH7 : (points_not_all_same pts_l )) (PreH8 : ((Zlength (pts_dedup)) = n_pre)) (PreH9 : (points_in_bound pts_dedup )) (PreH10 : (point_dedup_result pts_l pts_dedup unique_n pivot_out )) (PreH11 : (0 <= pivot_out)) (PreH12 : (pivot_out < unique_n)) (PreH13 : (unique_n <= n_pre)) (PreH14 : (2 <= unique_n)) ,
+  (PointArray.full pts_pre n_pre (point_swap (pts_dedup) (0) (pivot_out)) )
   **  (PointArray.undef_full hull_pre n_pre )
 |--
-  EX (suffix: (@list Point))  (unique_prefix: (@list Point))  (pts_dedup: (@list Point))  (pts_pivot: (@list Point))  (pivot0: Point) ,
-  “ (2 <= retval) ” 
-  &&  “ (retval <= n_pre) ” 
+  EX (suffix: (@list Point))  (unique_prefix: (@list Point))  (pts_dedup_2: (@list Point))  (pts_pivot: (@list Point))  (pivot0: Point) ,
+  “ (2 <= unique_n) ” 
+  &&  “ (unique_n <= n_pre) ” 
   &&  “ (n_pre <= 50000) ” 
-  &&  “ (1 <= (retval - 1 )) ” 
-  &&  “ ((retval - 1 ) < INT_MAX) ” 
-  &&  “ (((retval - 1 ) + 1 ) <= n_pre) ” 
-  &&  “ (pivot0 = (point_mk ((point_x ((Znth 0 (point_swap (pts_out) (0) (pivot_out)) __default_Point)))) ((point_y ((Znth 0 (point_swap (pts_out) (0) (pivot_out)) __default_Point)))))) ” 
-  &&  “ (pts_pivot = (point_swap (pts_dedup) (0) (pivot_out))) ” 
-  &&  “ ((Zlength (pts_dedup)) = n_pre) ” 
+  &&  “ (1 <= (unique_n - 1 )) ” 
+  &&  “ ((unique_n - 1 ) < INT_MAX) ” 
+  &&  “ (((unique_n - 1 ) + 1 ) <= n_pre) ” 
+  &&  “ (pivot0 = (point_mk ((point_x ((Znth 0 (point_swap (pts_dedup) (0) (pivot_out)) __default_Point)))) ((point_y ((Znth 0 (point_swap (pts_dedup) (0) (pivot_out)) __default_Point)))))) ” 
+  &&  “ (pts_pivot = (point_swap (pts_dedup_2) (0) (pivot_out))) ” 
+  &&  “ ((Zlength (pts_dedup_2)) = n_pre) ” 
   &&  “ ((Zlength (pts_pivot)) = n_pre) ” 
-  &&  “ ((Zlength (unique_prefix)) = retval) ” 
-  &&  “ (unique_prefix = (sublist (0) (retval) (pts_pivot))) ” 
-  &&  “ (suffix = (sublist (retval) (n_pre) (pts_pivot))) ” 
-  &&  “ (points_in_bound pts_dedup ) ” 
+  &&  “ ((Zlength (unique_prefix)) = unique_n) ” 
+  &&  “ (unique_prefix = (sublist (0) (unique_n) (pts_pivot))) ” 
+  &&  “ (suffix = (sublist (unique_n) (n_pre) (pts_pivot))) ” 
+  &&  “ (points_in_bound pts_dedup_2 ) ” 
   &&  “ (points_in_bound pts_pivot ) ” 
   &&  “ (points_in_bound unique_prefix ) ” 
   &&  “ (point_in_bound pivot0 ) ” 
-  &&  “ (point_dedup_result pts_l pts_dedup retval pivot_out ) ” 
-  &&  “ (point_no_dup_prefix pts_pivot retval ) ” 
+  &&  “ (point_dedup_result pts_l pts_dedup_2 unique_n pivot_out ) ” 
+  &&  “ (point_no_dup_prefix pts_pivot unique_n ) ” 
   &&  “ (leftmost pivot0 unique_prefix ) ” 
-  &&  “ (point_polar_cmp_safe_range pivot0 unique_prefix 1 (retval - 1 ) ) ” 
-  &&  “ (((Znth 0 pts_pivot __default_Point).(x) ) = (point_x ((Znth 0 (point_swap (pts_out) (0) (pivot_out)) __default_Point)))) ” 
-  &&  “ (((Znth 0 pts_pivot __default_Point).(y) ) = (point_y ((Znth 0 (point_swap (pts_out) (0) (pivot_out)) __default_Point)))) ”
-  &&  (PointArray.full pts_pre retval unique_prefix )
-  **  (PointArray.seg pts_pre retval n_pre suffix )
+  &&  “ (point_polar_cmp_safe_range pivot0 unique_prefix 1 (unique_n - 1 ) ) ” 
+  &&  “ (((Znth 0 pts_pivot __default_Point).(x) ) = (point_x ((Znth 0 (point_swap (pts_dedup) (0) (pivot_out)) __default_Point)))) ” 
+  &&  “ (((Znth 0 pts_pivot __default_Point).(y) ) = (point_y ((Znth 0 (point_swap (pts_dedup) (0) (pivot_out)) __default_Point)))) ”
+  &&  (PointArray.full pts_pre unique_n unique_prefix )
+  **  (PointArray.seg pts_pre unique_n n_pre suffix )
   **  (PointArray.undef_full hull_pre n_pre )
 ) \/
 (
-forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (pts_l: (@list Point)) (pivot_out: Z) (pts_out: (@list Point)) (retval: Z)  __default_Point (PreH1 : ((Zlength (pts_out)) = n_pre)) (PreH2 : (pivot_out <> 0)) (PreH3 : (retval <> 1)) (PreH4 : (1 <= retval)) (PreH5 : (retval <= n_pre)) (PreH6 : ((Zlength (pts_out)) = n_pre)) (PreH7 : (0 <= pivot_out)) (PreH8 : (pivot_out < retval)) (PreH9 : (points_in_bound pts_out )) (PreH10 : (point_dedup_result pts_l pts_out retval pivot_out )) (PreH11 : (n_pre > 0)) (PreH12 : (0 <= n_pre)) (PreH13 : (n_pre <= 50000)) (PreH14 : ((Zlength (pts_l)) = n_pre)) (PreH15 : (points_in_bound pts_l )) ,
-  (PointArray.full pts_pre n_pre (point_swap (pts_out) (0) (pivot_out)) )
+forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (pts_l: (@list Point)) (pts_dedup: (@list Point)) (pivot_out: Z) (unique_n: Z)  __default_Point (PreH1 : ((Zlength (pts_dedup)) = n_pre)) (PreH2 : (pivot_out <> 0)) (PreH3 : (2 <= n_pre)) (PreH4 : (n_pre <= 50000)) (PreH5 : ((Zlength (pts_l)) = n_pre)) (PreH6 : (points_in_bound pts_l )) (PreH7 : (points_not_all_same pts_l )) (PreH8 : ((Zlength (pts_dedup)) = n_pre)) (PreH9 : (points_in_bound pts_dedup )) (PreH10 : (point_dedup_result pts_l pts_dedup unique_n pivot_out )) (PreH11 : (0 <= pivot_out)) (PreH12 : (pivot_out < unique_n)) (PreH13 : (unique_n <= n_pre)) (PreH14 : (2 <= unique_n)) ,
+  (PointArray.full pts_pre n_pre (point_swap (pts_dedup) (0) (pivot_out)) )
   **  (PointArray.undef_full hull_pre n_pre )
 |--
-  EX (pts_dedup: (@list Point)) ,
-  “ (2 <= retval) ” 
-  &&  “ (retval <= n_pre) ” 
+  EX (pts_dedup_2: (@list Point)) ,
+  “ (2 <= unique_n) ” 
+  &&  “ (unique_n <= n_pre) ” 
   &&  “ (n_pre <= 50000) ” 
-  &&  “ (1 <= (retval - 1 )) ” 
-  &&  “ ((retval - 1 ) < INT_MAX) ” 
-  &&  “ (((retval - 1 ) + 1 ) <= n_pre) ” 
-  &&  “ ((Zlength (pts_dedup)) = n_pre) ” 
-  &&  “ ((Zlength ((point_swap (pts_dedup) (0) (pivot_out)))) = n_pre) ” 
-  &&  “ ((Zlength ((sublist (0) (retval) ((point_swap (pts_dedup) (0) (pivot_out)))))) = retval) ” 
-  &&  “ (points_in_bound pts_dedup ) ” 
-  &&  “ (points_in_bound (point_swap (pts_dedup) (0) (pivot_out)) ) ” 
-  &&  “ (points_in_bound (sublist (0) (retval) ((point_swap (pts_dedup) (0) (pivot_out)))) ) ” 
-  &&  “ (point_in_bound (point_mk ((point_x ((Znth 0 (point_swap (pts_out) (0) (pivot_out)) __default_Point)))) ((point_y ((Znth 0 (point_swap (pts_out) (0) (pivot_out)) __default_Point))))) ) ” 
-  &&  “ (point_dedup_result pts_l pts_dedup retval pivot_out ) ” 
-  &&  “ (point_no_dup_prefix (point_swap (pts_dedup) (0) (pivot_out)) retval ) ” 
-  &&  “ (leftmost (point_mk ((point_x ((Znth 0 (point_swap (pts_out) (0) (pivot_out)) __default_Point)))) ((point_y ((Znth 0 (point_swap (pts_out) (0) (pivot_out)) __default_Point))))) (sublist (0) (retval) ((point_swap (pts_dedup) (0) (pivot_out)))) ) ” 
-  &&  “ (point_polar_cmp_safe_range (point_mk ((point_x ((Znth 0 (point_swap (pts_out) (0) (pivot_out)) __default_Point)))) ((point_y ((Znth 0 (point_swap (pts_out) (0) (pivot_out)) __default_Point))))) (sublist (0) (retval) ((point_swap (pts_dedup) (0) (pivot_out)))) 1 (retval - 1 ) ) ” 
-  &&  “ (((Znth 0 (point_swap (pts_dedup) (0) (pivot_out)) __default_Point).(x) ) = (point_x ((Znth 0 (point_swap (pts_out) (0) (pivot_out)) __default_Point)))) ” 
-  &&  “ (((Znth 0 (point_swap (pts_dedup) (0) (pivot_out)) __default_Point).(y) ) = (point_y ((Znth 0 (point_swap (pts_out) (0) (pivot_out)) __default_Point)))) ”
-  &&  (PointArray.full pts_pre retval (sublist (0) (retval) ((point_swap (pts_dedup) (0) (pivot_out)))) )
-  **  (PointArray.seg pts_pre retval n_pre (sublist (retval) (n_pre) ((point_swap (pts_dedup) (0) (pivot_out)))) )
+  &&  “ (1 <= (unique_n - 1 )) ” 
+  &&  “ ((unique_n - 1 ) < INT_MAX) ” 
+  &&  “ (((unique_n - 1 ) + 1 ) <= n_pre) ” 
+  &&  “ ((Zlength (pts_dedup_2)) = n_pre) ” 
+  &&  “ ((Zlength ((point_swap (pts_dedup_2) (0) (pivot_out)))) = n_pre) ” 
+  &&  “ ((Zlength ((sublist (0) (unique_n) ((point_swap (pts_dedup_2) (0) (pivot_out)))))) = unique_n) ” 
+  &&  “ (points_in_bound pts_dedup_2 ) ” 
+  &&  “ (points_in_bound (point_swap (pts_dedup_2) (0) (pivot_out)) ) ” 
+  &&  “ (points_in_bound (sublist (0) (unique_n) ((point_swap (pts_dedup_2) (0) (pivot_out)))) ) ” 
+  &&  “ (point_in_bound (point_mk ((point_x ((Znth 0 (point_swap (pts_dedup) (0) (pivot_out)) __default_Point)))) ((point_y ((Znth 0 (point_swap (pts_dedup) (0) (pivot_out)) __default_Point))))) ) ” 
+  &&  “ (point_dedup_result pts_l pts_dedup_2 unique_n pivot_out ) ” 
+  &&  “ (point_no_dup_prefix (point_swap (pts_dedup_2) (0) (pivot_out)) unique_n ) ” 
+  &&  “ (leftmost (point_mk ((point_x ((Znth 0 (point_swap (pts_dedup) (0) (pivot_out)) __default_Point)))) ((point_y ((Znth 0 (point_swap (pts_dedup) (0) (pivot_out)) __default_Point))))) (sublist (0) (unique_n) ((point_swap (pts_dedup_2) (0) (pivot_out)))) ) ” 
+  &&  “ (point_polar_cmp_safe_range (point_mk ((point_x ((Znth 0 (point_swap (pts_dedup) (0) (pivot_out)) __default_Point)))) ((point_y ((Znth 0 (point_swap (pts_dedup) (0) (pivot_out)) __default_Point))))) (sublist (0) (unique_n) ((point_swap (pts_dedup_2) (0) (pivot_out)))) 1 (unique_n - 1 ) ) ” 
+  &&  “ (((Znth 0 (point_swap (pts_dedup_2) (0) (pivot_out)) __default_Point).(x) ) = (point_x ((Znth 0 (point_swap (pts_dedup) (0) (pivot_out)) __default_Point)))) ” 
+  &&  “ (((Znth 0 (point_swap (pts_dedup_2) (0) (pivot_out)) __default_Point).(y) ) = (point_y ((Znth 0 (point_swap (pts_dedup) (0) (pivot_out)) __default_Point)))) ”
+  &&  (PointArray.full pts_pre unique_n (sublist (0) (unique_n) ((point_swap (pts_dedup_2) (0) (pivot_out)))) )
+  **  (PointArray.seg pts_pre unique_n n_pre (sublist (unique_n) (n_pre) ((point_swap (pts_dedup_2) (0) (pivot_out)))) )
   **  (PointArray.undef_full hull_pre n_pre )
 ).
 
@@ -6729,7 +6635,7 @@ forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (pts_l: (@list Point)) (pts_dedup: 
   &&  “ (retval <= n_pre) ” 
   &&  “ ((Zlength (hull_out)) = retval) ” 
   &&  “ (points_in_bound pts_out ) ” 
-  &&  “ (point_dedup_hull_result pts_l hull_out ) ”
+  &&  “ (is_convex_hull pts_l hull_out ) ”
   &&  (PointArray.full pts_pre n_pre pts_out )
   **  (PointArray.seg hull_pre 0 retval hull_out )
   **  (PointArray.undef_seg hull_pre retval n_pre )
@@ -6749,13 +6655,13 @@ forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (pts_l: (@list Point)) (pts_dedup: 
   &&  “ (retval <= n_pre) ” 
   &&  “ ((Zlength (hull_out_2)) = retval) ” 
   &&  “ (points_in_bound pts_out ) ” 
-  &&  “ (point_dedup_hull_result pts_l hull_out_2 ) ”
+  &&  “ (is_convex_hull pts_l hull_out_2 ) ”
   &&  (PointArray.full pts_pre n_pre pts_out )
   **  (PointArray.undef_seg hull_pre retval n_pre )
 ).
 
 Definition graham_scan_dedup_return_wit_1 := 
-forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (pts_l: (@list Point)) (pts_out_2: (@list Point)) (hull_out_2: (@list Point)) (ret: Z) (PreH1 : ((Zlength (pts_out_2)) = n_pre)) (PreH2 : (0 <= ret)) (PreH3 : (ret <= n_pre)) (PreH4 : ((Zlength (hull_out_2)) = ret)) (PreH5 : (points_in_bound pts_out_2 )) (PreH6 : (point_dedup_hull_result pts_l hull_out_2 )) ,
+forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (pts_l: (@list Point)) (pts_out_2: (@list Point)) (hull_out_2: (@list Point)) (ret: Z) (PreH1 : ((Zlength (pts_out_2)) = n_pre)) (PreH2 : (0 <= ret)) (PreH3 : (ret <= n_pre)) (PreH4 : ((Zlength (hull_out_2)) = ret)) (PreH5 : (points_in_bound pts_out_2 )) (PreH6 : (is_convex_hull pts_l hull_out_2 )) ,
   (PointArray.full pts_pre n_pre pts_out_2 )
   **  (PointArray.seg hull_pre 0 ret hull_out_2 )
   **  (PointArray.undef_seg hull_pre ret n_pre )
@@ -6766,101 +6672,14 @@ forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (pts_l: (@list Point)) (pts_out_2: 
   &&  “ (ret <= n_pre) ” 
   &&  “ ((Zlength (hull_out)) = ret) ” 
   &&  “ (points_in_bound pts_out ) ” 
-  &&  “ (point_dedup_hull_result pts_l hull_out ) ”
+  &&  “ (is_convex_hull pts_l hull_out ) ”
   &&  (PointArray.full pts_pre n_pre pts_out )
   **  (PointArray.seg hull_pre 0 ret hull_out )
   **  (PointArray.undef_seg hull_pre ret n_pre )
 .
 
-Definition graham_scan_dedup_return_wit_2 := 
-(
-forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (pts_l: (@list Point)) (pts_dedup: (@list Point)) (pivot_out: Z) (pivot0: Point) (unique_n: Z)  __default_Point (PreH1 : (1 <= n_pre)) (PreH2 : (n_pre <= 50000)) (PreH3 : (unique_n = 1)) (PreH4 : (pivot0 = (Znth 0 pts_dedup __default_Point))) (PreH5 : ((Zlength (pts_dedup)) = n_pre)) (PreH6 : (points_in_bound pts_dedup )) (PreH7 : (point_dedup_result pts_l pts_dedup unique_n pivot_out )) (PreH8 : (point_dedup_hull_result pts_l (cons (pivot0) ((@nil Point))) )) ,
-  (PointArray.full pts_pre n_pre pts_dedup )
-  **  (PointArray.seg hull_pre 0 1 (cons (pivot0) ((@nil Point))) )
-  **  (PointArray.undef_seg hull_pre 1 n_pre )
-|--
-  EX (hull_out: (@list Point))  (pts_out: (@list Point)) ,
-  “ ((Zlength (pts_out)) = n_pre) ” 
-  &&  “ (0 <= 1) ” 
-  &&  “ (1 <= n_pre) ” 
-  &&  “ ((Zlength (hull_out)) = 1) ” 
-  &&  “ (points_in_bound pts_out ) ” 
-  &&  “ (point_dedup_hull_result pts_l hull_out ) ”
-  &&  (PointArray.full pts_pre n_pre pts_out )
-  **  (PointArray.seg hull_pre 0 1 hull_out )
-  **  (PointArray.undef_seg hull_pre 1 n_pre )
-) \/
-(
-forall (hull_pre: Z) (n_pre: Z) (pts_l: (@list Point)) (pts_dedup: (@list Point)) (pivot_out: Z) (pivot0: Point) (unique_n: Z)  __default_Point (PreH1 : (1 <= n_pre)) (PreH2 : (n_pre <= 50000)) (PreH3 : (unique_n = 1)) (PreH4 : (pivot0 = (Znth 0 pts_dedup __default_Point))) (PreH5 : ((Zlength (pts_dedup)) = n_pre)) (PreH6 : (points_in_bound pts_dedup )) (PreH7 : (point_dedup_result pts_l pts_dedup unique_n pivot_out )) (PreH8 : (point_dedup_hull_result pts_l (cons (pivot0) ((@nil Point))) )) ,
-  (PointArray.undef_seg hull_pre 1 n_pre )
-|--
-  “ ((Zlength ((cons (pivot0) ((@nil Point))))) = 1) ”
-  &&  (PointArray.undef_seg hull_pre 1 n_pre )
-).
-
-Definition graham_scan_dedup_return_wit_2_split_goal_1 := 
-forall (hull_pre: Z) (n_pre: Z) (pts_l: (@list Point)) (pts_dedup: (@list Point)) (pivot_out: Z) (pivot0: Point) (unique_n: Z)  __default_Point (PreH1 : (1 <= n_pre)) (PreH2 : (n_pre <= 50000)) (PreH3 : (unique_n = 1)) (PreH4 : (pivot0 = (Znth 0 pts_dedup __default_Point))) (PreH5 : ((Zlength (pts_dedup)) = n_pre)) (PreH6 : (points_in_bound pts_dedup )) (PreH7 : (point_dedup_result pts_l pts_dedup unique_n pivot_out )) (PreH8 : (point_dedup_hull_result pts_l (cons (pivot0) ((@nil Point))) )) ,
-  (PointArray.undef_seg hull_pre 1 n_pre )
-|--
-  “ ((Zlength ((cons (pivot0) ((@nil Point))))) = 1) ”
-.
-
-Definition graham_scan_dedup_return_wit_2_split_goal_spatial := 
-forall (hull_pre: Z) (n_pre: Z) (pts_l: (@list Point)) (pts_dedup: (@list Point)) (pivot_out: Z) (pivot0: Point) (unique_n: Z)  __default_Point (PreH1 : (1 <= n_pre)) (PreH2 : (n_pre <= 50000)) (PreH3 : (unique_n = 1)) (PreH4 : (pivot0 = (Znth 0 pts_dedup __default_Point))) (PreH5 : ((Zlength (pts_dedup)) = n_pre)) (PreH6 : (points_in_bound pts_dedup )) (PreH7 : (point_dedup_result pts_l pts_dedup unique_n pivot_out )) (PreH8 : (point_dedup_hull_result pts_l (cons (pivot0) ((@nil Point))) )) ,
-  (PointArray.undef_seg hull_pre 1 n_pre )
-|--
-  (PointArray.undef_seg hull_pre 1 n_pre )
-.
-
-Definition graham_scan_dedup_return_wit_3 := 
-(
-forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (pts_l: (@list Point)) (PreH1 : (n_pre <= 0)) (PreH2 : (0 <= n_pre)) (PreH3 : (n_pre <= 50000)) (PreH4 : ((Zlength (pts_l)) = n_pre)) (PreH5 : (points_in_bound pts_l )) ,
-  (PointArray.full pts_pre n_pre pts_l )
-  **  (PointArray.undef_full hull_pre n_pre )
-|--
-  EX (hull_out: (@list Point))  (pts_out: (@list Point)) ,
-  “ ((Zlength (pts_out)) = n_pre) ” 
-  &&  “ (0 <= 0) ” 
-  &&  “ (0 <= n_pre) ” 
-  &&  “ ((Zlength (hull_out)) = 0) ” 
-  &&  “ (points_in_bound pts_out ) ” 
-  &&  “ (point_dedup_hull_result pts_l hull_out ) ”
-  &&  (PointArray.full pts_pre n_pre pts_out )
-  **  (PointArray.seg hull_pre 0 0 hull_out )
-  **  (PointArray.undef_seg hull_pre 0 n_pre )
-) \/
-(
-forall (hull_pre: Z) (n_pre: Z) (pts_l: (@list Point)) (PreH1 : (n_pre <= 0)) (PreH2 : (0 <= n_pre)) (PreH3 : (n_pre <= 50000)) (PreH4 : ((Zlength (pts_l)) = n_pre)) (PreH5 : (points_in_bound pts_l )) ,
-  (PointArray.undef_full hull_pre n_pre )
-|--
-  “ (point_dedup_hull_result pts_l (@nil Point) ) ” 
-  &&  “ ((Zlength ((@nil Point))) = 0) ”
-  &&  (PointArray.undef_seg hull_pre 0 n_pre )
-).
-
-Definition graham_scan_dedup_return_wit_3_split_goal_1 := 
-forall (hull_pre: Z) (n_pre: Z) (pts_l: (@list Point)) (PreH1 : (n_pre <= 0)) (PreH2 : (0 <= n_pre)) (PreH3 : (n_pre <= 50000)) (PreH4 : ((Zlength (pts_l)) = n_pre)) (PreH5 : (points_in_bound pts_l )) ,
-  (PointArray.undef_full hull_pre n_pre )
-|--
-  “ (point_dedup_hull_result pts_l (@nil Point) ) ”
-.
-
-Definition graham_scan_dedup_return_wit_3_split_goal_2 := 
-forall (hull_pre: Z) (n_pre: Z) (pts_l: (@list Point)) (PreH1 : (n_pre <= 0)) (PreH2 : (0 <= n_pre)) (PreH3 : (n_pre <= 50000)) (PreH4 : ((Zlength (pts_l)) = n_pre)) (PreH5 : (points_in_bound pts_l )) ,
-  (PointArray.undef_full hull_pre n_pre )
-|--
-  “ ((Zlength ((@nil Point))) = 0) ”
-.
-
-Definition graham_scan_dedup_return_wit_3_split_goal_spatial := 
-forall (hull_pre: Z) (n_pre: Z) (pts_l: (@list Point)) (PreH1 : (n_pre <= 0)) (PreH2 : (0 <= n_pre)) (PreH3 : (n_pre <= 50000)) (PreH4 : ((Zlength (pts_l)) = n_pre)) (PreH5 : (points_in_bound pts_l )) ,
-  (PointArray.undef_full hull_pre n_pre )
-|--
-  (PointArray.undef_seg hull_pre 0 n_pre )
-.
-
 Definition graham_scan_dedup_partial_solve_wit_1_pure := 
-forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (pts_l: (@list Point)) (PreH1 : (n_pre > 0)) (PreH2 : (0 <= n_pre)) (PreH3 : (n_pre <= 50000)) (PreH4 : ((Zlength (pts_l)) = n_pre)) (PreH5 : (points_in_bound pts_l )) ,
+forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (pts_l: (@list Point)) (PreH1 : (2 <= n_pre)) (PreH2 : (n_pre <= 50000)) (PreH3 : ((Zlength (pts_l)) = n_pre)) (PreH4 : (points_in_bound pts_l )) (PreH5 : (points_not_all_same pts_l )) ,
   ((( &( "unique_n" ) )) # Int  |->_)
   **  ((( &( "pivot_idx" ) )) # Int  |-> 0)
   **  ((( &( "hull" ) )) # Ptr  |-> hull_pre)
@@ -6878,7 +6697,7 @@ forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (pts_l: (@list Point)) (PreH1 : (n_
 .
 
 Definition graham_scan_dedup_partial_solve_wit_1_aux := 
-forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (pts_l: (@list Point)) (PreH1 : (n_pre > 0)) (PreH2 : (0 <= n_pre)) (PreH3 : (n_pre <= 50000)) (PreH4 : ((Zlength (pts_l)) = n_pre)) (PreH5 : (points_in_bound pts_l )) ,
+forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (pts_l: (@list Point)) (PreH1 : (2 <= n_pre)) (PreH2 : (n_pre <= 50000)) (PreH3 : ((Zlength (pts_l)) = n_pre)) (PreH4 : (points_in_bound pts_l )) (PreH5 : (points_not_all_same pts_l )) ,
   (PointArray.full pts_pre n_pre pts_l )
   **  (PointArray.undef_full hull_pre n_pre )
 |--
@@ -6888,245 +6707,164 @@ forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (pts_l: (@list Point)) (PreH1 : (n_
   &&  “ (0 <= 0) ” 
   &&  “ (0 < n_pre) ” 
   &&  “ (points_in_bound pts_l ) ” 
-  &&  “ (n_pre > 0) ” 
-  &&  “ (0 <= n_pre) ” 
+  &&  “ (2 <= n_pre) ” 
   &&  “ (n_pre <= 50000) ” 
   &&  “ ((Zlength (pts_l)) = n_pre) ” 
-  &&  “ (points_in_bound pts_l ) ”
+  &&  “ (points_in_bound pts_l ) ” 
+  &&  “ (points_not_all_same pts_l ) ”
   &&  (PointArray.full pts_pre n_pre pts_l )
   **  (PointArray.undef_full hull_pre n_pre )
 .
 
 Definition graham_scan_dedup_partial_solve_wit_1 := graham_scan_dedup_partial_solve_wit_1_pure -> graham_scan_dedup_partial_solve_wit_1_aux.
 
-Definition graham_scan_dedup_partial_solve_wit_2 := 
-forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (pts_l: (@list Point)) (pivot_out: Z) (pts_out: (@list Point)) (retval: Z)  __default_Point (PreH1 : (retval = 1)) (PreH2 : (1 <= retval)) (PreH3 : (retval <= n_pre)) (PreH4 : ((Zlength (pts_out)) = n_pre)) (PreH5 : (0 <= pivot_out)) (PreH6 : (pivot_out < retval)) (PreH7 : (points_in_bound pts_out )) (PreH8 : (point_dedup_result pts_l pts_out retval pivot_out )) (PreH9 : (n_pre > 0)) (PreH10 : (0 <= n_pre)) (PreH11 : (n_pre <= 50000)) (PreH12 : ((Zlength (pts_l)) = n_pre)) (PreH13 : (points_in_bound pts_l )) ,
-  (PointArray.full pts_pre n_pre pts_out )
+Definition graham_scan_dedup_partial_solve_wit_2_pure := 
+forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (pts_l: (@list Point)) (pts_dedup: (@list Point)) (pivot_out: Z) (unique_n: Z) (PreH1 : (pivot_out <> 0)) (PreH2 : (2 <= n_pre)) (PreH3 : (n_pre <= 50000)) (PreH4 : ((Zlength (pts_l)) = n_pre)) (PreH5 : (points_in_bound pts_l )) (PreH6 : (points_not_all_same pts_l )) (PreH7 : ((Zlength (pts_dedup)) = n_pre)) (PreH8 : (points_in_bound pts_dedup )) (PreH9 : (point_dedup_result pts_l pts_dedup unique_n pivot_out )) (PreH10 : (0 <= pivot_out)) (PreH11 : (pivot_out < unique_n)) (PreH12 : (unique_n <= n_pre)) (PreH13 : (2 <= unique_n)) ,
+  ((( &( "pts" ) )) # Ptr  |-> pts_pre)
+  **  ((( &( "hull" ) )) # Ptr  |-> hull_pre)
+  **  ((( &( "n" ) )) # Int  |-> n_pre)
+  **  ((( &( "pivot_idx" ) )) # Int  |-> pivot_out)
+  **  ((( &( "unique_n" ) )) # Int  |-> unique_n)
+  **  (PointArray.full pts_pre n_pre pts_dedup )
   **  (PointArray.undef_full hull_pre n_pre )
 |--
-  “ (retval = 1) ” 
-  &&  “ (1 <= retval) ” 
-  &&  “ (retval <= n_pre) ” 
-  &&  “ ((Zlength (pts_out)) = n_pre) ” 
+  “ (0 <= 0) ” 
+  &&  “ (0 < n_pre) ” 
   &&  “ (0 <= pivot_out) ” 
-  &&  “ (pivot_out < retval) ” 
-  &&  “ (points_in_bound pts_out ) ” 
-  &&  “ (point_dedup_result pts_l pts_out retval pivot_out ) ” 
-  &&  “ (n_pre > 0) ” 
-  &&  “ (0 <= n_pre) ” 
+  &&  “ (pivot_out < n_pre) ” 
+  &&  “ (0 <> pivot_out) ” 
+  &&  “ ((Zlength (pts_dedup)) = n_pre) ”
+.
+
+Definition graham_scan_dedup_partial_solve_wit_2_aux := 
+forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (pts_l: (@list Point)) (pts_dedup: (@list Point)) (pivot_out: Z) (unique_n: Z) (PreH1 : (pivot_out <> 0)) (PreH2 : (2 <= n_pre)) (PreH3 : (n_pre <= 50000)) (PreH4 : ((Zlength (pts_l)) = n_pre)) (PreH5 : (points_in_bound pts_l )) (PreH6 : (points_not_all_same pts_l )) (PreH7 : ((Zlength (pts_dedup)) = n_pre)) (PreH8 : (points_in_bound pts_dedup )) (PreH9 : (point_dedup_result pts_l pts_dedup unique_n pivot_out )) (PreH10 : (0 <= pivot_out)) (PreH11 : (pivot_out < unique_n)) (PreH12 : (unique_n <= n_pre)) (PreH13 : (2 <= unique_n)) ,
+  (PointArray.full pts_pre n_pre pts_dedup )
+  **  (PointArray.undef_full hull_pre n_pre )
+|--
+  “ (0 <= 0) ” 
+  &&  “ (0 < n_pre) ” 
+  &&  “ (0 <= pivot_out) ” 
+  &&  “ (pivot_out < n_pre) ” 
+  &&  “ (0 <> pivot_out) ” 
+  &&  “ ((Zlength (pts_dedup)) = n_pre) ” 
+  &&  “ (pivot_out <> 0) ” 
+  &&  “ (2 <= n_pre) ” 
   &&  “ (n_pre <= 50000) ” 
   &&  “ ((Zlength (pts_l)) = n_pre) ” 
-  &&  “ (points_in_bound pts_l ) ”
-  &&  ((&(((pts_pre + (0 * sizeof( "Point" ) ) ))  # "Point" ->ₛ "x")) # Int  |-> (point_x ((Znth 0 pts_out __default_Point))))
-  **  (PointArray.missing_i pts_pre 0 0 n_pre pts_out )
-  **  ((&(((pts_pre + (0 * sizeof( "Point" ) ) ))  # "Point" ->ₛ "y")) # Int  |-> (point_y ((Znth 0 pts_out __default_Point))))
+  &&  “ (points_in_bound pts_l ) ” 
+  &&  “ (points_not_all_same pts_l ) ” 
+  &&  “ ((Zlength (pts_dedup)) = n_pre) ” 
+  &&  “ (points_in_bound pts_dedup ) ” 
+  &&  “ (point_dedup_result pts_l pts_dedup unique_n pivot_out ) ” 
+  &&  “ (0 <= pivot_out) ” 
+  &&  “ (pivot_out < unique_n) ” 
+  &&  “ (unique_n <= n_pre) ” 
+  &&  “ (2 <= unique_n) ”
+  &&  (PointArray.full pts_pre n_pre pts_dedup )
   **  (PointArray.undef_full hull_pre n_pre )
 .
 
+Definition graham_scan_dedup_partial_solve_wit_2 := graham_scan_dedup_partial_solve_wit_2_pure -> graham_scan_dedup_partial_solve_wit_2_aux.
+
 Definition graham_scan_dedup_partial_solve_wit_3 := 
-forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (pts_l: (@list Point)) (pivot_out: Z) (pts_out: (@list Point)) (retval: Z) (PreH1 : (retval = 1)) (PreH2 : (1 <= retval)) (PreH3 : (retval <= n_pre)) (PreH4 : ((Zlength (pts_out)) = n_pre)) (PreH5 : (0 <= pivot_out)) (PreH6 : (pivot_out < retval)) (PreH7 : (points_in_bound pts_out )) (PreH8 : (point_dedup_result pts_l pts_out retval pivot_out )) (PreH9 : (n_pre > 0)) (PreH10 : (0 <= n_pre)) (PreH11 : (n_pre <= 50000)) (PreH12 : ((Zlength (pts_l)) = n_pre)) (PreH13 : (points_in_bound pts_l )) ,
-  (PointArray.full pts_pre n_pre pts_out )
+forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (pts_l: (@list Point)) (pts_dedup: (@list Point)) (pivot_out: Z) (unique_n: Z)  __default_Point (PreH1 : ((Zlength (pts_dedup)) = n_pre)) (PreH2 : (pivot_out <> 0)) (PreH3 : (2 <= n_pre)) (PreH4 : (n_pre <= 50000)) (PreH5 : ((Zlength (pts_l)) = n_pre)) (PreH6 : (points_in_bound pts_l )) (PreH7 : (points_not_all_same pts_l )) (PreH8 : ((Zlength (pts_dedup)) = n_pre)) (PreH9 : (points_in_bound pts_dedup )) (PreH10 : (point_dedup_result pts_l pts_dedup unique_n pivot_out )) (PreH11 : (0 <= pivot_out)) (PreH12 : (pivot_out < unique_n)) (PreH13 : (unique_n <= n_pre)) (PreH14 : (2 <= unique_n)) ,
+  (PointArray.full pts_pre n_pre (point_swap (pts_dedup) (0) (pivot_out)) )
   **  (PointArray.undef_full hull_pre n_pre )
 |--
-  “ (retval = 1) ” 
-  &&  “ (1 <= retval) ” 
-  &&  “ (retval <= n_pre) ” 
-  &&  “ ((Zlength (pts_out)) = n_pre) ” 
-  &&  “ (0 <= pivot_out) ” 
-  &&  “ (pivot_out < retval) ” 
-  &&  “ (points_in_bound pts_out ) ” 
-  &&  “ (point_dedup_result pts_l pts_out retval pivot_out ) ” 
-  &&  “ (n_pre > 0) ” 
-  &&  “ (0 <= n_pre) ” 
+  “ ((Zlength (pts_dedup)) = n_pre) ” 
+  &&  “ (pivot_out <> 0) ” 
+  &&  “ (2 <= n_pre) ” 
   &&  “ (n_pre <= 50000) ” 
   &&  “ ((Zlength (pts_l)) = n_pre) ” 
-  &&  “ (points_in_bound pts_l ) ”
-  &&  ((&(((hull_pre + (0 * sizeof( "Point" ) ) ))  # "Point" ->ₛ "x")) # Int  |->_)
-  **  (PointArray.undef_seg hull_pre 1 n_pre )
-  **  ((&(((hull_pre + (0 * sizeof( "Point" ) ) ))  # "Point" ->ₛ "y")) # Int  |->_)
-  **  (PointArray.full pts_pre n_pre pts_out )
+  &&  “ (points_in_bound pts_l ) ” 
+  &&  “ (points_not_all_same pts_l ) ” 
+  &&  “ ((Zlength (pts_dedup)) = n_pre) ” 
+  &&  “ (points_in_bound pts_dedup ) ” 
+  &&  “ (point_dedup_result pts_l pts_dedup unique_n pivot_out ) ” 
+  &&  “ (0 <= pivot_out) ” 
+  &&  “ (pivot_out < unique_n) ” 
+  &&  “ (unique_n <= n_pre) ” 
+  &&  “ (2 <= unique_n) ”
+  &&  ((&(((pts_pre + (0 * sizeof( "Point" ) ) ))  # "Point" ->ₛ "x")) # Int  |-> (point_x ((Znth 0 (point_swap (pts_dedup) (0) (pivot_out)) __default_Point))))
+  **  (PointArray.missing_i pts_pre 0 0 n_pre (point_swap (pts_dedup) (0) (pivot_out)) )
+  **  ((&(((pts_pre + (0 * sizeof( "Point" ) ) ))  # "Point" ->ₛ "y")) # Int  |-> (point_y ((Znth 0 (point_swap (pts_dedup) (0) (pivot_out)) __default_Point))))
+  **  (PointArray.undef_full hull_pre n_pre )
 .
 
 Definition graham_scan_dedup_partial_solve_wit_4 := 
-forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (pts_l: (@list Point)) (pivot_out: Z) (pts_out: (@list Point)) (retval: Z)  __default_Point (PreH1 : (retval = 1)) (PreH2 : (1 <= retval)) (PreH3 : (retval <= n_pre)) (PreH4 : ((Zlength (pts_out)) = n_pre)) (PreH5 : (0 <= pivot_out)) (PreH6 : (pivot_out < retval)) (PreH7 : (points_in_bound pts_out )) (PreH8 : (point_dedup_result pts_l pts_out retval pivot_out )) (PreH9 : (n_pre > 0)) (PreH10 : (0 <= n_pre)) (PreH11 : (n_pre <= 50000)) (PreH12 : ((Zlength (pts_l)) = n_pre)) (PreH13 : (points_in_bound pts_l )) ,
-  ((&(((hull_pre + (0 * sizeof( "Point" ) ) ))  # "Point" ->ₛ "x")) # Int  |-> (point_x ((Znth 0 pts_out __default_Point))))
-  **  (PointArray.undef_seg hull_pre 1 n_pre )
-  **  ((&(((hull_pre + (0 * sizeof( "Point" ) ) ))  # "Point" ->ₛ "y")) # Int  |->_)
-  **  (PointArray.full pts_pre n_pre pts_out )
+forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (pts_l: (@list Point)) (pts_dedup: (@list Point)) (pivot_out: Z) (unique_n: Z)  __default_Point (PreH1 : (pivot_out = 0)) (PreH2 : (2 <= n_pre)) (PreH3 : (n_pre <= 50000)) (PreH4 : ((Zlength (pts_l)) = n_pre)) (PreH5 : (points_in_bound pts_l )) (PreH6 : (points_not_all_same pts_l )) (PreH7 : ((Zlength (pts_dedup)) = n_pre)) (PreH8 : (points_in_bound pts_dedup )) (PreH9 : (point_dedup_result pts_l pts_dedup unique_n pivot_out )) (PreH10 : (0 <= pivot_out)) (PreH11 : (pivot_out < unique_n)) (PreH12 : (unique_n <= n_pre)) (PreH13 : (2 <= unique_n)) ,
+  (PointArray.full pts_pre n_pre pts_dedup )
+  **  (PointArray.undef_full hull_pre n_pre )
 |--
-  “ (retval = 1) ” 
-  &&  “ (1 <= retval) ” 
-  &&  “ (retval <= n_pre) ” 
-  &&  “ ((Zlength (pts_out)) = n_pre) ” 
-  &&  “ (0 <= pivot_out) ” 
-  &&  “ (pivot_out < retval) ” 
-  &&  “ (points_in_bound pts_out ) ” 
-  &&  “ (point_dedup_result pts_l pts_out retval pivot_out ) ” 
-  &&  “ (n_pre > 0) ” 
-  &&  “ (0 <= n_pre) ” 
+  “ (pivot_out = 0) ” 
+  &&  “ (2 <= n_pre) ” 
   &&  “ (n_pre <= 50000) ” 
   &&  “ ((Zlength (pts_l)) = n_pre) ” 
-  &&  “ (points_in_bound pts_l ) ”
-  &&  ((&(((pts_pre + (0 * sizeof( "Point" ) ) ))  # "Point" ->ₛ "y")) # Int  |-> (point_y ((Znth 0 pts_out __default_Point))))
-  **  (PointArray.missing_i pts_pre 0 0 n_pre pts_out )
-  **  ((&(((pts_pre + (0 * sizeof( "Point" ) ) ))  # "Point" ->ₛ "x")) # Int  |-> (point_x ((Znth 0 pts_out __default_Point))))
-  **  ((&(((hull_pre + (0 * sizeof( "Point" ) ) ))  # "Point" ->ₛ "x")) # Int  |-> (point_x ((Znth 0 pts_out __default_Point))))
-  **  (PointArray.undef_seg hull_pre 1 n_pre )
-  **  ((&(((hull_pre + (0 * sizeof( "Point" ) ) ))  # "Point" ->ₛ "y")) # Int  |->_)
+  &&  “ (points_in_bound pts_l ) ” 
+  &&  “ (points_not_all_same pts_l ) ” 
+  &&  “ ((Zlength (pts_dedup)) = n_pre) ” 
+  &&  “ (points_in_bound pts_dedup ) ” 
+  &&  “ (point_dedup_result pts_l pts_dedup unique_n pivot_out ) ” 
+  &&  “ (0 <= pivot_out) ” 
+  &&  “ (pivot_out < unique_n) ” 
+  &&  “ (unique_n <= n_pre) ” 
+  &&  “ (2 <= unique_n) ”
+  &&  ((&(((pts_pre + (0 * sizeof( "Point" ) ) ))  # "Point" ->ₛ "x")) # Int  |-> (point_x ((Znth 0 pts_dedup __default_Point))))
+  **  (PointArray.missing_i pts_pre 0 0 n_pre pts_dedup )
+  **  ((&(((pts_pre + (0 * sizeof( "Point" ) ) ))  # "Point" ->ₛ "y")) # Int  |-> (point_y ((Znth 0 pts_dedup __default_Point))))
+  **  (PointArray.undef_full hull_pre n_pre )
 .
 
-Definition graham_scan_dedup_partial_solve_wit_5_pure := 
-forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (pts_l: (@list Point)) (pivot_out: Z) (pts_out: (@list Point)) (retval: Z) (PreH1 : (pivot_out <> 0)) (PreH2 : (retval <> 1)) (PreH3 : (1 <= retval)) (PreH4 : (retval <= n_pre)) (PreH5 : ((Zlength (pts_out)) = n_pre)) (PreH6 : (0 <= pivot_out)) (PreH7 : (pivot_out < retval)) (PreH8 : (points_in_bound pts_out )) (PreH9 : (point_dedup_result pts_l pts_out retval pivot_out )) (PreH10 : (n_pre > 0)) (PreH11 : (0 <= n_pre)) (PreH12 : (n_pre <= 50000)) (PreH13 : ((Zlength (pts_l)) = n_pre)) (PreH14 : (points_in_bound pts_l )) ,
-  (PointArray.full pts_pre n_pre pts_out )
-  **  ((( &( "pivot_idx" ) )) # Int  |-> pivot_out)
-  **  ((( &( "unique_n" ) )) # Int  |-> retval)
-  **  ((( &( "hull" ) )) # Ptr  |-> hull_pre)
-  **  ((( &( "n" ) )) # Int  |-> n_pre)
-  **  ((( &( "pts" ) )) # Ptr  |-> pts_pre)
+Definition graham_scan_dedup_partial_solve_wit_5 := 
+forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (pts_l: (@list Point)) (pts_dedup: (@list Point)) (pivot_out: Z) (unique_n: Z)  __default_Point (PreH1 : ((Zlength (pts_dedup)) = n_pre)) (PreH2 : (pivot_out <> 0)) (PreH3 : (2 <= n_pre)) (PreH4 : (n_pre <= 50000)) (PreH5 : ((Zlength (pts_l)) = n_pre)) (PreH6 : (points_in_bound pts_l )) (PreH7 : (points_not_all_same pts_l )) (PreH8 : ((Zlength (pts_dedup)) = n_pre)) (PreH9 : (points_in_bound pts_dedup )) (PreH10 : (point_dedup_result pts_l pts_dedup unique_n pivot_out )) (PreH11 : (0 <= pivot_out)) (PreH12 : (pivot_out < unique_n)) (PreH13 : (unique_n <= n_pre)) (PreH14 : (2 <= unique_n)) ,
+  (PointArray.full pts_pre n_pre (point_swap (pts_dedup) (0) (pivot_out)) )
   **  (PointArray.undef_full hull_pre n_pre )
 |--
-  “ (0 <= 0) ” 
-  &&  “ (0 < n_pre) ” 
-  &&  “ (0 <= pivot_out) ” 
-  &&  “ (pivot_out < n_pre) ” 
-  &&  “ (0 <> pivot_out) ” 
-  &&  “ ((Zlength (pts_out)) = n_pre) ”
-.
-
-Definition graham_scan_dedup_partial_solve_wit_5_aux := 
-forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (pts_l: (@list Point)) (pivot_out: Z) (pts_out: (@list Point)) (retval: Z) (PreH1 : (pivot_out <> 0)) (PreH2 : (retval <> 1)) (PreH3 : (1 <= retval)) (PreH4 : (retval <= n_pre)) (PreH5 : ((Zlength (pts_out)) = n_pre)) (PreH6 : (0 <= pivot_out)) (PreH7 : (pivot_out < retval)) (PreH8 : (points_in_bound pts_out )) (PreH9 : (point_dedup_result pts_l pts_out retval pivot_out )) (PreH10 : (n_pre > 0)) (PreH11 : (0 <= n_pre)) (PreH12 : (n_pre <= 50000)) (PreH13 : ((Zlength (pts_l)) = n_pre)) (PreH14 : (points_in_bound pts_l )) ,
-  (PointArray.full pts_pre n_pre pts_out )
-  **  (PointArray.undef_full hull_pre n_pre )
-|--
-  “ (0 <= 0) ” 
-  &&  “ (0 < n_pre) ” 
-  &&  “ (0 <= pivot_out) ” 
-  &&  “ (pivot_out < n_pre) ” 
-  &&  “ (0 <> pivot_out) ” 
-  &&  “ ((Zlength (pts_out)) = n_pre) ” 
+  “ ((Zlength (pts_dedup)) = n_pre) ” 
   &&  “ (pivot_out <> 0) ” 
-  &&  “ (retval <> 1) ” 
-  &&  “ (1 <= retval) ” 
-  &&  “ (retval <= n_pre) ” 
-  &&  “ ((Zlength (pts_out)) = n_pre) ” 
-  &&  “ (0 <= pivot_out) ” 
-  &&  “ (pivot_out < retval) ” 
-  &&  “ (points_in_bound pts_out ) ” 
-  &&  “ (point_dedup_result pts_l pts_out retval pivot_out ) ” 
-  &&  “ (n_pre > 0) ” 
-  &&  “ (0 <= n_pre) ” 
+  &&  “ (2 <= n_pre) ” 
   &&  “ (n_pre <= 50000) ” 
   &&  “ ((Zlength (pts_l)) = n_pre) ” 
-  &&  “ (points_in_bound pts_l ) ”
-  &&  (PointArray.full pts_pre n_pre pts_out )
+  &&  “ (points_in_bound pts_l ) ” 
+  &&  “ (points_not_all_same pts_l ) ” 
+  &&  “ ((Zlength (pts_dedup)) = n_pre) ” 
+  &&  “ (points_in_bound pts_dedup ) ” 
+  &&  “ (point_dedup_result pts_l pts_dedup unique_n pivot_out ) ” 
+  &&  “ (0 <= pivot_out) ” 
+  &&  “ (pivot_out < unique_n) ” 
+  &&  “ (unique_n <= n_pre) ” 
+  &&  “ (2 <= unique_n) ”
+  &&  ((&(((pts_pre + (0 * sizeof( "Point" ) ) ))  # "Point" ->ₛ "y")) # Int  |-> (point_y ((Znth 0 (point_swap (pts_dedup) (0) (pivot_out)) __default_Point))))
+  **  (PointArray.missing_i pts_pre 0 0 n_pre (point_swap (pts_dedup) (0) (pivot_out)) )
+  **  ((&(((pts_pre + (0 * sizeof( "Point" ) ) ))  # "Point" ->ₛ "x")) # Int  |-> (point_x ((Znth 0 (point_swap (pts_dedup) (0) (pivot_out)) __default_Point))))
   **  (PointArray.undef_full hull_pre n_pre )
 .
-
-Definition graham_scan_dedup_partial_solve_wit_5 := graham_scan_dedup_partial_solve_wit_5_pure -> graham_scan_dedup_partial_solve_wit_5_aux.
 
 Definition graham_scan_dedup_partial_solve_wit_6 := 
-forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (pts_l: (@list Point)) (pivot_out: Z) (pts_out: (@list Point)) (retval: Z)  __default_Point (PreH1 : ((Zlength (pts_out)) = n_pre)) (PreH2 : (pivot_out <> 0)) (PreH3 : (retval <> 1)) (PreH4 : (1 <= retval)) (PreH5 : (retval <= n_pre)) (PreH6 : ((Zlength (pts_out)) = n_pre)) (PreH7 : (0 <= pivot_out)) (PreH8 : (pivot_out < retval)) (PreH9 : (points_in_bound pts_out )) (PreH10 : (point_dedup_result pts_l pts_out retval pivot_out )) (PreH11 : (n_pre > 0)) (PreH12 : (0 <= n_pre)) (PreH13 : (n_pre <= 50000)) (PreH14 : ((Zlength (pts_l)) = n_pre)) (PreH15 : (points_in_bound pts_l )) ,
-  (PointArray.full pts_pre n_pre (point_swap (pts_out) (0) (pivot_out)) )
-  **  (PointArray.undef_full hull_pre n_pre )
-|--
-  “ ((Zlength (pts_out)) = n_pre) ” 
-  &&  “ (pivot_out <> 0) ” 
-  &&  “ (retval <> 1) ” 
-  &&  “ (1 <= retval) ” 
-  &&  “ (retval <= n_pre) ” 
-  &&  “ ((Zlength (pts_out)) = n_pre) ” 
-  &&  “ (0 <= pivot_out) ” 
-  &&  “ (pivot_out < retval) ” 
-  &&  “ (points_in_bound pts_out ) ” 
-  &&  “ (point_dedup_result pts_l pts_out retval pivot_out ) ” 
-  &&  “ (n_pre > 0) ” 
-  &&  “ (0 <= n_pre) ” 
-  &&  “ (n_pre <= 50000) ” 
-  &&  “ ((Zlength (pts_l)) = n_pre) ” 
-  &&  “ (points_in_bound pts_l ) ”
-  &&  ((&(((pts_pre + (0 * sizeof( "Point" ) ) ))  # "Point" ->ₛ "x")) # Int  |-> (point_x ((Znth 0 (point_swap (pts_out) (0) (pivot_out)) __default_Point))))
-  **  (PointArray.missing_i pts_pre 0 0 n_pre (point_swap (pts_out) (0) (pivot_out)) )
-  **  ((&(((pts_pre + (0 * sizeof( "Point" ) ) ))  # "Point" ->ₛ "y")) # Int  |-> (point_y ((Znth 0 (point_swap (pts_out) (0) (pivot_out)) __default_Point))))
-  **  (PointArray.undef_full hull_pre n_pre )
-.
-
-Definition graham_scan_dedup_partial_solve_wit_7 := 
-forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (pts_l: (@list Point)) (pivot_out: Z) (pts_out: (@list Point)) (retval: Z)  __default_Point (PreH1 : (pivot_out = 0)) (PreH2 : (retval <> 1)) (PreH3 : (1 <= retval)) (PreH4 : (retval <= n_pre)) (PreH5 : ((Zlength (pts_out)) = n_pre)) (PreH6 : (0 <= pivot_out)) (PreH7 : (pivot_out < retval)) (PreH8 : (points_in_bound pts_out )) (PreH9 : (point_dedup_result pts_l pts_out retval pivot_out )) (PreH10 : (n_pre > 0)) (PreH11 : (0 <= n_pre)) (PreH12 : (n_pre <= 50000)) (PreH13 : ((Zlength (pts_l)) = n_pre)) (PreH14 : (points_in_bound pts_l )) ,
-  (PointArray.full pts_pre n_pre pts_out )
+forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (pts_l: (@list Point)) (pts_dedup: (@list Point)) (pivot_out: Z) (unique_n: Z)  __default_Point (PreH1 : (pivot_out = 0)) (PreH2 : (2 <= n_pre)) (PreH3 : (n_pre <= 50000)) (PreH4 : ((Zlength (pts_l)) = n_pre)) (PreH5 : (points_in_bound pts_l )) (PreH6 : (points_not_all_same pts_l )) (PreH7 : ((Zlength (pts_dedup)) = n_pre)) (PreH8 : (points_in_bound pts_dedup )) (PreH9 : (point_dedup_result pts_l pts_dedup unique_n pivot_out )) (PreH10 : (0 <= pivot_out)) (PreH11 : (pivot_out < unique_n)) (PreH12 : (unique_n <= n_pre)) (PreH13 : (2 <= unique_n)) ,
+  (PointArray.full pts_pre n_pre pts_dedup )
   **  (PointArray.undef_full hull_pre n_pre )
 |--
   “ (pivot_out = 0) ” 
-  &&  “ (retval <> 1) ” 
-  &&  “ (1 <= retval) ” 
-  &&  “ (retval <= n_pre) ” 
-  &&  “ ((Zlength (pts_out)) = n_pre) ” 
-  &&  “ (0 <= pivot_out) ” 
-  &&  “ (pivot_out < retval) ” 
-  &&  “ (points_in_bound pts_out ) ” 
-  &&  “ (point_dedup_result pts_l pts_out retval pivot_out ) ” 
-  &&  “ (n_pre > 0) ” 
-  &&  “ (0 <= n_pre) ” 
+  &&  “ (2 <= n_pre) ” 
   &&  “ (n_pre <= 50000) ” 
   &&  “ ((Zlength (pts_l)) = n_pre) ” 
-  &&  “ (points_in_bound pts_l ) ”
-  &&  ((&(((pts_pre + (0 * sizeof( "Point" ) ) ))  # "Point" ->ₛ "x")) # Int  |-> (point_x ((Znth 0 pts_out __default_Point))))
-  **  (PointArray.missing_i pts_pre 0 0 n_pre pts_out )
-  **  ((&(((pts_pre + (0 * sizeof( "Point" ) ) ))  # "Point" ->ₛ "y")) # Int  |-> (point_y ((Znth 0 pts_out __default_Point))))
+  &&  “ (points_in_bound pts_l ) ” 
+  &&  “ (points_not_all_same pts_l ) ” 
+  &&  “ ((Zlength (pts_dedup)) = n_pre) ” 
+  &&  “ (points_in_bound pts_dedup ) ” 
+  &&  “ (point_dedup_result pts_l pts_dedup unique_n pivot_out ) ” 
+  &&  “ (0 <= pivot_out) ” 
+  &&  “ (pivot_out < unique_n) ” 
+  &&  “ (unique_n <= n_pre) ” 
+  &&  “ (2 <= unique_n) ”
+  &&  ((&(((pts_pre + (0 * sizeof( "Point" ) ) ))  # "Point" ->ₛ "y")) # Int  |-> (point_y ((Znth 0 pts_dedup __default_Point))))
+  **  (PointArray.missing_i pts_pre 0 0 n_pre pts_dedup )
+  **  ((&(((pts_pre + (0 * sizeof( "Point" ) ) ))  # "Point" ->ₛ "x")) # Int  |-> (point_x ((Znth 0 pts_dedup __default_Point))))
   **  (PointArray.undef_full hull_pre n_pre )
 .
 
-Definition graham_scan_dedup_partial_solve_wit_8 := 
-forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (pts_l: (@list Point)) (pivot_out: Z) (pts_out: (@list Point)) (retval: Z)  __default_Point (PreH1 : ((Zlength (pts_out)) = n_pre)) (PreH2 : (pivot_out <> 0)) (PreH3 : (retval <> 1)) (PreH4 : (1 <= retval)) (PreH5 : (retval <= n_pre)) (PreH6 : ((Zlength (pts_out)) = n_pre)) (PreH7 : (0 <= pivot_out)) (PreH8 : (pivot_out < retval)) (PreH9 : (points_in_bound pts_out )) (PreH10 : (point_dedup_result pts_l pts_out retval pivot_out )) (PreH11 : (n_pre > 0)) (PreH12 : (0 <= n_pre)) (PreH13 : (n_pre <= 50000)) (PreH14 : ((Zlength (pts_l)) = n_pre)) (PreH15 : (points_in_bound pts_l )) ,
-  (PointArray.full pts_pre n_pre (point_swap (pts_out) (0) (pivot_out)) )
-  **  (PointArray.undef_full hull_pre n_pre )
-|--
-  “ ((Zlength (pts_out)) = n_pre) ” 
-  &&  “ (pivot_out <> 0) ” 
-  &&  “ (retval <> 1) ” 
-  &&  “ (1 <= retval) ” 
-  &&  “ (retval <= n_pre) ” 
-  &&  “ ((Zlength (pts_out)) = n_pre) ” 
-  &&  “ (0 <= pivot_out) ” 
-  &&  “ (pivot_out < retval) ” 
-  &&  “ (points_in_bound pts_out ) ” 
-  &&  “ (point_dedup_result pts_l pts_out retval pivot_out ) ” 
-  &&  “ (n_pre > 0) ” 
-  &&  “ (0 <= n_pre) ” 
-  &&  “ (n_pre <= 50000) ” 
-  &&  “ ((Zlength (pts_l)) = n_pre) ” 
-  &&  “ (points_in_bound pts_l ) ”
-  &&  ((&(((pts_pre + (0 * sizeof( "Point" ) ) ))  # "Point" ->ₛ "y")) # Int  |-> (point_y ((Znth 0 (point_swap (pts_out) (0) (pivot_out)) __default_Point))))
-  **  (PointArray.missing_i pts_pre 0 0 n_pre (point_swap (pts_out) (0) (pivot_out)) )
-  **  ((&(((pts_pre + (0 * sizeof( "Point" ) ) ))  # "Point" ->ₛ "x")) # Int  |-> (point_x ((Znth 0 (point_swap (pts_out) (0) (pivot_out)) __default_Point))))
-  **  (PointArray.undef_full hull_pre n_pre )
-.
-
-Definition graham_scan_dedup_partial_solve_wit_9 := 
-forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (pts_l: (@list Point)) (pivot_out: Z) (pts_out: (@list Point)) (retval: Z)  __default_Point (PreH1 : (pivot_out = 0)) (PreH2 : (retval <> 1)) (PreH3 : (1 <= retval)) (PreH4 : (retval <= n_pre)) (PreH5 : ((Zlength (pts_out)) = n_pre)) (PreH6 : (0 <= pivot_out)) (PreH7 : (pivot_out < retval)) (PreH8 : (points_in_bound pts_out )) (PreH9 : (point_dedup_result pts_l pts_out retval pivot_out )) (PreH10 : (n_pre > 0)) (PreH11 : (0 <= n_pre)) (PreH12 : (n_pre <= 50000)) (PreH13 : ((Zlength (pts_l)) = n_pre)) (PreH14 : (points_in_bound pts_l )) ,
-  (PointArray.full pts_pre n_pre pts_out )
-  **  (PointArray.undef_full hull_pre n_pre )
-|--
-  “ (pivot_out = 0) ” 
-  &&  “ (retval <> 1) ” 
-  &&  “ (1 <= retval) ” 
-  &&  “ (retval <= n_pre) ” 
-  &&  “ ((Zlength (pts_out)) = n_pre) ” 
-  &&  “ (0 <= pivot_out) ” 
-  &&  “ (pivot_out < retval) ” 
-  &&  “ (points_in_bound pts_out ) ” 
-  &&  “ (point_dedup_result pts_l pts_out retval pivot_out ) ” 
-  &&  “ (n_pre > 0) ” 
-  &&  “ (0 <= n_pre) ” 
-  &&  “ (n_pre <= 50000) ” 
-  &&  “ ((Zlength (pts_l)) = n_pre) ” 
-  &&  “ (points_in_bound pts_l ) ”
-  &&  ((&(((pts_pre + (0 * sizeof( "Point" ) ) ))  # "Point" ->ₛ "y")) # Int  |-> (point_y ((Znth 0 pts_out __default_Point))))
-  **  (PointArray.missing_i pts_pre 0 0 n_pre pts_out )
-  **  ((&(((pts_pre + (0 * sizeof( "Point" ) ) ))  # "Point" ->ₛ "x")) # Int  |-> (point_x ((Znth 0 pts_out __default_Point))))
-  **  (PointArray.undef_full hull_pre n_pre )
-.
-
-Definition graham_scan_dedup_partial_solve_wit_10_pure := 
+Definition graham_scan_dedup_partial_solve_wit_7_pure := 
 forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (pts_l: (@list Point)) (pts_dedup: (@list Point)) (pts_pivot: (@list Point)) (unique_prefix: (@list Point)) (suffix: (@list Point)) (pivot0: Point) (unique_n: Z) (gy: Z) (gx: Z) (pivot_idx: Z)  __default_Point (PreH1 : (2 <= unique_n)) (PreH2 : (unique_n <= n_pre)) (PreH3 : (n_pre <= 50000)) (PreH4 : (1 <= (unique_n - 1 ))) (PreH5 : ((unique_n - 1 ) < INT_MAX)) (PreH6 : (((unique_n - 1 ) + 1 ) <= n_pre)) (PreH7 : (pivot0 = (point_mk (gx) (gy)))) (PreH8 : (pts_pivot = (point_swap (pts_dedup) (0) (pivot_idx)))) (PreH9 : ((Zlength (pts_dedup)) = n_pre)) (PreH10 : ((Zlength (pts_pivot)) = n_pre)) (PreH11 : ((Zlength (unique_prefix)) = unique_n)) (PreH12 : (unique_prefix = (sublist (0) (unique_n) (pts_pivot)))) (PreH13 : (suffix = (sublist (unique_n) (n_pre) (pts_pivot)))) (PreH14 : (points_in_bound pts_dedup )) (PreH15 : (points_in_bound pts_pivot )) (PreH16 : (points_in_bound unique_prefix )) (PreH17 : (point_in_bound pivot0 )) (PreH18 : (point_dedup_result pts_l pts_dedup unique_n pivot_idx )) (PreH19 : (point_no_dup_prefix pts_pivot unique_n )) (PreH20 : (leftmost pivot0 unique_prefix )) (PreH21 : (point_polar_cmp_safe_range pivot0 unique_prefix 1 (unique_n - 1 ) )) (PreH22 : (((Znth 0 pts_pivot __default_Point).(x) ) = gx)) (PreH23 : (((Znth 0 pts_pivot __default_Point).(y) ) = gy)) ,
   ((( &( "pts" ) )) # Ptr  |-> pts_pre)
   **  ((( &( "hull" ) )) # Ptr  |-> hull_pre)
@@ -7151,7 +6889,7 @@ forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (pts_l: (@list Point)) (pts_dedup: 
   &&  “ (point_polar_cmp_safe_range (point_mk (gx) (gy)) unique_prefix 1 (unique_n - 1 ) ) ”
 .
 
-Definition graham_scan_dedup_partial_solve_wit_10_aux := 
+Definition graham_scan_dedup_partial_solve_wit_7_aux := 
 forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (pts_l: (@list Point)) (pts_dedup: (@list Point)) (pts_pivot: (@list Point)) (unique_prefix: (@list Point)) (suffix: (@list Point)) (pivot0: Point) (unique_n: Z) (gy: Z) (gx: Z) (pivot_idx: Z)  __default_Point (PreH1 : (2 <= unique_n)) (PreH2 : (unique_n <= n_pre)) (PreH3 : (n_pre <= 50000)) (PreH4 : (1 <= (unique_n - 1 ))) (PreH5 : ((unique_n - 1 ) < INT_MAX)) (PreH6 : (((unique_n - 1 ) + 1 ) <= n_pre)) (PreH7 : (pivot0 = (point_mk (gx) (gy)))) (PreH8 : (pts_pivot = (point_swap (pts_dedup) (0) (pivot_idx)))) (PreH9 : ((Zlength (pts_dedup)) = n_pre)) (PreH10 : ((Zlength (pts_pivot)) = n_pre)) (PreH11 : ((Zlength (unique_prefix)) = unique_n)) (PreH12 : (unique_prefix = (sublist (0) (unique_n) (pts_pivot)))) (PreH13 : (suffix = (sublist (unique_n) (n_pre) (pts_pivot)))) (PreH14 : (points_in_bound pts_dedup )) (PreH15 : (points_in_bound pts_pivot )) (PreH16 : (points_in_bound unique_prefix )) (PreH17 : (point_in_bound pivot0 )) (PreH18 : (point_dedup_result pts_l pts_dedup unique_n pivot_idx )) (PreH19 : (point_no_dup_prefix pts_pivot unique_n )) (PreH20 : (leftmost pivot0 unique_prefix )) (PreH21 : (point_polar_cmp_safe_range pivot0 unique_prefix 1 (unique_n - 1 ) )) (PreH22 : (((Znth 0 pts_pivot __default_Point).(x) ) = gx)) (PreH23 : (((Znth 0 pts_pivot __default_Point).(y) ) = gy)) ,
   (PointArray.full pts_pre unique_n unique_prefix )
   **  (PointArray.seg pts_pre unique_n n_pre suffix )
@@ -7195,9 +6933,9 @@ forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (pts_l: (@list Point)) (pts_dedup: 
   **  (PointArray.undef_full hull_pre n_pre )
 .
 
-Definition graham_scan_dedup_partial_solve_wit_10 := graham_scan_dedup_partial_solve_wit_10_pure -> graham_scan_dedup_partial_solve_wit_10_aux.
+Definition graham_scan_dedup_partial_solve_wit_7 := graham_scan_dedup_partial_solve_wit_7_pure -> graham_scan_dedup_partial_solve_wit_7_aux.
 
-Definition graham_scan_dedup_partial_solve_wit_11_pure := 
+Definition graham_scan_dedup_partial_solve_wit_8_pure := 
 forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (pts_l: (@list Point)) (pts_dedup: (@list Point)) (pts_pivot: (@list Point)) (pts_sorted: (@list Point)) (unique_prefix: (@list Point)) (tail_sorted: (@list Point)) (suffix: (@list Point)) (pivot0: Point) (tail: Z) (unique_n: Z) (gy: Z) (gx: Z) (pivot_idx: Z)  __default_Point (PreH1 : (tail = (pts_pre + sizeof( "Point" ) ))) (PreH2 : (2 <= unique_n)) (PreH3 : (unique_n <= n_pre)) (PreH4 : (n_pre <= 50000)) (PreH5 : (pivot0 = (point_mk (gx) (gy)))) (PreH6 : (pts_pivot = (point_swap (pts_dedup) (0) (pivot_idx)))) (PreH7 : ((Zlength (pts_dedup)) = n_pre)) (PreH8 : ((Zlength (pts_sorted)) = unique_n)) (PreH9 : ((Zlength (unique_prefix)) = unique_n)) (PreH10 : ((Zlength (tail_sorted)) = (unique_n - 1 ))) (PreH11 : (unique_prefix = (sublist (0) (unique_n) (pts_pivot)))) (PreH12 : (tail_sorted = (sublist (1) (unique_n) (pts_sorted)))) (PreH13 : (suffix = (sublist (unique_n) (n_pre) (pts_pivot)))) (PreH14 : ((unique_n - 1 ) = (Zlength (tail_sorted)))) (PreH15 : (points_in_bound pts_sorted )) (PreH16 : (points_in_bound tail_sorted )) (PreH17 : (point_in_bound pivot0 )) (PreH18 : (point_dedup_result pts_l pts_dedup unique_n pivot_idx )) (PreH19 : (leftmost pivot0 pts_sorted )) (PreH20 : (point_permutation unique_prefix pts_sorted )) (PreH21 : (point_sorted_range (point_mk (gx) (gy)) pts_sorted 1 (unique_n - 1 ) )) (PreH22 : (point_polar_sorted pivot0 tail_sorted )) (PreH23 : (leftmost pivot0 (rev (tail_sorted)) )) (PreH24 : (((Znth 0 pts_sorted __default_Point).(x) ) = gx)) (PreH25 : (((Znth 0 pts_sorted __default_Point).(y) ) = gy)) ,
   ((( &( "ret" ) )) # Int  |->_)
   **  ((( &( "pts" ) )) # Ptr  |-> pts_pre)
@@ -7224,7 +6962,7 @@ forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (pts_l: (@list Point)) (pts_dedup: 
   &&  “ (points_in_bound tail_sorted ) ”
 .
 
-Definition graham_scan_dedup_partial_solve_wit_11_aux := 
+Definition graham_scan_dedup_partial_solve_wit_8_aux := 
 forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (pts_l: (@list Point)) (pts_dedup: (@list Point)) (pts_pivot: (@list Point)) (pts_sorted: (@list Point)) (unique_prefix: (@list Point)) (tail_sorted: (@list Point)) (suffix: (@list Point)) (pivot0: Point) (tail: Z) (unique_n: Z) (gy: Z) (gx: Z) (pivot_idx: Z)  __default_Point (PreH1 : (tail = (pts_pre + sizeof( "Point" ) ))) (PreH2 : (2 <= unique_n)) (PreH3 : (unique_n <= n_pre)) (PreH4 : (n_pre <= 50000)) (PreH5 : (pivot0 = (point_mk (gx) (gy)))) (PreH6 : (pts_pivot = (point_swap (pts_dedup) (0) (pivot_idx)))) (PreH7 : ((Zlength (pts_dedup)) = n_pre)) (PreH8 : ((Zlength (pts_sorted)) = unique_n)) (PreH9 : ((Zlength (unique_prefix)) = unique_n)) (PreH10 : ((Zlength (tail_sorted)) = (unique_n - 1 ))) (PreH11 : (unique_prefix = (sublist (0) (unique_n) (pts_pivot)))) (PreH12 : (tail_sorted = (sublist (1) (unique_n) (pts_sorted)))) (PreH13 : (suffix = (sublist (unique_n) (n_pre) (pts_pivot)))) (PreH14 : ((unique_n - 1 ) = (Zlength (tail_sorted)))) (PreH15 : (points_in_bound pts_sorted )) (PreH16 : (points_in_bound tail_sorted )) (PreH17 : (point_in_bound pivot0 )) (PreH18 : (point_dedup_result pts_l pts_dedup unique_n pivot_idx )) (PreH19 : (leftmost pivot0 pts_sorted )) (PreH20 : (point_permutation unique_prefix pts_sorted )) (PreH21 : (point_sorted_range (point_mk (gx) (gy)) pts_sorted 1 (unique_n - 1 ) )) (PreH22 : (point_polar_sorted pivot0 tail_sorted )) (PreH23 : (leftmost pivot0 (rev (tail_sorted)) )) (PreH24 : (((Znth 0 pts_sorted __default_Point).(x) ) = gx)) (PreH25 : (((Znth 0 pts_sorted __default_Point).(y) ) = gy)) ,
   (store_point pts_pre pivot0 )
   **  (PointArray.full tail (unique_n - 1 ) tail_sorted )
@@ -7272,7 +7010,7 @@ forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (pts_l: (@list Point)) (pts_dedup: 
   **  (PointArray.seg pts_pre unique_n n_pre suffix )
 .
 
-Definition graham_scan_dedup_partial_solve_wit_11 := graham_scan_dedup_partial_solve_wit_11_pure -> graham_scan_dedup_partial_solve_wit_11_aux.
+Definition graham_scan_dedup_partial_solve_wit_8 := graham_scan_dedup_partial_solve_wit_8_pure -> graham_scan_dedup_partial_solve_wit_8_aux.
 
 Definition build_hull_from_sorted_tail_dedup_derive_high_level_spec_by_low_level_spec := 
 forall (hull_pre: Z) (tail_n_pre: Z) (sorted_tail_pre: Z) (pivot_pre: Z) (n_full_high_level_spec: Z) (l_high_level_spec: (@list Point)) (pivot0_high_level_spec: Point) ,
@@ -7545,35 +7283,24 @@ Axiom proof_of_graham_scan_dedup_safety_wit_12 : graham_scan_dedup_safety_wit_12
 Axiom proof_of_graham_scan_dedup_safety_wit_13 : graham_scan_dedup_safety_wit_13.
 Axiom proof_of_graham_scan_dedup_safety_wit_14 : graham_scan_dedup_safety_wit_14.
 Axiom proof_of_graham_scan_dedup_safety_wit_15 : graham_scan_dedup_safety_wit_15.
-Axiom proof_of_graham_scan_dedup_safety_wit_16 : graham_scan_dedup_safety_wit_16.
-Axiom proof_of_graham_scan_dedup_safety_wit_17 : graham_scan_dedup_safety_wit_17.
-Axiom proof_of_graham_scan_dedup_safety_wit_18 : graham_scan_dedup_safety_wit_18.
-Axiom proof_of_graham_scan_dedup_safety_wit_19 : graham_scan_dedup_safety_wit_19.
-Axiom proof_of_graham_scan_dedup_safety_wit_20 : graham_scan_dedup_safety_wit_20.
-Axiom proof_of_graham_scan_dedup_safety_wit_21 : graham_scan_dedup_safety_wit_21.
 Axiom proof_of_graham_scan_dedup_entail_wit_1 : graham_scan_dedup_entail_wit_1.
 Axiom proof_of_graham_scan_dedup_entail_wit_2_1 : graham_scan_dedup_entail_wit_2_1.
 Axiom proof_of_graham_scan_dedup_entail_wit_2_2 : graham_scan_dedup_entail_wit_2_2.
 Axiom proof_of_graham_scan_dedup_entail_wit_3 : graham_scan_dedup_entail_wit_3.
 Axiom proof_of_graham_scan_dedup_entail_wit_4 : graham_scan_dedup_entail_wit_4.
 Axiom proof_of_graham_scan_dedup_return_wit_1 : graham_scan_dedup_return_wit_1.
-Axiom proof_of_graham_scan_dedup_return_wit_2 : graham_scan_dedup_return_wit_2.
-Axiom proof_of_graham_scan_dedup_return_wit_3 : graham_scan_dedup_return_wit_3.
 Axiom proof_of_graham_scan_dedup_partial_solve_wit_1_pure : graham_scan_dedup_partial_solve_wit_1_pure.
 Axiom proof_of_graham_scan_dedup_partial_solve_wit_1 : graham_scan_dedup_partial_solve_wit_1.
+Axiom proof_of_graham_scan_dedup_partial_solve_wit_2_pure : graham_scan_dedup_partial_solve_wit_2_pure.
 Axiom proof_of_graham_scan_dedup_partial_solve_wit_2 : graham_scan_dedup_partial_solve_wit_2.
 Axiom proof_of_graham_scan_dedup_partial_solve_wit_3 : graham_scan_dedup_partial_solve_wit_3.
 Axiom proof_of_graham_scan_dedup_partial_solve_wit_4 : graham_scan_dedup_partial_solve_wit_4.
-Axiom proof_of_graham_scan_dedup_partial_solve_wit_5_pure : graham_scan_dedup_partial_solve_wit_5_pure.
 Axiom proof_of_graham_scan_dedup_partial_solve_wit_5 : graham_scan_dedup_partial_solve_wit_5.
 Axiom proof_of_graham_scan_dedup_partial_solve_wit_6 : graham_scan_dedup_partial_solve_wit_6.
+Axiom proof_of_graham_scan_dedup_partial_solve_wit_7_pure : graham_scan_dedup_partial_solve_wit_7_pure.
 Axiom proof_of_graham_scan_dedup_partial_solve_wit_7 : graham_scan_dedup_partial_solve_wit_7.
+Axiom proof_of_graham_scan_dedup_partial_solve_wit_8_pure : graham_scan_dedup_partial_solve_wit_8_pure.
 Axiom proof_of_graham_scan_dedup_partial_solve_wit_8 : graham_scan_dedup_partial_solve_wit_8.
-Axiom proof_of_graham_scan_dedup_partial_solve_wit_9 : graham_scan_dedup_partial_solve_wit_9.
-Axiom proof_of_graham_scan_dedup_partial_solve_wit_10_pure : graham_scan_dedup_partial_solve_wit_10_pure.
-Axiom proof_of_graham_scan_dedup_partial_solve_wit_10 : graham_scan_dedup_partial_solve_wit_10.
-Axiom proof_of_graham_scan_dedup_partial_solve_wit_11_pure : graham_scan_dedup_partial_solve_wit_11_pure.
-Axiom proof_of_graham_scan_dedup_partial_solve_wit_11 : graham_scan_dedup_partial_solve_wit_11.
 Axiom proof_of_build_hull_from_sorted_tail_dedup_derive_high_level_spec_by_low_level_spec : build_hull_from_sorted_tail_dedup_derive_high_level_spec_by_low_level_spec.
 
 End VC_Correct.

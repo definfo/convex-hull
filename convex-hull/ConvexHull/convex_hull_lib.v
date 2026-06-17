@@ -3842,3 +3842,81 @@ Proof.
   rewrite point_swap_Znth_other_index by lia.
   apply Hmin; lia.
 Qed.
+
+Definition points_not_all_same (l : list Point) : Prop :=
+  exists i j,
+    0 <= i < Zlength l /\
+    0 <= j < Zlength l /\
+    i <> j /\
+    ~ point_same (Znth i l default_point) (Znth j l default_point).
+
+Lemma point_same_sym : forall a b,
+  point_same a b ->
+  point_same b a.
+Proof.
+  unfold point_same.
+  intros a b [Hx Hy].
+  split; congruence.
+Qed.
+
+Lemma point_same_trans : forall a b c,
+  point_same a b ->
+  point_same b c ->
+  point_same a c.
+Proof.
+  unfold point_same.
+  intros a b c [Habx Haby] [Hbcx Hbcy].
+  split; congruence.
+Qed.
+
+Lemma dedup_not_all_same_unique_n_ge_2 : forall base out n pivot,
+  point_dedup_result base out n pivot ->
+  points_not_all_same base ->
+  2 <= n.
+Proof.
+  intros base out n pivot Hdedup Hnot_all.
+  destruct Hdedup as [Hscan [Hn_bounds [_ Hrepr_all]]].
+  unfold point_dedup_scan_inv in Hscan.
+  destruct Hscan as [_ [_ [_ [Hperm _]]]].
+  destruct Hnot_all as [i [j [Hi [Hj [_ Hdiff]]]]].
+  destruct (Z_lt_ge_dec n 2) as [Hn_lt | Hn_ge]; [| lia].
+  assert (Hn_eq : n = 1) by lia.
+  subst n.
+  assert (Hin_i_base : In (Znth i base default_point) base)
+    by (apply Znth_In_range; lia).
+  assert (Hin_j_base : In (Znth j base default_point) base)
+    by (apply Znth_In_range; lia).
+  assert (Hin_i_out : In (Znth i base default_point) out).
+  {
+    eapply Permutation_in.
+    - exact Hperm.
+    - exact Hin_i_base.
+  }
+  assert (Hin_j_out : In (Znth j base default_point) out).
+  {
+    eapply Permutation_in.
+    - exact Hperm.
+    - exact Hin_j_base.
+  }
+  destruct (In_Znth_Zlength out (Znth i base default_point) default_point
+              Hin_i_out)
+    as [oi [Hoi Hoi_eq]].
+  destruct (In_Znth_Zlength out (Znth j base default_point) default_point
+              Hin_j_out)
+    as [oj [Hoj Hoj_eq]].
+  unfold point_unique_prefix_represents_all in Hrepr_all.
+  destruct Hrepr_all as [_ Hrepr_all].
+  destruct (Hrepr_all oi Hoi) as [ri [Hri Hsame_i]].
+  destruct (Hrepr_all oj Hoj) as [rj [Hrj Hsame_j]].
+  assert (Hri0 : ri = 0) by lia.
+  assert (Hrj0 : rj = 0) by lia.
+  subst ri rj.
+  rewrite Hoi_eq in Hsame_i.
+  rewrite Hoj_eq in Hsame_j.
+  exfalso.
+  apply Hdiff.
+  eapply point_same_trans.
+  - apply point_same_sym.
+    exact Hsame_i.
+  - exact Hsame_j.
+Qed.

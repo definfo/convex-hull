@@ -465,24 +465,6 @@ Proof. Admitted.
 Lemma proof_of_graham_scan_dedup_safety_wit_15 : graham_scan_dedup_safety_wit_15.
 Proof. Admitted. 
 
-Lemma proof_of_graham_scan_dedup_safety_wit_16 : graham_scan_dedup_safety_wit_16.
-Proof. Admitted. 
-
-Lemma proof_of_graham_scan_dedup_safety_wit_17 : graham_scan_dedup_safety_wit_17.
-Proof. Admitted. 
-
-Lemma proof_of_graham_scan_dedup_safety_wit_18 : graham_scan_dedup_safety_wit_18.
-Proof. Admitted. 
-
-Lemma proof_of_graham_scan_dedup_safety_wit_19 : graham_scan_dedup_safety_wit_19.
-Proof. Admitted. 
-
-Lemma proof_of_graham_scan_dedup_safety_wit_20 : graham_scan_dedup_safety_wit_20.
-Proof. Admitted. 
-
-Lemma proof_of_graham_scan_dedup_safety_wit_21 : graham_scan_dedup_safety_wit_21.
-Proof. Admitted. 
-
 Lemma proof_of_graham_scan_dedup_return_wit_1 : graham_scan_dedup_return_wit_1.
 Proof. Admitted. 
 
@@ -490,6 +472,9 @@ Lemma proof_of_graham_scan_dedup_partial_solve_wit_1_pure : graham_scan_dedup_pa
 Proof. Admitted. 
 
 Lemma proof_of_graham_scan_dedup_partial_solve_wit_1 : graham_scan_dedup_partial_solve_wit_1.
+Proof. Admitted. 
+
+Lemma proof_of_graham_scan_dedup_partial_solve_wit_2_pure : graham_scan_dedup_partial_solve_wit_2_pure.
 Proof. Admitted. 
 
 Lemma proof_of_graham_scan_dedup_partial_solve_wit_2 : graham_scan_dedup_partial_solve_wit_2.
@@ -501,33 +486,21 @@ Proof. Admitted.
 Lemma proof_of_graham_scan_dedup_partial_solve_wit_4 : graham_scan_dedup_partial_solve_wit_4.
 Proof. Admitted. 
 
-Lemma proof_of_graham_scan_dedup_partial_solve_wit_5_pure : graham_scan_dedup_partial_solve_wit_5_pure.
-Proof. Admitted. 
-
 Lemma proof_of_graham_scan_dedup_partial_solve_wit_5 : graham_scan_dedup_partial_solve_wit_5.
 Proof. Admitted. 
 
 Lemma proof_of_graham_scan_dedup_partial_solve_wit_6 : graham_scan_dedup_partial_solve_wit_6.
 Proof. Admitted. 
 
+Lemma proof_of_graham_scan_dedup_partial_solve_wit_7_pure : graham_scan_dedup_partial_solve_wit_7_pure.
+Proof. Admitted. 
+
 Lemma proof_of_graham_scan_dedup_partial_solve_wit_7 : graham_scan_dedup_partial_solve_wit_7.
 Proof. Admitted. 
 
+Lemma proof_of_graham_scan_dedup_partial_solve_wit_8_pure : graham_scan_dedup_partial_solve_wit_8_pure.
+Proof. Admitted. 
+
 Lemma proof_of_graham_scan_dedup_partial_solve_wit_8 : graham_scan_dedup_partial_solve_wit_8.
-Proof. Admitted. 
-
-Lemma proof_of_graham_scan_dedup_partial_solve_wit_9 : graham_scan_dedup_partial_solve_wit_9.
-Proof. Admitted. 
-
-Lemma proof_of_graham_scan_dedup_partial_solve_wit_10_pure : graham_scan_dedup_partial_solve_wit_10_pure.
-Proof. Admitted. 
-
-Lemma proof_of_graham_scan_dedup_partial_solve_wit_10 : graham_scan_dedup_partial_solve_wit_10.
-Proof. Admitted. 
-
-Lemma proof_of_graham_scan_dedup_partial_solve_wit_11_pure : graham_scan_dedup_partial_solve_wit_11_pure.
-Proof. Admitted. 
-
-Lemma proof_of_graham_scan_dedup_partial_solve_wit_11 : graham_scan_dedup_partial_solve_wit_11.
 Proof. Admitted. 
 

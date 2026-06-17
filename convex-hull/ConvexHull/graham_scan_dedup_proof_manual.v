@@ -4179,68 +4179,16 @@ Qed.
 
 Lemma proof_of_graham_scan_dedup_entail_wit_1_split_goal_1 : graham_scan_dedup_entail_wit_1_split_goal_1.
 Proof.
-  unfold graham_scan_dedup_entail_wit_1_split_goal_1.
+  unfold graham_scan_dedup_entail_wit_1_split_goal_1G.
   intros.
-  assert (Hhull :
-    point_dedup_hull_result pts_l
-      (cons (Znth 0 pts_out __default_Point) nil)).
-  {
-    unfold point_dedup_hull_result.
-    right.
-    exists (Znth 0 pts_out __default_Point).
-    split; [reflexivity |].
-    intros q Hqin.
-    unfold point_dedup_result in PreH12.
-    destruct PreH12 as [Hscan [_ [_ Hall]]].
-    unfold point_dedup_scan_inv in Hscan.
-    destruct Hscan as [_ [_ [_ [Hperm _]]]].
-    assert (Hqout : In q pts_out).
-    {
-      eapply Permutation_in; eauto.
-    }
-    destruct (In_Znth_Zlength pts_out q default_point Hqout)
-      as [k [Hk Hq]].
-    unfold point_unique_prefix_represents_all in Hall.
-    destruct Hall as [_ Hall].
-    specialize (Hall k Hk) as [j [Hj Hsame]].
-    assert (j = 0) by lia. subst j.
-    unfold point_same in *.
-    destruct Hsame as [Hsame_x Hsame_y].
-    split.
-    - rewrite <- Hq.
-      rewrite <- (Znth_indep pts_out 0 default_point __default_Point)
-        by lia.
-      symmetry; exact Hsame_x.
-    - rewrite <- Hq.
-      rewrite <- (Znth_indep pts_out 0 default_point __default_Point)
-        by lia.
-      symmetry; exact Hsame_y.
-  }
   apply derivable1s_coq_prop_r.
-  exact Hhull.
+  eapply dedup_not_all_same_unique_n_ge_2; eauto.
 Qed.
 
 Lemma proof_of_graham_scan_dedup_entail_wit_1_split_goal_spatial : graham_scan_dedup_entail_wit_1_split_goal_spatial.
 Proof.
   unfold graham_scan_dedup_entail_wit_1_split_goal_spatial.
   intros.
-  change (point_x (Znth 0 pts_out __default_Point))
-    with ((Znth 0 pts_out __default_Point).(x)).
-  change (point_y (Znth 0 pts_out __default_Point))
-    with ((Znth 0 pts_out __default_Point).(y)).
-  replace (hull_pre + 0 * sizeof("Point")) with hull_pre by lia.
-  sep_apply_l_atomic (store_point_fold hull_pre
-    (Znth 0 pts_out __default_Point)).
-  replace (store_point hull_pre (Znth 0 pts_out __default_Point))
-    with (StorePointAsElement.storeA hull_pre 0
-      (Znth 0 pts_out __default_Point)).
-  2:{
-    unfold StorePointAsElement.storeA.
-    replace (hull_pre + 0 * sizeof_Point) with hull_pre by lia.
-    reflexivity.
-  }
-  sep_apply_l_atomic (PointArray.seg_single hull_pre 0
-    (Znth 0 pts_out __default_Point)).
   entailer!.
 Qed.
 
@@ -4251,13 +4199,13 @@ Proof.
   intros.
   eapply split_pure_and_spatial_goals.
   - exact (proof_of_graham_scan_dedup_entail_wit_1_split_goal_spatial
-      hull_pre n_pre pts_l pivot_out pts_out retval __default_Point
+      hull_pre n_pre pts_l pivot_out pts_out retval
       PreH1 PreH2 PreH3 PreH4 PreH5 PreH6 PreH7 PreH8 PreH9
-      PreH10 PreH11 PreH12 PreH13 PreH14 PreH15 PreH16 PreH17).
+      PreH10 PreH11 PreH12).
   - exact (proof_of_graham_scan_dedup_entail_wit_1_split_goal_1
-      hull_pre n_pre pts_l pivot_out pts_out retval __default_Point
+      hull_pre n_pre pts_l pivot_out pts_out retval
       PreH1 PreH2 PreH3 PreH4 PreH5 PreH6 PreH7 PreH8 PreH9
-      PreH10 PreH11 PreH12 PreH13 PreH14 PreH15 PreH16 PreH17).
+      PreH10 PreH11 PreH12).
 Qed.
 
 Lemma proof_of_graham_scan_dedup_entail_wit_2_1 : graham_scan_dedup_entail_wit_2_1.
@@ -4272,12 +4220,12 @@ Proof.
   destruct Hscan as [_ [_ [_ [_ [Hnodup _]]]]].
   assert (Hleft_sub :
     leftmost
-      (point_mk (point_x (Znth 0 pts_out __default_Point))
-        (point_y (Znth 0 pts_out __default_Point)))
-      (sublist 0 retval pts_out)).
+      (point_mk (point_x (Znth 0 pts_dedup __default_Point))
+        (point_y (Znth 0 pts_dedup __default_Point)))
+      (sublist 0 unique_n pts_dedup)).
   {
     rewrite point_mk_eta.
-    rewrite (Znth_indep pts_out 0 __default_Point default_point) by lia.
+    rewrite (Znth_indep pts_dedup 0 __default_Point default_point) by lia.
     unfold point_leftmost_prefix in Hleft.
     destruct Hleft as [_ [Hretval_len Hmin]].
     unfold leftmost.
@@ -4289,14 +4237,14 @@ Proof.
     apply Hmin.
     lia.
   }
-  Exists pts_out.
+  Exists pts_dedup.
   repeat rewrite point_swap_0_0.
-  sep_apply_l_atomic (PointArray.full_split_to_seg pts_pre retval n_pre pts_out).
+  sep_apply_l_atomic (PointArray.full_split_to_seg pts_pre unique_n n_pre pts_dedup).
   1:{ entailer!. }
-  sep_apply_l_atomic (PointArray.seg_to_full pts_pre 0 retval
-    (sublist 0 retval pts_out)).
+  sep_apply_l_atomic (PointArray.seg_to_full pts_pre 0 unique_n
+    (sublist 0 unique_n pts_dedup)).
   replace (pts_pre + 0 * sizeof("Point")) with pts_pre by lia.
-  replace (retval - 0) with retval by lia.
+  replace (unique_n - 0) with unique_n by lia.
   entailer!;
     try (rewrite Zlength_sublist; lia);
     try (eapply points_in_bound_sublist; eauto; lia);
@@ -4308,7 +4256,7 @@ Proof.
   unfold point_polar_cmp_safe_range.
   intros i j Hi Hj.
   unfold point_polar_cmp_safe_pair.
-  rewrite (Znth_indep pts_out 0 __default_Point default_point) by lia.
+  rewrite (Znth_indep pts_dedup 0 __default_Point default_point) by lia.
   rewrite point_mk_eta.
   rewrite !Znth_sublist by lia.
   replace (i + 0) with i by lia.
@@ -4320,12 +4268,12 @@ Proof.
   - subst j.
     apply point_cmp_xy_eq; reflexivity.
   - assert (Hnot_pivot_i :
-      ~ point_same (Znth 0 pts_out default_point)
-        (Znth i pts_out default_point)).
+      ~ point_same (Znth 0 pts_dedup default_point)
+        (Znth i pts_dedup default_point)).
     { apply Hnodup_no; lia. }
-    destruct (Znth 0 pts_out default_point) as [gx gy] eqn:Hgp.
-    destruct (Znth i pts_out default_point) as [ax ay] eqn:Ha.
-    destruct (Znth j pts_out default_point) as [bx by0] eqn:Hb.
+    destruct (Znth 0 pts_dedup default_point) as [gx gy] eqn:Hgp.
+    destruct (Znth i pts_dedup default_point) as [ax ay] eqn:Ha.
+    destruct (Znth j pts_dedup default_point) as [bx by0] eqn:Hb.
     unfold point_colinear in Hcol.
     rewrite point_cross_unfold in Hcol.
     simpl in Hcol.
@@ -4420,7 +4368,7 @@ Proof.
   destruct PreH10 as [Hscan [_ [Hleft _]]].
   unfold point_dedup_scan_inv in Hscan.
   destruct Hscan as [_ [_ [_ [_ [Hnodup _]]]]].
-  set (pts_pivoted := point_swap pts_out 0 pivot_out).
+  set (pts_pivoted := point_swap pts_dedup 0 pivot_out).
   assert (Hlen_pivoted : Zlength pts_pivoted = n_pre).
   {
     unfold pts_pivoted.
@@ -4432,7 +4380,7 @@ Proof.
     unfold pts_pivoted.
     eapply points_in_bound_point_swap; eauto; lia.
   }
-  assert (Hbound_prefix : points_in_bound (sublist 0 retval pts_pivoted)).
+  assert (Hbound_prefix : points_in_bound (sublist 0 unique_n pts_pivoted)).
   {
     eapply points_in_bound_sublist; eauto; lia.
   }
@@ -4446,10 +4394,10 @@ Proof.
     lia.
   }
   assert (Hlookup : forall k,
-    0 <= k < retval ->
+    0 <= k < unique_n ->
     exists k',
-      0 <= k' < retval /\
-      Znth k pts_pivoted default_point = Znth k' pts_out default_point /\
+      0 <= k' < unique_n /\
+      Znth k pts_pivoted default_point = Znth k' pts_dedup default_point /\
       ((k = 0 /\ k' = pivot_out) \/
        (k = pivot_out /\ k' = 0) \/
        (k <> 0 /\ k <> pivot_out /\ k' = k))).
@@ -4476,7 +4424,7 @@ Proof.
         * apply point_swap_Znth_other_index; lia.
         * right. right. repeat split; auto.
   }
-  assert (Hnodup_pivoted : point_no_dup_prefix pts_pivoted retval).
+  assert (Hnodup_pivoted : point_no_dup_prefix pts_pivoted unique_n).
   {
     unfold point_no_dup_prefix in *.
     destruct Hnodup as [_ Hnodup_no].
@@ -4504,7 +4452,7 @@ Proof.
     leftmost
       (point_mk (point_x (Znth 0 pts_pivoted __default_Point))
         (point_y (Znth 0 pts_pivoted __default_Point)))
-      (sublist 0 retval pts_pivoted)).
+      (sublist 0 unique_n pts_pivoted)).
   {
     rewrite point_mk_eta.
     rewrite (Znth_indep pts_pivoted 0 __default_Point default_point)
@@ -4534,7 +4482,7 @@ Proof.
     point_polar_cmp_safe_range
       (point_mk (point_x (Znth 0 pts_pivoted __default_Point))
         (point_y (Znth 0 pts_pivoted __default_Point)))
-      (sublist 0 retval pts_pivoted) 1 (retval - 1)).
+      (sublist 0 unique_n pts_pivoted) 1 (unique_n - 1)).
   {
     unfold point_polar_cmp_safe_range.
     intros i j Hi Hj.
@@ -4642,14 +4590,14 @@ Proof.
       subst bx by0.
       apply point_cmp_xy_eq; reflexivity.
   }
-  Exists pts_out.
+  Exists pts_dedup.
   fold pts_pivoted.
-  sep_apply_l_atomic (PointArray.full_split_to_seg pts_pre retval n_pre pts_pivoted).
+  sep_apply_l_atomic (PointArray.full_split_to_seg pts_pre unique_n n_pre pts_pivoted).
   1:{ entailer!. }
-  sep_apply_l_atomic (PointArray.seg_to_full pts_pre 0 retval
-    (sublist 0 retval pts_pivoted)).
+  sep_apply_l_atomic (PointArray.seg_to_full pts_pre 0 unique_n
+    (sublist 0 unique_n pts_pivoted)).
   replace (pts_pre + 0 * sizeof("Point")) with pts_pre by lia.
-  replace (retval - 0) with retval by lia.
+  replace (unique_n - 0) with unique_n by lia.
   entailer!;
     try (rewrite Zlength_sublist; rewrite ?Hlen_pivoted; lia);
     try exact Hlen_pivoted;
@@ -4967,10 +4915,8 @@ Proof.
       destruct Hsame as [Hx Hy].
       apply point_eq_by_xy; symmetry; assumption.
   }
-  assert (Hdedup_hull : point_dedup_hull_result pts_l hull_out_2).
+  assert (Hdedup_hull : is_convex_hull pts_l hull_out_2).
   {
-    unfold point_dedup_hull_result.
-    left.
     unfold is_convex_hull in *.
     destruct PreH4 as [Hhull | Hhull].
     - left.
@@ -5012,147 +4958,6 @@ Proof.
     try exact Hpts_out_bound;
     try exact Hdedup_hull;
     try lia.
-Qed.
-
-Lemma proof_of_graham_scan_dedup_return_wit_2_split_goal_1 : graham_scan_dedup_return_wit_2_split_goal_1.
-Proof.
-  unfold graham_scan_dedup_return_wit_2_split_goal_1; try left.
-  intros.
-  entailer!;
-    try (unfold point_cmp_leftdown, point_cmp_polar, point_cmp_xy,
-      point_mk, point_cross, point_cross_by_value, point_dot_by_value,
-      point_at_mid, point_colinear in *; simpl in *);
-    try (unfold point_bound, Point_Order.point_bound,
-      point_in_bound, Point_Order.point_in_bound, points_in_bound,
-      point_polar_cmp_safe_pair, point_same, point_no_dup_prefix,
-      point_prefix_has_same, point_dedup_inner_scan_inv,
-      point_prefix_represents_range, point_unique_prefix_represents_all,
-      point_dedup_scan_inv, point_dedup_result,
-      point_dedup_hull_result in *; simpl in *);
-    try (repeat match goal with H : _ /\ _ |- _ => destruct H end);
-    try (repeat match goal with
-    | |- context [Z_lt_dec ?a ?b] => destruct (Z_lt_dec a b); try nia
-    | |- context [Z_gt_dec ?a ?b] => destruct (Z_gt_dec a b); try nia
-    | H : context [Z_lt_dec ?a ?b] |- _ => destruct (Z_lt_dec a b); try nia
-    | H : context [Z_gt_dec ?a ?b] |- _ => destruct (Z_gt_dec a b); try nia
-    end);
-    try lia; try nia; eauto.
-Qed.
-
-Lemma proof_of_graham_scan_dedup_return_wit_2_split_goal_spatial : graham_scan_dedup_return_wit_2_split_goal_spatial.
-Proof.
-  unfold graham_scan_dedup_return_wit_2_split_goal_spatial; try left.
-  intros.
-  entailer!;
-    try (unfold point_cmp_leftdown, point_cmp_polar, point_cmp_xy,
-      point_mk, point_cross, point_cross_by_value, point_dot_by_value,
-      point_at_mid, point_colinear in *; simpl in *);
-    try (unfold point_bound, Point_Order.point_bound,
-      point_in_bound, Point_Order.point_in_bound, points_in_bound,
-      point_polar_cmp_safe_pair, point_same, point_no_dup_prefix,
-      point_prefix_has_same, point_dedup_inner_scan_inv,
-      point_prefix_represents_range, point_unique_prefix_represents_all,
-      point_dedup_scan_inv, point_dedup_result,
-      point_dedup_hull_result in *; simpl in *);
-    try (repeat match goal with H : _ /\ _ |- _ => destruct H end);
-    try (repeat match goal with
-    | |- context [Z_lt_dec ?a ?b] => destruct (Z_lt_dec a b); try nia
-    | |- context [Z_gt_dec ?a ?b] => destruct (Z_gt_dec a b); try nia
-    | H : context [Z_lt_dec ?a ?b] |- _ => destruct (Z_lt_dec a b); try nia
-    | H : context [Z_gt_dec ?a ?b] |- _ => destruct (Z_gt_dec a b); try nia
-    end);
-    try lia; try nia; eauto.
-Qed.
-
-Lemma proof_of_graham_scan_dedup_return_wit_2 : graham_scan_dedup_return_wit_2.
-Proof.
-  unfold graham_scan_dedup_return_wit_2.
-  right.
-  intros.
-  eapply split_pure_and_spatial_goals.
-  - exact (proof_of_graham_scan_dedup_return_wit_2_split_goal_spatial
-      hull_pre n_pre pts_l pts_dedup pivot_out pivot0 unique_n
-      __default_Point PreH1 PreH2 PreH3 PreH4 PreH5 PreH6 PreH7
-      PreH8).
-  - exact (proof_of_graham_scan_dedup_return_wit_2_split_goal_1
-      hull_pre n_pre pts_l pts_dedup pivot_out pivot0 unique_n
-      __default_Point PreH1 PreH2 PreH3 PreH4 PreH5 PreH6 PreH7
-      PreH8).
-Qed.
-
-Lemma proof_of_graham_scan_dedup_return_wit_3_split_goal_1 : graham_scan_dedup_return_wit_3_split_goal_1.
-Proof.
-  unfold graham_scan_dedup_return_wit_3_split_goal_1.
-  intros.
-  apply derivable1s_coq_prop_r.
-  assert (Hn0 : n_pre = 0) by lia.
-  assert (Hpts_nil : pts_l = nil).
-  {
-    destruct pts_l as [| p ps]; [reflexivity |].
-    rewrite Zlength_cons in PreH4.
-    pose proof (Zlength_nonneg ps).
-    lia.
-  }
-  subst n_pre.
-  subst pts_l.
-  unfold point_dedup_hull_result.
-  left.
-  unfold is_convex_hull.
-  left.
-  unfold Graham_Scan_M.is_convex_hull.
-  split.
-  - unfold Graham_Scan_M.rev_ccw_convex.
-    intros l1 q l2 r l3 s l4 Hnil.
-    destruct l1; simpl in Hnil; discriminate.
-  - unfold Hull_Equiv.is_max_hull'_edges.
-    constructor.
-Qed.
-
-Lemma proof_of_graham_scan_dedup_return_wit_3_split_goal_2 : graham_scan_dedup_return_wit_3_split_goal_2.
-Proof.
-  unfold graham_scan_dedup_return_wit_3_split_goal_2; try left.
-  intros.
-  entailer!;
-    try (unfold point_cmp_leftdown, point_cmp_polar, point_cmp_xy,
-      point_mk, point_cross, point_cross_by_value, point_dot_by_value,
-      point_at_mid, point_colinear in *; simpl in *);
-    try (unfold point_bound, Point_Order.point_bound,
-      point_in_bound, Point_Order.point_in_bound, points_in_bound,
-      point_polar_cmp_safe_pair, point_same, point_no_dup_prefix,
-      point_prefix_has_same, point_dedup_inner_scan_inv,
-      point_prefix_represents_range, point_unique_prefix_represents_all,
-      point_dedup_scan_inv, point_dedup_result,
-      point_dedup_hull_result in *; simpl in *);
-    try (repeat match goal with H : _ /\ _ |- _ => destruct H end);
-    try (repeat match goal with
-    | |- context [Z_lt_dec ?a ?b] => destruct (Z_lt_dec a b); try nia
-    | |- context [Z_gt_dec ?a ?b] => destruct (Z_gt_dec a b); try nia
-    | H : context [Z_lt_dec ?a ?b] |- _ => destruct (Z_lt_dec a b); try nia
-    | H : context [Z_gt_dec ?a ?b] |- _ => destruct (Z_gt_dec a b); try nia
-    end);
-    try lia; try nia; eauto.
-Qed.
-
-Lemma proof_of_graham_scan_dedup_return_wit_3_split_goal_spatial : graham_scan_dedup_return_wit_3_split_goal_spatial.
-Proof.
-  unfold graham_scan_dedup_return_wit_3_split_goal_spatial.
-  intros.
-  apply PointArray.undef_full_to_undef_seg.
-Qed.
-
-Lemma proof_of_graham_scan_dedup_return_wit_3 : graham_scan_dedup_return_wit_3.
-Proof.
-  unfold graham_scan_dedup_return_wit_3.
-  right.
-  intros.
-  eapply split_pure_and_spatial_goals.
-  - exact (proof_of_graham_scan_dedup_return_wit_3_split_goal_spatial
-      hull_pre n_pre pts_l PreH1 PreH2 PreH3 PreH4 PreH5).
-  - eapply split_pure_and_spatial_goals.
-    + exact (proof_of_graham_scan_dedup_return_wit_3_split_goal_2
-        hull_pre n_pre pts_l PreH1 PreH2 PreH3 PreH4 PreH5).
-    + exact (proof_of_graham_scan_dedup_return_wit_3_split_goal_1
-        hull_pre n_pre pts_l PreH1 PreH2 PreH3 PreH4 PreH5).
 Qed.
 
 Lemma proof_of_build_hull_from_sorted_tail_dedup_derive_high_level_spec_by_low_level_spec : build_hull_from_sorted_tail_dedup_derive_high_level_spec_by_low_level_spec.

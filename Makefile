@@ -1,6 +1,7 @@
 COQMAKEFILE := CoqMakefile
 
 C_FILE := convex-hull/graham_scan.c
+ANDREW_C_FILE := convex-hull/andrew_monotone_chain.c
 BASEDIR := convex-hull/ConvexHull
 COQ_DEF_FILE := $(BASEDIR)/convex_hull_lib.v
 
@@ -27,6 +28,11 @@ PROOF_AUTO_V := $(BASEDIR)/graham_scan_proof_auto.v
 PROOF_MANUAL_V := $(BASEDIR)/graham_scan_proof_manual.v
 GOAL_CHECK_V := $(GOAL_V:_goal.v=_goal_check.v)
 
+ANDREW_GOAL_V := $(BASEDIR)/andrew_monotone_chain_goal.v
+ANDREW_PROOF_AUTO_V := $(BASEDIR)/andrew_monotone_chain_proof_auto.v
+ANDREW_PROOF_MANUAL_V := $(BASEDIR)/andrew_monotone_chain_proof_manual.v
+ANDREW_GOAL_CHECK_V := $(ANDREW_GOAL_V:_goal.v=_goal_check.v)
+
 STRATEGIES_GOAL_V := \
 	$(BASEDIR)/point_array_strategy_goal.v \
 	$(BASEDIR)/safeexec_strategy_goal.v
@@ -52,7 +58,11 @@ COQ_VFILES := \
 	$(GOAL_V) \
 	$(PROOF_AUTO_V) \
 	$(PROOF_MANUAL_V) \
-	$(GOAL_CHECK_V)
+	$(GOAL_CHECK_V) \
+	$(ANDREW_GOAL_V) \
+	$(ANDREW_PROOF_AUTO_V) \
+	$(ANDREW_PROOF_MANUAL_V) \
+	$(ANDREW_GOAL_CHECK_V)
 
 # Derive .vo targets from earlier path definitions
 VC_TARGETS := \
@@ -64,9 +74,15 @@ VC_TARGETS := \
 QUICK_TARGETS := $(VC_TARGETS:.vo=.vos)
 VOK_TARGETS := $(VC_TARGETS:.vo=.vok)
 
+ANDREW_VC_TARGETS := \
+	$(ANDREW_GOAL_V:.v=.vo) \
+	$(ANDREW_PROOF_AUTO_V:.v=.vo) \
+	$(ANDREW_PROOF_MANUAL_V:.v=.vo) \
+	$(ANDREW_GOAL_CHECK_V:.v=.vo)
+
 .DEFAULT_GOAL := build
 
-.PHONY: all build quick vok-check all-vfiles clean distclean deps symexec
+.PHONY: all build quick vok-check all-vfiles clean distclean deps symexec andrew-symexec andrew-build
 
 all: build
 
@@ -89,8 +105,10 @@ SYMEXEC_FLAGS := \
 	--no-exec-info
 
 SYMEXEC_OUTPUTS := $(GOAL_V) $(PROOF_AUTO_V) $(GOAL_CHECK_V)
+ANDREW_SYMEXEC_OUTPUTS := $(ANDREW_GOAL_V) $(ANDREW_PROOF_AUTO_V) $(ANDREW_GOAL_CHECK_V)
 SYMEXEC_UPDATE_MANUAL ?= 0
 symexec: $(SYMEXEC_OUTPUTS)
+andrew-symexec: $(ANDREW_SYMEXEC_OUTPUTS)
 
 # Grouped target (&:)
 $(SYMEXEC_OUTPUTS) &: $(C_FILE)
@@ -100,6 +118,17 @@ $(SYMEXEC_OUTPUTS) &: $(C_FILE)
 	  --proof-manual-file=$(PROOF_MANUAL_V) \
 	  $(SYMEXEC_FLAGS) \
 	  --input-file=$(SYMEXEC_INPUT_FILE) \
+
+$(ANDREW_SYMEXEC_OUTPUTS) &: $(ANDREW_C_FILE)
+	$(SYMEXEC) \
+	  --goal-file=$(ANDREW_GOAL_V) \
+	  --proof-auto-file=$(ANDREW_PROOF_AUTO_V) \
+	  --proof-manual-file=$(ANDREW_PROOF_MANUAL_V) \
+	  $(SYMEXEC_FLAGS) \
+	  --input-file=$(abspath $(ANDREW_C_FILE)) \
+
+andrew-build: andrew-symexec deps
+	$(MAKE) -f $(COQMAKEFILE) $(ANDREW_VC_TARGETS)
 
 all-vfiles: symexec deps
 

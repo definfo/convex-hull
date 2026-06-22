@@ -929,6 +929,216 @@ Definition point_sorted_range
     left <= i -> i <= j -> j <= right ->
     point_cmp_polar gp (Znth i l default_point) (Znth j l default_point) <= 0.
 
+Definition point_xy_sorted_range
+    (l : list Point) (left right : Z) : Prop :=
+  forall i j,
+    left <= i -> i <= j -> j <= right ->
+    point_cmp_leftdown (Znth i l default_point)
+                       (Znth j l default_point) <= 0.
+
+Definition point_xy_sorted (l : list Point) : Prop :=
+  point_xy_sorted_range l 0 (Zlength l - 1).
+
+Definition point_xy_partitioned_at
+    (l : list Point) (low high p : Z) : Prop :=
+  low <= p <= high /\
+  Forall (fun x => point_cmp_leftdown x (Znth p l default_point) <= 0)
+         (sublist low p l) /\
+  Forall (fun x => point_cmp_leftdown (Znth p l default_point) x < 0)
+         (sublist (p + 1) (high + 1) l).
+
+Definition point_xy_partition_scan_inv
+    (before cur : list Point)
+    (low high : Z) (pivot : Point) (i j : Z) : Prop :=
+  point_permutation before cur /\
+  point_same_outside_range before cur low high /\
+  Znth high cur default_point = pivot /\
+  (forall k, low <= k <= i ->
+     point_cmp_leftdown (Znth k cur default_point) pivot <= 0) /\
+  (forall k, i < k < j ->
+     point_cmp_leftdown pivot (Znth k cur default_point) < 0).
+
+Definition point_from_sorted_range
+    (sorted : list Point) (lo hi : Z) (p : Point) : Prop :=
+  exists idx,
+    lo <= idx < hi /\
+    p = Znth idx sorted default_point.
+
+Definition point_chain_uses_range
+    (sorted chain : list Point) (lo hi : Z) : Prop :=
+  0 <= lo /\
+  lo <= hi /\
+  hi <= Zlength sorted /\
+  Forall (point_from_sorted_range sorted lo hi) chain.
+
+Definition point_list_not_all_same (l : list Point) : Prop :=
+  exists i j,
+    0 <= i < Zlength l /\
+    0 <= j < Zlength l /\
+    ~ point_same (Znth i l default_point) (Znth j l default_point).
+
+Definition point_chain_indexed_by_range
+    (sorted chain : list Point) (lo hi : Z) (idxs : list Z) : Prop :=
+  Zlength idxs = Zlength chain /\
+  forall pos,
+    0 <= pos < Zlength chain ->
+    lo <= Znth pos idxs 0 < hi /\
+    Znth pos chain default_point =
+      Znth (Znth pos idxs 0) sorted default_point.
+
+Definition point_indices_strict_increasing (idxs : list Z) : Prop :=
+  forall a b,
+    0 <= a -> a < b -> b < Zlength idxs ->
+    Znth a idxs 0 < Znth b idxs 0.
+
+Definition point_indices_strict_decreasing (idxs : list Z) : Prop :=
+  forall a b,
+    0 <= a -> a < b -> b < Zlength idxs ->
+    Znth b idxs 0 < Znth a idxs 0.
+
+Definition point_chain_strictly_uses_range
+    (sorted chain : list Point) (lo hi : Z) : Prop :=
+  exists idxs,
+    point_chain_indexed_by_range sorted chain lo hi idxs /\
+    point_indices_strict_increasing idxs.
+
+Definition point_chain_rev_strictly_uses_range
+    (sorted chain : list Point) (lo hi : Z) : Prop :=
+  exists idxs,
+    point_chain_indexed_by_range sorted chain lo hi idxs /\
+    point_indices_strict_decreasing idxs.
+
+Definition point_chain_starts_at
+    (sorted chain : list Point) (idx : Z) : Prop :=
+  0 < Zlength chain ->
+  Znth 0 chain default_point = Znth idx sorted default_point.
+
+Definition point_chain_ends_at
+    (sorted chain : list Point) (idx : Z) : Prop :=
+  0 < Zlength chain ->
+  Znth (Zlength chain - 1) chain default_point =
+    Znth idx sorted default_point.
+
+Definition point_chain_left_turns (chain : list Point) : Prop :=
+  forall idx,
+    0 <= idx ->
+    idx + 2 < Zlength chain ->
+    ccw (Znth idx chain default_point)
+        (Znth (idx + 1) chain default_point)
+        (Znth (idx + 2) chain default_point).
+
+Definition point_chain_left_envelope
+    (sorted chain : list Point) (lo hi : Z) : Prop :=
+  forall edge_idx point_idx,
+    0 <= edge_idx ->
+    edge_idx + 1 < Zlength chain ->
+    lo <= point_idx < hi ->
+    0 <= point_cross
+           (Znth edge_idx chain default_point)
+           (Znth (edge_idx + 1) chain default_point)
+           (Znth point_idx sorted default_point).
+
+Definition andrew_lower_chain_geometry
+    (sorted chain : list Point) (read : Z) : Prop :=
+  point_chain_uses_range sorted chain 0 read /\
+  point_chain_strictly_uses_range sorted chain 0 read /\
+  point_chain_starts_at sorted chain 0 /\
+  point_chain_left_turns chain /\
+  point_chain_left_envelope sorted chain 0 read.
+
+Definition andrew_lower_finished_chain
+    (sorted chain : list Point) : Prop :=
+  point_chain_uses_range sorted chain 0 (Zlength sorted) /\
+  point_chain_strictly_uses_range sorted chain 0 (Zlength sorted) /\
+  point_chain_starts_at sorted chain 0 /\
+  point_chain_ends_at sorted chain (Zlength sorted - 1) /\
+  point_chain_left_turns chain /\
+  point_chain_left_envelope sorted chain 0 (Zlength sorted) /\
+  points_in_bound chain /\
+  point_list_not_all_same sorted /\
+  2 <= Zlength chain.
+
+Definition andrew_upper_suffix_geometry
+    (sorted chain : list Point) (read lower_n : Z) : Prop :=
+  let suffix := sublist lower_n (Zlength chain) chain in
+  point_chain_uses_range sorted suffix read (Zlength sorted) /\
+  point_chain_rev_strictly_uses_range sorted suffix read (Zlength sorted) /\
+  point_chain_left_turns suffix /\
+  point_chain_left_envelope sorted suffix read (Zlength sorted).
+
+Definition andrew_complete_hull_shape
+    (sorted hull : list Point) : Prop :=
+  2 <= Zlength hull <= 2 * Zlength sorted /\
+  point_chain_uses_range sorted hull 0 (Zlength sorted) /\
+  points_in_bound hull /\
+  is_convex_hull sorted hull.
+
+Definition andrew_lower_append_ready
+    (sorted chain : list Point) (read : Z) : Prop :=
+  read < Zlength sorted ->
+  (Zlength chain < 2 \/
+   0 < point_cross
+         (Znth (Zlength chain - 2) chain default_point)
+         (Znth (Zlength chain - 1) chain default_point)
+         (Znth read sorted default_point)) ->
+  andrew_lower_chain_geometry
+    sorted (chain ++ [Znth read sorted default_point]) (read + 1).
+
+Definition andrew_upper_capacity
+    (sorted chain : list Point) (read lower_n : Z) : Prop :=
+  lower_n <= Zlength sorted /\
+  Zlength chain <= lower_n + (Zlength sorted - read) /\
+  (1 <= read -> Zlength chain < 2 * Zlength sorted).
+
+Definition andrew_upper_append_ready
+    (sorted chain : list Point) (read lower_n : Z) : Prop :=
+  1 <= read - 1 ->
+  (Zlength chain <= lower_n \/
+   0 < point_cross
+         (Znth (Zlength chain - 2) chain default_point)
+         (Znth (Zlength chain - 1) chain default_point)
+         (Znth (read - 1) sorted default_point)) ->
+  andrew_upper_suffix_geometry
+    sorted (chain ++ [Znth (read - 1) sorted default_point]) (read - 1) lower_n /\
+  andrew_upper_capacity
+    sorted (chain ++ [Znth (read - 1) sorted default_point]) (read - 1) lower_n /\
+  (read - 1 <= 1 ->
+     andrew_complete_hull_shape
+       sorted (chain ++ [Znth (read - 1) sorted default_point])).
+
+Definition andrew_lower_scan_inv
+    (sorted chain : list Point) (read top : Z) : Prop :=
+  0 <= read <= Zlength sorted /\
+  top = Zlength chain /\
+  0 <= top <= read /\
+  points_in_bound chain /\
+  Forall (fun p => In p sorted) chain /\
+  point_list_not_all_same sorted /\
+  andrew_lower_chain_geometry sorted chain read /\
+  andrew_lower_append_ready sorted chain read /\
+  (Zlength sorted <= read -> andrew_lower_finished_chain sorted chain).
+
+Definition andrew_upper_scan_inv
+    (sorted chain : list Point) (read top lower_n : Z) : Prop :=
+  0 <= read <= Zlength sorted /\
+  lower_n <= top <= 2 * Zlength sorted /\
+  top = Zlength chain /\
+  points_in_bound chain /\
+  Forall (fun p => In p sorted) chain /\
+  point_list_not_all_same sorted /\
+  andrew_lower_finished_chain sorted (sublist 0 lower_n chain) /\
+  andrew_upper_suffix_geometry sorted chain read lower_n /\
+  andrew_upper_capacity sorted chain read lower_n /\
+  andrew_upper_append_ready sorted chain read lower_n /\
+  (read <= 1 -> andrew_complete_hull_shape sorted chain).
+
+Definition andrew_hull_result
+    (base sorted hull : list Point) : Prop :=
+  point_permutation base sorted /\
+  point_xy_sorted sorted /\
+  andrew_complete_hull_shape sorted hull /\
+  is_convex_hull base hull.
+
 Definition point_polar_partitioned_at
     (gp : Point) (l : list Point) (low high p : Z) : Prop :=
   low <= p <= high /\

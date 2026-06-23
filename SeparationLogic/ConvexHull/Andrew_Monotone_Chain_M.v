@@ -2,7 +2,7 @@
 Require Import Coq.ZArith.ZArith.
 Require Import Coq.Lists.List.
 From ConvexHull Require Import Record_Geo_Point Point_Order Hull_Equiv
-                               Graham_Scan Graham_Scan_M.
+                               Graham_Scan Graham_Scan_M Andrew_Monotone_Chain.
 Require Import MonadLib.Monad.
 From MonadLib.StateRelMonad Require StateRelBasic StateRelMonad StateRelHoare.
 Import ListNotations.
@@ -11,87 +11,6 @@ Import StateRelBasic StateRelMonad StateRelHoare.
 Local Open Scope Z_scope.
 Local Open Scope monad_scope.
 (* /COQ-HEAD *)
-
-(** Andrew's monotone chain uses the same stack update as [build_hull]:
-    repeatedly pop the stack while the next point would make a non-left turn,
-    then push the point.  The state is the stack with its top at the head. *)
-Definition andrew_scan_stack (l : list point) : list point :=
-  fold_left (fun T p => graham_scan_inc p T) l [].
-
-Definition andrew_chain (l : list point) : list point :=
-  rev (andrew_scan_stack l).
-
-Definition andrew_lower_chain (sorted : list point) : list point :=
-  andrew_chain sorted.
-
-Definition andrew_upper_chain (sorted : list point) : list point :=
-  andrew_chain (rev sorted).
-
-(** [lower] runs from left to right; [upper] runs from right to left.
-    For lists with at least two input points, the last vertex of each chain is
-    duplicated by the other chain, so [removelast] opens both chains before
-    concatenation.
-
-    This is the usual Andrew order.  [Graham_Scan_M.is_convex_hull] uses the
-    opposite directed-edge orientation, so [andrew_merge] below reverses this
-    concrete merge for the specification hull. *)
-Definition andrew_ccw_merge
-    (sorted lower upper : list point) : list point :=
-  match sorted with
-  | [] => []
-  | [_] => sorted
-  | _ => removelast lower ++ removelast upper
-  end.
-
-Definition andrew_merge
-    (sorted lower upper : list point) : list point :=
-  rev (andrew_ccw_merge sorted lower upper).
-
-Definition andrew_hull (sorted : list point) : list point :=
-  andrew_merge
-    sorted
-    (andrew_lower_chain sorted)
-    (andrew_upper_chain sorted).
-
-Fixpoint point_xy_sorted_from (p : point) (l : list point) : Prop :=
-  match l with
-  | [] => True
-  | q :: rest => point_cmp_xy p q <= 0 /\ point_xy_sorted_from q rest
-  end.
-
-Definition point_xy_sorted (l : list point) : Prop :=
-  match l with
-  | [] => True
-  | p :: rest => point_xy_sorted_from p rest
-  end.
-
-Definition point_list_non_singleton (l : list point) : Prop :=
-  exists p q rest, l = p :: q :: rest.
-
-(** The current Graham proof infrastructure does not derive Andrew's
-    two-chain geometry from x/y sorting alone.  Keep the missing geometric
-    obligations explicit: the merged Andrew hull must be clockwise convex, and
-    every input point must lie inside its directed edge hull. *)
-Definition andrew_hull_geometry (sorted : list point) : Prop :=
-  point_list_non_singleton sorted /\
-  rev_ccw_convex (andrew_hull sorted) /\
-  is_max_hull'_edges (andrew_hull sorted) sorted.
-
-Definition andrew_hull_geometry_from_sorting (sorted : list point) : Prop :=
-  point_xy_sorted sorted ->
-  point_list_non_singleton sorted ->
-  andrew_hull_geometry sorted.
-
-Lemma andrew_hull_geometry_is_convex_hull : forall sorted T,
-  T = andrew_hull sorted ->
-  andrew_hull_geometry sorted ->
-  is_convex_hull sorted T.
-Proof.
-  intros sorted T HT Hgeom.
-  subst T.
-  exact (proj2 Hgeom).
-Qed.
-
 
 (*** (StateRelMonad) Program Definition *)
 

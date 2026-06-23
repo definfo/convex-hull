@@ -50,6 +50,8 @@ COQ_VFILES := \
 	SeparationLogic/ConvexHull/Hull_Equiv.v \
 	SeparationLogic/ConvexHull/Graham_Scan.v \
 	SeparationLogic/ConvexHull/Graham_Scan_M.v \
+	SeparationLogic/ConvexHull/Andrew_Monotone_Chain.v \
+	SeparationLogic/ConvexHull/Andrew_Monotone_Chain_M.v \
 	SeparationLogic/ConvexHull/Reversal.v \
 	SeparationLogic/ConvexHull/ConvexHull.v \
 	$(COQ_DEF_FILE) \

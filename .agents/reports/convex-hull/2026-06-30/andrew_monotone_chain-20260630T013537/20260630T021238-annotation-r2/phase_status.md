@@ -1,0 +1,21 @@
+## Phase Status
+
+- phase: annotation
+- frozen_inputs: `convex-hull/andrew_monotone_chain.c` sha256 `e7d370bd04b534e5c745368f7b413c9fe21529aea277288067a5d995eb188483`; `convex-hull/ConvexHull/convex_hull_lib.v` sha256 `e8d7914088f143e2c8acad9c67318bffcc3bf7ecda89ae0d1890adff555d52d1`
+- active_scratch_paths: none
+- active_phase_owner: main
+- invalidated_outputs: old Andrew generated-file absence/stale state replaced by fresh symexec outputs
+- blocking_reason: none after main-owned dependency rebuild
+- phase_started_at: 2026-06-30T02:12:38+08:00
+- phase_finished_at: 2026-06-30T02:24:00+08:00
+- phase_elapsed_seconds: unknown
+- timing_source: wall-clock
+- human_activity_timings:
+  - analysis_seconds: n/a
+  - integration_edit_seconds: 0
+  - proof_edit_seconds: 0
+  - helper_cleanup_seconds: 0
+  - subagent_wait_seconds: 306
+  - review_seconds: n/a
+- major_time_sinks: scratch lib coqc, main-owned symexec refresh, generated Andrew build
+- next_action: goal-frozen -> vc-checking for the 37 manual Andrew witness stubs

@@ -1,0 +1,62 @@
+## Delegation Ticket
+
+- subagent_name: vc-proving-subagent
+- skill_name: vc-proving
+- post_filling_quality_gate: n/a
+- task_type: vc-proving-phase
+- phase: vc-proving
+- phase_input_version: post-refactor goal sha256:65bab7a689fe5208cdd279ea7d648e644cfd9b789803968fbf6141aa099a25ef
+- trigger_rule: user requested `$vc-proving` after vc-checking passed
+- target_scope: all 37 witnesses from current proof manual
+- iteration_owner: subagent
+- return_condition: completed | blocked | stale
+- allowed_read_set: current case C, goal, proof_auto, proof_manual, goal_check, common_case_formal_lib, vc-checking report and group plan, vc-proving scripts/docs, related ConvexHull libraries and LLM reference proofs
+- allowed_tooling: rocq-mcp
+- scratch_seed_files: convex-hull/ConvexHull/andrew_monotone_chain_proof_manual.v; convex-hull/ConvexHull/convex_hull_lib.v
+- scratch_owned_paths: .tmp/convex-hull/ConvexHull/andrew_monotone_chain__vc_proving_subagent_tmp_proof_manual.v; .tmp/convex-hull/ConvexHull/andrew_monotone_chain__vc_proving_subagent_tmp_lib.v; .tmp/convex-hull/ConvexHull/andrew_monotone_chain__vc_proving_workers/20260630T112443
+- annotation_scratch_lib_seed_files: n/a
+- annotation_scratch_lib_owned_paths: n/a
+- witness_group_plan: .agents/reports/convex-hull/2026-06-30/andrew_monotone_chain-20260630T013537/20260630T112443-vc-proving-r1/vc_checking_group_plan.json
+- grouping_source: vc-checking-group-plan
+- proof_pattern_summary: comparator returns; cross product arithmetic; point swap model; partition scan/finish; quicksort sortedness composition; Andrew lower scan; Andrew upper scan
+- group_helper_policy: group-local-helper-lib
+- worker_manual_workdir: .tmp/convex-hull/ConvexHull/andrew_monotone_chain__vc_proving_workers/20260630T112443
+- worker_reports: .agents/reports/convex-hull/2026-06-30/andrew_monotone_chain-20260630T013537/20260630T112443-vc-proving-r1/worker_reports
+- previous_vc_proving_checkpoint: none
+- previous_partial_proof_packet: none
+- checkpoint_reuse_policy: exact_or_pattern
+- checkpoint_stale_conditions: source_goal_version mismatch; lib_frozen_prefix_hash mismatch; protected_lib_prefix_end_line mismatch; packet hash mismatch; helper payload conflict; direct candidate compile gate failure; any source/generated/manual/lib hash change
+- timing_required: true
+- persistent_report_dir: .agents/reports/convex-hull/2026-06-30/andrew_monotone_chain-20260630T013537
+- round_report_dir: .agents/reports/convex-hull/2026-06-30/andrew_monotone_chain-20260630T013537/20260630T112443-vc-proving-r1
+- timing_log_path: .agents/reports/convex-hull/2026-06-30/andrew_monotone_chain-20260630T013537/20260630T112443-vc-proving-r1/timing_log.md
+- expected_report_paths: .agents/reports/convex-hull/2026-06-30/andrew_monotone_chain-20260630T013537/20260630T112443-vc-proving-r1/proof_strategy_report.md; .agents/reports/convex-hull/2026-06-30/andrew_monotone_chain-20260630T013537/20260630T112443-vc-proving-r1/subagent_return_report.md; .agents/reports/convex-hull/2026-06-30/andrew_monotone_chain-20260630T013537/20260630T112443-vc-proving-r1/worker_reports/
+- proof_manual_write_contract: witness-proofs-after-lib-migration
+- lib_write_contract: frozen-prefix-then-helper-imports-and-lemmas
+- protected_lib_prefix_end_line: 4125
+- task_local_scratch_lib_module: SimpleC.EE.convex_hull.convex_hull_lib
+- worker_execution_mode: coqc_only
+- allowed_write_set: .tmp/convex-hull/ConvexHull/andrew_monotone_chain__vc_proving_subagent_tmp_proof_manual.v; .tmp/convex-hull/ConvexHull/andrew_monotone_chain__vc_proving_subagent_tmp_lib.v; .tmp/convex-hull/ConvexHull/andrew_monotone_chain__vc_proving_workers/20260630T112443; .agents/reports/convex-hull/2026-06-30/andrew_monotone_chain-20260630T013537/20260630T112443-vc-proving-r1
+- forbidden_write_set: convex-hull/andrew_monotone_chain.c; convex-hull/ConvexHull/andrew_monotone_chain_goal.v; convex-hull/ConvexHull/andrew_monotone_chain_proof_auto.v; convex-hull/ConvexHull/andrew_monotone_chain_proof_manual.v; convex-hull/ConvexHull/andrew_monotone_chain_goal_check.v; convex-hull/ConvexHull/convex_hull_lib.v; unrelated source files; any stale scratch outside this round
+- expected_output: completed/blocked/stale Subagent Return Report; helper-free migrated scratch manual; migrated task_local_scratch_lib; worker reports; proof_strategy_report; timing log; checkpoint artifacts when applicable
+- handoff_format: Markdown report plus paths to scratch artifacts verified by scripts/coqc
+- annotation_focus: n/a
+- preferred_hidden_properties: n/a
+- forbidden_annotation_patterns: n/a
+- annotation_checking_required: false
+- spec_definition_review_required: false
+- spec_definition_focus: n/a
+- vc_informal_proof_report_path: .agents/reports/convex-hull/2026-06-30/andrew_monotone_chain-20260630T013537/20260630T024232-vc-checking-r1/vc_checking_informal_proof_report.md
+- cleanup_paths: stale proving scratch matching .tmp/convex-hull/ConvexHull/andrew_monotone_chain__vc_proving_subagent_tmp_* and .tmp/convex-hull/ConvexHull/andrew_monotone_chain__vc_proving_workers/20260630T112443 after completion/stale/main integration; keep handoff artifacts until main integrates
+- reentry_brief: n/a
+- stale_if: any frozen input hash changes; witness set changes; common_case_formal_lib frozen prefix changes; formal proof_manual or common_case_formal_lib is integrated by main; symexec refreshes generated files
+
+### Frozen Input Hashes
+
+- c_path: sha256:9ae7c264b2f4b8f06ae63a9c234b3dd1c94581cb4bb6a6e909665e43a5342842
+- common_case_formal_lib: sha256:a80daa2e4d0ff96d525fd94f8fda721edb8d69cb29e09934011b37248a9e6442
+- goal: sha256:65bab7a689fe5208cdd279ea7d648e644cfd9b789803968fbf6141aa099a25ef
+- proof_auto: sha256:e5155859b0b92f01ae072f486ff55c26b60d37c9b7be9989ed9b93465f3eb7d3
+- proof_manual: sha256:33c9f7cded508a1687ca8a83b6a5196f22318286a4d300c81a435bfda66bc097
+- goal_check: sha256:55f5ee519f32b889f41791eb31047192979e5474bdd55e859200248145e126ec
+

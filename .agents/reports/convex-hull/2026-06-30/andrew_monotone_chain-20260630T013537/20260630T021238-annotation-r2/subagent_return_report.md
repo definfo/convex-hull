@@ -1,0 +1,43 @@
+## Subagent Return Report
+
+- round_outcome: completed
+- annotation_checking_status: passed
+- qcp_mcp_requirement_satisfied: yes
+- annotation_scratch_lib_coqc_status: passed
+- ready_for_main_symexec: yes
+- ready_for_main_c_patch: empty
+- ready_for_main_common_case_formal_lib_spec_update: empty
+- summary: Fresh r2 scratch was created from the official C and common case formal lib after main rebuilt ConvexHull dependencies. qcp-mcp reached file end on the scratch C. The scratch lib compiled successfully. No official C annotation patch or `annotation_scratch_lib` spec patch was identified.
+- phase_started_at: 2026-06-30T02:13:00+08:00
+- phase_finished_at: 2026-06-30T02:18:06+08:00
+- phase_elapsed_seconds: 306
+- command_timings:
+  - `qcp.load_target_file` on scratch C: 5.55s, passed
+  - `qcp.symbolic line 330`: 5.26s, passed
+  - `qcp.close`: 2.70s, passed
+  - scratch lib `coqc`: 8.97s, passed
+- human_activity_timings:
+  - scratch_setup_seconds: not separately stopwatched
+  - spec_definition_review_seconds: not separately stopwatched
+  - annotation_review_seconds: not separately stopwatched
+  - report_seconds: not separately stopwatched
+  - cleanup_seconds: not separately stopwatched
+- slowest_steps: scratch lib `coqc`
+- major_time_sinks: source-level spec/annotation review and compile gate; no iterative annotation repair was needed
+- annotation_checking_report: `.agents/reports/convex-hull/2026-06-30/andrew_monotone_chain-20260630T013537/20260630T021238-annotation-r2/annotation_checking_report.md`
+- annotation_filling_analysis: `.agents/reports/convex-hull/2026-06-30/andrew_monotone_chain-20260630T013537/20260630T021238-annotation-r2/annotation_filling_analysis.md`
+- ready_for_main_proof_manual: n/a
+- ready_for_main_common_case_formal_lib_append: n/a
+- migrated_helper_imports: n/a
+- witness_group_plan: n/a
+- grouping_source: n/a
+- proof_pattern_summary: n/a
+- group_helper_policy: n/a
+- worker_reports: n/a
+- checkpoint_reuse_summary: n/a
+- round_checkpoint: n/a
+- partial_proof_packet: n/a
+- reuse_index: n/a
+- protected_prefix_respected: yes; scratch lib was identical to the official common case formal lib and no official files were edited
+- recommended_next_phase: main-owned annotation gate validation, then main-owned formal symexec refresh / goal-frozen transition
+- cleanup_status: completed; r2 scratch C, annotation scratch lib, and generated scratch `.vo` / `.glob` / `.aux` files were deleted

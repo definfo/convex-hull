@@ -1,0 +1,50 @@
+## Delegation Ticket
+
+- subagent_name: annotation-subagent
+- skill_name: annotation-filling
+- post_filling_quality_gate: annotation-checking
+- task_type: annotation-phase
+- phase: annotation
+- phase_input_version: c_sha256=e7d370bd04b534e5c745368f7b413c9fe21529aea277288067a5d995eb188483; common_case_formal_lib_sha256=e8d7914088f143e2c8acad9c67318bffcc3bf7ecda89ae0d1890adff555d52d1; header_sha256=1a8da15722859b430561da492773d3ad11cf433e751c20819142b5c9b76e2cc5; point_array_strategies_sha256=233b7249363198a3ec79302101458c9bbfa6fbf974b8d637faf3400011109e30
+- trigger_rule: user invoked `$annotation-filling convex-hull/andrew_monotone_chain.c`
+- target_scope: direct-proof annotation for `andrew_monotone_chain` and helper functions in `convex-hull/andrew_monotone_chain.c`
+- iteration_owner: subagent
+- return_condition: completed | blocked | stale
+- allowed_read_set: target C, `convex-hull/convex_hull_def.h`, `convex-hull/point_array.strategies`, `convex-hull/ConvexHull/convex_hull_lib.v`, existing convex-hull generated/proof files for context, `SeparationLogic/ConvexHull/Andrew_Monotone_Chain*.v`, `convex-hull/graham_scan*.c`, skill docs under `.agents/skills`
+- allowed_tooling: qcp-mcp
+- scratch_seed_files: `convex-hull/andrew_monotone_chain.c`; `convex-hull/ConvexHull/convex_hull_lib.v`
+- scratch_owned_paths: `.tmp/convex-hull/andrew_monotone_chain__annotation_subagent_tmp.c`; `.tmp/convex-hull/ConvexHull/andrew_monotone_chain__annotation_subagent_tmp_lib.v`
+- annotation_scratch_lib_seed_files: `convex-hull/ConvexHull/convex_hull_lib.v`
+- annotation_scratch_lib_owned_paths: `.tmp/convex-hull/ConvexHull/andrew_monotone_chain__annotation_subagent_tmp_lib.v`
+- witness_group_plan: n/a
+- grouping_source: n/a
+- proof_pattern_summary: n/a
+- group_helper_policy: n/a
+- worker_manual_workdir: n/a
+- worker_reports: n/a
+- previous_vc_proving_checkpoint: none
+- previous_partial_proof_packet: none
+- checkpoint_reuse_policy: n/a
+- checkpoint_stale_conditions: n/a
+- timing_required: true
+- persistent_report_dir: `.agents/reports/convex-hull/2026-06-30/andrew_monotone_chain-20260630T013537`
+- round_report_dir: `.agents/reports/convex-hull/2026-06-30/andrew_monotone_chain-20260630T013537/20260630T013537-annotation-r1`
+- timing_log_path: `.agents/reports/convex-hull/2026-06-30/andrew_monotone_chain-20260630T013537/20260630T013537-annotation-r1/timing_log.md`
+- expected_report_paths: `.agents/reports/convex-hull/2026-06-30/andrew_monotone_chain-20260630T013537/20260630T013537-annotation-r1/annotation_filling_analysis.md`; `.agents/reports/convex-hull/2026-06-30/andrew_monotone_chain-20260630T013537/20260630T013537-annotation-r1/annotation_checking_report.md`; `.agents/reports/convex-hull/2026-06-30/andrew_monotone_chain-20260630T013537/20260630T013537-annotation-r1/subagent_return_report.md`
+- proof_manual_write_contract: n/a
+- lib_write_contract: n/a
+- protected_lib_prefix_end_line: 4132
+- allowed_write_set: `.tmp/convex-hull/andrew_monotone_chain__annotation_subagent_tmp.c`; `.tmp/convex-hull/ConvexHull/andrew_monotone_chain__annotation_subagent_tmp_lib.v`; round-local reports under `.agents/reports/convex-hull/2026-06-30/andrew_monotone_chain-20260630T013537/20260630T013537-annotation-r1`
+- forbidden_write_set: `convex-hull/andrew_monotone_chain.c`; `convex-hull/ConvexHull/convex_hull_lib.v`; `convex-hull/ConvexHull/*_goal.v`; `convex-hull/ConvexHull/*_proof_auto.v`; `convex-hull/ConvexHull/*_proof_manual.v`; `convex-hull/ConvexHull/*_goal_check.v`; `SeparationLogic/ConvexHull/*.v`; stale or unrelated scratch files
+- expected_output: Subagent Return Report with checked C annotation patch, checked annotation_scratch_lib spec patch or `empty`, qcp-mcp file-end result, Annotation Checking Report, timing summary, cleanup status, and recommended next phase
+- handoff_format: markdown report plus unified diff or block rewrite for scratch C and annotation_scratch_lib changes; if blocked, precise blocker and latest failing qcp-mcp/checking evidence
+- annotation_focus: complete and validate predicate-first annotations for `andrew_monotone_chain`, especially lower scan loop, upper scan loop, stack pop/push assertions, final return assertion, and any helper-function specs needed for qcp-mcp to reach file end
+- preferred_hidden_properties: sorted/permutation relation after `quicksort_xy_points`; lower-chain processed prefix geometry via `andrew_lower_scan_inv`; upper-chain suffix geometry and fixed lower prefix via `andrew_upper_scan_inv`; append-ready facts for push after pop; PointArray segment/undef split for `hull[0,k)` and unwritten tail; final `andrew_hull_result` connecting base input, sorted points, hull output, and convex hull correctness
+- forbidden_annotation_patterns: no new Rocq recursive loop/state-machine mirror of Andrew monotone chain; no invariant containing only ranges and memory shape; no duplicate PointArray/store_point memory predicates; no weakening final correctness to `Zlength` and memory preservation; no direct edits to official `.c` or `common_case_formal_lib`; no replacing qcp-mcp success with direct symexec
+- annotation_checking_required: true
+- spec_definition_review_required: true
+- spec_definition_focus: review existing `andrew_hull_result`, `andrew_lower_scan_inv`, `andrew_upper_scan_inv`, `andrew_lower_append_ready`, `andrew_upper_append_ready`, and related chain geometry definitions in annotation_scratch_lib for mathematical-property style, strength, and consistency with C annotation; propose only property-level spec changes if needed
+- vc_informal_proof_report_path: n/a
+- cleanup_paths: `.tmp/convex-hull/andrew_monotone_chain__annotation_subagent_tmp.c`; `.tmp/convex-hull/ConvexHull/andrew_monotone_chain__annotation_subagent_tmp_lib.v`
+- reentry_brief: none; this is a fresh annotation-filling round after prior annotation-checking was blocked by missing scratch artifacts
+- stale_if: official target C changes; `common_case_formal_lib` changes; scratch paths change; phase input hashes above no longer match; user redirects/cancels; qcp-mcp session becomes unrecoverable and fresh reload cannot be established

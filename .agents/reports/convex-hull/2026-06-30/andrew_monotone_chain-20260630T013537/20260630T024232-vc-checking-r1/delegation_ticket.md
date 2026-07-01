@@ -1,0 +1,51 @@
+## Delegation Ticket
+
+- subagent_name: vc-checking-subagent
+- skill_name: vc-checking
+- post_filling_quality_gate: n/a
+- task_type: vc-checking-phase
+- phase: vc-checking
+- phase_input_version: post-refactor goal-frozen version after unfolding andrew_hull_result
+- trigger_rule: user requested `$vc-checking convex-hull/andrew_monotone_chain.c`
+- target_scope: all currently admitted witness obligations in convex-hull/ConvexHull/andrew_monotone_chain_proof_manual.v
+- iteration_owner: subagent
+- return_condition: completed | blocked | stale
+- allowed_read_set: current Andrew C/lib/generated/manual files; related ConvexHull project libraries; LLM style references
+- allowed_tooling: none
+- scratch_seed_files: n/a
+- scratch_owned_paths: none
+- annotation_scratch_lib_seed_files: n/a
+- annotation_scratch_lib_owned_paths: n/a
+- witness_group_plan: produce as output
+- grouping_source: n/a
+- proof_pattern_summary: produce as output
+- group_helper_policy: n/a during vc-checking; helper candidates belong to worker_helper_scratch_lib then task_local_scratch_lib helper suffix in vc-proving
+- worker_manual_workdir: n/a
+- worker_reports: n/a
+- previous_vc_proving_checkpoint: none
+- previous_partial_proof_packet: none
+- checkpoint_reuse_policy: n/a
+- checkpoint_stale_conditions: any source/generated/manual/lib hash change; witness set change; frozen lib prefix change; reintroduction of andrew_hull_result
+- timing_required: true
+- persistent_report_dir: .agents/reports/convex-hull/2026-06-30/andrew_monotone_chain-20260630T013537
+- round_report_dir: .agents/reports/convex-hull/2026-06-30/andrew_monotone_chain-20260630T013537/20260630T024232-vc-checking-r1
+- timing_log_path: .agents/reports/convex-hull/2026-06-30/andrew_monotone_chain-20260630T013537/20260630T024232-vc-checking-r1/timing_log.md
+- expected_report_paths: .agents/reports/convex-hull/2026-06-30/andrew_monotone_chain-20260630T013537/20260630T024232-vc-checking-r1/vc_checking_informal_proof_report.md; .agents/reports/convex-hull/2026-06-30/andrew_monotone_chain-20260630T013537/20260630T024232-vc-checking-r1/subagent_return_report.md
+- proof_manual_write_contract: n/a
+- lib_write_contract: n/a
+- protected_lib_prefix_end_line: 4125
+- allowed_write_set: none
+- forbidden_write_set: current case main-state files; generated files; common_case_formal_lib; proof manual; persistent report final state files
+- expected_output: VC Informal Proof Provability Report; per-witness judgments; witness_group_plan; timing summary; Subagent Return Report; recommended next phase
+- handoff_format: Markdown
+- annotation_focus: n/a
+- preferred_hidden_properties: n/a
+- forbidden_annotation_patterns: do not require reintroducing andrew_hull_result; do not propose a Rocq recursive/state-machine mirror of C loops; do not weaken final correctness to memory/range only
+- annotation_checking_required: false
+- spec_definition_review_required: false
+- spec_definition_focus: current property-level predicates only
+- vc_informal_proof_report_path: .agents/reports/convex-hull/2026-06-30/andrew_monotone_chain-20260630T013537/20260630T024232-vc-checking-r1/vc_checking_informal_proof_report.md
+- cleanup_paths: none
+- reentry_brief: n/a
+- stale_if: any source or generated file hash changes, witness set changes, frozen lib prefix changes, or andrew_hull_result is reintroduced
+

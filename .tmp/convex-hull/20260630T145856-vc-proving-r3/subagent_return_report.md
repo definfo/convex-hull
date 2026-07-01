@@ -1,0 +1,66 @@
+## Subagent Return Report
+
+- round_outcome: blocked
+- summary: r3 vc-proving used fresh scratch and the vc-checking group plan. The script split/prepare pipeline succeeded after local script-snapshot repairs, but concurrent Codex worker execution failed for every group with `failed to initialize in-process app-server client: Read-only file system (os error 30)`. I switched inside this subagent to serial `coqc` fallback and compile-gated groups 00-04, solving 20 of 37 witnesses. Groups 05-07 remain unsolved.
+- phase_started_at: 2026-06-30T14:58:56+08:00
+- phase_finished_at: 2026-06-30T15:48:52+08:00
+- phase_elapsed_seconds: about 2996
+- timing_summary: total wall-clock includes split/prepare repair, failed concurrent runner, overlay dependency repairs, serial proof editing/debugging, and group-local `coqc` gates. Exact per-edit timing was not fully captured; record remaining wall time as timing gap.
+- command_timings:
+  - split_manual_goals first attempt: failed because `/usr/bin/time` was absent
+  - split_manual_goals retry: 0.454s, passed
+  - official prepare_agent_concurrent: 0.069s, failed due missing `normalize_overlay_strategy_imports`
+  - script_snapshot prepare attempts: 0.082s and 0.118s failed, then 13.753s passed after local script snapshot patches
+  - run_agent_concurrent: 0.202s, failed for all workers with read-only filesystem app-server client error
+  - group_00 coqc fallback: 0.601s, passed
+  - group_01 coqc fallback: 1.044s, passed
+  - group_02 coqc fallback: 0.543s, passed
+  - group_03 coqc fallback final gate: 2.031s, passed
+  - group_04 coqc fallback final gate: 0.749s, passed
+  - overlay dependency repair: compiled missing group-local `andrew_monotone_chain_proof_auto.v` / `worker_helper_scratch_lib.v` where needed
+- human_activity_timings:
+  - proof_edit_seconds: not precisely measured; included swap-model, partition-scan, and partition-finish proof construction
+  - manual-analysis_seconds: not precisely measured; included group 05 helper-family assessment
+  - worker_wait_seconds: runner failed quickly; no usable worker reports produced
+  - timing_gap_seconds: remainder of about 2977s after known command timings, covering manual analysis/edit/debug and report writing
+- slowest_steps:
+  - overall wall-clock: serial fallback proof analysis/editing after worker runtime failure
+  - slowest solved proof area: partition scan accept/reject and finish branches, due `Znth` default normalization and swapped-index case splits
+- major_time_sinks:
+  - concurrent worker runtime was unavailable in this environment
+  - prepare script required local snapshot patches
+  - group 03/04 required manual invariant proof debugging
+  - group 05 needs new `point_xy_sorted_range` helper family analogous to existing polar sorted-range helpers
+- ready_for_main: no final handoff batch; partial results are compile-gated in worker-local scratch only
+- annotation_checking_status: n/a
+- qcp_mcp_requirement_satisfied: n/a
+- annotation_scratch_lib_coqc_status: n/a
+- ready_for_main_symexec: n/a
+- annotation_checking_report: n/a
+- vc_informal_proof_report: .agents/reports/convex-hull/2026-06-30/andrew_monotone_chain-20260630T013537/20260630T024232-vc-checking-r1/vc_checking_informal_proof_report.md
+- ready_for_main_c_patch: n/a
+- ready_for_main_common_case_formal_lib_spec_update: n/a
+- ready_for_main_proof_manual: n/a; only partial worker-local solved group manuals exist
+- ready_for_main_common_case_formal_lib_append: n/a; no helper migration was performed
+- migrated_helper_imports: []
+- witness_group_plan: .tmp/convex-hull/20260630T145856-vc-proving-r3/vc_checking_group_plan.json
+- grouping_source: vc-checking-group-plan
+- proof_pattern_summary: groups 00-04 solved with witness-local proofs and existing library lemmas; groups 05-07 require helper work
+- group_helper_policy: group-local-helper-lib
+- worker_reports:
+  - group_00: .tmp/convex-hull/ConvexHull/andrew_monotone_chain__vc_proving_r3_tmp_proof_manual__vc_proving_workers__00/group_00/proof_report.json; proof_strategy_report.json
+  - group_01: .tmp/convex-hull/ConvexHull/andrew_monotone_chain__vc_proving_r3_tmp_proof_manual__vc_proving_workers__00/group_01/proof_report.json; proof_strategy_report.json
+  - group_02: .tmp/convex-hull/ConvexHull/andrew_monotone_chain__vc_proving_r3_tmp_proof_manual__vc_proving_workers__00/group_02/proof_report.json; proof_strategy_report.json
+  - group_03: .tmp/convex-hull/ConvexHull/andrew_monotone_chain__vc_proving_r3_tmp_proof_manual__vc_proving_workers__00/group_03/proof_report.json; proof_strategy_report.json
+  - group_04: .tmp/convex-hull/ConvexHull/andrew_monotone_chain__vc_proving_r3_tmp_proof_manual__vc_proving_workers__00/group_04/proof_report.json; proof_strategy_report.json
+- solved_witnesses: proof_of_cmp_xy_return_wit_1, proof_of_cmp_xy_return_wit_2, proof_of_cmp_xy_return_wit_3, proof_of_cmp_xy_return_wit_4, proof_of_cmp_xy_return_wit_5, proof_of_cross_prod_safety_wit_1, proof_of_cross_prod_safety_wit_2, proof_of_cross_prod_safety_wit_3, proof_of_cross_prod_safety_wit_4, proof_of_cross_prod_safety_wit_5, proof_of_cross_prod_safety_wit_6, proof_of_cross_prod_safety_wit_7, proof_of_cross_prod_return_wit_1, proof_of_swap_points_return_wit_1, proof_of_partition_xy_points_entail_wit_1, proof_of_partition_xy_points_entail_wit_2_1, proof_of_partition_xy_points_entail_wit_2_2, proof_of_partition_xy_points_entail_wit_2_3, proof_of_partition_xy_points_return_wit_1, proof_of_partition_xy_points_return_wit_2
+- unsolved_witnesses: proof_of_quicksort_xy_points_return_wit_1, proof_of_quicksort_xy_points_return_wit_2, proof_of_quicksort_xy_points_return_wit_3, proof_of_quicksort_xy_points_return_wit_4, proof_of_andrew_monotone_chain_entail_wit_1, proof_of_andrew_monotone_chain_entail_wit_2, proof_of_andrew_monotone_chain_entail_wit_3, proof_of_andrew_monotone_chain_entail_wit_4_1, proof_of_andrew_monotone_chain_entail_wit_4_2, proof_of_andrew_monotone_chain_entail_wit_5, proof_of_andrew_monotone_chain_entail_wit_6, proof_of_andrew_monotone_chain_entail_wit_7, proof_of_andrew_monotone_chain_entail_wit_8_1, proof_of_andrew_monotone_chain_entail_wit_8_2, proof_of_andrew_monotone_chain_entail_wit_9, proof_of_andrew_monotone_chain_partial_solve_wit_8_pure, proof_of_andrew_monotone_chain_partial_solve_wit_21_pure
+- checkpoint_reuse_summary: no previous checkpoint or packet was provided; no checkpoint was generated because no merged helper-free manual / migrated task-local lib was produced for a completed or migration-gated partial batch
+- round_checkpoint: none
+- partial_proof_packet: none
+- reuse_index: none
+- protected_prefix_respected: yes; official files and the frozen prefix were not edited
+- blocking_reason: proof round did not complete all 37 witnesses. The remaining quicksort and Andrew scan groups require group-local helper lemma work, starting with `point_xy_sorted_range` composition/preservation lemmas analogous to existing `point_sorted_range_*` polar helpers, followed by lower/upper hull scan helper lemmas listed in the group plan. Concurrent worker runtime is also unavailable in this environment.
+- long_duration_reason: elapsed > 600s due serial fallback proof search and debugging after worker runtime failure, plus prepare repair and report writing
+- recommended_next_phase: vc-proving; launch a fresh round using r3 partial proofs as proof-pattern references, with explicit group-local helper work for groups 05-07. If worker runtime remains unavailable, continue serial fallback in the vc-proving subagent rather than returning to main proof search.
+- cleanup_status: not cleaned; r3 scratch/workdir/report staging are intentionally preserved for main audit and possible proof-pattern reuse. Official files were not modified.

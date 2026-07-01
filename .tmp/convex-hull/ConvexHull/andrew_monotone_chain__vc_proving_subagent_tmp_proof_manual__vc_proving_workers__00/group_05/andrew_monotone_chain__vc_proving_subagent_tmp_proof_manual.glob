@@ -1,0 +1,373 @@
+DIGEST 62196a55e5e53686b7bed8c749b4207e
+Fandrew_monotone_chain__vc_proving_subagent_tmp_proof_manual
+R15:31 Coq.ZArith.ZArith <> <> lib
+R49:61 Coq.Bool.Bool <> <> lib
+R79:96 Coq.Strings.String <> <> lib
+R114:130 Coq.Strings.Ascii <> <> lib
+R148:161 Coq.Lists.List <> <> lib
+R179:205 Coq.Classes.RelationClasses <> <> lib
+R223:243 Coq.Classes.Morphisms <> <> lib
+R261:279 Coq.micromega.Psatz <> <> lib
+R297:319 Coq.Sorting.Permutation <> <> lib
+R349:356 AUXLib.int_auto <> <> lib
+R358:363 AUXLib.Axioms <> <> lib
+R365:367 AUXLib.Feq <> <> lib
+R369:374 AUXLib.Idents <> <> lib
+R376:382 AUXLib.ListLib <> <> lib
+R384:387 AUXLib.VMap <> <> lib
+R405:423 SetsClass.SetsClass <> <> lib
+R433:444 SetsClass.SetsClass_AxiomFree SetsNotation <> mod
+R478:480 SimpleC.SL.Mem <> <> lib
+R482:496 SimpleC.SL.SeparationLogic <> <> lib
+R542:567 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> <> lib
+R613:644 SimpleC.EE.convex_hull.andrew_monotone_chain_proof_auto <> <> lib
+R662:699 Logic.LogicGenerator.demo932.Interface <> <> lib
+R812:824 SimpleC.SL.SeparationLogic naive_C_Rules <> mod
+R842:879 SimpleC.EE.convex_hull.convex_hull_lib <> <> lib
+R934:958 VCWorker.worker_helper_scratch_lib <> <> lib
+prf 967:1007 <> proof_of_cmp_xy_return_wit_1_split_goal_1
+R1011:1042 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> cmp_xy_return_wit_1_split_goal_1 def
+prf 1066:1093 <> proof_of_cmp_xy_return_wit_1
+R1097:1115 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> cmp_xy_return_wit_1 def
+prf 1143:1183 <> proof_of_cmp_xy_return_wit_2_split_goal_1
+R1187:1218 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> cmp_xy_return_wit_2_split_goal_1 def
+prf 1242:1269 <> proof_of_cmp_xy_return_wit_2
+R1273:1291 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> cmp_xy_return_wit_2 def
+prf 1319:1359 <> proof_of_cmp_xy_return_wit_3_split_goal_1
+R1363:1394 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> cmp_xy_return_wit_3_split_goal_1 def
+prf 1418:1445 <> proof_of_cmp_xy_return_wit_3
+R1449:1467 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> cmp_xy_return_wit_3 def
+prf 1495:1535 <> proof_of_cmp_xy_return_wit_4_split_goal_1
+R1539:1570 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> cmp_xy_return_wit_4_split_goal_1 def
+prf 1594:1621 <> proof_of_cmp_xy_return_wit_4
+R1625:1643 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> cmp_xy_return_wit_4 def
+prf 1671:1711 <> proof_of_cmp_xy_return_wit_5_split_goal_1
+R1715:1746 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> cmp_xy_return_wit_5_split_goal_1 def
+prf 1770:1797 <> proof_of_cmp_xy_return_wit_5
+R1801:1819 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> cmp_xy_return_wit_5 def
+prf 1847:1891 <> proof_of_cross_prod_safety_wit_1_split_goal_1
+R1895:1930 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> cross_prod_safety_wit_1_split_goal_1 def
+prf 1954:1998 <> proof_of_cross_prod_safety_wit_1_split_goal_2
+R2002:2037 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> cross_prod_safety_wit_1_split_goal_2 def
+prf 2061:2092 <> proof_of_cross_prod_safety_wit_1
+R2096:2118 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> cross_prod_safety_wit_1 def
+prf 2146:2190 <> proof_of_cross_prod_safety_wit_2_split_goal_1
+R2194:2229 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> cross_prod_safety_wit_2_split_goal_1 def
+prf 2253:2297 <> proof_of_cross_prod_safety_wit_2_split_goal_2
+R2301:2336 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> cross_prod_safety_wit_2_split_goal_2 def
+prf 2360:2391 <> proof_of_cross_prod_safety_wit_2
+R2395:2417 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> cross_prod_safety_wit_2 def
+prf 2445:2489 <> proof_of_cross_prod_safety_wit_3_split_goal_1
+R2493:2528 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> cross_prod_safety_wit_3_split_goal_1 def
+prf 2552:2596 <> proof_of_cross_prod_safety_wit_3_split_goal_2
+R2600:2635 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> cross_prod_safety_wit_3_split_goal_2 def
+prf 2659:2690 <> proof_of_cross_prod_safety_wit_3
+R2694:2716 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> cross_prod_safety_wit_3 def
+prf 2744:2788 <> proof_of_cross_prod_safety_wit_4_split_goal_1
+R2792:2827 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> cross_prod_safety_wit_4_split_goal_1 def
+prf 2851:2895 <> proof_of_cross_prod_safety_wit_4_split_goal_2
+R2899:2934 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> cross_prod_safety_wit_4_split_goal_2 def
+prf 2958:2989 <> proof_of_cross_prod_safety_wit_4
+R2993:3015 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> cross_prod_safety_wit_4 def
+prf 3043:3087 <> proof_of_cross_prod_safety_wit_5_split_goal_1
+R3091:3126 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> cross_prod_safety_wit_5_split_goal_1 def
+prf 3150:3194 <> proof_of_cross_prod_safety_wit_5_split_goal_2
+R3198:3233 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> cross_prod_safety_wit_5_split_goal_2 def
+prf 3257:3288 <> proof_of_cross_prod_safety_wit_5
+R3292:3314 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> cross_prod_safety_wit_5 def
+prf 3342:3386 <> proof_of_cross_prod_safety_wit_6_split_goal_1
+R3390:3425 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> cross_prod_safety_wit_6_split_goal_1 def
+prf 3449:3493 <> proof_of_cross_prod_safety_wit_6_split_goal_2
+R3497:3532 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> cross_prod_safety_wit_6_split_goal_2 def
+prf 3556:3587 <> proof_of_cross_prod_safety_wit_6
+R3591:3613 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> cross_prod_safety_wit_6 def
+prf 3641:3685 <> proof_of_cross_prod_safety_wit_7_split_goal_1
+R3689:3724 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> cross_prod_safety_wit_7_split_goal_1 def
+prf 3748:3792 <> proof_of_cross_prod_safety_wit_7_split_goal_2
+R3796:3831 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> cross_prod_safety_wit_7_split_goal_2 def
+prf 3855:3886 <> proof_of_cross_prod_safety_wit_7
+R3890:3912 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> cross_prod_safety_wit_7 def
+prf 3940:3984 <> proof_of_cross_prod_return_wit_1_split_goal_1
+R3988:4023 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> cross_prod_return_wit_1_split_goal_1 def
+prf 4047:4078 <> proof_of_cross_prod_return_wit_1
+R4082:4104 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> cross_prod_return_wit_1 def
+prf 4132:4177 <> proof_of_swap_points_return_wit_1_split_goal_1
+R4181:4217 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> swap_points_return_wit_1_split_goal_1 def
+prf 4241:4273 <> proof_of_swap_points_return_wit_1
+R4277:4300 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> swap_points_return_wit_1 def
+prf 4328:4381 <> proof_of_partition_xy_points_entail_wit_1_split_goal_1
+R4385:4429 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> partition_xy_points_entail_wit_1_split_goal_1 def
+prf 4453:4506 <> proof_of_partition_xy_points_entail_wit_1_split_goal_2
+R4510:4554 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> partition_xy_points_entail_wit_1_split_goal_2 def
+prf 4578:4631 <> proof_of_partition_xy_points_entail_wit_1_split_goal_3
+R4635:4679 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> partition_xy_points_entail_wit_1_split_goal_3 def
+prf 4703:4756 <> proof_of_partition_xy_points_entail_wit_1_split_goal_4
+R4760:4804 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> partition_xy_points_entail_wit_1_split_goal_4 def
+prf 4828:4868 <> proof_of_partition_xy_points_entail_wit_1
+R4872:4903 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> partition_xy_points_entail_wit_1 def
+prf 4931:4986 <> proof_of_partition_xy_points_entail_wit_2_1_split_goal_1
+R4990:5036 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> partition_xy_points_entail_wit_2_1_split_goal_1 def
+prf 5060:5115 <> proof_of_partition_xy_points_entail_wit_2_1_split_goal_2
+R5119:5165 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> partition_xy_points_entail_wit_2_1_split_goal_2 def
+prf 5189:5244 <> proof_of_partition_xy_points_entail_wit_2_1_split_goal_3
+R5248:5294 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> partition_xy_points_entail_wit_2_1_split_goal_3 def
+prf 5318:5373 <> proof_of_partition_xy_points_entail_wit_2_1_split_goal_4
+R5377:5423 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> partition_xy_points_entail_wit_2_1_split_goal_4 def
+prf 5447:5502 <> proof_of_partition_xy_points_entail_wit_2_1_split_goal_5
+R5506:5552 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> partition_xy_points_entail_wit_2_1_split_goal_5 def
+prf 5576:5618 <> proof_of_partition_xy_points_entail_wit_2_1
+R5622:5655 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> partition_xy_points_entail_wit_2_1 def
+prf 5683:5738 <> proof_of_partition_xy_points_entail_wit_2_2_split_goal_1
+R5742:5788 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> partition_xy_points_entail_wit_2_2_split_goal_1 def
+prf 5812:5854 <> proof_of_partition_xy_points_entail_wit_2_2
+R5858:5891 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> partition_xy_points_entail_wit_2_2 def
+prf 5919:5974 <> proof_of_partition_xy_points_entail_wit_2_3_split_goal_1
+R5978:6024 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> partition_xy_points_entail_wit_2_3_split_goal_1 def
+prf 6048:6090 <> proof_of_partition_xy_points_entail_wit_2_3
+R6094:6127 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> partition_xy_points_entail_wit_2_3 def
+prf 6155:6208 <> proof_of_partition_xy_points_return_wit_1_split_goal_1
+R6212:6256 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> partition_xy_points_return_wit_1_split_goal_1 def
+prf 6280:6333 <> proof_of_partition_xy_points_return_wit_1_split_goal_2
+R6337:6381 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> partition_xy_points_return_wit_1_split_goal_2 def
+prf 6405:6458 <> proof_of_partition_xy_points_return_wit_1_split_goal_3
+R6462:6506 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> partition_xy_points_return_wit_1_split_goal_3 def
+prf 6530:6583 <> proof_of_partition_xy_points_return_wit_1_split_goal_4
+R6587:6631 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> partition_xy_points_return_wit_1_split_goal_4 def
+prf 6655:6708 <> proof_of_partition_xy_points_return_wit_1_split_goal_5
+R6712:6756 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> partition_xy_points_return_wit_1_split_goal_5 def
+prf 6780:6820 <> proof_of_partition_xy_points_return_wit_1
+R6824:6855 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> partition_xy_points_return_wit_1 def
+prf 6883:6936 <> proof_of_partition_xy_points_return_wit_2_split_goal_1
+R6940:6984 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> partition_xy_points_return_wit_2_split_goal_1 def
+prf 7008:7061 <> proof_of_partition_xy_points_return_wit_2_split_goal_2
+R7065:7109 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> partition_xy_points_return_wit_2_split_goal_2 def
+prf 7133:7186 <> proof_of_partition_xy_points_return_wit_2_split_goal_3
+R7190:7234 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> partition_xy_points_return_wit_2_split_goal_3 def
+prf 7258:7298 <> proof_of_partition_xy_points_return_wit_2
+R7302:7333 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> partition_xy_points_return_wit_2 def
+prf 7361:7414 <> proof_of_quicksort_xy_points_return_wit_1_split_goal_1
+R7418:7462 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> quicksort_xy_points_return_wit_1_split_goal_1 def
+prf 7486:7539 <> proof_of_quicksort_xy_points_return_wit_1_split_goal_2
+R7543:7587 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> quicksort_xy_points_return_wit_1_split_goal_2 def
+prf 7611:7664 <> proof_of_quicksort_xy_points_return_wit_1_split_goal_3
+R7668:7712 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> quicksort_xy_points_return_wit_1_split_goal_3 def
+prf 7736:7776 <> proof_of_quicksort_xy_points_return_wit_1
+R7780:7811 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> quicksort_xy_points_return_wit_1 def
+R7830:7861 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> quicksort_xy_points_return_wit_1 def
+R7944:7966 SimpleC.EE.convex_hull.convex_hull_lib <> point_xy_partitioned_at def
+R7944:7966 SimpleC.EE.convex_hull.convex_hull_lib <> point_xy_partitioned_at def
+R8025:8072 VCWorker.worker_helper_scratch_lib <> point_xy_partitioned_at_preserved_by_left_worker thm
+R8025:8072 VCWorker.worker_helper_scratch_lib <> point_xy_partitioned_at_preserved_by_left_worker thm
+R8171:8193 SimpleC.EE.convex_hull.convex_hull_lib <> point_xy_partitioned_at def
+R8171:8193 SimpleC.EE.convex_hull.convex_hull_lib <> point_xy_partitioned_at def
+R8252:8300 VCWorker.worker_helper_scratch_lib <> point_xy_partitioned_at_preserved_by_right_worker thm
+R8252:8300 VCWorker.worker_helper_scratch_lib <> point_xy_partitioned_at_preserved_by_right_worker thm
+R8407:8427 SimpleC.EE.convex_hull.convex_hull_lib <> point_xy_sorted_range def
+R8455:8457 Coq.ZArith.BinInt <> ::Z_scope:x_'-'_x not
+R8407:8427 SimpleC.EE.convex_hull.convex_hull_lib <> point_xy_sorted_range def
+R8455:8457 Coq.ZArith.BinInt <> ::Z_scope:x_'-'_x not
+R8482:8513 VCWorker.worker_helper_scratch_lib <> point_xy_sorted_range_ext_worker thm
+R8482:8513 VCWorker.worker_helper_scratch_lib <> point_xy_sorted_range_ext_worker thm
+R8602:8625 SimpleC.EE.convex_hull.convex_hull_lib <> point_same_outside_range def
+R8668:8670 Coq.ZArith.BinInt <> ::Z_scope:x_'+'_x not
+R8602:8625 SimpleC.EE.convex_hull.convex_hull_lib <> point_same_outside_range def
+R8668:8670 Coq.ZArith.BinInt <> ::Z_scope:x_'+'_x not
+R8821:8844 SimpleC.EE.convex_hull.convex_hull_lib <> point_same_outside_range def
+R8887:8889 Coq.ZArith.BinInt <> ::Z_scope:x_'+'_x not
+R8821:8844 SimpleC.EE.convex_hull.convex_hull_lib <> point_same_outside_range def
+R8887:8889 Coq.ZArith.BinInt <> ::Z_scope:x_'+'_x not
+R9039:9082 VCWorker.worker_helper_scratch_lib <> point_xy_sorted_range_partition_merge_worker thm
+R9039:9082 VCWorker.worker_helper_scratch_lib <> point_xy_sorted_range_partition_merge_worker thm
+R9165:9188 SimpleC.EE.convex_hull.convex_hull_lib <> point_same_outside_range def
+R9165:9188 SimpleC.EE.convex_hull.convex_hull_lib <> point_same_outside_range def
+R9251:9281 SimpleC.EE.convex_hull.convex_hull_lib <> point_same_outside_range_weaken thm
+R9335:9337 Coq.ZArith.BinInt <> ::Z_scope:x_'-'_x not
+R9251:9281 SimpleC.EE.convex_hull.convex_hull_lib <> point_same_outside_range_weaken thm
+R9335:9337 Coq.ZArith.BinInt <> ::Z_scope:x_'-'_x not
+R9443:9466 SimpleC.EE.convex_hull.convex_hull_lib <> point_same_outside_range def
+R9443:9466 SimpleC.EE.convex_hull.convex_hull_lib <> point_same_outside_range def
+R9529:9559 SimpleC.EE.convex_hull.convex_hull_lib <> point_same_outside_range_weaken thm
+R9604:9606 Coq.ZArith.BinInt <> ::Z_scope:x_'+'_x not
+R9529:9559 SimpleC.EE.convex_hull.convex_hull_lib <> point_same_outside_range_weaken thm
+R9604:9606 Coq.ZArith.BinInt <> ::Z_scope:x_'+'_x not
+R9701:9724 SimpleC.EE.convex_hull.convex_hull_lib <> point_same_outside_range def
+R9701:9724 SimpleC.EE.convex_hull.convex_hull_lib <> point_same_outside_range def
+R9775:9804 SimpleC.EE.convex_hull.convex_hull_lib <> point_same_outside_range_trans thm
+R9775:9804 SimpleC.EE.convex_hull.convex_hull_lib <> point_same_outside_range_trans thm
+R9909:9938 SimpleC.EE.convex_hull.convex_hull_lib <> point_same_outside_range_trans thm
+R9909:9938 SimpleC.EE.convex_hull.convex_hull_lib <> point_same_outside_range_trans thm
+R10053:10069 SimpleC.EE.convex_hull.convex_hull_lib <> point_permutation def
+R10088:10104 Coq.Sorting.Permutation <> Permutation_trans thm
+R10088:10104 Coq.Sorting.Permutation <> Permutation_trans thm
+R10135:10151 Coq.Sorting.Permutation <> Permutation_trans thm
+R10135:10151 Coq.Sorting.Permutation <> Permutation_trans thm
+prf 10195:10248 <> proof_of_quicksort_xy_points_return_wit_2_split_goal_1
+R10252:10296 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> quicksort_xy_points_return_wit_2_split_goal_1 def
+prf 10320:10373 <> proof_of_quicksort_xy_points_return_wit_2_split_goal_2
+R10377:10421 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> quicksort_xy_points_return_wit_2_split_goal_2 def
+prf 10445:10498 <> proof_of_quicksort_xy_points_return_wit_2_split_goal_3
+R10502:10546 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> quicksort_xy_points_return_wit_2_split_goal_3 def
+prf 10570:10610 <> proof_of_quicksort_xy_points_return_wit_2
+R10614:10645 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> quicksort_xy_points_return_wit_2 def
+R10664:10695 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> quicksort_xy_points_return_wit_2 def
+R10778:10800 SimpleC.EE.convex_hull.convex_hull_lib <> point_xy_partitioned_at def
+R10778:10800 SimpleC.EE.convex_hull.convex_hull_lib <> point_xy_partitioned_at def
+R10859:10907 VCWorker.worker_helper_scratch_lib <> point_xy_partitioned_at_preserved_by_right_worker thm
+R10859:10907 VCWorker.worker_helper_scratch_lib <> point_xy_partitioned_at_preserved_by_right_worker thm
+R10990:11037 VCWorker.worker_helper_scratch_lib <> point_xy_sorted_range_from_right_boundary_worker thm
+R10990:11037 VCWorker.worker_helper_scratch_lib <> point_xy_sorted_range_from_right_boundary_worker thm
+R11144:11167 SimpleC.EE.convex_hull.convex_hull_lib <> point_same_outside_range def
+R11144:11167 SimpleC.EE.convex_hull.convex_hull_lib <> point_same_outside_range def
+R11230:11260 SimpleC.EE.convex_hull.convex_hull_lib <> point_same_outside_range_weaken thm
+R11305:11307 Coq.ZArith.BinInt <> ::Z_scope:x_'+'_x not
+R11230:11260 SimpleC.EE.convex_hull.convex_hull_lib <> point_same_outside_range_weaken thm
+R11305:11307 Coq.ZArith.BinInt <> ::Z_scope:x_'+'_x not
+R11402:11425 SimpleC.EE.convex_hull.convex_hull_lib <> point_same_outside_range def
+R11402:11425 SimpleC.EE.convex_hull.convex_hull_lib <> point_same_outside_range def
+R11476:11505 SimpleC.EE.convex_hull.convex_hull_lib <> point_same_outside_range_trans thm
+R11476:11505 SimpleC.EE.convex_hull.convex_hull_lib <> point_same_outside_range_trans thm
+R11619:11635 SimpleC.EE.convex_hull.convex_hull_lib <> point_permutation def
+R11654:11670 Coq.Sorting.Permutation <> Permutation_trans thm
+R11654:11670 Coq.Sorting.Permutation <> Permutation_trans thm
+prf 11714:11767 <> proof_of_quicksort_xy_points_return_wit_3_split_goal_1
+R11771:11815 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> quicksort_xy_points_return_wit_3_split_goal_1 def
+prf 11839:11892 <> proof_of_quicksort_xy_points_return_wit_3_split_goal_2
+R11896:11940 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> quicksort_xy_points_return_wit_3_split_goal_2 def
+prf 11964:12017 <> proof_of_quicksort_xy_points_return_wit_3_split_goal_3
+R12021:12065 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> quicksort_xy_points_return_wit_3_split_goal_3 def
+prf 12089:12129 <> proof_of_quicksort_xy_points_return_wit_3
+R12133:12164 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> quicksort_xy_points_return_wit_3 def
+R12183:12214 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> quicksort_xy_points_return_wit_3 def
+R12297:12319 SimpleC.EE.convex_hull.convex_hull_lib <> point_xy_partitioned_at def
+R12297:12319 SimpleC.EE.convex_hull.convex_hull_lib <> point_xy_partitioned_at def
+R12378:12425 VCWorker.worker_helper_scratch_lib <> point_xy_partitioned_at_preserved_by_left_worker thm
+R12378:12425 VCWorker.worker_helper_scratch_lib <> point_xy_partitioned_at_preserved_by_left_worker thm
+R12508:12554 VCWorker.worker_helper_scratch_lib <> point_xy_sorted_range_from_left_boundary_worker thm
+R12508:12554 VCWorker.worker_helper_scratch_lib <> point_xy_sorted_range_from_left_boundary_worker thm
+R12661:12684 SimpleC.EE.convex_hull.convex_hull_lib <> point_same_outside_range def
+R12661:12684 SimpleC.EE.convex_hull.convex_hull_lib <> point_same_outside_range def
+R12747:12777 SimpleC.EE.convex_hull.convex_hull_lib <> point_same_outside_range_weaken thm
+R12831:12833 Coq.ZArith.BinInt <> ::Z_scope:x_'-'_x not
+R12747:12777 SimpleC.EE.convex_hull.convex_hull_lib <> point_same_outside_range_weaken thm
+R12831:12833 Coq.ZArith.BinInt <> ::Z_scope:x_'-'_x not
+R12918:12941 SimpleC.EE.convex_hull.convex_hull_lib <> point_same_outside_range def
+R12918:12941 SimpleC.EE.convex_hull.convex_hull_lib <> point_same_outside_range def
+R12992:13021 SimpleC.EE.convex_hull.convex_hull_lib <> point_same_outside_range_trans thm
+R12992:13021 SimpleC.EE.convex_hull.convex_hull_lib <> point_same_outside_range_trans thm
+R13135:13151 SimpleC.EE.convex_hull.convex_hull_lib <> point_permutation def
+R13170:13186 Coq.Sorting.Permutation <> Permutation_trans thm
+R13170:13186 Coq.Sorting.Permutation <> Permutation_trans thm
+prf 13230:13283 <> proof_of_quicksort_xy_points_return_wit_4_split_goal_1
+R13287:13331 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> quicksort_xy_points_return_wit_4_split_goal_1 def
+prf 13355:13408 <> proof_of_quicksort_xy_points_return_wit_4_split_goal_2
+R13412:13456 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> quicksort_xy_points_return_wit_4_split_goal_2 def
+prf 13480:13533 <> proof_of_quicksort_xy_points_return_wit_4_split_goal_3
+R13537:13581 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> quicksort_xy_points_return_wit_4_split_goal_3 def
+prf 13605:13645 <> proof_of_quicksort_xy_points_return_wit_4
+R13649:13680 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> quicksort_xy_points_return_wit_4 def
+R13699:13730 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> quicksort_xy_points_return_wit_4 def
+R13792:13830 VCWorker.worker_helper_scratch_lib <> point_xy_sorted_range_degenerate_worker thm
+R13792:13830 VCWorker.worker_helper_scratch_lib <> point_xy_sorted_range_degenerate_worker thm
+R13853:13876 SimpleC.EE.convex_hull.convex_hull_lib <> point_same_outside_range def
+prf 13939:13994 <> proof_of_andrew_monotone_chain_entail_wit_1_split_goal_1
+R13998:14044 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> andrew_monotone_chain_entail_wit_1_split_goal_1 def
+prf 14068:14123 <> proof_of_andrew_monotone_chain_entail_wit_1_split_goal_2
+R14127:14173 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> andrew_monotone_chain_entail_wit_1_split_goal_2 def
+prf 14197:14258 <> proof_of_andrew_monotone_chain_entail_wit_1_split_goal_spatial
+R14262:14314 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> andrew_monotone_chain_entail_wit_1_split_goal_spatial def
+prf 14338:14380 <> proof_of_andrew_monotone_chain_entail_wit_1
+R14384:14417 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> andrew_monotone_chain_entail_wit_1 def
+prf 14445:14500 <> proof_of_andrew_monotone_chain_entail_wit_2_split_goal_1
+R14504:14550 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> andrew_monotone_chain_entail_wit_2_split_goal_1 def
+prf 14574:14635 <> proof_of_andrew_monotone_chain_entail_wit_2_split_goal_spatial
+R14639:14691 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> andrew_monotone_chain_entail_wit_2_split_goal_spatial def
+prf 14715:14757 <> proof_of_andrew_monotone_chain_entail_wit_2
+R14761:14794 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> andrew_monotone_chain_entail_wit_2 def
+prf 14822:14864 <> proof_of_andrew_monotone_chain_entail_wit_3
+R14868:14901 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> andrew_monotone_chain_entail_wit_3 def
+prf 14929:14973 <> proof_of_andrew_monotone_chain_entail_wit_4_1
+R14977:15012 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> andrew_monotone_chain_entail_wit_4_1 def
+prf 15040:15084 <> proof_of_andrew_monotone_chain_entail_wit_4_2
+R15088:15123 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> andrew_monotone_chain_entail_wit_4_2 def
+prf 15151:15206 <> proof_of_andrew_monotone_chain_entail_wit_5_split_goal_1
+R15210:15256 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> andrew_monotone_chain_entail_wit_5_split_goal_1 def
+prf 15280:15335 <> proof_of_andrew_monotone_chain_entail_wit_5_split_goal_2
+R15339:15385 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> andrew_monotone_chain_entail_wit_5_split_goal_2 def
+prf 15409:15470 <> proof_of_andrew_monotone_chain_entail_wit_5_split_goal_spatial
+R15474:15526 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> andrew_monotone_chain_entail_wit_5_split_goal_spatial def
+prf 15550:15592 <> proof_of_andrew_monotone_chain_entail_wit_5
+R15596:15629 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> andrew_monotone_chain_entail_wit_5 def
+prf 15657:15712 <> proof_of_andrew_monotone_chain_entail_wit_6_split_goal_1
+R15716:15762 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> andrew_monotone_chain_entail_wit_6_split_goal_1 def
+prf 15786:15841 <> proof_of_andrew_monotone_chain_entail_wit_6_split_goal_2
+R15845:15891 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> andrew_monotone_chain_entail_wit_6_split_goal_2 def
+prf 15915:15976 <> proof_of_andrew_monotone_chain_entail_wit_6_split_goal_spatial
+R15980:16032 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> andrew_monotone_chain_entail_wit_6_split_goal_spatial def
+prf 16056:16098 <> proof_of_andrew_monotone_chain_entail_wit_6
+R16102:16135 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> andrew_monotone_chain_entail_wit_6 def
+prf 16163:16205 <> proof_of_andrew_monotone_chain_entail_wit_7
+R16209:16242 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> andrew_monotone_chain_entail_wit_7 def
+prf 16270:16314 <> proof_of_andrew_monotone_chain_entail_wit_8_1
+R16318:16353 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> andrew_monotone_chain_entail_wit_8_1 def
+prf 16381:16425 <> proof_of_andrew_monotone_chain_entail_wit_8_2
+R16429:16464 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> andrew_monotone_chain_entail_wit_8_2 def
+prf 16492:16547 <> proof_of_andrew_monotone_chain_entail_wit_9_split_goal_1
+R16551:16597 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> andrew_monotone_chain_entail_wit_9_split_goal_1 def
+prf 16621:16676 <> proof_of_andrew_monotone_chain_entail_wit_9_split_goal_2
+R16680:16726 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> andrew_monotone_chain_entail_wit_9_split_goal_2 def
+prf 16750:16811 <> proof_of_andrew_monotone_chain_entail_wit_9_split_goal_spatial
+R16815:16867 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> andrew_monotone_chain_entail_wit_9_split_goal_spatial def
+prf 16891:16933 <> proof_of_andrew_monotone_chain_entail_wit_9
+R16937:16970 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> andrew_monotone_chain_entail_wit_9 def
+prf 16998:17065 <> proof_of_andrew_monotone_chain_partial_solve_wit_8_pure_split_goal_1
+R17069:17127 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> andrew_monotone_chain_partial_solve_wit_8_pure_split_goal_1 def
+prf 17151:17218 <> proof_of_andrew_monotone_chain_partial_solve_wit_8_pure_split_goal_2
+R17222:17280 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> andrew_monotone_chain_partial_solve_wit_8_pure_split_goal_2 def
+prf 17304:17371 <> proof_of_andrew_monotone_chain_partial_solve_wit_8_pure_split_goal_3
+R17375:17433 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> andrew_monotone_chain_partial_solve_wit_8_pure_split_goal_3 def
+prf 17457:17524 <> proof_of_andrew_monotone_chain_partial_solve_wit_8_pure_split_goal_4
+R17528:17586 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> andrew_monotone_chain_partial_solve_wit_8_pure_split_goal_4 def
+prf 17610:17677 <> proof_of_andrew_monotone_chain_partial_solve_wit_8_pure_split_goal_5
+R17681:17739 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> andrew_monotone_chain_partial_solve_wit_8_pure_split_goal_5 def
+prf 17763:17830 <> proof_of_andrew_monotone_chain_partial_solve_wit_8_pure_split_goal_6
+R17834:17892 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> andrew_monotone_chain_partial_solve_wit_8_pure_split_goal_6 def
+prf 17916:17983 <> proof_of_andrew_monotone_chain_partial_solve_wit_8_pure_split_goal_7
+R17987:18045 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> andrew_monotone_chain_partial_solve_wit_8_pure_split_goal_7 def
+prf 18069:18136 <> proof_of_andrew_monotone_chain_partial_solve_wit_8_pure_split_goal_8
+R18140:18198 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> andrew_monotone_chain_partial_solve_wit_8_pure_split_goal_8 def
+prf 18222:18289 <> proof_of_andrew_monotone_chain_partial_solve_wit_8_pure_split_goal_9
+R18293:18351 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> andrew_monotone_chain_partial_solve_wit_8_pure_split_goal_9 def
+prf 18375:18443 <> proof_of_andrew_monotone_chain_partial_solve_wit_8_pure_split_goal_10
+R18447:18506 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> andrew_monotone_chain_partial_solve_wit_8_pure_split_goal_10 def
+prf 18530:18598 <> proof_of_andrew_monotone_chain_partial_solve_wit_8_pure_split_goal_11
+R18602:18661 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> andrew_monotone_chain_partial_solve_wit_8_pure_split_goal_11 def
+prf 18685:18753 <> proof_of_andrew_monotone_chain_partial_solve_wit_8_pure_split_goal_12
+R18757:18816 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> andrew_monotone_chain_partial_solve_wit_8_pure_split_goal_12 def
+prf 18840:18894 <> proof_of_andrew_monotone_chain_partial_solve_wit_8_pure
+R18898:18943 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> andrew_monotone_chain_partial_solve_wit_8_pure def
+prf 18971:19039 <> proof_of_andrew_monotone_chain_partial_solve_wit_21_pure_split_goal_1
+R19043:19102 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> andrew_monotone_chain_partial_solve_wit_21_pure_split_goal_1 def
+prf 19126:19194 <> proof_of_andrew_monotone_chain_partial_solve_wit_21_pure_split_goal_2
+R19198:19257 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> andrew_monotone_chain_partial_solve_wit_21_pure_split_goal_2 def
+prf 19281:19349 <> proof_of_andrew_monotone_chain_partial_solve_wit_21_pure_split_goal_3
+R19353:19412 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> andrew_monotone_chain_partial_solve_wit_21_pure_split_goal_3 def
+prf 19436:19504 <> proof_of_andrew_monotone_chain_partial_solve_wit_21_pure_split_goal_4
+R19508:19567 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> andrew_monotone_chain_partial_solve_wit_21_pure_split_goal_4 def
+prf 19591:19659 <> proof_of_andrew_monotone_chain_partial_solve_wit_21_pure_split_goal_5
+R19663:19722 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> andrew_monotone_chain_partial_solve_wit_21_pure_split_goal_5 def
+prf 19746:19814 <> proof_of_andrew_monotone_chain_partial_solve_wit_21_pure_split_goal_6
+R19818:19877 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> andrew_monotone_chain_partial_solve_wit_21_pure_split_goal_6 def
+prf 19901:19969 <> proof_of_andrew_monotone_chain_partial_solve_wit_21_pure_split_goal_7
+R19973:20032 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> andrew_monotone_chain_partial_solve_wit_21_pure_split_goal_7 def
+prf 20056:20124 <> proof_of_andrew_monotone_chain_partial_solve_wit_21_pure_split_goal_8
+R20128:20187 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> andrew_monotone_chain_partial_solve_wit_21_pure_split_goal_8 def
+prf 20211:20279 <> proof_of_andrew_monotone_chain_partial_solve_wit_21_pure_split_goal_9
+R20283:20342 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> andrew_monotone_chain_partial_solve_wit_21_pure_split_goal_9 def
+prf 20366:20435 <> proof_of_andrew_monotone_chain_partial_solve_wit_21_pure_split_goal_10
+R20439:20499 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> andrew_monotone_chain_partial_solve_wit_21_pure_split_goal_10 def
+prf 20523:20592 <> proof_of_andrew_monotone_chain_partial_solve_wit_21_pure_split_goal_11
+R20596:20656 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> andrew_monotone_chain_partial_solve_wit_21_pure_split_goal_11 def
+prf 20680:20749 <> proof_of_andrew_monotone_chain_partial_solve_wit_21_pure_split_goal_12
+R20753:20813 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> andrew_monotone_chain_partial_solve_wit_21_pure_split_goal_12 def
+prf 20837:20892 <> proof_of_andrew_monotone_chain_partial_solve_wit_21_pure
+R20896:20942 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> andrew_monotone_chain_partial_solve_wit_21_pure def

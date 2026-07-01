@@ -1,0 +1,73 @@
+## Subagent Return Report
+
+- round_outcome: blocked
+- summary: r4 serial fallback reconstructed and compile-gated 29/37 target witness proofs in fresh r4 scratch. The remaining 8 witnesses are Andrew lower/upper scan invariant transition witnesses requiring unproved semantic helper families. No official files were edited.
+- phase_started_at: 2026-06-30T15:51:46+08:00
+- phase_finished_at: 2026-06-30T16:41:37+08:00
+- phase_elapsed_seconds: 2991
+- timing_summary: long-duration round; exact fine-grained timing is incomplete because r4 continued across context compaction and earlier proof-edit activity was not command-timed. Recorded successful command timings include task-local lib compile 3.35s, overlay lib compile 3.40s, `point_array_strategy_goal.v` compile 0.36s, `point_array_strategy_proof.v` compile 2.92s, `andrew_monotone_chain_goal.v` compile 1.20s, `andrew_monotone_chain_proof_auto.v` compile 0.42s, scratch manual compile 3.97s, blocked checkpoint generation 0.61s.
+- command_timings:
+  - `coqc ... andrew_monotone_chain__vc_proving_r4_tmp_lib.v`: passed, 3.35s after prefix repair
+  - `coqc ... case_deps/convex_hull/convex_hull_lib.v`: passed, 3.40s
+  - `coqc ... point_array_strategy_goal.v`: passed, 0.36s
+  - `coqc ... point_array_strategy_proof.v`: passed, 2.92s after stale `.vo` order rerun
+  - `coqc ... andrew_monotone_chain_goal.v`: passed, 1.20s
+  - `coqc ... andrew_monotone_chain_proof_auto.v`: passed, 0.42s
+  - `coqc ... andrew_monotone_chain__vc_proving_r4_tmp_proof_manual.v`: passed with 8 remaining admits, 3.97s
+  - `checkpoint_round.py ... --unusable`: passed, 0.61s; wrote blocked checkpoint
+- human_activity_timings:
+  - proof_edit_seconds: unknown; included in timing gap
+  - manual-analysis_seconds: unknown; included in timing gap
+  - helper_cleanup_seconds: includes prefix repair moving two helper lemmas from protected prefix into suffix; exact seconds unknown
+  - timing_gap_seconds: approximately 2979 seconds not precisely split across inherited r4 serial proof reconstruction, manual proof editing, semantic analysis, repeated coqc checks, and context-compaction handoff
+- slowest_steps: semantic analysis/proof search for Andrew lower/upper scan helper families; no single slow tactic isolated
+- major_time_sinks: reconstructing r3 pattern proofs in fresh r4 scratch; proving quicksort helper suffix; attempting Andrew scan invariant preservation; diagnosing missing bridge from frozen Andrew predicates to `Graham_Scan_M.is_convex_hull` / `Hull_Equiv.is_max_hull'_edges`
+- ready_for_main: no
+- annotation_checking_status: n/a
+- qcp_mcp_requirement_satisfied: n/a
+- annotation_scratch_lib_coqc_status: n/a
+- ready_for_main_symexec: n/a
+- annotation_checking_report: n/a
+- vc_informal_proof_report: `.agents/reports/convex-hull/2026-06-30/andrew_monotone_chain-20260630T013537/20260630T024232-vc-checking-r1/vc_checking_informal_proof_report.md`
+- ready_for_main_c_patch: n/a
+- ready_for_main_common_case_formal_lib_spec_update: n/a
+- ready_for_main_proof_manual: not ready; r4 scratch manual still contains 8 admitted Andrew witnesses
+- ready_for_main_common_case_formal_lib_append: not ready for main integration; helper suffix compiles and respects the frozen prefix, but the round is blocked before full witness completion
+- migrated_helper_imports: empty; no new suffix imports added
+- witness_group_plan: `.tmp/convex-hull/20260630T155146-vc-proving-r4/vc_checking_group_plan.json`
+- grouping_source: vc-checking-group-plan
+- proof_pattern_summary: r3 groups 00-04 treated only as proof-pattern references; r4 reconstructed those plus group 05 quicksort and direct Andrew bound witnesses in fresh scratch
+- group_helper_policy: group-local-helper-lib / task-local suffix migration; serial fallback used due worker runtime failure
+- worker_reports: no successful concurrent worker reports; worker runtime unavailable from start due prior `Read-only file system (os error 30)`
+- checkpoint_reuse_summary: previous checkpoint none; generated r4 blocked checkpoint marked unusable for direct completion but containing compile-gated solved proof blocks as future pattern/direct candidates subject to next-round gates
+- round_checkpoint: `.tmp/convex-hull/20260630T155146-vc-proving-r4/reuse_checkpoints/r4-blocked/vc_proving_round_checkpoint.json`
+- partial_proof_packet: `.tmp/convex-hull/20260630T155146-vc-proving-r4/reuse_checkpoints/r4-blocked/partial_proof_packet.json`
+- reuse_index: `.tmp/convex-hull/20260630T155146-vc-proving-r4/reuse_checkpoints/r4-blocked/reuse_index.json`
+- artifact_paths:
+  - scratch_manual: `.tmp/convex-hull/ConvexHull/andrew_monotone_chain__vc_proving_r4_tmp_proof_manual.v`
+  - task_local_scratch_lib: `.tmp/convex-hull/ConvexHull/andrew_monotone_chain__vc_proving_r4_tmp_lib.v`
+  - overlay_workdir: `.tmp/convex-hull/ConvexHull/andrew_monotone_chain__vc_proving_workers/20260630T155146`
+  - failure_analysis: `.tmp/convex-hull/20260630T155146-vc-proving-r4/vc_proving_failure_analysis.md`
+- protected_prefix_respected: yes; after repair, diff of official lib lines `1..4125` against r4 task-local lib lines `1..4125` is empty
+- blocking_reason: 8 Andrew scan witnesses require unproved semantic helper families over `andrew_lower_scan_inv`, `andrew_upper_scan_inv`, `andrew_lower_append_ready`, `andrew_upper_append_ready`, and a final bridge from frozen Andrew chain/envelope predicates to `Graham_Scan_M.is_convex_hull` / `Hull_Equiv.is_max_hull'_edges`. Existing library search found no such bridge, and adding new definitions or changing frozen specs is outside vc-proving suffix-only scope.
+- remaining_witnesses:
+  - `proof_of_andrew_monotone_chain_entail_wit_1`
+  - `proof_of_andrew_monotone_chain_entail_wit_3`
+  - `proof_of_andrew_monotone_chain_entail_wit_4_1`
+  - `proof_of_andrew_monotone_chain_entail_wit_4_2`
+  - `proof_of_andrew_monotone_chain_entail_wit_5`
+  - `proof_of_andrew_monotone_chain_entail_wit_7`
+  - `proof_of_andrew_monotone_chain_entail_wit_8_1`
+  - `proof_of_andrew_monotone_chain_entail_wit_8_2`
+- remaining_helper_families:
+  - `point_list_not_all_same_of_points_not_all_same_permutation`
+  - `andrew_lower_scan_inv_init`
+  - `andrew_lower_scan_inv_pop`
+  - `andrew_lower_scan_inv_push`
+  - `andrew_upper_scan_inv_init_from_lower_finished`
+  - `andrew_upper_scan_inv_pop`
+  - `andrew_upper_scan_inv_push`
+  - bridge from `andrew_complete_hull_shape` / Andrew scan-envelope predicates to `is_convex_hull`
+- long_duration_reason: r4 inherited a long serial fallback after worker runtime failure; most time was proof reconstruction, helper design, repeated coqc compile gates, and semantic analysis of Andrew scan/hull-correctness obligations
+- recommended_next_phase: annotation
+- cleanup_status: active r4 scratch retained for main audit because the round is blocked and artifacts/checkpoint are needed; no official files modified

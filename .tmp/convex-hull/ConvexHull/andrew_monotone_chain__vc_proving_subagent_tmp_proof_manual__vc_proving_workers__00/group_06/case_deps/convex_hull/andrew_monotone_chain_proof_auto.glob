@@ -1,0 +1,269 @@
+DIGEST 76d1fb3e8205e9ef17a3506ae079f7e8
+FSimpleC.EE.convex_hull.andrew_monotone_chain_proof_auto
+R15:31 Coq.ZArith.ZArith <> <> lib
+R49:61 Coq.Bool.Bool <> <> lib
+R79:96 Coq.Strings.String <> <> lib
+R114:130 Coq.Strings.Ascii <> <> lib
+R148:161 Coq.Lists.List <> <> lib
+R179:205 Coq.Classes.RelationClasses <> <> lib
+R223:243 Coq.Classes.Morphisms <> <> lib
+R261:279 Coq.micromega.Psatz <> <> lib
+R297:319 Coq.Sorting.Permutation <> <> lib
+R349:356 AUXLib.int_auto <> <> lib
+R358:363 AUXLib.Axioms <> <> lib
+R365:367 AUXLib.Feq <> <> lib
+R369:374 AUXLib.Idents <> <> lib
+R376:382 AUXLib.ListLib <> <> lib
+R384:387 AUXLib.VMap <> <> lib
+R405:423 SetsClass.SetsClass <> <> lib
+R433:444 SetsClass.SetsClass_AxiomFree SetsNotation <> mod
+R478:480 SimpleC.SL.Mem <> <> lib
+R482:496 SimpleC.SL.SeparationLogic <> <> lib
+R542:567 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> <> lib
+R585:622 Logic.LogicGenerator.demo932.Interface <> <> lib
+R735:747 SimpleC.SL.SeparationLogic naive_C_Rules <> mod
+R765:802 SimpleC.EE.convex_hull.convex_hull_lib <> <> lib
+prf 834:861 <> proof_of_cmp_xy_safety_wit_1
+R865:883 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> cmp_xy_safety_wit_1 def
+prf 911:938 <> proof_of_cmp_xy_safety_wit_2
+R942:960 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> cmp_xy_safety_wit_2 def
+prf 988:1015 <> proof_of_cmp_xy_safety_wit_3
+R1019:1037 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> cmp_xy_safety_wit_3 def
+prf 1065:1092 <> proof_of_cmp_xy_safety_wit_4
+R1096:1114 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> cmp_xy_safety_wit_4 def
+prf 1142:1169 <> proof_of_cmp_xy_safety_wit_5
+R1173:1191 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> cmp_xy_safety_wit_5 def
+prf 1219:1246 <> proof_of_cmp_xy_safety_wit_6
+R1250:1268 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> cmp_xy_safety_wit_6 def
+prf 1296:1323 <> proof_of_cmp_xy_safety_wit_7
+R1327:1345 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> cmp_xy_safety_wit_7 def
+prf 1373:1400 <> proof_of_cmp_xy_entail_wit_1
+R1404:1422 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> cmp_xy_entail_wit_1 def
+prf 1450:1481 <> proof_of_cross_prod_entail_wit_1
+R1485:1507 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> cross_prod_entail_wit_1 def
+prf 1535:1574 <> proof_of_swap_points_partial_solve_wit_1
+R1578:1608 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> swap_points_partial_solve_wit_1 def
+prf 1636:1675 <> proof_of_swap_points_partial_solve_wit_2
+R1679:1709 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> swap_points_partial_solve_wit_2 def
+prf 1737:1776 <> proof_of_swap_points_partial_solve_wit_3
+R1780:1810 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> swap_points_partial_solve_wit_3 def
+prf 1838:1877 <> proof_of_swap_points_partial_solve_wit_4
+R1881:1911 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> swap_points_partial_solve_wit_4 def
+prf 1939:1978 <> proof_of_swap_points_partial_solve_wit_5
+R1982:2012 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> swap_points_partial_solve_wit_5 def
+prf 2040:2079 <> proof_of_swap_points_partial_solve_wit_6
+R2083:2113 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> swap_points_partial_solve_wit_6 def
+prf 2141:2180 <> proof_of_swap_points_partial_solve_wit_7
+R2184:2214 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> swap_points_partial_solve_wit_7 def
+prf 2242:2281 <> proof_of_swap_points_partial_solve_wit_8
+R2285:2315 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> swap_points_partial_solve_wit_8 def
+prf 2343:2383 <> proof_of_partition_xy_points_safety_wit_1
+R2387:2418 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> partition_xy_points_safety_wit_1 def
+prf 2446:2486 <> proof_of_partition_xy_points_safety_wit_2
+R2490:2521 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> partition_xy_points_safety_wit_2 def
+prf 2549:2589 <> proof_of_partition_xy_points_safety_wit_3
+R2593:2624 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> partition_xy_points_safety_wit_3 def
+prf 2652:2692 <> proof_of_partition_xy_points_safety_wit_4
+R2696:2727 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> partition_xy_points_safety_wit_4 def
+prf 2755:2795 <> proof_of_partition_xy_points_safety_wit_5
+R2799:2830 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> partition_xy_points_safety_wit_5 def
+prf 2858:2898 <> proof_of_partition_xy_points_safety_wit_6
+R2902:2933 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> partition_xy_points_safety_wit_6 def
+prf 2961:3001 <> proof_of_partition_xy_points_safety_wit_7
+R3005:3036 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> partition_xy_points_safety_wit_7 def
+prf 3064:3104 <> proof_of_partition_xy_points_safety_wit_8
+R3108:3139 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> partition_xy_points_safety_wit_8 def
+prf 3167:3207 <> proof_of_partition_xy_points_safety_wit_9
+R3211:3242 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> partition_xy_points_safety_wit_9 def
+prf 3270:3311 <> proof_of_partition_xy_points_safety_wit_10
+R3315:3347 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> partition_xy_points_safety_wit_10 def
+prf 3375:3416 <> proof_of_partition_xy_points_safety_wit_11
+R3420:3452 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> partition_xy_points_safety_wit_11 def
+prf 3480:3521 <> proof_of_partition_xy_points_safety_wit_12
+R3525:3557 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> partition_xy_points_safety_wit_12 def
+prf 3585:3626 <> proof_of_partition_xy_points_safety_wit_13
+R3630:3662 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> partition_xy_points_safety_wit_13 def
+prf 3690:3731 <> proof_of_partition_xy_points_safety_wit_14
+R3735:3767 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> partition_xy_points_safety_wit_14 def
+prf 3795:3836 <> proof_of_partition_xy_points_safety_wit_15
+R3840:3872 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> partition_xy_points_safety_wit_15 def
+prf 3900:3947 <> proof_of_partition_xy_points_partial_solve_wit_1
+R3951:3989 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> partition_xy_points_partial_solve_wit_1 def
+prf 4017:4064 <> proof_of_partition_xy_points_partial_solve_wit_2
+R4068:4106 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> partition_xy_points_partial_solve_wit_2 def
+prf 4134:4181 <> proof_of_partition_xy_points_partial_solve_wit_3
+R4185:4223 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> partition_xy_points_partial_solve_wit_3 def
+prf 4251:4298 <> proof_of_partition_xy_points_partial_solve_wit_4
+R4302:4340 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> partition_xy_points_partial_solve_wit_4 def
+prf 4368:4415 <> proof_of_partition_xy_points_partial_solve_wit_5
+R4419:4457 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> partition_xy_points_partial_solve_wit_5 def
+prf 4485:4537 <> proof_of_partition_xy_points_partial_solve_wit_6_pure
+R4541:4584 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> partition_xy_points_partial_solve_wit_6_pure def
+prf 4612:4659 <> proof_of_partition_xy_points_partial_solve_wit_6
+R4663:4701 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> partition_xy_points_partial_solve_wit_6 def
+prf 4729:4781 <> proof_of_partition_xy_points_partial_solve_wit_7_pure
+R4785:4828 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> partition_xy_points_partial_solve_wit_7_pure def
+prf 4856:4903 <> proof_of_partition_xy_points_partial_solve_wit_7
+R4907:4945 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> partition_xy_points_partial_solve_wit_7 def
+prf 4973:5013 <> proof_of_quicksort_xy_points_safety_wit_1
+R5017:5048 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> quicksort_xy_points_safety_wit_1 def
+prf 5076:5116 <> proof_of_quicksort_xy_points_safety_wit_2
+R5120:5151 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> quicksort_xy_points_safety_wit_2 def
+prf 5179:5219 <> proof_of_quicksort_xy_points_safety_wit_3
+R5223:5254 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> quicksort_xy_points_safety_wit_3 def
+prf 5282:5322 <> proof_of_quicksort_xy_points_safety_wit_4
+R5326:5357 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> quicksort_xy_points_safety_wit_4 def
+prf 5385:5425 <> proof_of_quicksort_xy_points_safety_wit_5
+R5429:5460 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> quicksort_xy_points_safety_wit_5 def
+prf 5488:5528 <> proof_of_quicksort_xy_points_safety_wit_6
+R5532:5563 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> quicksort_xy_points_safety_wit_6 def
+prf 5591:5631 <> proof_of_quicksort_xy_points_safety_wit_7
+R5635:5666 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> quicksort_xy_points_safety_wit_7 def
+prf 5694:5746 <> proof_of_quicksort_xy_points_partial_solve_wit_1_pure
+R5750:5793 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> quicksort_xy_points_partial_solve_wit_1_pure def
+prf 5821:5868 <> proof_of_quicksort_xy_points_partial_solve_wit_1
+R5872:5910 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> quicksort_xy_points_partial_solve_wit_1 def
+prf 5938:5990 <> proof_of_quicksort_xy_points_partial_solve_wit_2_pure
+R5994:6037 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> quicksort_xy_points_partial_solve_wit_2_pure def
+prf 6065:6112 <> proof_of_quicksort_xy_points_partial_solve_wit_2
+R6116:6154 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> quicksort_xy_points_partial_solve_wit_2 def
+prf 6182:6234 <> proof_of_quicksort_xy_points_partial_solve_wit_3_pure
+R6238:6281 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> quicksort_xy_points_partial_solve_wit_3_pure def
+prf 6309:6356 <> proof_of_quicksort_xy_points_partial_solve_wit_3
+R6360:6398 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> quicksort_xy_points_partial_solve_wit_3 def
+prf 6426:6478 <> proof_of_quicksort_xy_points_partial_solve_wit_4_pure
+R6482:6525 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> quicksort_xy_points_partial_solve_wit_4_pure def
+prf 6553:6600 <> proof_of_quicksort_xy_points_partial_solve_wit_4
+R6604:6642 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> quicksort_xy_points_partial_solve_wit_4 def
+prf 6670:6712 <> proof_of_andrew_monotone_chain_safety_wit_1
+R6716:6749 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> andrew_monotone_chain_safety_wit_1 def
+prf 6777:6819 <> proof_of_andrew_monotone_chain_safety_wit_2
+R6823:6856 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> andrew_monotone_chain_safety_wit_2 def
+prf 6884:6926 <> proof_of_andrew_monotone_chain_safety_wit_3
+R6930:6963 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> andrew_monotone_chain_safety_wit_3 def
+prf 6991:7033 <> proof_of_andrew_monotone_chain_safety_wit_4
+R7037:7070 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> andrew_monotone_chain_safety_wit_4 def
+prf 7098:7140 <> proof_of_andrew_monotone_chain_safety_wit_5
+R7144:7177 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> andrew_monotone_chain_safety_wit_5 def
+prf 7205:7247 <> proof_of_andrew_monotone_chain_safety_wit_6
+R7251:7284 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> andrew_monotone_chain_safety_wit_6 def
+prf 7312:7354 <> proof_of_andrew_monotone_chain_safety_wit_7
+R7358:7391 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> andrew_monotone_chain_safety_wit_7 def
+prf 7419:7461 <> proof_of_andrew_monotone_chain_safety_wit_8
+R7465:7498 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> andrew_monotone_chain_safety_wit_8 def
+prf 7526:7568 <> proof_of_andrew_monotone_chain_safety_wit_9
+R7572:7605 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> andrew_monotone_chain_safety_wit_9 def
+prf 7633:7676 <> proof_of_andrew_monotone_chain_safety_wit_10
+R7680:7714 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> andrew_monotone_chain_safety_wit_10 def
+prf 7742:7785 <> proof_of_andrew_monotone_chain_safety_wit_11
+R7789:7823 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> andrew_monotone_chain_safety_wit_11 def
+prf 7851:7894 <> proof_of_andrew_monotone_chain_safety_wit_12
+R7898:7932 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> andrew_monotone_chain_safety_wit_12 def
+prf 7960:8003 <> proof_of_andrew_monotone_chain_safety_wit_13
+R8007:8041 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> andrew_monotone_chain_safety_wit_13 def
+prf 8069:8112 <> proof_of_andrew_monotone_chain_safety_wit_14
+R8116:8150 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> andrew_monotone_chain_safety_wit_14 def
+prf 8178:8221 <> proof_of_andrew_monotone_chain_safety_wit_15
+R8225:8259 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> andrew_monotone_chain_safety_wit_15 def
+prf 8287:8330 <> proof_of_andrew_monotone_chain_safety_wit_16
+R8334:8368 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> andrew_monotone_chain_safety_wit_16 def
+prf 8396:8439 <> proof_of_andrew_monotone_chain_safety_wit_17
+R8443:8477 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> andrew_monotone_chain_safety_wit_17 def
+prf 8505:8548 <> proof_of_andrew_monotone_chain_safety_wit_18
+R8552:8586 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> andrew_monotone_chain_safety_wit_18 def
+prf 8614:8657 <> proof_of_andrew_monotone_chain_safety_wit_19
+R8661:8695 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> andrew_monotone_chain_safety_wit_19 def
+prf 8723:8766 <> proof_of_andrew_monotone_chain_safety_wit_20
+R8770:8804 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> andrew_monotone_chain_safety_wit_20 def
+prf 8832:8875 <> proof_of_andrew_monotone_chain_safety_wit_21
+R8879:8913 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> andrew_monotone_chain_safety_wit_21 def
+prf 8941:8984 <> proof_of_andrew_monotone_chain_safety_wit_22
+R8988:9022 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> andrew_monotone_chain_safety_wit_22 def
+prf 9050:9093 <> proof_of_andrew_monotone_chain_safety_wit_23
+R9097:9131 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> andrew_monotone_chain_safety_wit_23 def
+prf 9159:9202 <> proof_of_andrew_monotone_chain_safety_wit_24
+R9206:9240 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> andrew_monotone_chain_safety_wit_24 def
+prf 9268:9311 <> proof_of_andrew_monotone_chain_safety_wit_25
+R9315:9349 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> andrew_monotone_chain_safety_wit_25 def
+prf 9377:9420 <> proof_of_andrew_monotone_chain_safety_wit_26
+R9424:9458 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> andrew_monotone_chain_safety_wit_26 def
+prf 9486:9529 <> proof_of_andrew_monotone_chain_safety_wit_27
+R9533:9567 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> andrew_monotone_chain_safety_wit_27 def
+prf 9595:9638 <> proof_of_andrew_monotone_chain_safety_wit_28
+R9642:9676 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> andrew_monotone_chain_safety_wit_28 def
+prf 9704:9747 <> proof_of_andrew_monotone_chain_safety_wit_29
+R9751:9785 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> andrew_monotone_chain_safety_wit_29 def
+prf 9813:9856 <> proof_of_andrew_monotone_chain_safety_wit_30
+R9860:9894 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> andrew_monotone_chain_safety_wit_30 def
+prf 9922:9965 <> proof_of_andrew_monotone_chain_safety_wit_31
+R9969:10003 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> andrew_monotone_chain_safety_wit_31 def
+prf 10031:10074 <> proof_of_andrew_monotone_chain_safety_wit_32
+R10078:10112 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> andrew_monotone_chain_safety_wit_32 def
+prf 10140:10183 <> proof_of_andrew_monotone_chain_safety_wit_33
+R10187:10221 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> andrew_monotone_chain_safety_wit_33 def
+prf 10249:10292 <> proof_of_andrew_monotone_chain_safety_wit_34
+R10296:10330 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> andrew_monotone_chain_safety_wit_34 def
+prf 10358:10401 <> proof_of_andrew_monotone_chain_safety_wit_35
+R10405:10439 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> andrew_monotone_chain_safety_wit_35 def
+prf 10467:10510 <> proof_of_andrew_monotone_chain_safety_wit_36
+R10514:10548 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> andrew_monotone_chain_safety_wit_36 def
+prf 10576:10619 <> proof_of_andrew_monotone_chain_safety_wit_37
+R10623:10657 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> andrew_monotone_chain_safety_wit_37 def
+prf 10685:10727 <> proof_of_andrew_monotone_chain_return_wit_1
+R10731:10764 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> andrew_monotone_chain_return_wit_1 def
+prf 10792:10846 <> proof_of_andrew_monotone_chain_partial_solve_wit_1_pure
+R10850:10895 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> andrew_monotone_chain_partial_solve_wit_1_pure def
+prf 10923:10972 <> proof_of_andrew_monotone_chain_partial_solve_wit_1
+R10976:11016 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> andrew_monotone_chain_partial_solve_wit_1 def
+prf 11044:11093 <> proof_of_andrew_monotone_chain_partial_solve_wit_2
+R11097:11137 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> andrew_monotone_chain_partial_solve_wit_2 def
+prf 11165:11214 <> proof_of_andrew_monotone_chain_partial_solve_wit_3
+R11218:11258 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> andrew_monotone_chain_partial_solve_wit_3 def
+prf 11286:11335 <> proof_of_andrew_monotone_chain_partial_solve_wit_4
+R11339:11379 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> andrew_monotone_chain_partial_solve_wit_4 def
+prf 11407:11456 <> proof_of_andrew_monotone_chain_partial_solve_wit_5
+R11460:11500 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> andrew_monotone_chain_partial_solve_wit_5 def
+prf 11528:11577 <> proof_of_andrew_monotone_chain_partial_solve_wit_6
+R11581:11621 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> andrew_monotone_chain_partial_solve_wit_6 def
+prf 11649:11698 <> proof_of_andrew_monotone_chain_partial_solve_wit_7
+R11702:11742 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> andrew_monotone_chain_partial_solve_wit_7 def
+prf 11770:11819 <> proof_of_andrew_monotone_chain_partial_solve_wit_8
+R11823:11863 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> andrew_monotone_chain_partial_solve_wit_8 def
+prf 11891:11940 <> proof_of_andrew_monotone_chain_partial_solve_wit_9
+R11944:11984 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> andrew_monotone_chain_partial_solve_wit_9 def
+prf 12012:12062 <> proof_of_andrew_monotone_chain_partial_solve_wit_10
+R12066:12107 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> andrew_monotone_chain_partial_solve_wit_10 def
+prf 12135:12185 <> proof_of_andrew_monotone_chain_partial_solve_wit_11
+R12189:12230 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> andrew_monotone_chain_partial_solve_wit_11 def
+prf 12258:12308 <> proof_of_andrew_monotone_chain_partial_solve_wit_12
+R12312:12353 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> andrew_monotone_chain_partial_solve_wit_12 def
+prf 12381:12431 <> proof_of_andrew_monotone_chain_partial_solve_wit_13
+R12435:12476 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> andrew_monotone_chain_partial_solve_wit_13 def
+prf 12504:12554 <> proof_of_andrew_monotone_chain_partial_solve_wit_14
+R12558:12599 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> andrew_monotone_chain_partial_solve_wit_14 def
+prf 12627:12677 <> proof_of_andrew_monotone_chain_partial_solve_wit_15
+R12681:12722 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> andrew_monotone_chain_partial_solve_wit_15 def
+prf 12750:12800 <> proof_of_andrew_monotone_chain_partial_solve_wit_16
+R12804:12845 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> andrew_monotone_chain_partial_solve_wit_16 def
+prf 12873:12923 <> proof_of_andrew_monotone_chain_partial_solve_wit_17
+R12927:12968 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> andrew_monotone_chain_partial_solve_wit_17 def
+prf 12996:13046 <> proof_of_andrew_monotone_chain_partial_solve_wit_18
+R13050:13091 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> andrew_monotone_chain_partial_solve_wit_18 def
+prf 13119:13169 <> proof_of_andrew_monotone_chain_partial_solve_wit_19
+R13173:13214 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> andrew_monotone_chain_partial_solve_wit_19 def
+prf 13242:13292 <> proof_of_andrew_monotone_chain_partial_solve_wit_20
+R13296:13337 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> andrew_monotone_chain_partial_solve_wit_20 def
+prf 13365:13415 <> proof_of_andrew_monotone_chain_partial_solve_wit_21
+R13419:13460 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> andrew_monotone_chain_partial_solve_wit_21 def
+prf 13488:13538 <> proof_of_andrew_monotone_chain_partial_solve_wit_22
+R13542:13583 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> andrew_monotone_chain_partial_solve_wit_22 def
+prf 13611:13661 <> proof_of_andrew_monotone_chain_partial_solve_wit_23
+R13665:13706 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> andrew_monotone_chain_partial_solve_wit_23 def
+prf 13734:13784 <> proof_of_andrew_monotone_chain_partial_solve_wit_24
+R13788:13829 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> andrew_monotone_chain_partial_solve_wit_24 def
+prf 13857:13907 <> proof_of_andrew_monotone_chain_partial_solve_wit_25
+R13911:13952 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> andrew_monotone_chain_partial_solve_wit_25 def
+prf 13980:14030 <> proof_of_andrew_monotone_chain_partial_solve_wit_26
+R14034:14075 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> andrew_monotone_chain_partial_solve_wit_26 def
+prf 14103:14153 <> proof_of_andrew_monotone_chain_partial_solve_wit_27
+R14157:14198 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> andrew_monotone_chain_partial_solve_wit_27 def

@@ -1,0 +1,9 @@
+[
+  {
+    "goal": "proof_of_swap_points_return_wit_1",
+    "status": "solved",
+    "elapsed_seconds": null,
+    "coqc_seconds": 0.543,
+    "slow_steps": []
+  }
+]

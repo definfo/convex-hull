@@ -1,0 +1,1184 @@
+DIGEST 256addc50ff719d700ae189262d258e8
+Fandrew_monotone_chain__vc_proving_r4_tmp_proof_manual
+R15:31 Coq.ZArith.ZArith <> <> lib
+R49:61 Coq.Bool.Bool <> <> lib
+R79:96 Coq.Strings.String <> <> lib
+R114:130 Coq.Strings.Ascii <> <> lib
+R148:161 Coq.Lists.List <> <> lib
+R179:205 Coq.Classes.RelationClasses <> <> lib
+R223:243 Coq.Classes.Morphisms <> <> lib
+R261:279 Coq.micromega.Psatz <> <> lib
+R297:319 Coq.Sorting.Permutation <> <> lib
+R349:356 AUXLib.int_auto <> <> lib
+R358:363 AUXLib.Axioms <> <> lib
+R365:367 AUXLib.Feq <> <> lib
+R369:374 AUXLib.Idents <> <> lib
+R376:382 AUXLib.ListLib <> <> lib
+R384:387 AUXLib.VMap <> <> lib
+R405:423 SetsClass.SetsClass <> <> lib
+R433:444 SetsClass.SetsClass_AxiomFree SetsNotation <> mod
+R478:480 SimpleC.SL.Mem <> <> lib
+R482:496 SimpleC.SL.SeparationLogic <> <> lib
+R542:567 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> <> lib
+R613:644 SimpleC.EE.convex_hull.andrew_monotone_chain_proof_auto <> <> lib
+R662:699 Logic.LogicGenerator.demo932.Interface <> <> lib
+R812:824 SimpleC.SL.SeparationLogic naive_C_Rules <> mod
+R842:879 SimpleC.EE.convex_hull.convex_hull_lib <> <> lib
+prf 911:951 <> proof_of_cmp_xy_return_wit_1_split_goal_1
+R955:986 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> cmp_xy_return_wit_1_split_goal_1 def
+prf 1010:1037 <> proof_of_cmp_xy_return_wit_1
+R1041:1059 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> cmp_xy_return_wit_1 def
+R1109:1126 SimpleC.EE.convex_hull.convex_hull_lib <> point_cmp_leftdown def
+R1129:1136 SimpleC.EE.convex_hull.convex_hull_lib <> point_mk def
+R1158:1165 Coq.ZArith.ZArith_dec <> Z_lt_dec def
+R1197:1204 Coq.ZArith.ZArith_dec <> Z_gt_dec def
+R1236:1243 Coq.ZArith.ZArith_dec <> Z_lt_dec def
+R1275:1282 Coq.ZArith.ZArith_dec <> Z_gt_dec def
+R1158:1165 Coq.ZArith.ZArith_dec <> Z_lt_dec def
+R1197:1204 Coq.ZArith.ZArith_dec <> Z_gt_dec def
+R1197:1204 Coq.ZArith.ZArith_dec <> Z_gt_dec def
+R1236:1243 Coq.ZArith.ZArith_dec <> Z_lt_dec def
+R1236:1243 Coq.ZArith.ZArith_dec <> Z_lt_dec def
+R1236:1243 Coq.ZArith.ZArith_dec <> Z_lt_dec def
+R1236:1243 Coq.ZArith.ZArith_dec <> Z_lt_dec def
+R1275:1282 Coq.ZArith.ZArith_dec <> Z_gt_dec def
+R1275:1282 Coq.ZArith.ZArith_dec <> Z_gt_dec def
+R1275:1282 Coq.ZArith.ZArith_dec <> Z_gt_dec def
+R1275:1282 Coq.ZArith.ZArith_dec <> Z_gt_dec def
+R1275:1282 Coq.ZArith.ZArith_dec <> Z_gt_dec def
+R1275:1282 Coq.ZArith.ZArith_dec <> Z_gt_dec def
+R1275:1282 Coq.ZArith.ZArith_dec <> Z_gt_dec def
+R1275:1282 Coq.ZArith.ZArith_dec <> Z_gt_dec def
+prf 1319:1359 <> proof_of_cmp_xy_return_wit_2_split_goal_1
+R1363:1394 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> cmp_xy_return_wit_2_split_goal_1 def
+prf 1418:1445 <> proof_of_cmp_xy_return_wit_2
+R1449:1467 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> cmp_xy_return_wit_2 def
+R1517:1534 SimpleC.EE.convex_hull.convex_hull_lib <> point_cmp_leftdown def
+R1537:1544 SimpleC.EE.convex_hull.convex_hull_lib <> point_mk def
+R1566:1573 Coq.ZArith.ZArith_dec <> Z_lt_dec def
+R1605:1612 Coq.ZArith.ZArith_dec <> Z_gt_dec def
+R1644:1651 Coq.ZArith.ZArith_dec <> Z_lt_dec def
+R1683:1690 Coq.ZArith.ZArith_dec <> Z_gt_dec def
+R1566:1573 Coq.ZArith.ZArith_dec <> Z_lt_dec def
+R1605:1612 Coq.ZArith.ZArith_dec <> Z_gt_dec def
+R1605:1612 Coq.ZArith.ZArith_dec <> Z_gt_dec def
+R1644:1651 Coq.ZArith.ZArith_dec <> Z_lt_dec def
+R1644:1651 Coq.ZArith.ZArith_dec <> Z_lt_dec def
+R1644:1651 Coq.ZArith.ZArith_dec <> Z_lt_dec def
+R1644:1651 Coq.ZArith.ZArith_dec <> Z_lt_dec def
+R1683:1690 Coq.ZArith.ZArith_dec <> Z_gt_dec def
+R1683:1690 Coq.ZArith.ZArith_dec <> Z_gt_dec def
+R1683:1690 Coq.ZArith.ZArith_dec <> Z_gt_dec def
+R1683:1690 Coq.ZArith.ZArith_dec <> Z_gt_dec def
+R1683:1690 Coq.ZArith.ZArith_dec <> Z_gt_dec def
+R1683:1690 Coq.ZArith.ZArith_dec <> Z_gt_dec def
+R1683:1690 Coq.ZArith.ZArith_dec <> Z_gt_dec def
+R1683:1690 Coq.ZArith.ZArith_dec <> Z_gt_dec def
+prf 1727:1767 <> proof_of_cmp_xy_return_wit_3_split_goal_1
+R1771:1802 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> cmp_xy_return_wit_3_split_goal_1 def
+prf 1826:1853 <> proof_of_cmp_xy_return_wit_3
+R1857:1875 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> cmp_xy_return_wit_3 def
+R1925:1942 SimpleC.EE.convex_hull.convex_hull_lib <> point_cmp_leftdown def
+R1945:1952 SimpleC.EE.convex_hull.convex_hull_lib <> point_mk def
+R1974:1981 Coq.ZArith.ZArith_dec <> Z_lt_dec def
+R2013:2020 Coq.ZArith.ZArith_dec <> Z_gt_dec def
+R2052:2059 Coq.ZArith.ZArith_dec <> Z_lt_dec def
+R2091:2098 Coq.ZArith.ZArith_dec <> Z_gt_dec def
+R1974:1981 Coq.ZArith.ZArith_dec <> Z_lt_dec def
+R2013:2020 Coq.ZArith.ZArith_dec <> Z_gt_dec def
+R2013:2020 Coq.ZArith.ZArith_dec <> Z_gt_dec def
+R2052:2059 Coq.ZArith.ZArith_dec <> Z_lt_dec def
+R2052:2059 Coq.ZArith.ZArith_dec <> Z_lt_dec def
+R2052:2059 Coq.ZArith.ZArith_dec <> Z_lt_dec def
+R2052:2059 Coq.ZArith.ZArith_dec <> Z_lt_dec def
+R2091:2098 Coq.ZArith.ZArith_dec <> Z_gt_dec def
+R2091:2098 Coq.ZArith.ZArith_dec <> Z_gt_dec def
+R2091:2098 Coq.ZArith.ZArith_dec <> Z_gt_dec def
+R2091:2098 Coq.ZArith.ZArith_dec <> Z_gt_dec def
+R2091:2098 Coq.ZArith.ZArith_dec <> Z_gt_dec def
+R2091:2098 Coq.ZArith.ZArith_dec <> Z_gt_dec def
+R2091:2098 Coq.ZArith.ZArith_dec <> Z_gt_dec def
+R2091:2098 Coq.ZArith.ZArith_dec <> Z_gt_dec def
+prf 2135:2175 <> proof_of_cmp_xy_return_wit_4_split_goal_1
+R2179:2210 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> cmp_xy_return_wit_4_split_goal_1 def
+prf 2234:2261 <> proof_of_cmp_xy_return_wit_4
+R2265:2283 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> cmp_xy_return_wit_4 def
+R2333:2350 SimpleC.EE.convex_hull.convex_hull_lib <> point_cmp_leftdown def
+R2353:2360 SimpleC.EE.convex_hull.convex_hull_lib <> point_mk def
+R2382:2389 Coq.ZArith.ZArith_dec <> Z_lt_dec def
+R2421:2428 Coq.ZArith.ZArith_dec <> Z_gt_dec def
+R2460:2467 Coq.ZArith.ZArith_dec <> Z_lt_dec def
+R2499:2506 Coq.ZArith.ZArith_dec <> Z_gt_dec def
+R2382:2389 Coq.ZArith.ZArith_dec <> Z_lt_dec def
+R2421:2428 Coq.ZArith.ZArith_dec <> Z_gt_dec def
+R2421:2428 Coq.ZArith.ZArith_dec <> Z_gt_dec def
+R2460:2467 Coq.ZArith.ZArith_dec <> Z_lt_dec def
+R2460:2467 Coq.ZArith.ZArith_dec <> Z_lt_dec def
+R2460:2467 Coq.ZArith.ZArith_dec <> Z_lt_dec def
+R2460:2467 Coq.ZArith.ZArith_dec <> Z_lt_dec def
+R2499:2506 Coq.ZArith.ZArith_dec <> Z_gt_dec def
+R2499:2506 Coq.ZArith.ZArith_dec <> Z_gt_dec def
+R2499:2506 Coq.ZArith.ZArith_dec <> Z_gt_dec def
+R2499:2506 Coq.ZArith.ZArith_dec <> Z_gt_dec def
+R2499:2506 Coq.ZArith.ZArith_dec <> Z_gt_dec def
+R2499:2506 Coq.ZArith.ZArith_dec <> Z_gt_dec def
+R2499:2506 Coq.ZArith.ZArith_dec <> Z_gt_dec def
+R2499:2506 Coq.ZArith.ZArith_dec <> Z_gt_dec def
+prf 2543:2583 <> proof_of_cmp_xy_return_wit_5_split_goal_1
+R2587:2618 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> cmp_xy_return_wit_5_split_goal_1 def
+prf 2642:2669 <> proof_of_cmp_xy_return_wit_5
+R2673:2691 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> cmp_xy_return_wit_5 def
+R2741:2758 SimpleC.EE.convex_hull.convex_hull_lib <> point_cmp_leftdown def
+R2761:2768 SimpleC.EE.convex_hull.convex_hull_lib <> point_mk def
+R2790:2797 Coq.ZArith.ZArith_dec <> Z_lt_dec def
+R2829:2836 Coq.ZArith.ZArith_dec <> Z_gt_dec def
+R2868:2875 Coq.ZArith.ZArith_dec <> Z_lt_dec def
+R2907:2914 Coq.ZArith.ZArith_dec <> Z_gt_dec def
+R2790:2797 Coq.ZArith.ZArith_dec <> Z_lt_dec def
+R2829:2836 Coq.ZArith.ZArith_dec <> Z_gt_dec def
+R2829:2836 Coq.ZArith.ZArith_dec <> Z_gt_dec def
+R2868:2875 Coq.ZArith.ZArith_dec <> Z_lt_dec def
+R2868:2875 Coq.ZArith.ZArith_dec <> Z_lt_dec def
+R2868:2875 Coq.ZArith.ZArith_dec <> Z_lt_dec def
+R2868:2875 Coq.ZArith.ZArith_dec <> Z_lt_dec def
+R2907:2914 Coq.ZArith.ZArith_dec <> Z_gt_dec def
+R2907:2914 Coq.ZArith.ZArith_dec <> Z_gt_dec def
+R2907:2914 Coq.ZArith.ZArith_dec <> Z_gt_dec def
+R2907:2914 Coq.ZArith.ZArith_dec <> Z_gt_dec def
+R2907:2914 Coq.ZArith.ZArith_dec <> Z_gt_dec def
+R2907:2914 Coq.ZArith.ZArith_dec <> Z_gt_dec def
+R2907:2914 Coq.ZArith.ZArith_dec <> Z_gt_dec def
+R2907:2914 Coq.ZArith.ZArith_dec <> Z_gt_dec def
+prf 2951:2995 <> proof_of_cross_prod_safety_wit_1_split_goal_1
+R2999:3034 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> cross_prod_safety_wit_1_split_goal_1 def
+prf 3058:3102 <> proof_of_cross_prod_safety_wit_1_split_goal_2
+R3106:3141 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> cross_prod_safety_wit_1_split_goal_2 def
+prf 3165:3196 <> proof_of_cross_prod_safety_wit_1
+R3200:3222 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> cross_prod_safety_wit_1 def
+R3277:3287 SimpleC.EE.convex_hull.convex_hull_lib <> point_bound def
+R3290:3312 ConvexHull.Point_Order <> point_bound def
+prf 3337:3381 <> proof_of_cross_prod_safety_wit_2_split_goal_1
+R3385:3420 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> cross_prod_safety_wit_2_split_goal_1 def
+prf 3444:3488 <> proof_of_cross_prod_safety_wit_2_split_goal_2
+R3492:3527 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> cross_prod_safety_wit_2_split_goal_2 def
+prf 3551:3582 <> proof_of_cross_prod_safety_wit_2
+R3586:3608 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> cross_prod_safety_wit_2 def
+R3663:3673 SimpleC.EE.convex_hull.convex_hull_lib <> point_bound def
+R3676:3698 ConvexHull.Point_Order <> point_bound def
+prf 3723:3767 <> proof_of_cross_prod_safety_wit_3_split_goal_1
+R3771:3806 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> cross_prod_safety_wit_3_split_goal_1 def
+prf 3830:3874 <> proof_of_cross_prod_safety_wit_3_split_goal_2
+R3878:3913 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> cross_prod_safety_wit_3_split_goal_2 def
+prf 3937:3968 <> proof_of_cross_prod_safety_wit_3
+R3972:3994 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> cross_prod_safety_wit_3 def
+R4049:4059 SimpleC.EE.convex_hull.convex_hull_lib <> point_bound def
+R4062:4084 ConvexHull.Point_Order <> point_bound def
+prf 4109:4153 <> proof_of_cross_prod_safety_wit_4_split_goal_1
+R4157:4192 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> cross_prod_safety_wit_4_split_goal_1 def
+prf 4216:4260 <> proof_of_cross_prod_safety_wit_4_split_goal_2
+R4264:4299 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> cross_prod_safety_wit_4_split_goal_2 def
+prf 4323:4354 <> proof_of_cross_prod_safety_wit_4
+R4358:4380 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> cross_prod_safety_wit_4 def
+R4435:4445 SimpleC.EE.convex_hull.convex_hull_lib <> point_bound def
+R4448:4470 ConvexHull.Point_Order <> point_bound def
+prf 4495:4539 <> proof_of_cross_prod_safety_wit_5_split_goal_1
+R4543:4578 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> cross_prod_safety_wit_5_split_goal_1 def
+prf 4602:4646 <> proof_of_cross_prod_safety_wit_5_split_goal_2
+R4650:4685 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> cross_prod_safety_wit_5_split_goal_2 def
+prf 4709:4740 <> proof_of_cross_prod_safety_wit_5
+R4744:4766 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> cross_prod_safety_wit_5 def
+R4821:4831 SimpleC.EE.convex_hull.convex_hull_lib <> point_bound def
+R4834:4856 ConvexHull.Point_Order <> point_bound def
+prf 4881:4925 <> proof_of_cross_prod_safety_wit_6_split_goal_1
+R4929:4964 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> cross_prod_safety_wit_6_split_goal_1 def
+prf 4988:5032 <> proof_of_cross_prod_safety_wit_6_split_goal_2
+R5036:5071 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> cross_prod_safety_wit_6_split_goal_2 def
+prf 5095:5126 <> proof_of_cross_prod_safety_wit_6
+R5130:5152 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> cross_prod_safety_wit_6 def
+R5207:5217 SimpleC.EE.convex_hull.convex_hull_lib <> point_bound def
+R5220:5242 ConvexHull.Point_Order <> point_bound def
+prf 5267:5311 <> proof_of_cross_prod_safety_wit_7_split_goal_1
+R5315:5350 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> cross_prod_safety_wit_7_split_goal_1 def
+prf 5374:5418 <> proof_of_cross_prod_safety_wit_7_split_goal_2
+R5422:5457 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> cross_prod_safety_wit_7_split_goal_2 def
+prf 5481:5512 <> proof_of_cross_prod_safety_wit_7
+R5516:5538 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> cross_prod_safety_wit_7 def
+R5593:5603 SimpleC.EE.convex_hull.convex_hull_lib <> point_bound def
+R5606:5628 ConvexHull.Point_Order <> point_bound def
+prf 5653:5697 <> proof_of_cross_prod_return_wit_1_split_goal_1
+R5701:5736 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> cross_prod_return_wit_1_split_goal_1 def
+prf 5760:5791 <> proof_of_cross_prod_return_wit_1
+R5795:5817 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> cross_prod_return_wit_1 def
+prf 5870:5915 <> proof_of_swap_points_return_wit_1_split_goal_1
+R5919:5955 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> swap_points_return_wit_1_split_goal_1 def
+prf 5979:6011 <> proof_of_swap_points_return_wit_1
+R6015:6038 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> swap_points_return_wit_1 def
+R6057:6080 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> swap_points_return_wit_1 def
+R6125:6134 ListLib.General.Length <> Znth_indep thm
+R6164:6176 SimpleC.EE.convex_hull.convex_hull_lib <> default_point def
+R6125:6134 ListLib.General.Length <> Znth_indep thm
+R6164:6176 SimpleC.EE.convex_hull.convex_hull_lib <> default_point def
+R6125:6134 ListLib.General.Length <> Znth_indep thm
+R6164:6176 SimpleC.EE.convex_hull.convex_hull_lib <> default_point def
+R6198:6207 ListLib.General.Length <> Znth_indep thm
+R6237:6249 SimpleC.EE.convex_hull.convex_hull_lib <> default_point def
+R6198:6207 ListLib.General.Length <> Znth_indep thm
+R6237:6249 SimpleC.EE.convex_hull.convex_hull_lib <> default_point def
+R6198:6207 ListLib.General.Length <> Znth_indep thm
+R6237:6249 SimpleC.EE.convex_hull.convex_hull_lib <> default_point def
+R6269:6278 SimpleC.EE.convex_hull.convex_hull_lib <> point_swap def
+R6334:6353 AUXLib.ListLib <> Zlength_replace_Znth thm
+R6298:6319 ListLib.Base.Positional <> Znth_replace_Znth_Same thm
+R6298:6319 ListLib.Base.Positional <> Znth_replace_Znth_Same thm
+R6334:6353 AUXLib.ListLib <> Zlength_replace_Znth thm
+R6334:6353 AUXLib.ListLib <> Zlength_replace_Znth thm
+R6334:6353 AUXLib.ListLib <> Zlength_replace_Znth thm
+R6334:6353 AUXLib.ListLib <> Zlength_replace_Znth thm
+R6298:6319 ListLib.Base.Positional <> Znth_replace_Znth_Same thm
+R6298:6319 ListLib.Base.Positional <> Znth_replace_Znth_Same thm
+R6334:6353 AUXLib.ListLib <> Zlength_replace_Znth thm
+R6334:6353 AUXLib.ListLib <> Zlength_replace_Znth thm
+R6298:6319 ListLib.Base.Positional <> Znth_replace_Znth_Same thm
+R6298:6319 ListLib.Base.Positional <> Znth_replace_Znth_Same thm
+R6415:6434 AUXLib.ListLib <> Zlength_replace_Znth thm
+R6379:6400 ListLib.Base.Positional <> Znth_replace_Znth_Diff thm
+R6379:6400 ListLib.Base.Positional <> Znth_replace_Znth_Diff thm
+R6415:6434 AUXLib.ListLib <> Zlength_replace_Znth thm
+R6415:6434 AUXLib.ListLib <> Zlength_replace_Znth thm
+R6415:6434 AUXLib.ListLib <> Zlength_replace_Znth thm
+R6415:6434 AUXLib.ListLib <> Zlength_replace_Znth thm
+R6415:6434 AUXLib.ListLib <> Zlength_replace_Znth thm
+R6415:6434 AUXLib.ListLib <> Zlength_replace_Znth thm
+R6415:6434 AUXLib.ListLib <> Zlength_replace_Znth thm
+R6415:6434 AUXLib.ListLib <> Zlength_replace_Znth thm
+R6379:6400 ListLib.Base.Positional <> Znth_replace_Znth_Diff thm
+R6379:6400 ListLib.Base.Positional <> Znth_replace_Znth_Diff thm
+R6415:6434 AUXLib.ListLib <> Zlength_replace_Znth thm
+R6415:6434 AUXLib.ListLib <> Zlength_replace_Znth thm
+R6415:6434 AUXLib.ListLib <> Zlength_replace_Znth thm
+R6415:6434 AUXLib.ListLib <> Zlength_replace_Znth thm
+R6415:6434 AUXLib.ListLib <> Zlength_replace_Znth thm
+R6415:6434 AUXLib.ListLib <> Zlength_replace_Znth thm
+R6379:6400 ListLib.Base.Positional <> Znth_replace_Znth_Diff thm
+R6379:6400 ListLib.Base.Positional <> Znth_replace_Znth_Diff thm
+R6460:6476 ListLib.Base.Positional <> replace_Znth_Znth thm
+R6460:6476 ListLib.Base.Positional <> replace_Znth_Znth thm
+R6535:6554 AUXLib.ListLib <> Zlength_replace_Znth thm
+R6503:6520 SimpleC.EE.convex_hull.convex_hull_lib <> replace_Znth_twice thm
+R6503:6520 SimpleC.EE.convex_hull.convex_hull_lib <> replace_Znth_twice thm
+R6535:6554 AUXLib.ListLib <> Zlength_replace_Znth thm
+R6535:6554 AUXLib.ListLib <> Zlength_replace_Znth thm
+R6535:6554 AUXLib.ListLib <> Zlength_replace_Znth thm
+R6535:6554 AUXLib.ListLib <> Zlength_replace_Znth thm
+R6503:6520 SimpleC.EE.convex_hull.convex_hull_lib <> replace_Znth_twice thm
+R6503:6520 SimpleC.EE.convex_hull.convex_hull_lib <> replace_Znth_twice thm
+R6535:6554 AUXLib.ListLib <> Zlength_replace_Znth thm
+R6535:6554 AUXLib.ListLib <> Zlength_replace_Znth thm
+R6503:6520 SimpleC.EE.convex_hull.convex_hull_lib <> replace_Znth_twice thm
+R6503:6520 SimpleC.EE.convex_hull.convex_hull_lib <> replace_Znth_twice thm
+R6574:6583 ListLib.General.Length <> Znth_indep thm
+R6613:6625 SimpleC.EE.convex_hull.convex_hull_lib <> default_point def
+R6574:6583 ListLib.General.Length <> Znth_indep thm
+R6613:6625 SimpleC.EE.convex_hull.convex_hull_lib <> default_point def
+R6574:6583 ListLib.General.Length <> Znth_indep thm
+R6613:6625 SimpleC.EE.convex_hull.convex_hull_lib <> default_point def
+R6648:6651 ListLib.Base.Positional <> Znth def
+R6665:6677 SimpleC.EE.convex_hull.convex_hull_lib <> default_point def
+R6648:6651 ListLib.Base.Positional <> Znth def
+R6665:6677 SimpleC.EE.convex_hull.convex_hull_lib <> default_point def
+R6693:6696 ListLib.Base.Positional <> Znth def
+R6710:6722 SimpleC.EE.convex_hull.convex_hull_lib <> default_point def
+R6693:6696 ListLib.Base.Positional <> Znth def
+R6710:6722 SimpleC.EE.convex_hull.convex_hull_lib <> default_point def
+R6743:6757 SimpleC.SL.SeparationLogic naive_C_Rules derivable1_refl def
+R6743:6757 SimpleC.SL.SeparationLogic naive_C_Rules derivable1_refl def
+prf 6772:6825 <> proof_of_partition_xy_points_entail_wit_1_split_goal_1
+R6829:6873 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> partition_xy_points_entail_wit_1_split_goal_1 def
+prf 6897:6950 <> proof_of_partition_xy_points_entail_wit_1_split_goal_2
+R6954:6998 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> partition_xy_points_entail_wit_1_split_goal_2 def
+prf 7022:7075 <> proof_of_partition_xy_points_entail_wit_1_split_goal_3
+R7079:7123 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> partition_xy_points_entail_wit_1_split_goal_3 def
+prf 7147:7200 <> proof_of_partition_xy_points_entail_wit_1_split_goal_4
+R7204:7248 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> partition_xy_points_entail_wit_1_split_goal_4 def
+prf 7272:7312 <> proof_of_partition_xy_points_entail_wit_1
+R7316:7347 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> partition_xy_points_entail_wit_1 def
+R7415:7441 SimpleC.EE.convex_hull.convex_hull_lib <> point_xy_partition_scan_inv def
+R7467:7482 Coq.Sorting.Permutation <> Permutation_refl thm
+R7467:7482 Coq.Sorting.Permutation <> Permutation_refl thm
+R7512:7540 SimpleC.EE.convex_hull.convex_hull_lib <> point_same_outside_range_refl thm
+R7512:7540 SimpleC.EE.convex_hull.convex_hull_lib <> point_same_outside_range_refl thm
+R7578:7587 ListLib.General.Length <> Znth_indep thm
+R7620:7632 SimpleC.EE.convex_hull.convex_hull_lib <> default_point def
+R7578:7587 ListLib.General.Length <> Znth_indep thm
+R7620:7632 SimpleC.EE.convex_hull.convex_hull_lib <> default_point def
+R7578:7587 ListLib.General.Length <> Znth_indep thm
+R7620:7632 SimpleC.EE.convex_hull.convex_hull_lib <> default_point def
+R7664:7667 ListLib.Base.Positional <> Znth def
+R7684:7696 SimpleC.EE.convex_hull.convex_hull_lib <> default_point def
+R7664:7667 ListLib.Base.Positional <> Znth def
+R7684:7696 SimpleC.EE.convex_hull.convex_hull_lib <> default_point def
+R7771:7799 SimpleC.EE.convex_hull.convex_hull_lib <> points_in_bound_Znth_point_mk thm
+R7771:7799 SimpleC.EE.convex_hull.convex_hull_lib <> points_in_bound_Znth_point_mk thm
+prf 7826:7881 <> proof_of_partition_xy_points_entail_wit_2_1_split_goal_1
+R7885:7931 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> partition_xy_points_entail_wit_2_1_split_goal_1 def
+prf 7955:8010 <> proof_of_partition_xy_points_entail_wit_2_1_split_goal_2
+R8014:8060 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> partition_xy_points_entail_wit_2_1_split_goal_2 def
+prf 8084:8139 <> proof_of_partition_xy_points_entail_wit_2_1_split_goal_3
+R8143:8189 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> partition_xy_points_entail_wit_2_1_split_goal_3 def
+prf 8213:8268 <> proof_of_partition_xy_points_entail_wit_2_1_split_goal_4
+R8272:8318 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> partition_xy_points_entail_wit_2_1_split_goal_4 def
+prf 8342:8397 <> proof_of_partition_xy_points_entail_wit_2_1_split_goal_5
+R8401:8447 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> partition_xy_points_entail_wit_2_1_split_goal_5 def
+prf 8471:8513 <> proof_of_partition_xy_points_entail_wit_2_1
+R8517:8550 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> partition_xy_points_entail_wit_2_1 def
+R8588:8597 SimpleC.EE.convex_hull.convex_hull_lib <> point_swap def
+R8611:8613 Coq.ZArith.BinInt <> ::Z_scope:x_'+'_x not
+R8588:8597 SimpleC.EE.convex_hull.convex_hull_lib <> point_swap def
+R8611:8613 Coq.ZArith.BinInt <> ::Z_scope:x_'+'_x not
+R8657:8659 Coq.ZArith.BinInt <> ::Z_scope:x_'<'_x not
+R8653:8655 Coq.ZArith.BinInt <> ::Z_scope:x_'+'_x not
+R8657:8659 Coq.ZArith.BinInt <> ::Z_scope:x_'<'_x not
+R8653:8655 Coq.ZArith.BinInt <> ::Z_scope:x_'+'_x not
+R8696:8699 Coq.ZArith.BinInt <> ::Z_scope:x_'<='_x_'<'_x not
+R8705:8707 Coq.ZArith.BinInt <> ::Z_scope:x_'<='_x_'<'_x not
+R8701:8703 Coq.ZArith.BinInt <> ::Z_scope:x_'+'_x not
+R8701:8703 Coq.ZArith.BinInt <> ::Z_scope:x_'+'_x not
+R8708:8714 Coq.ZArith.Zcomplements <> Zlength def
+R8696:8699 Coq.ZArith.BinInt <> ::Z_scope:x_'<='_x_'<'_x not
+R8705:8707 Coq.ZArith.BinInt <> ::Z_scope:x_'<='_x_'<'_x not
+R8701:8703 Coq.ZArith.BinInt <> ::Z_scope:x_'+'_x not
+R8701:8703 Coq.ZArith.BinInt <> ::Z_scope:x_'+'_x not
+R8708:8714 Coq.ZArith.Zcomplements <> Zlength def
+R8759:8762 Coq.ZArith.BinInt <> ::Z_scope:x_'<='_x_'<'_x not
+R8764:8766 Coq.ZArith.BinInt <> ::Z_scope:x_'<='_x_'<'_x not
+R8767:8773 Coq.ZArith.Zcomplements <> Zlength def
+R8759:8762 Coq.ZArith.BinInt <> ::Z_scope:x_'<='_x_'<'_x not
+R8764:8766 Coq.ZArith.BinInt <> ::Z_scope:x_'<='_x_'<'_x not
+R8767:8773 Coq.ZArith.Zcomplements <> Zlength def
+R8923:8926 Coq.ZArith.BinInt <> ::Z_scope:x_'<='_x not
+R8820:8837 SimpleC.EE.convex_hull.convex_hull_lib <> point_cmp_leftdown def
+R8840:8843 ListLib.Base.Positional <> Znth def
+R8857:8869 SimpleC.EE.convex_hull.convex_hull_lib <> default_point def
+R8898:8905 SimpleC.EE.convex_hull.convex_hull_lib <> point_mk def
+R8923:8926 Coq.ZArith.BinInt <> ::Z_scope:x_'<='_x not
+R8820:8837 SimpleC.EE.convex_hull.convex_hull_lib <> point_cmp_leftdown def
+R8840:8843 ListLib.Base.Positional <> Znth def
+R8857:8869 SimpleC.EE.convex_hull.convex_hull_lib <> default_point def
+R8898:8905 SimpleC.EE.convex_hull.convex_hull_lib <> point_mk def
+R8984:8993 ListLib.General.Length <> Znth_indep thm
+R9023:9035 SimpleC.EE.convex_hull.convex_hull_lib <> default_point def
+R8984:8993 ListLib.General.Length <> Znth_indep thm
+R9023:9035 SimpleC.EE.convex_hull.convex_hull_lib <> default_point def
+R8984:8993 ListLib.General.Length <> Znth_indep thm
+R9023:9035 SimpleC.EE.convex_hull.convex_hull_lib <> default_point def
+R9068:9079 SimpleC.EE.convex_hull.convex_hull_lib <> point_mk_eta thm
+R9068:9079 SimpleC.EE.convex_hull.convex_hull_lib <> point_mk_eta thm
+R9068:9079 SimpleC.EE.convex_hull.convex_hull_lib <> point_mk_eta thm
+R9149:9175 SimpleC.EE.convex_hull.convex_hull_lib <> point_xy_partition_scan_inv def
+R9269:9285 Coq.Sorting.Permutation <> Permutation_trans thm
+R9269:9285 Coq.Sorting.Permutation <> Permutation_trans thm
+R9323:9344 SimpleC.EE.convex_hull.convex_hull_lib <> point_swap_permutation thm
+R9323:9344 SimpleC.EE.convex_hull.convex_hull_lib <> point_swap_permutation thm
+R9380:9421 SimpleC.EE.convex_hull.convex_hull_lib <> point_same_outside_range_point_swap_inside thm
+R9380:9421 SimpleC.EE.convex_hull.convex_hull_lib <> point_same_outside_range_point_swap_inside thm
+R9470:9496 SimpleC.EE.convex_hull.convex_hull_lib <> point_swap_Znth_other_index thm
+R9470:9496 SimpleC.EE.convex_hull.convex_hull_lib <> point_swap_Znth_other_index thm
+R9470:9496 SimpleC.EE.convex_hull.convex_hull_lib <> point_swap_Znth_other_index thm
+R9598:9605 Coq.ZArith.BinInt Z eq_dec def
+R9611:9613 Coq.ZArith.BinInt <> ::Z_scope:x_'+'_x not
+R9598:9605 Coq.ZArith.BinInt Z eq_dec def
+R9611:9613 Coq.ZArith.BinInt <> ::Z_scope:x_'+'_x not
+R9658:9683 SimpleC.EE.convex_hull.convex_hull_lib <> point_swap_Znth_left_index thm
+R9658:9683 SimpleC.EE.convex_hull.convex_hull_lib <> point_swap_Znth_left_index thm
+R9658:9683 SimpleC.EE.convex_hull.convex_hull_lib <> point_swap_Znth_left_index thm
+R9748:9774 SimpleC.EE.convex_hull.convex_hull_lib <> point_swap_Znth_other_index thm
+R9748:9774 SimpleC.EE.convex_hull.convex_hull_lib <> point_swap_Znth_other_index thm
+R9748:9774 SimpleC.EE.convex_hull.convex_hull_lib <> point_swap_Znth_other_index thm
+R9870:9877 Coq.ZArith.BinInt Z eq_dec def
+R9870:9877 Coq.ZArith.BinInt Z eq_dec def
+R9924:9950 SimpleC.EE.convex_hull.convex_hull_lib <> point_swap_Znth_right_index thm
+R9924:9950 SimpleC.EE.convex_hull.convex_hull_lib <> point_swap_Znth_right_index thm
+R9924:9950 SimpleC.EE.convex_hull.convex_hull_lib <> point_swap_Znth_right_index thm
+R10021:10047 SimpleC.EE.convex_hull.convex_hull_lib <> point_swap_Znth_other_index thm
+R10021:10047 SimpleC.EE.convex_hull.convex_hull_lib <> point_swap_Znth_other_index thm
+R10021:10047 SimpleC.EE.convex_hull.convex_hull_lib <> point_swap_Znth_other_index thm
+R10103:10128 SimpleC.EE.convex_hull.convex_hull_lib <> points_in_bound_point_swap thm
+R10103:10128 SimpleC.EE.convex_hull.convex_hull_lib <> points_in_bound_point_swap thm
+R10265:10282 SimpleC.EE.convex_hull.convex_hull_lib <> Zlength_point_swap thm
+R10163:10172 ListLib.General.Length <> Znth_indep thm
+R10175:10184 SimpleC.EE.convex_hull.convex_hull_lib <> point_swap def
+R10198:10200 Coq.ZArith.BinInt <> ::Z_scope:x_'+'_x not
+R10232:10244 SimpleC.EE.convex_hull.convex_hull_lib <> default_point def
+R10163:10172 ListLib.General.Length <> Znth_indep thm
+R10175:10184 SimpleC.EE.convex_hull.convex_hull_lib <> point_swap def
+R10198:10200 Coq.ZArith.BinInt <> ::Z_scope:x_'+'_x not
+R10232:10244 SimpleC.EE.convex_hull.convex_hull_lib <> default_point def
+R10265:10282 SimpleC.EE.convex_hull.convex_hull_lib <> Zlength_point_swap thm
+R10265:10282 SimpleC.EE.convex_hull.convex_hull_lib <> Zlength_point_swap thm
+R10163:10172 ListLib.General.Length <> Znth_indep thm
+R10175:10184 SimpleC.EE.convex_hull.convex_hull_lib <> point_swap def
+R10198:10200 Coq.ZArith.BinInt <> ::Z_scope:x_'+'_x not
+R10232:10244 SimpleC.EE.convex_hull.convex_hull_lib <> default_point def
+R10303:10329 SimpleC.EE.convex_hull.convex_hull_lib <> point_swap_Znth_other_index thm
+R10303:10329 SimpleC.EE.convex_hull.convex_hull_lib <> point_swap_Znth_other_index thm
+R10303:10329 SimpleC.EE.convex_hull.convex_hull_lib <> point_swap_Znth_other_index thm
+R10355:10364 ListLib.General.Length <> Znth_indep thm
+R10401:10413 SimpleC.EE.convex_hull.convex_hull_lib <> default_point def
+R10355:10364 ListLib.General.Length <> Znth_indep thm
+R10401:10413 SimpleC.EE.convex_hull.convex_hull_lib <> default_point def
+R10355:10364 ListLib.General.Length <> Znth_indep thm
+R10401:10413 SimpleC.EE.convex_hull.convex_hull_lib <> default_point def
+R10557:10574 SimpleC.EE.convex_hull.convex_hull_lib <> Zlength_point_swap thm
+R10455:10464 ListLib.General.Length <> Znth_indep thm
+R10467:10476 SimpleC.EE.convex_hull.convex_hull_lib <> point_swap def
+R10490:10492 Coq.ZArith.BinInt <> ::Z_scope:x_'+'_x not
+R10524:10536 SimpleC.EE.convex_hull.convex_hull_lib <> default_point def
+R10455:10464 ListLib.General.Length <> Znth_indep thm
+R10467:10476 SimpleC.EE.convex_hull.convex_hull_lib <> point_swap def
+R10490:10492 Coq.ZArith.BinInt <> ::Z_scope:x_'+'_x not
+R10524:10536 SimpleC.EE.convex_hull.convex_hull_lib <> default_point def
+R10557:10574 SimpleC.EE.convex_hull.convex_hull_lib <> Zlength_point_swap thm
+R10557:10574 SimpleC.EE.convex_hull.convex_hull_lib <> Zlength_point_swap thm
+R10455:10464 ListLib.General.Length <> Znth_indep thm
+R10467:10476 SimpleC.EE.convex_hull.convex_hull_lib <> point_swap def
+R10490:10492 Coq.ZArith.BinInt <> ::Z_scope:x_'+'_x not
+R10524:10536 SimpleC.EE.convex_hull.convex_hull_lib <> default_point def
+R10595:10621 SimpleC.EE.convex_hull.convex_hull_lib <> point_swap_Znth_other_index thm
+R10595:10621 SimpleC.EE.convex_hull.convex_hull_lib <> point_swap_Znth_other_index thm
+R10595:10621 SimpleC.EE.convex_hull.convex_hull_lib <> point_swap_Znth_other_index thm
+R10647:10656 ListLib.General.Length <> Znth_indep thm
+R10693:10705 SimpleC.EE.convex_hull.convex_hull_lib <> default_point def
+R10647:10656 ListLib.General.Length <> Znth_indep thm
+R10693:10705 SimpleC.EE.convex_hull.convex_hull_lib <> default_point def
+R10647:10656 ListLib.General.Length <> Znth_indep thm
+R10693:10705 SimpleC.EE.convex_hull.convex_hull_lib <> default_point def
+R10746:10763 SimpleC.EE.convex_hull.convex_hull_lib <> Zlength_point_swap thm
+R10746:10763 SimpleC.EE.convex_hull.convex_hull_lib <> Zlength_point_swap thm
+R10746:10763 SimpleC.EE.convex_hull.convex_hull_lib <> Zlength_point_swap thm
+prf 10795:10850 <> proof_of_partition_xy_points_entail_wit_2_2_split_goal_1
+R10854:10900 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> partition_xy_points_entail_wit_2_2_split_goal_1 def
+prf 10924:10966 <> proof_of_partition_xy_points_entail_wit_2_2
+R10970:11003 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> partition_xy_points_entail_wit_2_2 def
+R11187:11190 Coq.ZArith.BinInt <> ::Z_scope:x_'<='_x not
+R11086:11103 SimpleC.EE.convex_hull.convex_hull_lib <> point_cmp_leftdown def
+R11106:11109 ListLib.Base.Positional <> Znth def
+R11123:11135 SimpleC.EE.convex_hull.convex_hull_lib <> default_point def
+R11162:11169 SimpleC.EE.convex_hull.convex_hull_lib <> point_mk def
+R11187:11190 Coq.ZArith.BinInt <> ::Z_scope:x_'<='_x not
+R11086:11103 SimpleC.EE.convex_hull.convex_hull_lib <> point_cmp_leftdown def
+R11106:11109 ListLib.Base.Positional <> Znth def
+R11123:11135 SimpleC.EE.convex_hull.convex_hull_lib <> default_point def
+R11162:11169 SimpleC.EE.convex_hull.convex_hull_lib <> point_mk def
+R11242:11251 ListLib.General.Length <> Znth_indep thm
+R11281:11293 SimpleC.EE.convex_hull.convex_hull_lib <> default_point def
+R11242:11251 ListLib.General.Length <> Znth_indep thm
+R11281:11293 SimpleC.EE.convex_hull.convex_hull_lib <> default_point def
+R11242:11251 ListLib.General.Length <> Znth_indep thm
+R11281:11293 SimpleC.EE.convex_hull.convex_hull_lib <> default_point def
+R11324:11335 SimpleC.EE.convex_hull.convex_hull_lib <> point_mk_eta thm
+R11324:11335 SimpleC.EE.convex_hull.convex_hull_lib <> point_mk_eta thm
+R11324:11335 SimpleC.EE.convex_hull.convex_hull_lib <> point_mk_eta thm
+R11397:11423 SimpleC.EE.convex_hull.convex_hull_lib <> point_xy_partition_scan_inv def
+R11608:11615 Coq.ZArith.BinInt Z eq_dec def
+R11608:11615 Coq.ZArith.BinInt Z eq_dec def
+prf 11732:11787 <> proof_of_partition_xy_points_entail_wit_2_3_split_goal_1
+R11791:11837 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> partition_xy_points_entail_wit_2_3_split_goal_1 def
+prf 11861:11903 <> proof_of_partition_xy_points_entail_wit_2_3
+R11907:11940 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> partition_xy_points_entail_wit_2_3 def
+R12124:12126 Coq.ZArith.BinInt <> ::Z_scope:x_'<'_x not
+R12023:12040 SimpleC.EE.convex_hull.convex_hull_lib <> point_cmp_leftdown def
+R12043:12050 SimpleC.EE.convex_hull.convex_hull_lib <> point_mk def
+R12093:12096 ListLib.Base.Positional <> Znth def
+R12110:12122 SimpleC.EE.convex_hull.convex_hull_lib <> default_point def
+R12124:12126 Coq.ZArith.BinInt <> ::Z_scope:x_'<'_x not
+R12023:12040 SimpleC.EE.convex_hull.convex_hull_lib <> point_cmp_leftdown def
+R12043:12050 SimpleC.EE.convex_hull.convex_hull_lib <> point_mk def
+R12093:12096 ListLib.Base.Positional <> Znth def
+R12110:12122 SimpleC.EE.convex_hull.convex_hull_lib <> default_point def
+R12178:12187 ListLib.General.Length <> Znth_indep thm
+R12217:12229 SimpleC.EE.convex_hull.convex_hull_lib <> default_point def
+R12178:12187 ListLib.General.Length <> Znth_indep thm
+R12217:12229 SimpleC.EE.convex_hull.convex_hull_lib <> default_point def
+R12178:12187 ListLib.General.Length <> Znth_indep thm
+R12217:12229 SimpleC.EE.convex_hull.convex_hull_lib <> default_point def
+R12260:12271 SimpleC.EE.convex_hull.convex_hull_lib <> point_mk_eta thm
+R12260:12271 SimpleC.EE.convex_hull.convex_hull_lib <> point_mk_eta thm
+R12260:12271 SimpleC.EE.convex_hull.convex_hull_lib <> point_mk_eta thm
+R12296:12299 ListLib.Base.Positional <> Znth def
+R12313:12325 SimpleC.EE.convex_hull.convex_hull_lib <> default_point def
+R12296:12299 ListLib.Base.Positional <> Znth def
+R12313:12325 SimpleC.EE.convex_hull.convex_hull_lib <> default_point def
+R12340:12357 SimpleC.EE.convex_hull.convex_hull_lib <> point_cmp_leftdown def
+R12430:12437 Coq.ZArith.ZArith_dec <> Z_lt_dec def
+R12430:12437 Coq.ZArith.ZArith_dec <> Z_lt_dec def
+R12494:12501 Coq.ZArith.ZArith_dec <> Z_lt_dec def
+R12494:12501 Coq.ZArith.ZArith_dec <> Z_lt_dec def
+R12562:12569 Coq.ZArith.ZArith_dec <> Z_gt_dec def
+R12562:12569 Coq.ZArith.ZArith_dec <> Z_gt_dec def
+R12626:12633 Coq.ZArith.ZArith_dec <> Z_gt_dec def
+R12626:12633 Coq.ZArith.ZArith_dec <> Z_gt_dec def
+R12660:12667 Coq.ZArith.ZArith_dec <> Z_gt_dec def
+R12591:12598 Coq.ZArith.ZArith_dec <> Z_gt_dec def
+R12528:12535 Coq.ZArith.ZArith_dec <> Z_lt_dec def
+R12459:12466 Coq.ZArith.ZArith_dec <> Z_lt_dec def
+R12459:12466 Coq.ZArith.ZArith_dec <> Z_lt_dec def
+R12528:12535 Coq.ZArith.ZArith_dec <> Z_lt_dec def
+R12528:12535 Coq.ZArith.ZArith_dec <> Z_lt_dec def
+R12528:12535 Coq.ZArith.ZArith_dec <> Z_lt_dec def
+R12660:12667 Coq.ZArith.ZArith_dec <> Z_gt_dec def
+R12660:12667 Coq.ZArith.ZArith_dec <> Z_gt_dec def
+R12660:12667 Coq.ZArith.ZArith_dec <> Z_gt_dec def
+R12528:12535 Coq.ZArith.ZArith_dec <> Z_lt_dec def
+R12528:12535 Coq.ZArith.ZArith_dec <> Z_lt_dec def
+R12660:12667 Coq.ZArith.ZArith_dec <> Z_gt_dec def
+R12528:12535 Coq.ZArith.ZArith_dec <> Z_lt_dec def
+R12660:12667 Coq.ZArith.ZArith_dec <> Z_gt_dec def
+R12660:12667 Coq.ZArith.ZArith_dec <> Z_gt_dec def
+R12660:12667 Coq.ZArith.ZArith_dec <> Z_gt_dec def
+R12660:12667 Coq.ZArith.ZArith_dec <> Z_gt_dec def
+R12660:12667 Coq.ZArith.ZArith_dec <> Z_gt_dec def
+R12660:12667 Coq.ZArith.ZArith_dec <> Z_gt_dec def
+R12660:12667 Coq.ZArith.ZArith_dec <> Z_gt_dec def
+R12660:12667 Coq.ZArith.ZArith_dec <> Z_gt_dec def
+R12528:12535 Coq.ZArith.ZArith_dec <> Z_lt_dec def
+R12660:12667 Coq.ZArith.ZArith_dec <> Z_gt_dec def
+R12660:12667 Coq.ZArith.ZArith_dec <> Z_gt_dec def
+R12528:12535 Coq.ZArith.ZArith_dec <> Z_lt_dec def
+R12660:12667 Coq.ZArith.ZArith_dec <> Z_gt_dec def
+R12660:12667 Coq.ZArith.ZArith_dec <> Z_gt_dec def
+R12660:12667 Coq.ZArith.ZArith_dec <> Z_gt_dec def
+R12660:12667 Coq.ZArith.ZArith_dec <> Z_gt_dec def
+R12660:12667 Coq.ZArith.ZArith_dec <> Z_gt_dec def
+R12660:12667 Coq.ZArith.ZArith_dec <> Z_gt_dec def
+R12660:12667 Coq.ZArith.ZArith_dec <> Z_gt_dec def
+R12660:12667 Coq.ZArith.ZArith_dec <> Z_gt_dec def
+R12660:12667 Coq.ZArith.ZArith_dec <> Z_gt_dec def
+R12660:12667 Coq.ZArith.ZArith_dec <> Z_gt_dec def
+R12660:12667 Coq.ZArith.ZArith_dec <> Z_gt_dec def
+R12660:12667 Coq.ZArith.ZArith_dec <> Z_gt_dec def
+R12660:12667 Coq.ZArith.ZArith_dec <> Z_gt_dec def
+R12459:12466 Coq.ZArith.ZArith_dec <> Z_lt_dec def
+R12528:12535 Coq.ZArith.ZArith_dec <> Z_lt_dec def
+R12528:12535 Coq.ZArith.ZArith_dec <> Z_lt_dec def
+R12591:12598 Coq.ZArith.ZArith_dec <> Z_gt_dec def
+R12528:12535 Coq.ZArith.ZArith_dec <> Z_lt_dec def
+R12591:12598 Coq.ZArith.ZArith_dec <> Z_gt_dec def
+R12660:12667 Coq.ZArith.ZArith_dec <> Z_gt_dec def
+R12660:12667 Coq.ZArith.ZArith_dec <> Z_gt_dec def
+R12591:12598 Coq.ZArith.ZArith_dec <> Z_gt_dec def
+R12660:12667 Coq.ZArith.ZArith_dec <> Z_gt_dec def
+R12660:12667 Coq.ZArith.ZArith_dec <> Z_gt_dec def
+R12660:12667 Coq.ZArith.ZArith_dec <> Z_gt_dec def
+R12660:12667 Coq.ZArith.ZArith_dec <> Z_gt_dec def
+R12528:12535 Coq.ZArith.ZArith_dec <> Z_lt_dec def
+R12528:12535 Coq.ZArith.ZArith_dec <> Z_lt_dec def
+R12591:12598 Coq.ZArith.ZArith_dec <> Z_gt_dec def
+R12660:12667 Coq.ZArith.ZArith_dec <> Z_gt_dec def
+R12660:12667 Coq.ZArith.ZArith_dec <> Z_gt_dec def
+R12528:12535 Coq.ZArith.ZArith_dec <> Z_lt_dec def
+R12591:12598 Coq.ZArith.ZArith_dec <> Z_gt_dec def
+R12660:12667 Coq.ZArith.ZArith_dec <> Z_gt_dec def
+R12660:12667 Coq.ZArith.ZArith_dec <> Z_gt_dec def
+R12660:12667 Coq.ZArith.ZArith_dec <> Z_gt_dec def
+R12660:12667 Coq.ZArith.ZArith_dec <> Z_gt_dec def
+R12660:12667 Coq.ZArith.ZArith_dec <> Z_gt_dec def
+R12660:12667 Coq.ZArith.ZArith_dec <> Z_gt_dec def
+R12591:12598 Coq.ZArith.ZArith_dec <> Z_gt_dec def
+R12660:12667 Coq.ZArith.ZArith_dec <> Z_gt_dec def
+R12660:12667 Coq.ZArith.ZArith_dec <> Z_gt_dec def
+R12660:12667 Coq.ZArith.ZArith_dec <> Z_gt_dec def
+R12660:12667 Coq.ZArith.ZArith_dec <> Z_gt_dec def
+R12660:12667 Coq.ZArith.ZArith_dec <> Z_gt_dec def
+R12660:12667 Coq.ZArith.ZArith_dec <> Z_gt_dec def
+R12660:12667 Coq.ZArith.ZArith_dec <> Z_gt_dec def
+R12660:12667 Coq.ZArith.ZArith_dec <> Z_gt_dec def
+R12660:12667 Coq.ZArith.ZArith_dec <> Z_gt_dec def
+R12660:12667 Coq.ZArith.ZArith_dec <> Z_gt_dec def
+R12528:12535 Coq.ZArith.ZArith_dec <> Z_lt_dec def
+R12591:12598 Coq.ZArith.ZArith_dec <> Z_gt_dec def
+R12660:12667 Coq.ZArith.ZArith_dec <> Z_gt_dec def
+R12660:12667 Coq.ZArith.ZArith_dec <> Z_gt_dec def
+R12660:12667 Coq.ZArith.ZArith_dec <> Z_gt_dec def
+R12660:12667 Coq.ZArith.ZArith_dec <> Z_gt_dec def
+R12528:12535 Coq.ZArith.ZArith_dec <> Z_lt_dec def
+R12591:12598 Coq.ZArith.ZArith_dec <> Z_gt_dec def
+R12660:12667 Coq.ZArith.ZArith_dec <> Z_gt_dec def
+R12660:12667 Coq.ZArith.ZArith_dec <> Z_gt_dec def
+R12660:12667 Coq.ZArith.ZArith_dec <> Z_gt_dec def
+R12660:12667 Coq.ZArith.ZArith_dec <> Z_gt_dec def
+R12660:12667 Coq.ZArith.ZArith_dec <> Z_gt_dec def
+R12660:12667 Coq.ZArith.ZArith_dec <> Z_gt_dec def
+R12660:12667 Coq.ZArith.ZArith_dec <> Z_gt_dec def
+R12660:12667 Coq.ZArith.ZArith_dec <> Z_gt_dec def
+R12660:12667 Coq.ZArith.ZArith_dec <> Z_gt_dec def
+R12660:12667 Coq.ZArith.ZArith_dec <> Z_gt_dec def
+R12591:12598 Coq.ZArith.ZArith_dec <> Z_gt_dec def
+R12660:12667 Coq.ZArith.ZArith_dec <> Z_gt_dec def
+R12660:12667 Coq.ZArith.ZArith_dec <> Z_gt_dec def
+R12660:12667 Coq.ZArith.ZArith_dec <> Z_gt_dec def
+R12660:12667 Coq.ZArith.ZArith_dec <> Z_gt_dec def
+R12660:12667 Coq.ZArith.ZArith_dec <> Z_gt_dec def
+R12660:12667 Coq.ZArith.ZArith_dec <> Z_gt_dec def
+R12660:12667 Coq.ZArith.ZArith_dec <> Z_gt_dec def
+R12660:12667 Coq.ZArith.ZArith_dec <> Z_gt_dec def
+R12660:12667 Coq.ZArith.ZArith_dec <> Z_gt_dec def
+R12660:12667 Coq.ZArith.ZArith_dec <> Z_gt_dec def
+R12660:12667 Coq.ZArith.ZArith_dec <> Z_gt_dec def
+R12660:12667 Coq.ZArith.ZArith_dec <> Z_gt_dec def
+R12660:12667 Coq.ZArith.ZArith_dec <> Z_gt_dec def
+R12660:12667 Coq.ZArith.ZArith_dec <> Z_gt_dec def
+R12660:12667 Coq.ZArith.ZArith_dec <> Z_gt_dec def
+R12660:12667 Coq.ZArith.ZArith_dec <> Z_gt_dec def
+R12528:12535 Coq.ZArith.ZArith_dec <> Z_lt_dec def
+R12528:12535 Coq.ZArith.ZArith_dec <> Z_lt_dec def
+R12591:12598 Coq.ZArith.ZArith_dec <> Z_gt_dec def
+R12591:12598 Coq.ZArith.ZArith_dec <> Z_gt_dec def
+R12528:12535 Coq.ZArith.ZArith_dec <> Z_lt_dec def
+R12591:12598 Coq.ZArith.ZArith_dec <> Z_gt_dec def
+R12660:12667 Coq.ZArith.ZArith_dec <> Z_gt_dec def
+R12591:12598 Coq.ZArith.ZArith_dec <> Z_gt_dec def
+R12660:12667 Coq.ZArith.ZArith_dec <> Z_gt_dec def
+R12660:12667 Coq.ZArith.ZArith_dec <> Z_gt_dec def
+R12591:12598 Coq.ZArith.ZArith_dec <> Z_gt_dec def
+R12660:12667 Coq.ZArith.ZArith_dec <> Z_gt_dec def
+R12660:12667 Coq.ZArith.ZArith_dec <> Z_gt_dec def
+R12591:12598 Coq.ZArith.ZArith_dec <> Z_gt_dec def
+R12660:12667 Coq.ZArith.ZArith_dec <> Z_gt_dec def
+R12660:12667 Coq.ZArith.ZArith_dec <> Z_gt_dec def
+R12660:12667 Coq.ZArith.ZArith_dec <> Z_gt_dec def
+R12660:12667 Coq.ZArith.ZArith_dec <> Z_gt_dec def
+R12528:12535 Coq.ZArith.ZArith_dec <> Z_lt_dec def
+R12528:12535 Coq.ZArith.ZArith_dec <> Z_lt_dec def
+R12591:12598 Coq.ZArith.ZArith_dec <> Z_gt_dec def
+R12660:12667 Coq.ZArith.ZArith_dec <> Z_gt_dec def
+R12591:12598 Coq.ZArith.ZArith_dec <> Z_gt_dec def
+R12660:12667 Coq.ZArith.ZArith_dec <> Z_gt_dec def
+R12660:12667 Coq.ZArith.ZArith_dec <> Z_gt_dec def
+R12528:12535 Coq.ZArith.ZArith_dec <> Z_lt_dec def
+R12591:12598 Coq.ZArith.ZArith_dec <> Z_gt_dec def
+R12660:12667 Coq.ZArith.ZArith_dec <> Z_gt_dec def
+R12660:12667 Coq.ZArith.ZArith_dec <> Z_gt_dec def
+R12660:12667 Coq.ZArith.ZArith_dec <> Z_gt_dec def
+R12591:12598 Coq.ZArith.ZArith_dec <> Z_gt_dec def
+R12660:12667 Coq.ZArith.ZArith_dec <> Z_gt_dec def
+R12660:12667 Coq.ZArith.ZArith_dec <> Z_gt_dec def
+R12660:12667 Coq.ZArith.ZArith_dec <> Z_gt_dec def
+R12660:12667 Coq.ZArith.ZArith_dec <> Z_gt_dec def
+R12660:12667 Coq.ZArith.ZArith_dec <> Z_gt_dec def
+R12660:12667 Coq.ZArith.ZArith_dec <> Z_gt_dec def
+R12591:12598 Coq.ZArith.ZArith_dec <> Z_gt_dec def
+R12660:12667 Coq.ZArith.ZArith_dec <> Z_gt_dec def
+R12660:12667 Coq.ZArith.ZArith_dec <> Z_gt_dec def
+R12660:12667 Coq.ZArith.ZArith_dec <> Z_gt_dec def
+R12660:12667 Coq.ZArith.ZArith_dec <> Z_gt_dec def
+R12660:12667 Coq.ZArith.ZArith_dec <> Z_gt_dec def
+R12591:12598 Coq.ZArith.ZArith_dec <> Z_gt_dec def
+R12660:12667 Coq.ZArith.ZArith_dec <> Z_gt_dec def
+R12660:12667 Coq.ZArith.ZArith_dec <> Z_gt_dec def
+R12660:12667 Coq.ZArith.ZArith_dec <> Z_gt_dec def
+R12660:12667 Coq.ZArith.ZArith_dec <> Z_gt_dec def
+R12660:12667 Coq.ZArith.ZArith_dec <> Z_gt_dec def
+R12660:12667 Coq.ZArith.ZArith_dec <> Z_gt_dec def
+R12660:12667 Coq.ZArith.ZArith_dec <> Z_gt_dec def
+R12660:12667 Coq.ZArith.ZArith_dec <> Z_gt_dec def
+R12660:12667 Coq.ZArith.ZArith_dec <> Z_gt_dec def
+R12660:12667 Coq.ZArith.ZArith_dec <> Z_gt_dec def
+R12528:12535 Coq.ZArith.ZArith_dec <> Z_lt_dec def
+R12591:12598 Coq.ZArith.ZArith_dec <> Z_gt_dec def
+R12660:12667 Coq.ZArith.ZArith_dec <> Z_gt_dec def
+R12660:12667 Coq.ZArith.ZArith_dec <> Z_gt_dec def
+R12591:12598 Coq.ZArith.ZArith_dec <> Z_gt_dec def
+R12660:12667 Coq.ZArith.ZArith_dec <> Z_gt_dec def
+R12660:12667 Coq.ZArith.ZArith_dec <> Z_gt_dec def
+R12660:12667 Coq.ZArith.ZArith_dec <> Z_gt_dec def
+R12660:12667 Coq.ZArith.ZArith_dec <> Z_gt_dec def
+R12528:12535 Coq.ZArith.ZArith_dec <> Z_lt_dec def
+R12591:12598 Coq.ZArith.ZArith_dec <> Z_gt_dec def
+R12660:12667 Coq.ZArith.ZArith_dec <> Z_gt_dec def
+R12660:12667 Coq.ZArith.ZArith_dec <> Z_gt_dec def
+R12660:12667 Coq.ZArith.ZArith_dec <> Z_gt_dec def
+R12660:12667 Coq.ZArith.ZArith_dec <> Z_gt_dec def
+R12660:12667 Coq.ZArith.ZArith_dec <> Z_gt_dec def
+R12591:12598 Coq.ZArith.ZArith_dec <> Z_gt_dec def
+R12660:12667 Coq.ZArith.ZArith_dec <> Z_gt_dec def
+R12660:12667 Coq.ZArith.ZArith_dec <> Z_gt_dec def
+R12660:12667 Coq.ZArith.ZArith_dec <> Z_gt_dec def
+R12660:12667 Coq.ZArith.ZArith_dec <> Z_gt_dec def
+R12660:12667 Coq.ZArith.ZArith_dec <> Z_gt_dec def
+R12660:12667 Coq.ZArith.ZArith_dec <> Z_gt_dec def
+R12660:12667 Coq.ZArith.ZArith_dec <> Z_gt_dec def
+R12660:12667 Coq.ZArith.ZArith_dec <> Z_gt_dec def
+R12660:12667 Coq.ZArith.ZArith_dec <> Z_gt_dec def
+R12660:12667 Coq.ZArith.ZArith_dec <> Z_gt_dec def
+R12591:12598 Coq.ZArith.ZArith_dec <> Z_gt_dec def
+R12660:12667 Coq.ZArith.ZArith_dec <> Z_gt_dec def
+R12660:12667 Coq.ZArith.ZArith_dec <> Z_gt_dec def
+R12660:12667 Coq.ZArith.ZArith_dec <> Z_gt_dec def
+R12660:12667 Coq.ZArith.ZArith_dec <> Z_gt_dec def
+R12660:12667 Coq.ZArith.ZArith_dec <> Z_gt_dec def
+R12660:12667 Coq.ZArith.ZArith_dec <> Z_gt_dec def
+R12660:12667 Coq.ZArith.ZArith_dec <> Z_gt_dec def
+R12660:12667 Coq.ZArith.ZArith_dec <> Z_gt_dec def
+R12591:12598 Coq.ZArith.ZArith_dec <> Z_gt_dec def
+R12660:12667 Coq.ZArith.ZArith_dec <> Z_gt_dec def
+R12660:12667 Coq.ZArith.ZArith_dec <> Z_gt_dec def
+R12660:12667 Coq.ZArith.ZArith_dec <> Z_gt_dec def
+R12660:12667 Coq.ZArith.ZArith_dec <> Z_gt_dec def
+R12660:12667 Coq.ZArith.ZArith_dec <> Z_gt_dec def
+R12660:12667 Coq.ZArith.ZArith_dec <> Z_gt_dec def
+R12660:12667 Coq.ZArith.ZArith_dec <> Z_gt_dec def
+R12660:12667 Coq.ZArith.ZArith_dec <> Z_gt_dec def
+R12660:12667 Coq.ZArith.ZArith_dec <> Z_gt_dec def
+R12660:12667 Coq.ZArith.ZArith_dec <> Z_gt_dec def
+R12660:12667 Coq.ZArith.ZArith_dec <> Z_gt_dec def
+R12660:12667 Coq.ZArith.ZArith_dec <> Z_gt_dec def
+R12660:12667 Coq.ZArith.ZArith_dec <> Z_gt_dec def
+R12660:12667 Coq.ZArith.ZArith_dec <> Z_gt_dec def
+R12660:12667 Coq.ZArith.ZArith_dec <> Z_gt_dec def
+R12660:12667 Coq.ZArith.ZArith_dec <> Z_gt_dec def
+R12703:12729 SimpleC.EE.convex_hull.convex_hull_lib <> point_xy_partition_scan_inv def
+R12953:12960 Coq.ZArith.BinInt Z eq_dec def
+R12953:12960 Coq.ZArith.BinInt Z eq_dec def
+prf 13038:13091 <> proof_of_partition_xy_points_return_wit_1_split_goal_1
+R13095:13139 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> partition_xy_points_return_wit_1_split_goal_1 def
+prf 13163:13216 <> proof_of_partition_xy_points_return_wit_1_split_goal_2
+R13220:13264 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> partition_xy_points_return_wit_1_split_goal_2 def
+prf 13288:13341 <> proof_of_partition_xy_points_return_wit_1_split_goal_3
+R13345:13389 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> partition_xy_points_return_wit_1_split_goal_3 def
+prf 13413:13466 <> proof_of_partition_xy_points_return_wit_1_split_goal_4
+R13470:13514 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> partition_xy_points_return_wit_1_split_goal_4 def
+prf 13538:13591 <> proof_of_partition_xy_points_return_wit_1_split_goal_5
+R13595:13639 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> partition_xy_points_return_wit_1_split_goal_5 def
+prf 13663:13703 <> proof_of_partition_xy_points_return_wit_1
+R13707:13738 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> partition_xy_points_return_wit_1 def
+R13776:13785 SimpleC.EE.convex_hull.convex_hull_lib <> point_swap def
+R13797:13799 Coq.ZArith.BinInt <> ::Z_scope:x_'+'_x not
+R13776:13785 SimpleC.EE.convex_hull.convex_hull_lib <> point_swap def
+R13797:13799 Coq.ZArith.BinInt <> ::Z_scope:x_'+'_x not
+R13838:13864 SimpleC.EE.convex_hull.convex_hull_lib <> point_xy_partition_scan_inv def
+R13950:13972 SimpleC.EE.convex_hull.convex_hull_lib <> point_xy_partitioned_at def
+R13994:13997 Coq.ZArith.BinInt <> ::Z_scope:x_'<='_x_'<'_x not
+R14003:14005 Coq.ZArith.BinInt <> ::Z_scope:x_'<='_x_'<'_x not
+R13999:14001 Coq.ZArith.BinInt <> ::Z_scope:x_'+'_x not
+R13999:14001 Coq.ZArith.BinInt <> ::Z_scope:x_'+'_x not
+R14006:14012 Coq.ZArith.Zcomplements <> Zlength def
+R13994:13997 Coq.ZArith.BinInt <> ::Z_scope:x_'<='_x_'<'_x not
+R14003:14005 Coq.ZArith.BinInt <> ::Z_scope:x_'<='_x_'<'_x not
+R13999:14001 Coq.ZArith.BinInt <> ::Z_scope:x_'+'_x not
+R13999:14001 Coq.ZArith.BinInt <> ::Z_scope:x_'+'_x not
+R14006:14012 Coq.ZArith.Zcomplements <> Zlength def
+R14050:14053 Coq.ZArith.BinInt <> ::Z_scope:x_'<='_x_'<'_x not
+R14062:14064 Coq.ZArith.BinInt <> ::Z_scope:x_'<='_x_'<'_x not
+R14065:14071 Coq.ZArith.Zcomplements <> Zlength def
+R14050:14053 Coq.ZArith.BinInt <> ::Z_scope:x_'<='_x_'<'_x not
+R14062:14064 Coq.ZArith.BinInt <> ::Z_scope:x_'<='_x_'<'_x not
+R14065:14071 Coq.ZArith.Zcomplements <> Zlength def
+R14181:14189 Coq.Init.Logic <> ::type_scope:x_'='_x not
+R14117:14120 ListLib.Base.Positional <> Znth def
+R14168:14180 SimpleC.EE.convex_hull.convex_hull_lib <> default_point def
+R14131:14140 SimpleC.EE.convex_hull.convex_hull_lib <> point_swap def
+R14152:14154 Coq.ZArith.BinInt <> ::Z_scope:x_'+'_x not
+R14124:14126 Coq.ZArith.BinInt <> ::Z_scope:x_'+'_x not
+R14190:14197 SimpleC.EE.convex_hull.convex_hull_lib <> point_mk def
+R14181:14189 Coq.Init.Logic <> ::type_scope:x_'='_x not
+R14117:14120 ListLib.Base.Positional <> Znth def
+R14168:14180 SimpleC.EE.convex_hull.convex_hull_lib <> default_point def
+R14131:14140 SimpleC.EE.convex_hull.convex_hull_lib <> point_swap def
+R14152:14154 Coq.ZArith.BinInt <> ::Z_scope:x_'+'_x not
+R14124:14126 Coq.ZArith.BinInt <> ::Z_scope:x_'+'_x not
+R14190:14197 SimpleC.EE.convex_hull.convex_hull_lib <> point_mk def
+R14237:14262 SimpleC.EE.convex_hull.convex_hull_lib <> point_swap_Znth_left_index thm
+R14237:14262 SimpleC.EE.convex_hull.convex_hull_lib <> point_swap_Znth_left_index thm
+R14237:14262 SimpleC.EE.convex_hull.convex_hull_lib <> point_swap_Znth_left_index thm
+R14361:14388 SimpleC.EE.convex_hull.convex_hull_lib <> Forall_sublist_by_Znth_point thm
+R14403:14420 SimpleC.EE.convex_hull.convex_hull_lib <> Zlength_point_swap thm
+R14361:14388 SimpleC.EE.convex_hull.convex_hull_lib <> Forall_sublist_by_Znth_point thm
+R14403:14420 SimpleC.EE.convex_hull.convex_hull_lib <> Zlength_point_swap thm
+R14403:14420 SimpleC.EE.convex_hull.convex_hull_lib <> Zlength_point_swap thm
+R14403:14420 SimpleC.EE.convex_hull.convex_hull_lib <> Zlength_point_swap thm
+R14403:14420 SimpleC.EE.convex_hull.convex_hull_lib <> Zlength_point_swap thm
+R14465:14491 SimpleC.EE.convex_hull.convex_hull_lib <> point_swap_Znth_other_index thm
+R14465:14491 SimpleC.EE.convex_hull.convex_hull_lib <> point_swap_Znth_other_index thm
+R14465:14491 SimpleC.EE.convex_hull.convex_hull_lib <> point_swap_Znth_other_index thm
+R14559:14586 SimpleC.EE.convex_hull.convex_hull_lib <> Forall_sublist_by_Znth_point thm
+R14601:14618 SimpleC.EE.convex_hull.convex_hull_lib <> Zlength_point_swap thm
+R14559:14586 SimpleC.EE.convex_hull.convex_hull_lib <> Forall_sublist_by_Znth_point thm
+R14601:14618 SimpleC.EE.convex_hull.convex_hull_lib <> Zlength_point_swap thm
+R14601:14618 SimpleC.EE.convex_hull.convex_hull_lib <> Zlength_point_swap thm
+R14601:14618 SimpleC.EE.convex_hull.convex_hull_lib <> Zlength_point_swap thm
+R14601:14618 SimpleC.EE.convex_hull.convex_hull_lib <> Zlength_point_swap thm
+R14665:14672 Coq.ZArith.BinInt Z eq_dec def
+R14665:14672 Coq.ZArith.BinInt Z eq_dec def
+R14718:14744 SimpleC.EE.convex_hull.convex_hull_lib <> point_swap_Znth_right_index thm
+R14718:14744 SimpleC.EE.convex_hull.convex_hull_lib <> point_swap_Znth_right_index thm
+R14718:14744 SimpleC.EE.convex_hull.convex_hull_lib <> point_swap_Znth_right_index thm
+R14797:14823 SimpleC.EE.convex_hull.convex_hull_lib <> point_swap_Znth_other_index thm
+R14797:14823 SimpleC.EE.convex_hull.convex_hull_lib <> point_swap_Znth_other_index thm
+R14797:14823 SimpleC.EE.convex_hull.convex_hull_lib <> point_swap_Znth_other_index thm
+R14871:14897 SimpleC.EE.convex_hull.convex_hull_lib <> point_xy_partition_scan_inv def
+R14983:15024 SimpleC.EE.convex_hull.convex_hull_lib <> point_same_outside_range_point_swap_inside thm
+R14983:15024 SimpleC.EE.convex_hull.convex_hull_lib <> point_same_outside_range_point_swap_inside thm
+R15050:15076 SimpleC.EE.convex_hull.convex_hull_lib <> point_xy_partition_scan_inv def
+R15162:15178 Coq.Sorting.Permutation <> Permutation_trans thm
+R15162:15178 Coq.Sorting.Permutation <> Permutation_trans thm
+R15212:15233 SimpleC.EE.convex_hull.convex_hull_lib <> point_swap_permutation thm
+R15212:15233 SimpleC.EE.convex_hull.convex_hull_lib <> point_swap_permutation thm
+R15251:15276 SimpleC.EE.convex_hull.convex_hull_lib <> points_in_bound_point_swap thm
+R15251:15276 SimpleC.EE.convex_hull.convex_hull_lib <> points_in_bound_point_swap thm
+R15310:15327 SimpleC.EE.convex_hull.convex_hull_lib <> Zlength_point_swap thm
+R15310:15327 SimpleC.EE.convex_hull.convex_hull_lib <> Zlength_point_swap thm
+R15310:15327 SimpleC.EE.convex_hull.convex_hull_lib <> Zlength_point_swap thm
+prf 15359:15412 <> proof_of_partition_xy_points_return_wit_2_split_goal_1
+R15416:15460 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> partition_xy_points_return_wit_2_split_goal_1 def
+prf 15484:15537 <> proof_of_partition_xy_points_return_wit_2_split_goal_2
+R15541:15585 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> partition_xy_points_return_wit_2_split_goal_2 def
+prf 15609:15662 <> proof_of_partition_xy_points_return_wit_2_split_goal_3
+R15666:15710 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> partition_xy_points_return_wit_2_split_goal_3 def
+prf 15734:15774 <> proof_of_partition_xy_points_return_wit_2
+R15778:15809 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> partition_xy_points_return_wit_2 def
+R15864:15890 SimpleC.EE.convex_hull.convex_hull_lib <> point_xy_partition_scan_inv def
+R15985:16007 SimpleC.EE.convex_hull.convex_hull_lib <> point_xy_partitioned_at def
+R16098:16100 Coq.Init.Logic <> ::type_scope:x_'='_x not
+R16064:16067 ListLib.Base.Positional <> Znth def
+R16085:16097 SimpleC.EE.convex_hull.convex_hull_lib <> default_point def
+R16071:16073 Coq.ZArith.BinInt <> ::Z_scope:x_'+'_x not
+R16101:16108 SimpleC.EE.convex_hull.convex_hull_lib <> point_mk def
+R16098:16100 Coq.Init.Logic <> ::type_scope:x_'='_x not
+R16064:16067 ListLib.Base.Positional <> Znth def
+R16085:16097 SimpleC.EE.convex_hull.convex_hull_lib <> default_point def
+R16071:16073 Coq.ZArith.BinInt <> ::Z_scope:x_'+'_x not
+R16101:16108 SimpleC.EE.convex_hull.convex_hull_lib <> point_mk def
+R16170:16179 ListLib.General.Length <> Znth_indep thm
+R16198:16210 SimpleC.EE.convex_hull.convex_hull_lib <> default_point def
+R16170:16179 ListLib.General.Length <> Znth_indep thm
+R16198:16210 SimpleC.EE.convex_hull.convex_hull_lib <> default_point def
+R16170:16179 ListLib.General.Length <> Znth_indep thm
+R16198:16210 SimpleC.EE.convex_hull.convex_hull_lib <> default_point def
+R16253:16256 ListLib.Base.Positional <> Znth def
+R16253:16256 ListLib.Base.Positional <> Znth def
+R16390:16417 SimpleC.EE.convex_hull.convex_hull_lib <> Forall_sublist_by_Znth_point thm
+R16390:16417 SimpleC.EE.convex_hull.convex_hull_lib <> Forall_sublist_by_Znth_point thm
+R16492:16494 Coq.Init.Logic <> ::type_scope:x_'='_x not
+R16488:16490 Coq.ZArith.BinInt <> ::Z_scope:x_'+'_x not
+R16496:16498 Coq.ZArith.BinInt <> ::Z_scope:x_'+'_x not
+R16492:16494 Coq.Init.Logic <> ::type_scope:x_'='_x not
+R16488:16490 Coq.ZArith.BinInt <> ::Z_scope:x_'+'_x not
+R16496:16498 Coq.ZArith.BinInt <> ::Z_scope:x_'+'_x not
+R16531:16533 Coq.ZArith.BinInt <> ::Z_scope:x_'+'_x not
+R16544:16546 Coq.ZArith.BinInt <> ::Z_scope:x_'+'_x not
+R16531:16533 Coq.ZArith.BinInt <> ::Z_scope:x_'+'_x not
+R16544:16546 Coq.ZArith.BinInt <> ::Z_scope:x_'+'_x not
+R16576:16578 Coq.ZArith.BinInt <> ::Z_scope:x_'+'_x not
+R16572:16574 Coq.ZArith.BinInt <> ::Z_scope:x_'+'_x not
+R16589:16591 Coq.ZArith.BinInt <> ::Z_scope:x_'+'_x not
+R16576:16578 Coq.ZArith.BinInt <> ::Z_scope:x_'+'_x not
+R16572:16574 Coq.ZArith.BinInt <> ::Z_scope:x_'+'_x not
+R16589:16591 Coq.ZArith.BinInt <> ::Z_scope:x_'+'_x not
+R16617:16628 ListLib.Base.Positional <> Zsublist_nil thm
+R16630:16634 SimpleC.EE.convex_hull.convex_hull_lib <> Point abbrev
+R16646:16648 Coq.ZArith.BinInt <> ::Z_scope:x_'+'_x not
+R16654:16656 Coq.ZArith.BinInt <> ::Z_scope:x_'+'_x not
+R16617:16628 ListLib.Base.Positional <> Zsublist_nil thm
+R16630:16634 SimpleC.EE.convex_hull.convex_hull_lib <> Point abbrev
+R16646:16648 Coq.ZArith.BinInt <> ::Z_scope:x_'+'_x not
+R16654:16656 Coq.ZArith.BinInt <> ::Z_scope:x_'+'_x not
+R16617:16628 ListLib.Base.Positional <> Zsublist_nil thm
+R16630:16634 SimpleC.EE.convex_hull.convex_hull_lib <> Point abbrev
+R16646:16648 Coq.ZArith.BinInt <> ::Z_scope:x_'+'_x not
+R16654:16656 Coq.ZArith.BinInt <> ::Z_scope:x_'+'_x not
+prf 16698:16751 <> proof_of_quicksort_xy_points_return_wit_1_split_goal_1
+R16755:16799 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> quicksort_xy_points_return_wit_1_split_goal_1 def
+prf 16823:16876 <> proof_of_quicksort_xy_points_return_wit_1_split_goal_2
+R16880:16924 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> quicksort_xy_points_return_wit_1_split_goal_2 def
+prf 16948:17001 <> proof_of_quicksort_xy_points_return_wit_1_split_goal_3
+R17005:17049 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> quicksort_xy_points_return_wit_1_split_goal_3 def
+prf 17073:17113 <> proof_of_quicksort_xy_points_return_wit_1
+R17117:17148 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> quicksort_xy_points_return_wit_1 def
+R17243:17263 SimpleC.EE.convex_hull.convex_hull_lib <> point_xy_sorted_range def
+R17291:17293 Coq.ZArith.BinInt <> ::Z_scope:x_'-'_x not
+R17243:17263 SimpleC.EE.convex_hull.convex_hull_lib <> point_xy_sorted_range def
+R17291:17293 Coq.ZArith.BinInt <> ::Z_scope:x_'-'_x not
+R17367:17390 SimpleC.EE.convex_hull.convex_hull_lib <> point_same_outside_range def
+R17431:17433 Coq.ZArith.BinInt <> ::Z_scope:x_'+'_x not
+R17367:17390 SimpleC.EE.convex_hull.convex_hull_lib <> point_same_outside_range def
+R17431:17433 Coq.ZArith.BinInt <> ::Z_scope:x_'+'_x not
+R17658:17680 SimpleC.EE.convex_hull.convex_hull_lib <> point_xy_partitioned_at def
+R17658:17680 SimpleC.EE.convex_hull.convex_hull_lib <> point_xy_partitioned_at def
+R17739:17779 SimpleC.EE.convex_hull.convex_hull_lib <> point_xy_partitioned_at_preserved_by_left thm
+R17739:17779 SimpleC.EE.convex_hull.convex_hull_lib <> point_xy_partitioned_at_preserved_by_left thm
+R17878:17900 SimpleC.EE.convex_hull.convex_hull_lib <> point_xy_partitioned_at def
+R17878:17900 SimpleC.EE.convex_hull.convex_hull_lib <> point_xy_partitioned_at def
+R17959:18000 SimpleC.EE.convex_hull.convex_hull_lib <> point_xy_partitioned_at_preserved_by_right thm
+R17959:18000 SimpleC.EE.convex_hull.convex_hull_lib <> point_xy_partitioned_at_preserved_by_right thm
+R18084:18120 SimpleC.EE.convex_hull.convex_hull_lib <> point_xy_sorted_range_partition_merge thm
+R18084:18120 SimpleC.EE.convex_hull.convex_hull_lib <> point_xy_sorted_range_partition_merge thm
+R18221:18244 SimpleC.EE.convex_hull.convex_hull_lib <> point_same_outside_range def
+R18221:18244 SimpleC.EE.convex_hull.convex_hull_lib <> point_same_outside_range def
+R18307:18337 SimpleC.EE.convex_hull.convex_hull_lib <> point_same_outside_range_weaken thm
+R18391:18393 Coq.ZArith.BinInt <> ::Z_scope:x_'-'_x not
+R18307:18337 SimpleC.EE.convex_hull.convex_hull_lib <> point_same_outside_range_weaken thm
+R18391:18393 Coq.ZArith.BinInt <> ::Z_scope:x_'-'_x not
+R18499:18522 SimpleC.EE.convex_hull.convex_hull_lib <> point_same_outside_range def
+R18499:18522 SimpleC.EE.convex_hull.convex_hull_lib <> point_same_outside_range def
+R18585:18615 SimpleC.EE.convex_hull.convex_hull_lib <> point_same_outside_range_weaken thm
+R18660:18662 Coq.ZArith.BinInt <> ::Z_scope:x_'+'_x not
+R18585:18615 SimpleC.EE.convex_hull.convex_hull_lib <> point_same_outside_range_weaken thm
+R18660:18662 Coq.ZArith.BinInt <> ::Z_scope:x_'+'_x not
+R18757:18786 SimpleC.EE.convex_hull.convex_hull_lib <> point_same_outside_range_trans thm
+R18757:18786 SimpleC.EE.convex_hull.convex_hull_lib <> point_same_outside_range_trans thm
+R18891:18920 SimpleC.EE.convex_hull.convex_hull_lib <> point_same_outside_range_trans thm
+R18891:18920 SimpleC.EE.convex_hull.convex_hull_lib <> point_same_outside_range_trans thm
+R19035:19051 SimpleC.EE.convex_hull.convex_hull_lib <> point_permutation def
+R19070:19086 Coq.Sorting.Permutation <> Permutation_trans thm
+R19070:19086 Coq.Sorting.Permutation <> Permutation_trans thm
+R19117:19133 Coq.Sorting.Permutation <> Permutation_trans thm
+R19117:19133 Coq.Sorting.Permutation <> Permutation_trans thm
+prf 19177:19230 <> proof_of_quicksort_xy_points_return_wit_2_split_goal_1
+R19234:19278 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> quicksort_xy_points_return_wit_2_split_goal_1 def
+prf 19302:19355 <> proof_of_quicksort_xy_points_return_wit_2_split_goal_2
+R19359:19403 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> quicksort_xy_points_return_wit_2_split_goal_2 def
+prf 19427:19480 <> proof_of_quicksort_xy_points_return_wit_2_split_goal_3
+R19484:19528 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> quicksort_xy_points_return_wit_2_split_goal_3 def
+prf 19552:19592 <> proof_of_quicksort_xy_points_return_wit_2
+R19596:19627 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> quicksort_xy_points_return_wit_2 def
+R19715:19737 SimpleC.EE.convex_hull.convex_hull_lib <> point_xy_partitioned_at def
+R19715:19737 SimpleC.EE.convex_hull.convex_hull_lib <> point_xy_partitioned_at def
+R19796:19837 SimpleC.EE.convex_hull.convex_hull_lib <> point_xy_partitioned_at_preserved_by_right thm
+R19796:19837 SimpleC.EE.convex_hull.convex_hull_lib <> point_xy_partitioned_at_preserved_by_right thm
+R19920:19960 SimpleC.EE.convex_hull.convex_hull_lib <> point_xy_sorted_range_from_right_boundary thm
+R19920:19960 SimpleC.EE.convex_hull.convex_hull_lib <> point_xy_sorted_range_from_right_boundary thm
+R20068:20091 SimpleC.EE.convex_hull.convex_hull_lib <> point_same_outside_range def
+R20068:20091 SimpleC.EE.convex_hull.convex_hull_lib <> point_same_outside_range def
+R20154:20184 SimpleC.EE.convex_hull.convex_hull_lib <> point_same_outside_range_weaken thm
+R20229:20231 Coq.ZArith.BinInt <> ::Z_scope:x_'+'_x not
+R20154:20184 SimpleC.EE.convex_hull.convex_hull_lib <> point_same_outside_range_weaken thm
+R20229:20231 Coq.ZArith.BinInt <> ::Z_scope:x_'+'_x not
+R20326:20355 SimpleC.EE.convex_hull.convex_hull_lib <> point_same_outside_range_trans thm
+R20326:20355 SimpleC.EE.convex_hull.convex_hull_lib <> point_same_outside_range_trans thm
+R20470:20486 SimpleC.EE.convex_hull.convex_hull_lib <> point_permutation def
+R20505:20521 Coq.Sorting.Permutation <> Permutation_trans thm
+R20505:20521 Coq.Sorting.Permutation <> Permutation_trans thm
+prf 20565:20618 <> proof_of_quicksort_xy_points_return_wit_3_split_goal_1
+R20622:20666 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> quicksort_xy_points_return_wit_3_split_goal_1 def
+prf 20690:20743 <> proof_of_quicksort_xy_points_return_wit_3_split_goal_2
+R20747:20791 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> quicksort_xy_points_return_wit_3_split_goal_2 def
+prf 20815:20868 <> proof_of_quicksort_xy_points_return_wit_3_split_goal_3
+R20872:20916 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> quicksort_xy_points_return_wit_3_split_goal_3 def
+prf 20940:20980 <> proof_of_quicksort_xy_points_return_wit_3
+R20984:21015 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> quicksort_xy_points_return_wit_3 def
+R21103:21125 SimpleC.EE.convex_hull.convex_hull_lib <> point_xy_partitioned_at def
+R21103:21125 SimpleC.EE.convex_hull.convex_hull_lib <> point_xy_partitioned_at def
+R21184:21224 SimpleC.EE.convex_hull.convex_hull_lib <> point_xy_partitioned_at_preserved_by_left thm
+R21184:21224 SimpleC.EE.convex_hull.convex_hull_lib <> point_xy_partitioned_at_preserved_by_left thm
+R21307:21346 SimpleC.EE.convex_hull.convex_hull_lib <> point_xy_sorted_range_from_left_boundary thm
+R21307:21346 SimpleC.EE.convex_hull.convex_hull_lib <> point_xy_sorted_range_from_left_boundary thm
+R21454:21477 SimpleC.EE.convex_hull.convex_hull_lib <> point_same_outside_range def
+R21454:21477 SimpleC.EE.convex_hull.convex_hull_lib <> point_same_outside_range def
+R21540:21570 SimpleC.EE.convex_hull.convex_hull_lib <> point_same_outside_range_weaken thm
+R21624:21626 Coq.ZArith.BinInt <> ::Z_scope:x_'-'_x not
+R21540:21570 SimpleC.EE.convex_hull.convex_hull_lib <> point_same_outside_range_weaken thm
+R21624:21626 Coq.ZArith.BinInt <> ::Z_scope:x_'-'_x not
+R21711:21740 SimpleC.EE.convex_hull.convex_hull_lib <> point_same_outside_range_trans thm
+R21711:21740 SimpleC.EE.convex_hull.convex_hull_lib <> point_same_outside_range_trans thm
+R21855:21871 SimpleC.EE.convex_hull.convex_hull_lib <> point_permutation def
+R21890:21906 Coq.Sorting.Permutation <> Permutation_trans thm
+R21890:21906 Coq.Sorting.Permutation <> Permutation_trans thm
+prf 21950:22003 <> proof_of_quicksort_xy_points_return_wit_4_split_goal_1
+R22007:22051 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> quicksort_xy_points_return_wit_4_split_goal_1 def
+prf 22075:22128 <> proof_of_quicksort_xy_points_return_wit_4_split_goal_2
+R22132:22176 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> quicksort_xy_points_return_wit_4_split_goal_2 def
+prf 22200:22253 <> proof_of_quicksort_xy_points_return_wit_4_split_goal_3
+R22257:22301 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> quicksort_xy_points_return_wit_4_split_goal_3 def
+prf 22325:22365 <> proof_of_quicksort_xy_points_return_wit_4
+R22369:22400 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> quicksort_xy_points_return_wit_4 def
+R22467:22498 SimpleC.EE.convex_hull.convex_hull_lib <> point_xy_sorted_range_degenerate thm
+R22467:22498 SimpleC.EE.convex_hull.convex_hull_lib <> point_xy_sorted_range_degenerate thm
+R22520:22548 SimpleC.EE.convex_hull.convex_hull_lib <> point_same_outside_range_refl thm
+R22520:22548 SimpleC.EE.convex_hull.convex_hull_lib <> point_same_outside_range_refl thm
+prf 22563:22618 <> proof_of_andrew_monotone_chain_entail_wit_1_split_goal_1
+R22622:22668 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> andrew_monotone_chain_entail_wit_1_split_goal_1 def
+prf 22692:22747 <> proof_of_andrew_monotone_chain_entail_wit_1_split_goal_2
+R22751:22797 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> andrew_monotone_chain_entail_wit_1_split_goal_2 def
+prf 22821:22882 <> proof_of_andrew_monotone_chain_entail_wit_1_split_goal_spatial
+R22886:22938 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> andrew_monotone_chain_entail_wit_1_split_goal_spatial def
+prf 22962:23004 <> proof_of_andrew_monotone_chain_entail_wit_1
+R23008:23041 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> andrew_monotone_chain_entail_wit_1 def
+prf 23069:23124 <> proof_of_andrew_monotone_chain_entail_wit_2_split_goal_1
+R23128:23174 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> andrew_monotone_chain_entail_wit_2_split_goal_1 def
+prf 23198:23259 <> proof_of_andrew_monotone_chain_entail_wit_2_split_goal_spatial
+R23263:23315 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> andrew_monotone_chain_entail_wit_2_split_goal_spatial def
+prf 23339:23381 <> proof_of_andrew_monotone_chain_entail_wit_2
+R23385:23418 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> andrew_monotone_chain_entail_wit_2 def
+R23499:23518 SimpleC.EE.convex_hull.convex_hull_lib <> points_in_bound_Znth thm
+R23499:23518 SimpleC.EE.convex_hull.convex_hull_lib <> points_in_bound_Znth thm
+prf 23545:23587 <> proof_of_andrew_monotone_chain_entail_wit_3
+R23591:23624 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> andrew_monotone_chain_entail_wit_3 def
+prf 23652:23696 <> proof_of_andrew_monotone_chain_entail_wit_4_1
+R23700:23735 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> andrew_monotone_chain_entail_wit_4_1 def
+prf 23763:23807 <> proof_of_andrew_monotone_chain_entail_wit_4_2
+R23811:23846 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> andrew_monotone_chain_entail_wit_4_2 def
+prf 23874:23929 <> proof_of_andrew_monotone_chain_entail_wit_5_split_goal_1
+R23933:23979 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> andrew_monotone_chain_entail_wit_5_split_goal_1 def
+prf 24003:24058 <> proof_of_andrew_monotone_chain_entail_wit_5_split_goal_2
+R24062:24108 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> andrew_monotone_chain_entail_wit_5_split_goal_2 def
+prf 24132:24193 <> proof_of_andrew_monotone_chain_entail_wit_5_split_goal_spatial
+R24197:24249 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> andrew_monotone_chain_entail_wit_5_split_goal_spatial def
+prf 24273:24315 <> proof_of_andrew_monotone_chain_entail_wit_5
+R24319:24352 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> andrew_monotone_chain_entail_wit_5 def
+prf 24380:24435 <> proof_of_andrew_monotone_chain_entail_wit_6_split_goal_1
+R24439:24485 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> andrew_monotone_chain_entail_wit_6_split_goal_1 def
+prf 24509:24564 <> proof_of_andrew_monotone_chain_entail_wit_6_split_goal_2
+R24568:24614 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> andrew_monotone_chain_entail_wit_6_split_goal_2 def
+prf 24638:24699 <> proof_of_andrew_monotone_chain_entail_wit_6_split_goal_spatial
+R24703:24755 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> andrew_monotone_chain_entail_wit_6_split_goal_spatial def
+prf 24779:24821 <> proof_of_andrew_monotone_chain_entail_wit_6
+R24825:24858 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> andrew_monotone_chain_entail_wit_6 def
+R24944:24963 SimpleC.EE.convex_hull.convex_hull_lib <> points_in_bound_Znth thm
+R24944:24963 SimpleC.EE.convex_hull.convex_hull_lib <> points_in_bound_Znth thm
+R24989:25009 SimpleC.EE.convex_hull.convex_hull_lib <> andrew_upper_scan_inv def
+R25184:25204 SimpleC.EE.convex_hull.convex_hull_lib <> andrew_upper_capacity def
+prf 25305:25347 <> proof_of_andrew_monotone_chain_entail_wit_7
+R25351:25384 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> andrew_monotone_chain_entail_wit_7 def
+prf 25412:25456 <> proof_of_andrew_monotone_chain_entail_wit_8_1
+R25460:25495 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> andrew_monotone_chain_entail_wit_8_1 def
+prf 25523:25567 <> proof_of_andrew_monotone_chain_entail_wit_8_2
+R25571:25606 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> andrew_monotone_chain_entail_wit_8_2 def
+prf 25634:25689 <> proof_of_andrew_monotone_chain_entail_wit_9_split_goal_1
+R25693:25739 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> andrew_monotone_chain_entail_wit_9_split_goal_1 def
+prf 25763:25818 <> proof_of_andrew_monotone_chain_entail_wit_9_split_goal_2
+R25822:25868 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> andrew_monotone_chain_entail_wit_9_split_goal_2 def
+prf 25892:25953 <> proof_of_andrew_monotone_chain_entail_wit_9_split_goal_spatial
+R25957:26009 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> andrew_monotone_chain_entail_wit_9_split_goal_spatial def
+prf 26033:26075 <> proof_of_andrew_monotone_chain_entail_wit_9
+R26079:26112 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> andrew_monotone_chain_entail_wit_9 def
+R26196:26216 SimpleC.EE.convex_hull.convex_hull_lib <> andrew_upper_scan_inv def
+R26391:26421 SimpleC.EE.convex_hull.convex_hull_lib <> is_convex_hull_base_permutation thm
+R26391:26421 SimpleC.EE.convex_hull.convex_hull_lib <> is_convex_hull_base_permutation thm
+R26531:26551 SimpleC.EE.convex_hull.convex_hull_lib <> andrew_upper_scan_inv def
+R26749:26769 SimpleC.EE.convex_hull.convex_hull_lib <> andrew_upper_scan_inv def
+prf 26978:27045 <> proof_of_andrew_monotone_chain_partial_solve_wit_8_pure_split_goal_1
+R27049:27107 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> andrew_monotone_chain_partial_solve_wit_8_pure_split_goal_1 def
+prf 27131:27198 <> proof_of_andrew_monotone_chain_partial_solve_wit_8_pure_split_goal_2
+R27202:27260 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> andrew_monotone_chain_partial_solve_wit_8_pure_split_goal_2 def
+prf 27284:27351 <> proof_of_andrew_monotone_chain_partial_solve_wit_8_pure_split_goal_3
+R27355:27413 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> andrew_monotone_chain_partial_solve_wit_8_pure_split_goal_3 def
+prf 27437:27504 <> proof_of_andrew_monotone_chain_partial_solve_wit_8_pure_split_goal_4
+R27508:27566 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> andrew_monotone_chain_partial_solve_wit_8_pure_split_goal_4 def
+prf 27590:27657 <> proof_of_andrew_monotone_chain_partial_solve_wit_8_pure_split_goal_5
+R27661:27719 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> andrew_monotone_chain_partial_solve_wit_8_pure_split_goal_5 def
+prf 27743:27810 <> proof_of_andrew_monotone_chain_partial_solve_wit_8_pure_split_goal_6
+R27814:27872 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> andrew_monotone_chain_partial_solve_wit_8_pure_split_goal_6 def
+prf 27896:27963 <> proof_of_andrew_monotone_chain_partial_solve_wit_8_pure_split_goal_7
+R27967:28025 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> andrew_monotone_chain_partial_solve_wit_8_pure_split_goal_7 def
+prf 28049:28116 <> proof_of_andrew_monotone_chain_partial_solve_wit_8_pure_split_goal_8
+R28120:28178 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> andrew_monotone_chain_partial_solve_wit_8_pure_split_goal_8 def
+prf 28202:28269 <> proof_of_andrew_monotone_chain_partial_solve_wit_8_pure_split_goal_9
+R28273:28331 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> andrew_monotone_chain_partial_solve_wit_8_pure_split_goal_9 def
+prf 28355:28423 <> proof_of_andrew_monotone_chain_partial_solve_wit_8_pure_split_goal_10
+R28427:28486 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> andrew_monotone_chain_partial_solve_wit_8_pure_split_goal_10 def
+prf 28510:28578 <> proof_of_andrew_monotone_chain_partial_solve_wit_8_pure_split_goal_11
+R28582:28641 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> andrew_monotone_chain_partial_solve_wit_8_pure_split_goal_11 def
+prf 28665:28733 <> proof_of_andrew_monotone_chain_partial_solve_wit_8_pure_split_goal_12
+R28737:28796 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> andrew_monotone_chain_partial_solve_wit_8_pure_split_goal_12 def
+prf 28820:28874 <> proof_of_andrew_monotone_chain_partial_solve_wit_8_pure
+R28878:28923 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> andrew_monotone_chain_partial_solve_wit_8_pure def
+R28961:28981 SimpleC.EE.convex_hull.convex_hull_lib <> andrew_lower_scan_inv def
+R29076:29089 SimpleC.EE.convex_hull.convex_hull_lib <> point_in_bound def
+R29092:29095 ListLib.Base.Positional <> Znth def
+R29076:29089 SimpleC.EE.convex_hull.convex_hull_lib <> point_in_bound def
+R29092:29095 ListLib.Base.Positional <> Znth def
+R29140:29159 SimpleC.EE.convex_hull.convex_hull_lib <> points_in_bound_Znth thm
+R29140:29159 SimpleC.EE.convex_hull.convex_hull_lib <> points_in_bound_Znth thm
+R29202:29215 SimpleC.EE.convex_hull.convex_hull_lib <> point_in_bound def
+R29218:29221 ListLib.Base.Positional <> Znth def
+R29229:29231 Coq.ZArith.BinInt <> ::Z_scope:x_'-'_x not
+R29225:29227 Coq.ZArith.BinInt <> ::Z_scope:x_'-'_x not
+R29202:29215 SimpleC.EE.convex_hull.convex_hull_lib <> point_in_bound def
+R29218:29221 ListLib.Base.Positional <> Znth def
+R29229:29231 Coq.ZArith.BinInt <> ::Z_scope:x_'-'_x not
+R29225:29227 Coq.ZArith.BinInt <> ::Z_scope:x_'-'_x not
+R29271:29290 SimpleC.EE.convex_hull.convex_hull_lib <> points_in_bound_Znth thm
+R29271:29290 SimpleC.EE.convex_hull.convex_hull_lib <> points_in_bound_Znth thm
+R29350:29363 SimpleC.EE.convex_hull.convex_hull_lib <> point_in_bound def
+R29366:29369 ListLib.Base.Positional <> Znth def
+R29377:29379 Coq.ZArith.BinInt <> ::Z_scope:x_'-'_x not
+R29373:29375 Coq.ZArith.BinInt <> ::Z_scope:x_'-'_x not
+R29350:29363 SimpleC.EE.convex_hull.convex_hull_lib <> point_in_bound def
+R29366:29369 ListLib.Base.Positional <> Znth def
+R29377:29379 Coq.ZArith.BinInt <> ::Z_scope:x_'-'_x not
+R29373:29375 Coq.ZArith.BinInt <> ::Z_scope:x_'-'_x not
+R29419:29438 SimpleC.EE.convex_hull.convex_hull_lib <> points_in_bound_Znth thm
+R29419:29438 SimpleC.EE.convex_hull.convex_hull_lib <> points_in_bound_Znth thm
+R29481:29494 SimpleC.EE.convex_hull.convex_hull_lib <> point_in_bound def
+R29497:29522 ConvexHull.Point_Order <> point_in_bound def
+R29546:29559 SimpleC.EE.convex_hull.convex_hull_lib <> point_in_bound def
+R29562:29587 ConvexHull.Point_Order <> point_in_bound def
+R29612:29625 SimpleC.EE.convex_hull.convex_hull_lib <> point_in_bound def
+R29628:29653 ConvexHull.Point_Order <> point_in_bound def
+R29880:29893 SimpleC.EE.convex_hull.convex_hull_lib <> point_in_bound def
+R29896:29921 ConvexHull.Point_Order <> point_in_bound def
+R29928:29938 SimpleC.EE.convex_hull.convex_hull_lib <> point_bound def
+R29941:29963 ConvexHull.Point_Order <> point_bound def
+prf 30000:30068 <> proof_of_andrew_monotone_chain_partial_solve_wit_21_pure_split_goal_1
+R30072:30131 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> andrew_monotone_chain_partial_solve_wit_21_pure_split_goal_1 def
+prf 30155:30223 <> proof_of_andrew_monotone_chain_partial_solve_wit_21_pure_split_goal_2
+R30227:30286 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> andrew_monotone_chain_partial_solve_wit_21_pure_split_goal_2 def
+prf 30310:30378 <> proof_of_andrew_monotone_chain_partial_solve_wit_21_pure_split_goal_3
+R30382:30441 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> andrew_monotone_chain_partial_solve_wit_21_pure_split_goal_3 def
+prf 30465:30533 <> proof_of_andrew_monotone_chain_partial_solve_wit_21_pure_split_goal_4
+R30537:30596 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> andrew_monotone_chain_partial_solve_wit_21_pure_split_goal_4 def
+prf 30620:30688 <> proof_of_andrew_monotone_chain_partial_solve_wit_21_pure_split_goal_5
+R30692:30751 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> andrew_monotone_chain_partial_solve_wit_21_pure_split_goal_5 def
+prf 30775:30843 <> proof_of_andrew_monotone_chain_partial_solve_wit_21_pure_split_goal_6
+R30847:30906 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> andrew_monotone_chain_partial_solve_wit_21_pure_split_goal_6 def
+prf 30930:30998 <> proof_of_andrew_monotone_chain_partial_solve_wit_21_pure_split_goal_7
+R31002:31061 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> andrew_monotone_chain_partial_solve_wit_21_pure_split_goal_7 def
+prf 31085:31153 <> proof_of_andrew_monotone_chain_partial_solve_wit_21_pure_split_goal_8
+R31157:31216 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> andrew_monotone_chain_partial_solve_wit_21_pure_split_goal_8 def
+prf 31240:31308 <> proof_of_andrew_monotone_chain_partial_solve_wit_21_pure_split_goal_9
+R31312:31371 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> andrew_monotone_chain_partial_solve_wit_21_pure_split_goal_9 def
+prf 31395:31464 <> proof_of_andrew_monotone_chain_partial_solve_wit_21_pure_split_goal_10
+R31468:31528 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> andrew_monotone_chain_partial_solve_wit_21_pure_split_goal_10 def
+prf 31552:31621 <> proof_of_andrew_monotone_chain_partial_solve_wit_21_pure_split_goal_11
+R31625:31685 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> andrew_monotone_chain_partial_solve_wit_21_pure_split_goal_11 def
+prf 31709:31778 <> proof_of_andrew_monotone_chain_partial_solve_wit_21_pure_split_goal_12
+R31782:31842 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> andrew_monotone_chain_partial_solve_wit_21_pure_split_goal_12 def
+prf 31866:31921 <> proof_of_andrew_monotone_chain_partial_solve_wit_21_pure
+R31925:31971 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> andrew_monotone_chain_partial_solve_wit_21_pure def
+R32009:32029 SimpleC.EE.convex_hull.convex_hull_lib <> andrew_upper_scan_inv def
+R32123:32136 SimpleC.EE.convex_hull.convex_hull_lib <> point_in_bound def
+R32139:32142 ListLib.Base.Positional <> Znth def
+R32123:32136 SimpleC.EE.convex_hull.convex_hull_lib <> point_in_bound def
+R32139:32142 ListLib.Base.Positional <> Znth def
+R32187:32206 SimpleC.EE.convex_hull.convex_hull_lib <> points_in_bound_Znth thm
+R32187:32206 SimpleC.EE.convex_hull.convex_hull_lib <> points_in_bound_Znth thm
+R32249:32262 SimpleC.EE.convex_hull.convex_hull_lib <> point_in_bound def
+R32265:32268 ListLib.Base.Positional <> Znth def
+R32276:32278 Coq.ZArith.BinInt <> ::Z_scope:x_'-'_x not
+R32272:32274 Coq.ZArith.BinInt <> ::Z_scope:x_'-'_x not
+R32249:32262 SimpleC.EE.convex_hull.convex_hull_lib <> point_in_bound def
+R32265:32268 ListLib.Base.Positional <> Znth def
+R32276:32278 Coq.ZArith.BinInt <> ::Z_scope:x_'-'_x not
+R32272:32274 Coq.ZArith.BinInt <> ::Z_scope:x_'-'_x not
+R32321:32340 SimpleC.EE.convex_hull.convex_hull_lib <> points_in_bound_Znth thm
+R32321:32340 SimpleC.EE.convex_hull.convex_hull_lib <> points_in_bound_Znth thm
+R32400:32413 SimpleC.EE.convex_hull.convex_hull_lib <> point_in_bound def
+R32416:32419 ListLib.Base.Positional <> Znth def
+R32427:32429 Coq.ZArith.BinInt <> ::Z_scope:x_'-'_x not
+R32423:32425 Coq.ZArith.BinInt <> ::Z_scope:x_'-'_x not
+R32400:32413 SimpleC.EE.convex_hull.convex_hull_lib <> point_in_bound def
+R32416:32419 ListLib.Base.Positional <> Znth def
+R32427:32429 Coq.ZArith.BinInt <> ::Z_scope:x_'-'_x not
+R32423:32425 Coq.ZArith.BinInt <> ::Z_scope:x_'-'_x not
+R32472:32491 SimpleC.EE.convex_hull.convex_hull_lib <> points_in_bound_Znth thm
+R32472:32491 SimpleC.EE.convex_hull.convex_hull_lib <> points_in_bound_Znth thm
+R32534:32547 SimpleC.EE.convex_hull.convex_hull_lib <> point_in_bound def
+R32550:32575 ConvexHull.Point_Order <> point_in_bound def
+R32599:32612 SimpleC.EE.convex_hull.convex_hull_lib <> point_in_bound def
+R32615:32640 ConvexHull.Point_Order <> point_in_bound def
+R32665:32678 SimpleC.EE.convex_hull.convex_hull_lib <> point_in_bound def
+R32681:32706 ConvexHull.Point_Order <> point_in_bound def
+R32933:32946 SimpleC.EE.convex_hull.convex_hull_lib <> point_in_bound def
+R32949:32974 ConvexHull.Point_Order <> point_in_bound def
+R32981:32991 SimpleC.EE.convex_hull.convex_hull_lib <> point_bound def
+R32994:33016 ConvexHull.Point_Order <> point_bound def

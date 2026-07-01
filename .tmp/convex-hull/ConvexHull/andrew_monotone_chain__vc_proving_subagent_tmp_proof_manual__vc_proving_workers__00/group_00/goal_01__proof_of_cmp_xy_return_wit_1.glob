@@ -1,0 +1,42 @@
+DIGEST 95778ad6fd720a887928ac6d18ba00cb
+Fgoal_01__proof_of_cmp_xy_return_wit_1
+R15:31 Coq.ZArith.ZArith <> <> lib
+R49:61 Coq.Bool.Bool <> <> lib
+R79:96 Coq.Strings.String <> <> lib
+R114:130 Coq.Strings.Ascii <> <> lib
+R148:161 Coq.Lists.List <> <> lib
+R179:205 Coq.Classes.RelationClasses <> <> lib
+R223:243 Coq.Classes.Morphisms <> <> lib
+R261:279 Coq.micromega.Psatz <> <> lib
+R297:319 Coq.Sorting.Permutation <> <> lib
+R349:356 AUXLib.int_auto <> <> lib
+R358:363 AUXLib.Axioms <> <> lib
+R365:367 AUXLib.Feq <> <> lib
+R369:374 AUXLib.Idents <> <> lib
+R376:382 AUXLib.ListLib <> <> lib
+R384:387 AUXLib.VMap <> <> lib
+R405:423 SetsClass.SetsClass <> <> lib
+R433:444 SetsClass.SetsClass_AxiomFree SetsNotation <> mod
+R478:480 SimpleC.SL.Mem <> <> lib
+R482:496 SimpleC.SL.SeparationLogic <> <> lib
+R542:567 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> <> lib
+R613:644 SimpleC.EE.convex_hull.andrew_monotone_chain_proof_auto <> <> lib
+R662:699 Logic.LogicGenerator.demo932.Interface <> <> lib
+R812:824 SimpleC.SL.SeparationLogic naive_C_Rules <> mod
+R842:879 SimpleC.EE.convex_hull.convex_hull_lib <> <> lib
+prf 911:938 <> proof_of_cmp_xy_return_wit_1
+R942:960 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> cmp_xy_return_wit_1 def
+R979:997 SimpleC.EE.convex_hull.andrew_monotone_chain_goal <> cmp_xy_return_wit_1 def
+R1042:1059 SimpleC.EE.convex_hull.convex_hull_lib <> point_cmp_leftdown def
+R1062:1073 SimpleC.EE.convex_hull.convex_hull_lib <> point_cmp_xy def
+R1076:1083 SimpleC.EE.convex_hull.convex_hull_lib <> point_mk def
+R1136:1143 Coq.ZArith.ZArith_dec <> Z_lt_dec def
+R1136:1143 Coq.ZArith.ZArith_dec <> Z_lt_dec def
+R1204:1211 Coq.ZArith.ZArith_dec <> Z_gt_dec def
+R1204:1211 Coq.ZArith.ZArith_dec <> Z_gt_dec def
+R1233:1240 Coq.ZArith.ZArith_dec <> Z_gt_dec def
+R1165:1172 Coq.ZArith.ZArith_dec <> Z_lt_dec def
+R1165:1172 Coq.ZArith.ZArith_dec <> Z_lt_dec def
+R1165:1172 Coq.ZArith.ZArith_dec <> Z_lt_dec def
+R1233:1240 Coq.ZArith.ZArith_dec <> Z_gt_dec def
+R1233:1240 Coq.ZArith.ZArith_dec <> Z_gt_dec def

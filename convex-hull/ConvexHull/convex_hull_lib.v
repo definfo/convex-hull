@@ -14,6 +14,8 @@ Require Import SetsClass.SetsClass. Import SetsNotation.
 From SimpleC.SL Require Import Mem SeparationLogic ArrayLib.
 From ConvexHull Require Export Record_Geo_Point.
 From ConvexHull Require Import Record_Geo_Vec Point_Order Graham_Scan Hull_Equiv Graham_Scan_M Reversal.
+From ConvexHull Require Andrew_Monotone_Chain.
+From ConvexHull Require Andrew_Monotone_Chain_M.
 From FP Require Import PartialOrder_Setoid.
 Require Import MonadLib.Monad.
 From MonadLib.StateRelMonad Require StateRelBasic StateRelMonad.
@@ -85,6 +87,19 @@ Definition point_leftmost_prefix (l : list Point) (pivot_idx i : Z) : Prop :=
                    (Znth k l default_point).
 
 Definition empty_point_stack : list Point := nil.
+
+Definition andrew_monotone_chain_m
+  : list Point -> program (list Point) unit :=
+  Andrew_Monotone_Chain_M.andrew_monotone_chain.
+
+Definition build_chain
+  : list Point -> program (list Point) unit :=
+  Andrew_Monotone_Chain_M.build_chain.
+
+Definition build_upper_chain_cont
+    (sorted lower : list Point) : program (list Point) unit :=
+  upper <- Andrew_Monotone_Chain_M.build_upper_chain sorted ;;
+  update' (fun _ => Andrew_Monotone_Chain.andrew_merge sorted lower upper).
 
 #[export] Instance point_list_equiv : Equiv (list Point) := eq.
 

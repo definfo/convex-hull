@@ -1,4 +1,5 @@
 #include "convex_hull_def.h"
+#include "safeexec_def.h"
 
 /*@ Extern Coq (is_convex_hull : list Point -> list Point -> Prop)
                (andrew_complete_hull_shape : list Point -> list Point -> Prop)
@@ -14,6 +15,10 @@
    Point -> Z -> Z -> Prop) (point_cmp_leftdown : Point -> Point -> Z)
                (point_cross_by_value : Z -> Z -> Z -> Z -> Z -> Z -> Z)
                (default_point : Point)
+               (empty_point_stack : list Point)
+               (andrew_monotone_chain_m : list Point -> program (list Point) unit)
+               (build_chain : list Point -> program (list Point) unit)
+               (build_upper_chain_cont : list Point -> list Point -> program (list Point) unit)
 */
 
 static int cmp_xy(int a_x, int a_y, int b_x, int b_y)
@@ -180,7 +185,8 @@ static void quicksort_xy_points(struct Point *pts, int n, int left, int right)
 }
 
 int andrew_monotone_chain(struct Point *pts, int n, struct Point *hull)
-/*@ With (pts_l : list Point)
+/*@ high_level_spec <= low_level_spec
+    With (pts_l : list Point)
     Require
       2 <= n && n <= 50000 &&
       Zlength(pts_l) == n &&
@@ -202,6 +208,33 @@ int andrew_monotone_chain(struct Point *pts, int n, struct Point *hull)
         PointArray::seg(hull, 0, __return, hull_out) *
         PointArray::undef_seg(hull, __return, 2 * n)
 */
+;
+
+int andrew_monotone_chain(struct Point *pts, int n, struct Point *hull)
+/*@ low_level_spec
+    With (pts_l : list Point) X
+    Require
+      2 <= n && n <= 50000 &&
+      Zlength(pts_l) == n &&
+      points_in_bound(pts_l) &&
+      points_not_all_same(pts_l) &&
+      safeExec(equiv(empty_point_stack), andrew_monotone_chain_m(pts_l), X) &&
+      PointArray::full(pts, n, pts_l) *
+      PointArray::undef_full(hull, 2 * n)
+    Ensure
+      exists pts_out hull_out,
+        Zlength(pts_out) == n &&
+        2 <= __return && __return <= 2 * n &&
+        Zlength(hull_out) == __return &&
+        points_in_bound(pts_out) &&
+        point_permutation(pts_l, pts_out) &&
+        point_xy_sorted(pts_out) &&
+        andrew_complete_hull_shape(pts_out, hull_out) &&
+        safeExec(equiv(hull_out), return(tt), X) &&
+        PointArray::full(pts, n, pts_out) *
+        PointArray::seg(hull, 0, __return, hull_out) *
+        PointArray::undef_seg(hull, __return, 2 * n)
+*/
 {
   quicksort_xy_points(pts, n, 0, n - 1);
   int k = 0;
@@ -219,6 +252,7 @@ int andrew_monotone_chain(struct Point *pts, int n, struct Point *hull)
         point_permutation(pts_l, pts_sorted) &&
         point_xy_sorted(pts_sorted) &&
         andrew_lower_scan_inv(pts_sorted, lower, i, k) &&
+        safeExec(equiv(lower), build_chain(sublist(i, n, pts_sorted)), X) &&
         PointArray::full(pts, n, pts_sorted) *
         PointArray::seg(hull, 0, k, lower) *
         PointArray::undef_seg(hull, k, 2 * n)
@@ -239,6 +273,7 @@ int andrew_monotone_chain(struct Point *pts, int n, struct Point *hull)
           point_xy_sorted(pts_sorted) &&
           point_in_bound(pts_sorted[i]) &&
           andrew_lower_scan_inv(pts_sorted, lower, i, k) &&
+          safeExec(equiv(lower), build_chain(sublist(i, n, pts_sorted)), X) &&
           PointArray::full(pts, n, pts_sorted) *
           PointArray::seg(hull, 0, k, lower) *
           PointArray::undef_seg(hull, k, 2 * n)
@@ -270,6 +305,7 @@ int andrew_monotone_chain(struct Point *pts, int n, struct Point *hull)
         point_permutation(pts_l, pts_sorted) &&
         point_xy_sorted(pts_sorted) &&
         andrew_upper_scan_inv(pts_sorted, hull_cur, i + 1, k, lower_n) &&
+        safeExec(equiv(hull_cur), build_upper_chain_cont(pts_sorted, sublist(0, lower_n, hull_cur)), X) &&
         PointArray::full(pts, n, pts_sorted) *
         PointArray::seg(hull, 0, k, hull_cur) *
         PointArray::undef_seg(hull, k, 2 * n)
@@ -290,6 +326,7 @@ int andrew_monotone_chain(struct Point *pts, int n, struct Point *hull)
           point_xy_sorted(pts_sorted) &&
           point_in_bound(pts_sorted[i]) &&
           andrew_upper_scan_inv(pts_sorted, hull_cur, i + 1, k, lower_n) &&
+          safeExec(equiv(hull_cur), build_upper_chain_cont(pts_sorted, sublist(0, lower_n, hull_cur)), X) &&
           PointArray::full(pts, n, pts_sorted) *
           PointArray::seg(hull, 0, k, hull_cur) *
           PointArray::undef_seg(hull, k, 2 * n)
@@ -319,7 +356,7 @@ int andrew_monotone_chain(struct Point *pts, int n, struct Point *hull)
         point_permutation(pts_l, pts_sorted) &&
         point_xy_sorted(pts_sorted) &&
         andrew_complete_hull_shape(pts_sorted, hull_out) &&
-        is_convex_hull(pts_l, hull_out) &&
+        safeExec(equiv(hull_out), return(tt), X) &&
         store(&lower_n, lower_n) *
         PointArray::full(pts, n, pts_sorted) *
         PointArray::seg(hull, 0, k, hull_out) *

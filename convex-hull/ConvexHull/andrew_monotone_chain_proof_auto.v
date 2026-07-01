@@ -18,6 +18,10 @@ Local Open Scope string_scope.
 Local Open Scope list.
 Import naive_C_Rules.
 Require Import SimpleC.EE.convex_hull.convex_hull_lib.
+Require Import SimpleC.EE.QCP_demos_LLM.sll_merge_rel_lib.
+Local Open Scope monad.
+From AUXLib Require Import int_auto Axioms Feq Idents ListLib VMap relations.
+From FP Require Import PartialOrder_Setoid BourbakiWitt.
 Local Open Scope sac.
 
 Lemma proof_of_cmp_xy_safety_wit_1 : cmp_xy_safety_wit_1.

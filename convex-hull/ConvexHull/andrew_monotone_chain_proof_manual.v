@@ -19,6 +19,11 @@ Local Open Scope string_scope.
 Local Open Scope list.
 Import naive_C_Rules.
 Require Import SimpleC.EE.convex_hull.convex_hull_lib.
+Require Import SimpleC.EE.QCP_demos_LLM.sll_merge_rel_lib.
+Local Open Scope monad.
+From AUXLib Require Import relations.
+From FP Require Import PartialOrder_Setoid BourbakiWitt.
+From MonadLib.StateRelMonad Require Import StateRelBasic safeexec_lib FixpointLib.
 Local Open Scope sac.
 
 Lemma proof_of_cmp_xy_return_wit_1_split_goal_1 : cmp_xy_return_wit_1_split_goal_1.
@@ -402,3 +407,44 @@ Proof. Abort.
 Lemma proof_of_andrew_monotone_chain_partial_solve_wit_21_pure : andrew_monotone_chain_partial_solve_wit_21_pure.
 Proof. Admitted. 
 
+Lemma proof_of_andrew_monotone_chain_derive_high_level_spec_by_low_level_spec :
+  andrew_monotone_chain_derive_high_level_spec_by_low_level_spec.
+Proof.
+  pre_process.
+  Exists pts_l_high_level_spec
+    (result_state
+       (equiv empty_point_stack)
+       (andrew_monotone_chain_m pts_l_high_level_spec)).
+  split_pure_spatial.
+  - cancel (PointArray.full pts_pre n_pre pts_l_high_level_spec).
+    cancel (PointArray.undef_full hull_pre (2 * n_pre)).
+    apply derivable1_wand_sepcon_adjoint.
+    Intros hull_out_2. Intros pts_out_2. Intros retval_2.
+    Exists hull_out_2 pts_out_2 retval_2.
+    repeat (split_pure_spatial || split_pures).
+    + cancel (PointArray.full pts_pre n_pre pts_out_2).
+      cancel (PointArray.seg hull_pre 0 retval_2 hull_out_2).
+      cancel (PointArray.undef_seg hull_pre retval_2 (2 * n_pre)).
+    + dump_pre_spatial. exact H4.
+    + dump_pre_spatial. exact H5.
+    + dump_pre_spatial. exact H6.
+    + dump_pre_spatial. exact H7.
+    + dump_pre_spatial. exact H8.
+    + dump_pre_spatial. exact H9.
+    + dump_pre_spatial. exact H10.
+    + dump_pre_spatial. exact H11.
+    + dump_pre_spatial.
+      unfold andrew_complete_hull_shape in H11.
+      destruct H11 as (_ & _ & _ & Hhull).
+      eapply is_convex_hull_base_permutation; eauto.
+  - repeat (split_pure_spatial || split_pures).
+    + dump_pre_spatial. exact H.
+    + dump_pre_spatial. exact H0.
+    + dump_pre_spatial. exact H1.
+    + dump_pre_spatial. exact H2.
+    + dump_pre_spatial. exact H3.
+    + dump_pre_spatial.
+      apply safeExec_result_state.
+      exists empty_point_stack.
+      reflexivity.
+Qed.

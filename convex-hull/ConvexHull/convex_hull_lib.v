@@ -1132,13 +1132,6 @@ Definition andrew_upper_scan_inv
   andrew_upper_append_ready sorted chain read lower_n /\
   (read <= 1 -> andrew_complete_hull_shape sorted chain).
 
-Definition andrew_hull_result
-    (base sorted hull : list Point) : Prop :=
-  point_permutation base sorted /\
-  point_xy_sorted sorted /\
-  andrew_complete_hull_shape sorted hull /\
-  is_convex_hull base hull.
-
 Definition point_polar_partitioned_at
     (gp : Point) (l : list Point) (low high p : Z) : Prop :=
   low <= p <= high /\

@@ -77,6 +77,8 @@ QUICK_TARGETS := $(VC_TARGETS:.vo=.vos)
 VOK_TARGETS := $(VC_TARGETS:.vo=.vok)
 
 ANDREW_VC_TARGETS := \
+	SeparationLogic/ConvexHull/Andrew_Monotone_Chain.vo \
+	SeparationLogic/ConvexHull/Andrew_Monotone_Chain_M.vo \
 	$(ANDREW_GOAL_V:.v=.vo) \
 	$(ANDREW_PROOF_AUTO_V:.v=.vo) \
 	$(ANDREW_PROOF_MANUAL_V:.v=.vo) \
@@ -88,8 +90,8 @@ ANDREW_VC_TARGETS := \
 
 all: build
 
-build: symexec deps
-	$(MAKE) -f $(COQMAKEFILE) $(VC_TARGETS)
+build: symexec andrew-symexec deps
+	$(MAKE) -f $(COQMAKEFILE) $(VC_TARGETS) $(ANDREW_VC_TARGETS)
 
 quick: symexec deps
 	$(MAKE) -f $(COQMAKEFILE) $(QUICK_TARGETS)
@@ -132,7 +134,7 @@ $(ANDREW_SYMEXEC_OUTPUTS) &: $(ANDREW_C_FILE)
 andrew-build: andrew-symexec deps
 	$(MAKE) -f $(COQMAKEFILE) $(ANDREW_VC_TARGETS)
 
-all-vfiles: symexec deps
+all-vfiles: symexec andrew-symexec deps
 
 clean: deps
 	$(MAKE) -f $(COQMAKEFILE) clean

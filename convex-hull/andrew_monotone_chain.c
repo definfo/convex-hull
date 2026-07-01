@@ -1,20 +1,17 @@
 #include "convex_hull_def.h"
 
 /*@ Extern Coq (is_convex_hull : list Point -> list Point -> Prop)
-               (andrew_hull_result : list Point -> list Point -> list Point -> Prop)
+               (andrew_complete_hull_shape : list Point -> list Point -> Prop)
                (andrew_lower_scan_inv : list Point -> list Point -> Z -> Z -> Prop)
-               (andrew_upper_scan_inv : list Point -> list Point -> Z -> Z -> Z -> Prop)
-               (point_bound : Z)
-               (point_in_bound : Point -> Prop)
-               (points_in_bound : list Point -> Prop)
-               (points_not_all_same : list Point -> Prop)
+               (andrew_upper_scan_inv : list Point -> list Point -> Z -> Z -> Z
+   -> Prop) (point_bound : Z) (point_in_bound : Point -> Prop) (points_in_bound
+   : list Point -> Prop) (points_not_all_same : list Point -> Prop)
                (point_permutation : list Point -> list Point -> Prop)
-               (point_same_outside_range : list Point -> list Point -> Z -> Z -> Prop)
-               (point_xy_sorted : list Point -> Prop)
-               (point_xy_sorted_range : list Point -> Z -> Z -> Prop)
-               (point_xy_partitioned_at : list Point -> Z -> Z -> Z -> Prop)
-               (point_xy_partition_scan_inv : list Point -> list Point -> Z -> Z -> Point -> Z -> Z -> Prop)
-               (point_cmp_leftdown : Point -> Point -> Z)
+               (point_same_outside_range : list Point -> list Point -> Z -> Z ->
+   Prop) (point_xy_sorted : list Point -> Prop) (point_xy_sorted_range : list
+   Point -> Z -> Z -> Prop) (point_xy_partitioned_at : list Point -> Z -> Z -> Z
+   -> Prop) (point_xy_partition_scan_inv : list Point -> list Point -> Z -> Z ->
+   Point -> Z -> Z -> Prop) (point_cmp_leftdown : Point -> Point -> Z)
                (point_cross_by_value : Z -> Z -> Z -> Z -> Z -> Z -> Z)
                (default_point : Point)
 */
@@ -198,7 +195,9 @@ int andrew_monotone_chain(struct Point *pts, int n, struct Point *hull)
         Zlength(hull_out) == __return &&
         points_in_bound(pts_out) &&
         point_permutation(pts_l, pts_out) &&
-        andrew_hull_result(pts_l, pts_out, hull_out) &&
+        point_xy_sorted(pts_out) &&
+        andrew_complete_hull_shape(pts_out, hull_out) &&
+        is_convex_hull(pts_l, hull_out) &&
         PointArray::full(pts, n, pts_out) *
         PointArray::seg(hull, 0, __return, hull_out) *
         PointArray::undef_seg(hull, __return, 2 * n)
@@ -245,8 +244,7 @@ int andrew_monotone_chain(struct Point *pts, int n, struct Point *hull)
           PointArray::undef_seg(hull, k, 2 * n)
     */
     while (k >= 2) {
-      if (cross_prod(hull[k - 2].x, hull[k - 2].y,
-                     hull[k - 1].x, hull[k - 1].y,
+      if (cross_prod(hull[k - 2].x, hull[k - 2].y, hull[k - 1].x, hull[k - 1].y,
                      pts[i].x, pts[i].y) > 0) {
         break;
       }
@@ -297,8 +295,7 @@ int andrew_monotone_chain(struct Point *pts, int n, struct Point *hull)
           PointArray::undef_seg(hull, k, 2 * n)
     */
     while (k > lower_n) {
-      if (cross_prod(hull[k - 2].x, hull[k - 2].y,
-                     hull[k - 1].x, hull[k - 1].y,
+      if (cross_prod(hull[k - 2].x, hull[k - 2].y, hull[k - 1].x, hull[k - 1].y,
                      pts[i].x, pts[i].y) > 0) {
         break;
       }
@@ -320,7 +317,9 @@ int andrew_monotone_chain(struct Point *pts, int n, struct Point *hull)
         Zlength(hull_out) == k &&
         points_in_bound(pts_sorted) &&
         point_permutation(pts_l, pts_sorted) &&
-        andrew_hull_result(pts_l, pts_sorted, hull_out) &&
+        point_xy_sorted(pts_sorted) &&
+        andrew_complete_hull_shape(pts_sorted, hull_out) &&
+        is_convex_hull(pts_l, hull_out) &&
         store(&lower_n, lower_n) *
         PointArray::full(pts, n, pts_sorted) *
         PointArray::seg(hull, 0, k, hull_out) *

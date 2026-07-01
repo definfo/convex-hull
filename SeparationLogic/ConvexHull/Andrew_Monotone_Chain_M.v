@@ -174,20 +174,20 @@ Proof.
 Qed.
 
 Theorem andrew_monotone_chain_correct : forall sorted,
-  andrew_hull_geometry_from_sorting sorted ->
   Hoare
     (fun _ : list point =>
        point_xy_sorted sorted /\ point_list_non_singleton sorted)
     (andrew_monotone_chain sorted)
     (fun _ T => T = andrew_hull sorted /\ is_convex_hull sorted T).
 Proof.
-  intros sorted Hgeometry_from_sorting.
+  intros sorted.
   unfold Hoare.
   intros T0 [] T Hpre Hrun.
   destruct Hpre as [Hsorted Hnonsingleton].
   pose proof (andrew_monotone_chain_returns_andrew_hull
                 sorted T0 tt T Hsorted Hrun) as HT.
-  pose proof (Hgeometry_from_sorting Hsorted Hnonsingleton) as Hgeom.
+  pose proof (andrew_hull_geometry_from_sorting_correct
+                sorted Hsorted Hnonsingleton) as Hgeom.
   split.
   - exact HT.
   - eapply andrew_hull_geometry_is_convex_hull; eauto.

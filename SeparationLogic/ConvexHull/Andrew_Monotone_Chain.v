@@ -4851,6 +4851,19 @@ Definition andrew_hull_geometry_from_sorting (sorted : list point) : Prop :=
   point_list_non_singleton sorted ->
   andrew_hull_geometry sorted.
 
+Lemma andrew_hull_geometry_from_sorting_correct : forall sorted,
+  andrew_hull_geometry_from_sorting sorted.
+Proof.
+  unfold andrew_hull_geometry_from_sorting, andrew_hull_geometry.
+  intros sorted Hsorted Hnonsingleton.
+  split.
+  - exact Hnonsingleton.
+  - split.
+    + apply andrew_hull_convex.
+      exact Hsorted.
+    + apply andrew_hull_max; assumption.
+Qed.
+
 Lemma andrew_hull_geometry_is_convex_hull : forall sorted T,
   T = andrew_hull sorted ->
   andrew_hull_geometry sorted ->

@@ -1088,6 +1088,33 @@ Definition andrew_complete_hull_shape
   points_in_bound hull /\
   is_convex_hull sorted hull.
 
+Definition point_drop_last (l : list Point) : list Point :=
+  sublist 0 (Zlength l - 1) l.
+
+Definition andrew_ccw_complete_hull_shape
+    (sorted chain : list Point) : Prop :=
+  andrew_complete_hull_shape sorted (rev chain).
+
+Definition andrew_closed_ccw_complete_hull_shape
+    (sorted chain : list Point) : Prop :=
+  0 < Zlength chain /\
+  andrew_ccw_complete_hull_shape sorted (point_drop_last chain).
+
+Definition point_prefix_reverse_state
+    (original current : list Point) (len done : Z) : Prop :=
+  Zlength original = len /\
+  Zlength current = len /\
+  0 <= done <= len / 2 /\
+  forall idx,
+    0 <= idx < len ->
+    Znth idx current default_point =
+      if Z_lt_dec idx done then
+        Znth (len - 1 - idx) original default_point
+      else if Z_le_dec (len - done) idx then
+        Znth (len - 1 - idx) original default_point
+      else
+        Znth idx original default_point.
+
 Definition andrew_lower_append_ready
     (sorted chain : list Point) (read : Z) : Prop :=
   read < Zlength sorted ->
@@ -1107,7 +1134,7 @@ Definition andrew_upper_capacity
 
 Definition andrew_upper_append_ready
     (sorted chain : list Point) (read lower_n : Z) : Prop :=
-  1 <= read - 1 ->
+  0 <= read - 1 ->
   (Zlength chain <= lower_n \/
    0 < point_cross
          (Znth (Zlength chain - 2) chain default_point)
@@ -1117,8 +1144,8 @@ Definition andrew_upper_append_ready
     sorted (chain ++ [Znth (read - 1) sorted default_point]) (read - 1) lower_n /\
   andrew_upper_capacity
     sorted (chain ++ [Znth (read - 1) sorted default_point]) (read - 1) lower_n /\
-  (read - 1 <= 1 ->
-     andrew_complete_hull_shape
+  (read - 1 <= 0 ->
+     andrew_closed_ccw_complete_hull_shape
        sorted (chain ++ [Znth (read - 1) sorted default_point])).
 
 Definition andrew_lower_scan_inv
@@ -1145,7 +1172,7 @@ Definition andrew_upper_scan_inv
   andrew_upper_suffix_geometry sorted chain read lower_n /\
   andrew_upper_capacity sorted chain read lower_n /\
   andrew_upper_append_ready sorted chain read lower_n /\
-  (read <= 1 -> andrew_complete_hull_shape sorted chain).
+  (read <= 0 -> andrew_closed_ccw_complete_hull_shape sorted chain).
 
 Definition point_polar_partitioned_at
     (gp : Point) (l : list Point) (low high p : Z) : Prop :=
@@ -1184,6 +1211,50 @@ Definition build_hull_c_push (l : list Point) (i : Z)
   T <- get' id ;;
   update' (fun _ => Znth i l default_point :: T) ;;
   build_hull_c_iter l (i + 1).
+
+Definition andrew_upper_remaining_points
+    (sorted : list Point) (read : Z) : list Point :=
+  rev (sublist 0 read sorted).
+
+Definition andrew_upper_stack_from_chain
+    (chain : list Point) (lower_n : Z) : list Point :=
+  rev (sublist (lower_n - 1) (Zlength chain) chain).
+
+Definition andrew_upper_cont
+    (sorted lower : list Point) (read : Z)
+    : program (list Point) unit :=
+  iter step_p (andrew_upper_remaining_points sorted read) tt ;;
+  T <- get' id ;;
+  update' (fun _ => Andrew_Monotone_Chain.andrew_merge sorted lower (rev T)).
+
+Definition andrew_upper_remaining_cont
+    (sorted chain : list Point) (read lower_n : Z)
+    (X : unit -> list Point -> Prop) : Prop :=
+  exists stk,
+    stk = andrew_upper_stack_from_chain chain lower_n /\
+    safeExec (equiv stk)
+      (andrew_upper_cont sorted (sublist 0 lower_n chain) read) X /\
+    (read <= 0 ->
+       safeExec (equiv (rev (point_drop_last chain))) (return tt) X).
+
+Definition andrew_lower_cont
+    (sorted : list Point) (read : Z)
+    : program (list Point) unit :=
+  build_hull_c_iter sorted read ;;
+  T <- get' id ;;
+  let lower := rev T in
+  upper <- Andrew_Monotone_Chain_M.build_upper_chain sorted ;;
+  update' (fun _ => Andrew_Monotone_Chain.andrew_merge sorted lower upper).
+
+Definition andrew_lower_remaining_cont
+    (sorted chain : list Point) (read : Z)
+    (X : unit -> list Point -> Prop) : Prop :=
+  exists stk,
+    chain = rev stk /\
+    safeExec (equiv stk) (andrew_lower_cont sorted read) X /\
+    (Zlength sorted <= read ->
+       andrew_upper_remaining_cont
+         sorted chain (Zlength sorted - 1) (Zlength chain) X).
 
 Lemma pop_fun_continue_hseval : forall p t s T,
   ~ ccw s t p ->
@@ -4137,4 +4208,712 @@ Proof.
   - apply point_same_sym.
     exact Hsame_i.
   - exact Hsame_j.
+Qed.
+
+(* Helper imports migrated from andrew_monotone_chain__vc_proving_r2_full_partial_merged_proof_manual.v. *)
+Require Import Coq.Strings.Ascii.
+From AUXLib Require Import int_auto Axioms Feq Idents ListLib VMap.
+From SimpleC.SL Require Import Mem SeparationLogic.
+From AUXLib Require Import int_auto Axioms Feq Idents ListLib VMap relations.
+From FP Require Import PartialOrder_Setoid BourbakiWitt.
+
+(* Helper lemmas migrated from andrew_monotone_chain__vc_proving_r2_full_partial_merged_proof_manual.v. *)
+
+Lemma point_mk_eta_worker : forall p : Point, point_mk p.(x) p.(y) = p.
+Proof.
+  intros p; destruct p as [px py]; reflexivity.
+Qed.
+
+Lemma point_cmp_leftdown_gt_flip_worker : forall a b : Point,
+  point_cmp_leftdown a b > 0 -> point_cmp_leftdown b a < 0.
+Proof.
+  intros a b H.
+  destruct a as [ax ay]; destruct b as [bx by_].
+  unfold point_cmp_leftdown in *; simpl in *.
+  repeat match goal with
+  | |- context[Z_lt_dec ?x ?y] => destruct (Z_lt_dec x y)
+  | |- context[Z_gt_dec ?x ?y] => destruct (Z_gt_dec x y)
+  | H0 : context[Z_lt_dec ?x ?y] |- _ => destruct (Z_lt_dec x y)
+  | H0 : context[Z_gt_dec ?x ?y] |- _ => destruct (Z_gt_dec x y)
+  end; lia.
+Qed.
+
+Lemma point_xy_partition_scan_inv_init :
+  forall (pts : list Point) (low high n : Z) (d : Point),
+    0 <= low ->
+    low <= high ->
+    high < n ->
+    Zlength pts = n ->
+    point_xy_partition_scan_inv pts pts low high
+      (point_mk (Znth high pts d).(x) (Znth high pts d).(y))
+      (low - 1) low.
+Proof.
+  intros pts low high n d Hlow Hle Hhigh Hlen.
+  unfold point_xy_partition_scan_inv.
+  split; [apply Permutation_refl|].
+  split; [apply point_same_outside_range_refl|].
+  split.
+  - rewrite (Znth_indep pts high default_point d) by lia.
+    symmetry; apply point_mk_eta_worker.
+  - split; intros k Hk; lia.
+Qed.
+
+Lemma point_xy_partition_scan_inv_accept_noswap :
+  forall (before cur : list Point) (low high : Z) (pivot : Point)
+    (i j retval : Z) (d : Point),
+    i + 1 = j ->
+    retval <= 0 ->
+    retval =
+      point_cmp_leftdown
+        (point_mk (Znth j cur d).(x) (Znth j cur d).(y)) pivot ->
+    0 <= j < Zlength cur ->
+    point_xy_partition_scan_inv before cur low high pivot i j ->
+    point_xy_partition_scan_inv before cur low high pivot (i + 1) (j + 1).
+Proof.
+  intros before cur low high pivot i j retval d Hij Hret Hcmp Hj Hinv.
+  unfold point_xy_partition_scan_inv in *.
+  destruct Hinv as [Hperm [Houtside [Hpivot [Hacc Hrej]]]].
+  split; [exact Hperm|].
+  split; [exact Houtside|].
+  split; [exact Hpivot|].
+  split.
+  - intros k Hk.
+    destruct (Z.eq_dec k j) as [-> | Hneq].
+    + rewrite (Znth_indep cur j default_point d) by lia.
+      rewrite (point_mk_eta_worker (Znth j cur d)) in Hcmp.
+      rewrite <- Hcmp; lia.
+    + apply Hacc; lia.
+  - intros k Hk; lia.
+Qed.
+
+Lemma point_xy_partition_scan_inv_reject_step :
+  forall (before cur : list Point) (low high : Z) (pivot : Point)
+    (i j retval : Z) (d : Point),
+    retval > 0 ->
+    retval =
+      point_cmp_leftdown
+        (point_mk (Znth j cur d).(x) (Znth j cur d).(y)) pivot ->
+    0 <= j < Zlength cur ->
+    point_xy_partition_scan_inv before cur low high pivot i j ->
+    point_xy_partition_scan_inv before cur low high pivot i (j + 1).
+Proof.
+  intros before cur low high pivot i j retval d Hret Hcmp Hj Hinv.
+  unfold point_xy_partition_scan_inv in *.
+  destruct Hinv as [Hperm [Houtside [Hpivot [Hacc Hrej]]]].
+  split; [exact Hperm|].
+  split; [exact Houtside|].
+  split; [exact Hpivot|].
+  split; [exact Hacc|].
+  intros k Hk.
+  destruct (Z.eq_dec k j) as [-> | Hneq].
+  - rewrite (Znth_indep cur j default_point d) by lia.
+    rewrite (point_mk_eta_worker (Znth j cur d)) in Hcmp.
+    apply point_cmp_leftdown_gt_flip_worker.
+    rewrite <- Hcmp; lia.
+  - apply Hrej; lia.
+Qed.
+
+Lemma point_xy_partition_scan_inv_accept_swap :
+  forall (before cur : list Point) (low high : Z) (pivot : Point)
+    (i j retval : Z) (d : Point),
+    i + 1 <> j ->
+    retval <= 0 ->
+    retval =
+      point_cmp_leftdown
+        (point_mk (Znth j cur d).(x) (Znth j cur d).(y)) pivot ->
+    j < high ->
+    high < Zlength cur ->
+    0 <= low ->
+    low - 1 <= i ->
+    i < j ->
+    j <= high ->
+    point_xy_partition_scan_inv before cur low high pivot i j ->
+    point_xy_partition_scan_inv before (point_swap cur (i + 1) j)
+      low high pivot (i + 1) (j + 1).
+Proof.
+  intros before cur low high pivot i j retval d Hijneq Hret Hcmp
+    Hjhigh Hhighlen Hlow Hlowi Hij Hjh Hinv.
+  assert (Hijlt : i + 1 < j) by lia.
+  assert (Hi1_range : 0 <= i + 1 < Zlength cur) by lia.
+  assert (Hj_range : 0 <= j < Zlength cur) by lia.
+  assert (Hhigh_range : 0 <= high < Zlength cur) by lia.
+  assert (Hcmp_cur_j :
+    point_cmp_leftdown (Znth j cur default_point) pivot <= 0).
+  {
+    rewrite (Znth_indep cur j default_point d) by lia.
+    rewrite (point_mk_eta_worker (Znth j cur d)) in Hcmp.
+    rewrite <- Hcmp; lia.
+  }
+  unfold point_xy_partition_scan_inv in *.
+  destruct Hinv as [Hperm [Houtside [Hpivot [Hacc Hrej]]]].
+  split.
+  - eapply Permutation_trans; [exact Hperm|].
+    apply point_swap_permutation; lia.
+  - split.
+    + apply point_same_outside_range_point_swap_inside; try exact Houtside; lia.
+    + split.
+      * rewrite point_swap_Znth_other_index by lia.
+        exact Hpivot.
+      * split.
+        -- intros k Hk.
+           destruct (Z.eq_dec k (i + 1)) as [-> | Hneq].
+           ++ rewrite point_swap_Znth_left_index by lia.
+              exact Hcmp_cur_j.
+           ++ rewrite point_swap_Znth_other_index by lia.
+              apply Hacc; lia.
+        -- intros k Hk.
+           destruct (Z.eq_dec k j) as [-> | Hneqj].
+           ++ rewrite point_swap_Znth_right_index by lia.
+              apply Hrej; lia.
+           ++ rewrite point_swap_Znth_other_index by lia.
+              apply Hrej; lia.
+Qed.
+
+Lemma worker_partition_finish_swap_partitioned :
+  forall (before cur : list Point) (low high i j : Z) (pivot : Point),
+    0 <= low ->
+    low <= high ->
+    high < Zlength cur ->
+    low - 1 <= i ->
+    i < j ->
+    j <= high ->
+    j >= high ->
+    i + 1 <> high ->
+    point_xy_partition_scan_inv before cur low high pivot i j ->
+    point_xy_partitioned_at (point_swap cur (i + 1) high) low high (i + 1).
+Proof.
+  intros before cur low high i j pivot Hlow Hlow_high Hhigh_len Hlow_i
+         Hi_j Hj_high Hhigh_j Hi1_neq Hinv.
+  assert (Hj : j = high) by lia.
+  subst j.
+  destruct Hinv as [_ [_ [Hpivot [Hleft Hright]]]].
+  assert (Hi1_range : 0 <= i + 1 < Zlength cur) by lia.
+  assert (Hhigh_range : 0 <= high < Zlength cur) by lia.
+  assert (Hi1_high : i + 1 < high) by lia.
+  assert (Hpivot_swap :
+            Znth (i + 1) (point_swap cur (i + 1) high) default_point = pivot).
+  {
+    rewrite point_swap_Znth_left_index by lia.
+    exact Hpivot.
+  }
+  unfold point_xy_partitioned_at.
+  split.
+  - lia.
+  - split.
+    + eapply Forall_sublist_by_Znth_point.
+      * lia.
+      * rewrite Zlength_point_swap; lia.
+      * intros k Hk.
+        rewrite Hpivot_swap.
+        rewrite point_swap_Znth_other_index by lia.
+        apply Hleft; lia.
+    + eapply Forall_sublist_by_Znth_point.
+      * lia.
+      * rewrite Zlength_point_swap; lia.
+      * intros k Hk.
+        rewrite Hpivot_swap.
+        destruct (Z.eq_dec k high) as [-> | Hk_high].
+        -- rewrite point_swap_Znth_right_index by lia.
+           apply Hright; lia.
+        -- rewrite point_swap_Znth_other_index by lia.
+           apply Hright; lia.
+Qed.
+
+Lemma worker_partition_finish_noswap_partitioned :
+  forall (before cur : list Point) (low high i j : Z) (pivot : Point),
+    0 <= low ->
+    low <= high ->
+    high < Zlength cur ->
+    low - 1 <= i ->
+    i < j ->
+    j <= high ->
+    j >= high ->
+    i + 1 = high ->
+    point_xy_partition_scan_inv before cur low high pivot i j ->
+    point_xy_partitioned_at cur low high (i + 1).
+Proof.
+  intros before cur low high i j pivot Hlow Hlow_high Hhigh_len Hlow_i
+         Hi_j Hj_high Hhigh_j Hi1_eq Hinv.
+  assert (Hj : j = high) by lia.
+  subst j.
+  destruct Hinv as [_ [_ [Hpivot [Hleft _]]]].
+  assert (Hpivot_at : Znth (i + 1) cur default_point = pivot).
+  {
+    rewrite Hi1_eq.
+    exact Hpivot.
+  }
+  unfold point_xy_partitioned_at.
+  split.
+  - lia.
+  - split.
+    + eapply Forall_sublist_by_Znth_point.
+      * lia.
+      * lia.
+      * intros k Hk.
+        rewrite Hpivot_at.
+        apply Hleft; lia.
+    + eapply Forall_sublist_by_Znth_point.
+      * lia.
+      * lia.
+      * intros k Hk; lia.
+Qed.
+
+Lemma point_cmp_leftdown_le_point_leftdown : forall a b,
+  point_cmp_leftdown a b <= 0 ->
+  point_leftdown a b.
+Proof.
+  intros a b Hcmp.
+  unfold point_cmp_leftdown, point_leftdown in *.
+  destruct (Z_lt_dec (Point_Order.x a) (Point_Order.x b)); [left; lia |].
+  destruct (Z_gt_dec (Point_Order.x a) (Point_Order.x b)); [lia |].
+  destruct (Z_lt_dec (Point_Order.y a) (Point_Order.y b)); [right; lia |].
+  destruct (Z_gt_dec (Point_Order.y a) (Point_Order.y b)); lia.
+Qed.
+
+Lemma point_leftdown_point_cmp_leftdown_le : forall a b,
+  point_leftdown a b ->
+  point_cmp_leftdown a b <= 0.
+Proof.
+  intros a b H.
+  unfold point_cmp_leftdown, point_leftdown in *.
+  destruct H as [H | [H H0]].
+  - destruct (Z_lt_dec (Point_Order.x a) (Point_Order.x b)); lia.
+  - destruct (Z_lt_dec (Point_Order.x a) (Point_Order.x b)); [lia |].
+    destruct (Z_gt_dec (Point_Order.x a) (Point_Order.x b)); [lia |].
+    destruct (Z_lt_dec (Point_Order.y a) (Point_Order.y b)); [lia |].
+    destruct (Z_gt_dec (Point_Order.y a) (Point_Order.y b)); lia.
+Qed.
+
+Lemma point_cmp_leftdown_le_trans : forall a b c,
+  point_cmp_leftdown a b <= 0 ->
+  point_cmp_leftdown b c <= 0 ->
+  point_cmp_leftdown a c <= 0.
+Proof.
+  intros a b c Hab Hbc.
+  apply point_leftdown_point_cmp_leftdown_le.
+  eapply point_leftdown_trans.
+  - apply point_cmp_leftdown_le_point_leftdown; exact Hab.
+  - apply point_cmp_leftdown_le_point_leftdown; exact Hbc.
+Qed.
+
+Lemma point_cmp_leftdown_le_lt_trans : forall a b c,
+  point_cmp_leftdown a b <= 0 ->
+  point_cmp_leftdown b c < 0 ->
+  point_cmp_leftdown a c <= 0.
+Proof.
+  intros a b c Hab Hbc.
+  apply point_leftdown_point_cmp_leftdown_le.
+  eapply point_leftdown_trans.
+  - apply point_cmp_leftdown_le_point_leftdown; exact Hab.
+  - apply point_cmp_leftdown_lt_point_leftdown; exact Hbc.
+Qed.
+
+Lemma point_xy_sorted_range_degenerate :
+  forall l left right,
+    right <= left ->
+    point_xy_sorted_range l left right.
+Proof.
+  intros l left right Hle i j Hi Hij Hj.
+  assert (i = j) by lia.
+  subst j.
+  apply point_leftdown_point_cmp_leftdown_le.
+  apply point_leftdown_refl.
+Qed.
+
+Lemma point_xy_sorted_range_from_left_boundary :
+  forall l left right p,
+    0 <= left ->
+    right < Zlength l ->
+    left <= p <= right ->
+    right <= p ->
+    point_xy_partitioned_at l left right p ->
+    point_xy_sorted_range l left (p - 1) ->
+    point_xy_sorted_range l left right.
+Proof.
+  intros l left right p Hleft0 Hrightlen Hp_range Hrightp Hpart Hsorted.
+  intros i j Hi Hij Hj.
+  destruct Hpart as [_ [Hleftpart _]].
+  destruct (Z_lt_ge_dec j p) as [Hjleft | Hjge].
+  - apply Hsorted; lia.
+  - assert (j = p) by lia.
+    subst j.
+    destruct (Z.eq_dec i p) as [-> | Hip].
+    + apply point_leftdown_point_cmp_leftdown_le.
+      apply point_leftdown_refl.
+    + eapply (Forall_sublist_lookup_point
+                (fun x => point_cmp_leftdown x (Znth p l default_point) <= 0)
+                l left p i);
+        try eassumption; lia.
+Qed.
+
+Lemma point_xy_sorted_range_from_right_boundary :
+  forall l left right p,
+    0 <= left ->
+    right < Zlength l ->
+    left <= p <= right ->
+    p <= left ->
+    point_xy_partitioned_at l left right p ->
+    point_xy_sorted_range l (p + 1) right ->
+    point_xy_sorted_range l left right.
+Proof.
+  intros l left right p Hleft0 Hrightlen Hp_range Hpleft Hpart Hsorted.
+  intros i j Hi Hij Hj.
+  destruct Hpart as [_ [_ Hrightpart]].
+  assert (p = left) by lia.
+  subst p.
+  destruct (Z.eq_dec i left) as [-> | Hileft].
+  - destruct (Z.eq_dec j left) as [-> | Hjleft].
+    + apply point_leftdown_point_cmp_leftdown_le.
+      apply point_leftdown_refl.
+    + apply Z.lt_le_incl.
+      eapply (Forall_sublist_lookup_point
+                (fun x => point_cmp_leftdown (Znth left l default_point) x < 0)
+                l (left + 1) (right + 1) j);
+        try eassumption; lia.
+  - apply Hsorted; lia.
+Qed.
+
+Lemma point_xy_sorted_range_partition_merge :
+  forall l left right p,
+    0 <= left ->
+    right < Zlength l ->
+    left <= p <= right ->
+    point_xy_partitioned_at l left right p ->
+    point_xy_sorted_range l left (p - 1) ->
+    point_xy_sorted_range l (p + 1) right ->
+    point_xy_sorted_range l left right.
+Proof.
+  intros l left right p Hleft0 Hrightlen Hp_range Hpart Hsorted_left Hsorted_right.
+  intros i j Hi Hij Hj.
+  destruct (Z_lt_ge_dec j p) as [Hjleft | Hjnotleft].
+  - apply Hsorted_left; lia.
+  - destruct (Z_le_gt_dec i p) as [Hinotright | Hiright].
+    + destruct Hpart as [_ [Hleftpart Hrightpart]].
+      destruct (Z.eq_dec i p) as [-> | Hip].
+      * destruct (Z.eq_dec j p) as [-> | Hjp].
+        -- apply point_leftdown_point_cmp_leftdown_le.
+           apply point_leftdown_refl.
+        -- apply Z.lt_le_incl.
+           eapply (Forall_sublist_lookup_point
+                     (fun x => point_cmp_leftdown (Znth p l default_point) x < 0)
+                     l (p + 1) (right + 1) j);
+             try eassumption; lia.
+      * assert (Hipcmp :
+          point_cmp_leftdown (Znth i l default_point)
+                             (Znth p l default_point) <= 0).
+        {
+          eapply (Forall_sublist_lookup_point
+                    (fun x => point_cmp_leftdown x (Znth p l default_point) <= 0)
+                    l left p i);
+            try eassumption; lia.
+        }
+        destruct (Z.eq_dec j p) as [-> | Hjp].
+        -- exact Hipcmp.
+        -- assert (Hpjcmp :
+             point_cmp_leftdown (Znth p l default_point)
+                                (Znth j l default_point) < 0).
+           {
+             eapply (Forall_sublist_lookup_point
+                       (fun x => point_cmp_leftdown (Znth p l default_point) x < 0)
+                       l (p + 1) (right + 1) j);
+               try eassumption; lia.
+           }
+           eapply point_cmp_leftdown_le_lt_trans; eassumption.
+    + apply Hsorted_right; lia.
+Qed.
+
+Lemma Znth_In_sublist_point :
+  forall l lo hi k,
+    0 <= lo <= hi ->
+    hi <= Zlength l ->
+    lo <= k < hi ->
+    In (Znth k l default_point) (sublist lo hi l).
+Proof.
+  intros l lo hi k Hlohi Hhi Hk.
+  pose proof (Znth_In_range (sublist lo hi l) (k - lo) default_point) as Hin.
+  assert (Hrange : 0 <= k - lo < Zlength (sublist lo hi l)).
+  {
+    rewrite Zlength_sublist by lia.
+    lia.
+  }
+  specialize (Hin Hrange).
+  rewrite Znth_sublist in Hin by lia.
+  replace (k - lo + lo) with k in Hin by lia.
+  exact Hin.
+Qed.
+
+Lemma point_xy_sorted_range_partition_merge_after_subsorts :
+  forall base mid out left right p,
+    0 <= left ->
+    right < Zlength base ->
+    left <= p <= right ->
+    point_xy_partitioned_at base left right p ->
+    point_permutation base mid ->
+    point_same_outside_range base mid left (p - 1) ->
+    point_xy_sorted_range mid left (p - 1) ->
+    point_permutation mid out ->
+    point_same_outside_range mid out (p + 1) right ->
+    point_xy_sorted_range out (p + 1) right ->
+    point_xy_sorted_range out left right.
+Proof.
+  intros base mid out left right p Hleft0 Hrightlen Hp_range Hpart
+    Hperm_left Hsame_left Hsorted_left Hperm_right Hsame_right Hsorted_right.
+  destruct Hpart as [_ [Hpart_left Hpart_right]].
+  pose proof Hsame_left as Hsame_left_full.
+  pose proof Hsame_right as Hsame_right_full.
+  destruct Hsame_left as [Hlen_mid Hsame_left].
+  destruct Hsame_right as [Hlen_out Hsame_right].
+  assert (Hrightlen_mid : right < Zlength mid) by (rewrite <- Hlen_mid; lia).
+  assert (Hrightlen_out : right < Zlength out) by (rewrite <- Hlen_out; lia).
+  assert (Hp_mid : Znth p mid default_point = Znth p base default_point).
+  {
+    apply Hsame_left; [lia | right; lia].
+  }
+  assert (Hp_out : Znth p out default_point = Znth p mid default_point).
+  {
+    apply Hsame_right; [lia | left; lia].
+  }
+  assert (Hleft_lookup : forall k,
+    left <= k < p ->
+    point_cmp_leftdown (Znth k out default_point)
+                       (Znth p out default_point) <= 0).
+  {
+    intros k Hk.
+    rewrite Hsame_right by (lia || left; lia).
+    rewrite Hp_out, Hp_mid.
+    rewrite Forall_forall in Hpart_left.
+    apply Hpart_left.
+    assert (Hmidperm :
+      point_permutation (sublist left p base) (sublist left p mid)).
+    {
+      replace p with ((p - 1) + 1) by lia.
+      eapply (point_permutation_middle_of_same_outside base mid left (p - 1));
+        try eassumption; lia.
+    }
+    eapply Permutation_in.
+    - apply Permutation_sym. exact Hmidperm.
+    - apply Znth_In_sublist_point; try lia.
+  }
+  assert (Hright_lookup : forall k,
+    p < k <= right ->
+    point_cmp_leftdown (Znth p out default_point)
+                       (Znth k out default_point) < 0).
+  {
+    intros k Hk.
+    rewrite Hp_out, Hp_mid.
+    rewrite Forall_forall in Hpart_right.
+    apply Hpart_right.
+    assert (Hrightperm :
+      point_permutation (sublist (p + 1) (right + 1) mid)
+                        (sublist (p + 1) (right + 1) out)).
+    {
+      eapply (point_permutation_middle_of_same_outside mid out (p + 1) right);
+        try eassumption; lia.
+    }
+    assert (Hright_eq :
+      sublist (p + 1) (right + 1) mid =
+      sublist (p + 1) (right + 1) base).
+    {
+      apply sublist_eq_from_Znth_point.
+      - symmetry. exact Hlen_mid.
+      - lia.
+      - rewrite <- Hlen_mid; lia.
+      - intros t Ht.
+        apply Hsame_left; [lia | right; lia].
+    }
+    assert (Hin_out :
+      In (Znth k out default_point) (sublist (p + 1) (right + 1) out)).
+    {
+      apply Znth_In_sublist_point; try lia.
+    }
+    assert (Hin_mid :
+      In (Znth k out default_point) (sublist (p + 1) (right + 1) mid)).
+    {
+      eapply Permutation_in.
+      - apply Permutation_sym. exact Hrightperm.
+      - exact Hin_out.
+    }
+    rewrite Hright_eq in Hin_mid.
+    exact Hin_mid.
+  }
+  intros i j Hi Hij Hj.
+  destruct (Z_lt_ge_dec j p) as [Hjleft | Hjnotleft].
+  - rewrite Hsame_right by (lia || left; lia).
+    rewrite Hsame_right by (lia || left; lia).
+    apply Hsorted_left; lia.
+  - destruct (Z_le_gt_dec i p) as [Hinotright | Hiright].
+    + destruct (Z.eq_dec i p) as [-> | Hip].
+      * destruct (Z.eq_dec j p) as [-> | Hjp].
+        -- apply point_leftdown_point_cmp_leftdown_le.
+           apply point_leftdown_refl.
+        -- apply Z.lt_le_incl.
+           apply Hright_lookup; lia.
+      * destruct (Z.eq_dec j p) as [-> | Hjp].
+        -- apply Hleft_lookup; lia.
+        -- eapply point_cmp_leftdown_le_lt_trans.
+           ++ apply Hleft_lookup; lia.
+           ++ apply Hright_lookup; lia.
+    + apply Hsorted_right; lia.
+Qed.
+
+Lemma points_not_all_same_to_point_list_not_all_same :
+  forall l, points_not_all_same l -> point_list_not_all_same l.
+Proof.
+  unfold points_not_all_same, point_list_not_all_same.
+  intros l [i [j [Hi [Hj [_ Hneq]]]]].
+  exists i, j. repeat split; try lia; auto.
+Qed.
+
+Lemma andrew_lower_scan_inv_nil :
+  forall sorted,
+    2 <= Zlength sorted ->
+    points_in_bound sorted ->
+    points_not_all_same sorted ->
+    andrew_lower_scan_inv sorted nil 0 0.
+Proof.
+  intros sorted Hlen Hbound Hnas.
+  unfold andrew_lower_scan_inv.
+  repeat split; try lia; try constructor.
+  - apply points_not_all_same_to_point_list_not_all_same; exact Hnas.
+  - unfold point_chain_strictly_uses_range, point_chain_indexed_by_range,
+      point_indices_strict_increasing.
+    exists nil. split.
+    + split.
+      * rewrite Zlength_nil. reflexivity.
+      * intros pos Hpos. rewrite Zlength_nil in Hpos. lia.
+    + intros a b Ha Hab Hb. rewrite Zlength_nil in Hb. lia.
+  - unfold point_chain_starts_at; intros Hz.
+    rewrite Zlength_nil in Hz. lia.
+  - unfold point_chain_left_turns; intros idx Hidx Hlt.
+    rewrite Zlength_nil in Hlt. lia.
+  - unfold point_chain_left_envelope; intros edge_idx point_idx Hedge HedgeLen Hpoint.
+    rewrite Zlength_nil in HedgeLen. lia.
+  - unfold point_from_sorted_range. exists 0. split; [lia | reflexivity].
+  - constructor.
+  - change (nil ++ Znth 0 sorted default_point :: nil) with
+      (Znth 0 sorted default_point :: nil).
+    unfold point_chain_strictly_uses_range, point_chain_indexed_by_range,
+      point_indices_strict_increasing.
+    exists (0 :: nil). split.
+    + split.
+      * repeat rewrite Zlength_cons. rewrite Zlength_nil. reflexivity.
+      * intros pos Hpos.
+        rewrite Zlength_cons in Hpos. rewrite Zlength_nil in Hpos.
+        assert (pos = 0) by lia. subst pos.
+        repeat rewrite Znth0_cons. split; [lia | reflexivity].
+    + intros a b Ha Hab Hb.
+      rewrite Zlength_cons in Hb. rewrite Zlength_nil in Hb. lia.
+  - change (nil ++ Znth 0 sorted default_point :: nil) with
+      (Znth 0 sorted default_point :: nil).
+    unfold point_chain_left_turns; intros idx Hidx Hlt.
+    rewrite Zlength_cons in Hlt. rewrite Zlength_nil in Hlt. lia.
+  - change (nil ++ Znth 0 sorted default_point :: nil) with
+      (Znth 0 sorted default_point :: nil).
+    unfold point_chain_left_envelope; intros edge_idx point_idx Hedge HedgeLen Hpoint.
+    rewrite Zlength_cons in HedgeLen. rewrite Zlength_nil in HedgeLen. lia.
+Qed.
+
+Lemma sublist_cons_z :
+  forall {A : Type} (d : A) (lo hi : Z) (l : list A),
+    0 <= lo < hi ->
+    hi <= Zlength l ->
+    sublist lo hi l = Znth lo l d :: sublist (lo + 1) hi l.
+Proof.
+  intros A d lo hi l Hlo Hhi.
+  rewrite (sublist_split lo hi (lo + 1) l) by lia.
+  rewrite (sublist_single d) by lia.
+  reflexivity.
+Qed.
+
+Lemma point_array_seg_pop_tail_at_k :
+  forall (base : addr) (k hi : Z) (prefix : list Point) (last : Point),
+    k - 1 = Zlength prefix ->
+    k <= hi ->
+    PointArray.seg base 0 k (prefix ++ last :: nil) **
+    PointArray.undef_seg base k hi
+    |-- PointArray.seg base 0 (k - 1) prefix **
+        PointArray.undef_seg base (k - 1) hi.
+Proof.
+  intros base k hi prefix last Hlen Hhi.
+  replace k with ((k - 1) + 1) by lia.
+  replace (k - 1 + 1 - 1) with (k - 1) by lia.
+  apply point_array_seg_pop_tail; lia.
+Qed.
+
+Lemma points_not_all_same_permutation_worker :
+  forall l l', point_permutation l l' ->
+  points_not_all_same l -> points_not_all_same l'.
+Proof.
+  unfold point_permutation, points_not_all_same.
+  intros l l' Hperm [i [j [Hi [Hj [Hij Hdiff]]]]].
+  pose proof (Znth_In_range l i default_point Hi) as Hin_i.
+  pose proof (Znth_In_range l j default_point Hj) as Hin_j.
+  pose proof (Permutation_in (Znth i l default_point) Hperm Hin_i) as Hin_i'.
+  pose proof (Permutation_in (Znth j l default_point) Hperm Hin_j) as Hin_j'.
+  destruct (In_Znth_Zlength l' (Znth i l default_point) default_point Hin_i') as [i' [Hi' Hzi]].
+  destruct (In_Znth_Zlength l' (Znth j l default_point) default_point Hin_j') as [j' [Hj' Hzj]].
+  exists i', j'. split; [exact Hi'|]. split; [exact Hj'|]. split.
+  - intro Heq. subst j'. apply Hdiff. rewrite <- Hzi. rewrite <- Hzj.
+    unfold point_same; auto.
+  - intro Hsame. apply Hdiff. rewrite <- Hzi. rewrite <- Hzj. exact Hsame.
+Qed.
+
+Lemma points_not_all_same_non_singleton_worker :
+  forall l, points_not_all_same l -> Andrew_Monotone_Chain.point_list_non_singleton l.
+Proof.
+  intros l Hnot.
+  unfold points_not_all_same in Hnot.
+  destruct l as [|p [|q rest]].
+  - destruct Hnot as [i [j [Hi [Hj [Hij Hdiff]]]]].
+    rewrite Zlength_nil in Hi. lia.
+  - destruct Hnot as [i [j [Hi [Hj [Hij Hdiff]]]]].
+    rewrite Zlength_cons, Zlength_nil in Hi, Hj. lia.
+  - unfold Andrew_Monotone_Chain.point_list_non_singleton. eauto.
+Qed.
+
+Lemma leftdown_from_cmp_le_worker :
+  forall a b, point_cmp_leftdown a b <= 0 -> Andrew_Monotone_Chain.leftdown a b.
+Proof.
+  intros a b Hcmp.
+  destruct a as [ax ay].
+  destruct b as [bx by_].
+  unfold point_cmp_leftdown in Hcmp.
+  unfold Andrew_Monotone_Chain.leftdown.
+  simpl in *.
+  destruct (Z_lt_dec ax bx) as [Hlt | Hnlt].
+  - left; lia.
+  - destruct (Z_gt_dec ax bx) as [Hgt | Hngt].
+    + lia.
+    + destruct (Z_lt_dec ay by_) as [Hylt | Hynlt].
+      * right; split; lia.
+      * destruct (Z_gt_dec ay by_) as [Hygt | Hyngt].
+        -- lia.
+        -- right; split; lia.
+Qed.
+
+Lemma public_point_xy_sorted_to_andrew_worker :
+  forall l, point_xy_sorted l -> Andrew_Monotone_Chain.point_xy_sorted l.
+Proof.
+  unfold point_xy_sorted.
+  intros l Hsort.
+  destruct l as [|p rest]; simpl; [auto|].
+  revert p Hsort.
+  induction rest as [|q rest IH]; intros p Hsort; simpl; [auto|].
+  split.
+  - apply leftdown_from_cmp_le_worker.
+    specialize (Hsort 0 1 ltac:(lia) ltac:(lia)
+      ltac:(rewrite !Zlength_cons; pose proof (Zlength_nonneg rest); lia)).
+    simpl in Hsort.
+    exact Hsort.
+  - apply IH.
+    unfold point_xy_sorted_range in *.
+    intros i j Hi Hij Hj.
+    assert (Hcmp := Hsort (i + 1) (j + 1)
+      ltac:(lia) ltac:(lia)
+      ltac:(rewrite !Zlength_cons; rewrite Zlength_cons in Hj; lia)).
+    rewrite (Znth_cons default_point (i + 1) p (q :: rest)) in Hcmp by lia.
+    rewrite (Znth_cons default_point (j + 1) p (q :: rest)) in Hcmp by lia.
+    replace (i + 1 - 1) with i in Hcmp by lia.
+    replace (j + 1 - 1) with j in Hcmp by lia.
+    exact Hcmp.
 Qed.

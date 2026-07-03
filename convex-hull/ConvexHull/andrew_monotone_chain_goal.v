@@ -1989,73 +1989,37 @@ forall (right_pre: Z) (left_pre: Z) (n_pre: Z) (pts_pre: Z) (pts_l: (@list Point
 
 Definition quicksort_xy_points_partial_solve_wit_4 := quicksort_xy_points_partial_solve_wit_4_pure -> quicksort_xy_points_partial_solve_wit_4_aux.
 
-(*----- Function andrew_monotone_chain -----*)
+(*----- Function andrew_build_from_sorted -----*)
 
-Definition andrew_monotone_chain_safety_wit_1 := 
-forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list Point) -> Prop))) (pts_l_low_level_spec: (@list Point)) (PreH1 : (2 <= n_pre)) (PreH2 : (n_pre <= 50000)) (PreH3 : ((Zlength (pts_l_low_level_spec)) = n_pre)) (PreH4 : (points_in_bound pts_l_low_level_spec )) (PreH5 : (points_not_all_same pts_l_low_level_spec )) (PreH6 : (safeExec (equiv (empty_point_stack)) (andrew_monotone_chain_m (pts_l_low_level_spec)) X_low_level_spec )) ,
-  ((( &( "hull" ) )) # Ptr  |-> hull_pre)
-  **  ((( &( "n" ) )) # Int  |-> n_pre)
-  **  ((( &( "pts" ) )) # Ptr  |-> pts_pre)
-  **  (PointArray.full pts_pre n_pre pts_l_low_level_spec )
-  **  (PointArray.undef_full hull_pre (2 * n_pre ) )
-|--
-  “ ((n_pre - 1 ) <= INT_MAX) ” 
-  &&  “ ((INT_MIN) <= (n_pre - 1 )) ”
-.
-
-Definition andrew_monotone_chain_safety_wit_2 := 
-forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list Point) -> Prop))) (pts_l_low_level_spec: (@list Point)) (PreH1 : (2 <= n_pre)) (PreH2 : (n_pre <= 50000)) (PreH3 : ((Zlength (pts_l_low_level_spec)) = n_pre)) (PreH4 : (points_in_bound pts_l_low_level_spec )) (PreH5 : (points_not_all_same pts_l_low_level_spec )) (PreH6 : (safeExec (equiv (empty_point_stack)) (andrew_monotone_chain_m (pts_l_low_level_spec)) X_low_level_spec )) ,
-  ((( &( "hull" ) )) # Ptr  |-> hull_pre)
-  **  ((( &( "n" ) )) # Int  |-> n_pre)
-  **  ((( &( "pts" ) )) # Ptr  |-> pts_pre)
-  **  (PointArray.full pts_pre n_pre pts_l_low_level_spec )
-  **  (PointArray.undef_full hull_pre (2 * n_pre ) )
-|--
-  “ (0 <= INT_MAX) ” 
-  &&  “ ((INT_MIN) <= 0) ”
-.
-
-Definition andrew_monotone_chain_safety_wit_3 := 
-forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list Point) -> Prop))) (pts_l_low_level_spec: (@list Point)) (PreH1 : (2 <= n_pre)) (PreH2 : (n_pre <= 50000)) (PreH3 : ((Zlength (pts_l_low_level_spec)) = n_pre)) (PreH4 : (points_in_bound pts_l_low_level_spec )) (PreH5 : (points_not_all_same pts_l_low_level_spec )) (PreH6 : (safeExec (equiv (empty_point_stack)) (andrew_monotone_chain_m (pts_l_low_level_spec)) X_low_level_spec )) ,
-  ((( &( "hull" ) )) # Ptr  |-> hull_pre)
-  **  ((( &( "n" ) )) # Int  |-> n_pre)
-  **  ((( &( "pts" ) )) # Ptr  |-> pts_pre)
-  **  (PointArray.full pts_pre n_pre pts_l_low_level_spec )
-  **  (PointArray.undef_full hull_pre (2 * n_pre ) )
-|--
-  “ (1 <= INT_MAX) ” 
-  &&  “ ((INT_MIN) <= 1) ”
-.
-
-Definition andrew_monotone_chain_safety_wit_4 := 
-forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list Point) -> Prop))) (pts_l_low_level_spec: (@list Point)) (pts_out: (@list Point)) (PreH1 : ((Zlength (pts_out)) = n_pre)) (PreH2 : (points_in_bound pts_out )) (PreH3 : (point_permutation pts_l_low_level_spec pts_out )) (PreH4 : (point_same_outside_range pts_l_low_level_spec pts_out 0 (n_pre - 1 ) )) (PreH5 : (point_xy_sorted_range pts_out 0 (n_pre - 1 ) )) (PreH6 : (2 <= n_pre)) (PreH7 : (n_pre <= 50000)) (PreH8 : ((Zlength (pts_l_low_level_spec)) = n_pre)) (PreH9 : (points_in_bound pts_l_low_level_spec )) (PreH10 : (points_not_all_same pts_l_low_level_spec )) (PreH11 : (safeExec (equiv (empty_point_stack)) (andrew_monotone_chain_m (pts_l_low_level_spec)) X_low_level_spec )) ,
+Definition andrew_build_from_sorted_safety_wit_1 := 
+forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list Point) -> Prop))) (pts_l_low_level_spec: (@list Point)) (PreH1 : (2 <= n_pre)) (PreH2 : (n_pre <= 50000)) (PreH3 : ((Zlength (pts_l_low_level_spec)) = n_pre)) (PreH4 : (points_in_bound pts_l_low_level_spec )) (PreH5 : (points_not_all_same pts_l_low_level_spec )) (PreH6 : (point_xy_sorted pts_l_low_level_spec )) (PreH7 : (safeExec (equiv (empty_point_stack)) (andrew_monotone_chain_m (pts_l_low_level_spec)) X_low_level_spec )) ,
   ((( &( "k" ) )) # Int  |->_)
-  **  (PointArray.full pts_pre n_pre pts_out )
   **  ((( &( "hull" ) )) # Ptr  |-> hull_pre)
   **  ((( &( "n" ) )) # Int  |-> n_pre)
   **  ((( &( "pts" ) )) # Ptr  |-> pts_pre)
+  **  (PointArray.full pts_pre n_pre pts_l_low_level_spec )
   **  (PointArray.undef_full hull_pre (2 * n_pre ) )
 |--
   “ (0 <= INT_MAX) ” 
   &&  “ ((INT_MIN) <= 0) ”
 .
 
-Definition andrew_monotone_chain_safety_wit_5 := 
-forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list Point) -> Prop))) (pts_l_low_level_spec: (@list Point)) (pts_out: (@list Point)) (PreH1 : ((Zlength (pts_out)) = n_pre)) (PreH2 : (points_in_bound pts_out )) (PreH3 : (point_permutation pts_l_low_level_spec pts_out )) (PreH4 : (point_same_outside_range pts_l_low_level_spec pts_out 0 (n_pre - 1 ) )) (PreH5 : (point_xy_sorted_range pts_out 0 (n_pre - 1 ) )) (PreH6 : (2 <= n_pre)) (PreH7 : (n_pre <= 50000)) (PreH8 : ((Zlength (pts_l_low_level_spec)) = n_pre)) (PreH9 : (points_in_bound pts_l_low_level_spec )) (PreH10 : (points_not_all_same pts_l_low_level_spec )) (PreH11 : (safeExec (equiv (empty_point_stack)) (andrew_monotone_chain_m (pts_l_low_level_spec)) X_low_level_spec )) ,
+Definition andrew_build_from_sorted_safety_wit_2 := 
+forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list Point) -> Prop))) (pts_l_low_level_spec: (@list Point)) (PreH1 : (2 <= n_pre)) (PreH2 : (n_pre <= 50000)) (PreH3 : ((Zlength (pts_l_low_level_spec)) = n_pre)) (PreH4 : (points_in_bound pts_l_low_level_spec )) (PreH5 : (points_not_all_same pts_l_low_level_spec )) (PreH6 : (point_xy_sorted pts_l_low_level_spec )) (PreH7 : (safeExec (equiv (empty_point_stack)) (andrew_monotone_chain_m (pts_l_low_level_spec)) X_low_level_spec )) ,
   ((( &( "i" ) )) # Int  |->_)
   **  ((( &( "k" ) )) # Int  |-> 0)
-  **  (PointArray.full pts_pre n_pre pts_out )
   **  ((( &( "hull" ) )) # Ptr  |-> hull_pre)
   **  ((( &( "n" ) )) # Int  |-> n_pre)
   **  ((( &( "pts" ) )) # Ptr  |-> pts_pre)
+  **  (PointArray.full pts_pre n_pre pts_l_low_level_spec )
   **  (PointArray.undef_full hull_pre (2 * n_pre ) )
 |--
   “ (0 <= INT_MAX) ” 
   &&  “ ((INT_MIN) <= 0) ”
 .
 
-Definition andrew_monotone_chain_safety_wit_6 := 
-forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list Point) -> Prop))) (pts_l_low_level_spec: (@list Point)) (lower: (@list Point)) (pts_sorted: (@list Point)) (k: Z) (i: Z)  __default_Point (PreH1 : (0 <= i)) (PreH2 : (i < n_pre)) (PreH3 : (0 <= k)) (PreH4 : (k <= i)) (PreH5 : (2 <= n_pre)) (PreH6 : (n_pre <= 50000)) (PreH7 : ((Zlength (pts_l_low_level_spec)) = n_pre)) (PreH8 : ((Zlength (pts_sorted)) = n_pre)) (PreH9 : (points_in_bound pts_sorted )) (PreH10 : (point_permutation pts_l_low_level_spec pts_sorted )) (PreH11 : (point_xy_sorted pts_sorted )) (PreH12 : (point_in_bound (Znth i pts_sorted __default_Point) )) (PreH13 : (andrew_lower_scan_inv pts_sorted lower i k )) (PreH14 : (safeExec (equiv (lower)) (build_chain ((sublist (i) (n_pre) (pts_sorted)))) X_low_level_spec )) ,
+Definition andrew_build_from_sorted_safety_wit_3 := 
+forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list Point) -> Prop))) (pts_l_low_level_spec: (@list Point)) (lower: (@list Point)) (pts_sorted: (@list Point)) (k: Z) (i: Z)  __default_Point (PreH1 : (0 <= i)) (PreH2 : (i < n_pre)) (PreH3 : (0 <= k)) (PreH4 : (k <= i)) (PreH5 : ((0 < i) -> (1 <= k))) (PreH6 : (2 <= n_pre)) (PreH7 : (n_pre <= 50000)) (PreH8 : ((Zlength (pts_l_low_level_spec)) = n_pre)) (PreH9 : ((Zlength (pts_sorted)) = n_pre)) (PreH10 : (points_in_bound pts_sorted )) (PreH11 : (point_permutation pts_l_low_level_spec pts_sorted )) (PreH12 : (point_xy_sorted pts_sorted )) (PreH13 : (point_in_bound (Znth i pts_sorted __default_Point) )) (PreH14 : (andrew_lower_scan_inv pts_sorted lower i k )) (PreH15 : (andrew_lower_remaining_cont pts_sorted lower i X_low_level_spec )) ,
   ((( &( "i" ) )) # Int  |-> i)
   **  ((( &( "n" ) )) # Int  |-> n_pre)
   **  ((( &( "k" ) )) # Int  |-> k)
@@ -2069,8 +2033,8 @@ forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list
   &&  “ ((INT_MIN) <= 2) ”
 .
 
-Definition andrew_monotone_chain_safety_wit_7 := 
-forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list Point) -> Prop))) (pts_l_low_level_spec: (@list Point)) (lower: (@list Point)) (pts_sorted: (@list Point)) (k: Z) (i: Z)  __default_Point (PreH1 : (k >= 2)) (PreH2 : (0 <= i)) (PreH3 : (i < n_pre)) (PreH4 : (0 <= k)) (PreH5 : (k <= i)) (PreH6 : (2 <= n_pre)) (PreH7 : (n_pre <= 50000)) (PreH8 : ((Zlength (pts_l_low_level_spec)) = n_pre)) (PreH9 : ((Zlength (pts_sorted)) = n_pre)) (PreH10 : (points_in_bound pts_sorted )) (PreH11 : (point_permutation pts_l_low_level_spec pts_sorted )) (PreH12 : (point_xy_sorted pts_sorted )) (PreH13 : (point_in_bound (Znth i pts_sorted __default_Point) )) (PreH14 : (andrew_lower_scan_inv pts_sorted lower i k )) (PreH15 : (safeExec (equiv (lower)) (build_chain ((sublist (i) (n_pre) (pts_sorted)))) X_low_level_spec )) ,
+Definition andrew_build_from_sorted_safety_wit_4 := 
+forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list Point) -> Prop))) (pts_l_low_level_spec: (@list Point)) (lower: (@list Point)) (pts_sorted: (@list Point)) (k: Z) (i: Z)  __default_Point (PreH1 : (k >= 2)) (PreH2 : (0 <= i)) (PreH3 : (i < n_pre)) (PreH4 : (0 <= k)) (PreH5 : (k <= i)) (PreH6 : ((0 < i) -> (1 <= k))) (PreH7 : (2 <= n_pre)) (PreH8 : (n_pre <= 50000)) (PreH9 : ((Zlength (pts_l_low_level_spec)) = n_pre)) (PreH10 : ((Zlength (pts_sorted)) = n_pre)) (PreH11 : (points_in_bound pts_sorted )) (PreH12 : (point_permutation pts_l_low_level_spec pts_sorted )) (PreH13 : (point_xy_sorted pts_sorted )) (PreH14 : (point_in_bound (Znth i pts_sorted __default_Point) )) (PreH15 : (andrew_lower_scan_inv pts_sorted lower i k )) (PreH16 : (andrew_lower_remaining_cont pts_sorted lower i X_low_level_spec )) ,
   (PointArray.seg hull_pre 0 k lower )
   **  ((( &( "i" ) )) # Int  |-> i)
   **  ((( &( "n" ) )) # Int  |-> n_pre)
@@ -2084,8 +2048,8 @@ forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list
   &&  “ ((INT_MIN) <= (k - 1 )) ”
 .
 
-Definition andrew_monotone_chain_safety_wit_8 := 
-forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list Point) -> Prop))) (pts_l_low_level_spec: (@list Point)) (lower: (@list Point)) (pts_sorted: (@list Point)) (k: Z) (i: Z)  __default_Point (PreH1 : (k >= 2)) (PreH2 : (0 <= i)) (PreH3 : (i < n_pre)) (PreH4 : (0 <= k)) (PreH5 : (k <= i)) (PreH6 : (2 <= n_pre)) (PreH7 : (n_pre <= 50000)) (PreH8 : ((Zlength (pts_l_low_level_spec)) = n_pre)) (PreH9 : ((Zlength (pts_sorted)) = n_pre)) (PreH10 : (points_in_bound pts_sorted )) (PreH11 : (point_permutation pts_l_low_level_spec pts_sorted )) (PreH12 : (point_xy_sorted pts_sorted )) (PreH13 : (point_in_bound (Znth i pts_sorted __default_Point) )) (PreH14 : (andrew_lower_scan_inv pts_sorted lower i k )) (PreH15 : (safeExec (equiv (lower)) (build_chain ((sublist (i) (n_pre) (pts_sorted)))) X_low_level_spec )) ,
+Definition andrew_build_from_sorted_safety_wit_5 := 
+forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list Point) -> Prop))) (pts_l_low_level_spec: (@list Point)) (lower: (@list Point)) (pts_sorted: (@list Point)) (k: Z) (i: Z)  __default_Point (PreH1 : (k >= 2)) (PreH2 : (0 <= i)) (PreH3 : (i < n_pre)) (PreH4 : (0 <= k)) (PreH5 : (k <= i)) (PreH6 : ((0 < i) -> (1 <= k))) (PreH7 : (2 <= n_pre)) (PreH8 : (n_pre <= 50000)) (PreH9 : ((Zlength (pts_l_low_level_spec)) = n_pre)) (PreH10 : ((Zlength (pts_sorted)) = n_pre)) (PreH11 : (points_in_bound pts_sorted )) (PreH12 : (point_permutation pts_l_low_level_spec pts_sorted )) (PreH13 : (point_xy_sorted pts_sorted )) (PreH14 : (point_in_bound (Znth i pts_sorted __default_Point) )) (PreH15 : (andrew_lower_scan_inv pts_sorted lower i k )) (PreH16 : (andrew_lower_remaining_cont pts_sorted lower i X_low_level_spec )) ,
   (PointArray.seg hull_pre 0 k lower )
   **  ((( &( "i" ) )) # Int  |-> i)
   **  ((( &( "n" ) )) # Int  |-> n_pre)
@@ -2099,8 +2063,8 @@ forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list
   &&  “ ((INT_MIN) <= (k - 1 )) ”
 .
 
-Definition andrew_monotone_chain_safety_wit_9 := 
-forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list Point) -> Prop))) (pts_l_low_level_spec: (@list Point)) (lower: (@list Point)) (pts_sorted: (@list Point)) (k: Z) (i: Z)  __default_Point (PreH1 : (k >= 2)) (PreH2 : (0 <= i)) (PreH3 : (i < n_pre)) (PreH4 : (0 <= k)) (PreH5 : (k <= i)) (PreH6 : (2 <= n_pre)) (PreH7 : (n_pre <= 50000)) (PreH8 : ((Zlength (pts_l_low_level_spec)) = n_pre)) (PreH9 : ((Zlength (pts_sorted)) = n_pre)) (PreH10 : (points_in_bound pts_sorted )) (PreH11 : (point_permutation pts_l_low_level_spec pts_sorted )) (PreH12 : (point_xy_sorted pts_sorted )) (PreH13 : (point_in_bound (Znth i pts_sorted __default_Point) )) (PreH14 : (andrew_lower_scan_inv pts_sorted lower i k )) (PreH15 : (safeExec (equiv (lower)) (build_chain ((sublist (i) (n_pre) (pts_sorted)))) X_low_level_spec )) ,
+Definition andrew_build_from_sorted_safety_wit_6 := 
+forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list Point) -> Prop))) (pts_l_low_level_spec: (@list Point)) (lower: (@list Point)) (pts_sorted: (@list Point)) (k: Z) (i: Z)  __default_Point (PreH1 : (k >= 2)) (PreH2 : (0 <= i)) (PreH3 : (i < n_pre)) (PreH4 : (0 <= k)) (PreH5 : (k <= i)) (PreH6 : ((0 < i) -> (1 <= k))) (PreH7 : (2 <= n_pre)) (PreH8 : (n_pre <= 50000)) (PreH9 : ((Zlength (pts_l_low_level_spec)) = n_pre)) (PreH10 : ((Zlength (pts_sorted)) = n_pre)) (PreH11 : (points_in_bound pts_sorted )) (PreH12 : (point_permutation pts_l_low_level_spec pts_sorted )) (PreH13 : (point_xy_sorted pts_sorted )) (PreH14 : (point_in_bound (Znth i pts_sorted __default_Point) )) (PreH15 : (andrew_lower_scan_inv pts_sorted lower i k )) (PreH16 : (andrew_lower_remaining_cont pts_sorted lower i X_low_level_spec )) ,
   (PointArray.seg hull_pre 0 k lower )
   **  ((( &( "i" ) )) # Int  |-> i)
   **  ((( &( "n" ) )) # Int  |-> n_pre)
@@ -2114,8 +2078,8 @@ forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list
   &&  “ ((INT_MIN) <= (k - 2 )) ”
 .
 
-Definition andrew_monotone_chain_safety_wit_10 := 
-forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list Point) -> Prop))) (pts_l_low_level_spec: (@list Point)) (lower: (@list Point)) (pts_sorted: (@list Point)) (k: Z) (i: Z)  __default_Point (PreH1 : (k >= 2)) (PreH2 : (0 <= i)) (PreH3 : (i < n_pre)) (PreH4 : (0 <= k)) (PreH5 : (k <= i)) (PreH6 : (2 <= n_pre)) (PreH7 : (n_pre <= 50000)) (PreH8 : ((Zlength (pts_l_low_level_spec)) = n_pre)) (PreH9 : ((Zlength (pts_sorted)) = n_pre)) (PreH10 : (points_in_bound pts_sorted )) (PreH11 : (point_permutation pts_l_low_level_spec pts_sorted )) (PreH12 : (point_xy_sorted pts_sorted )) (PreH13 : (point_in_bound (Znth i pts_sorted __default_Point) )) (PreH14 : (andrew_lower_scan_inv pts_sorted lower i k )) (PreH15 : (safeExec (equiv (lower)) (build_chain ((sublist (i) (n_pre) (pts_sorted)))) X_low_level_spec )) ,
+Definition andrew_build_from_sorted_safety_wit_7 := 
+forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list Point) -> Prop))) (pts_l_low_level_spec: (@list Point)) (lower: (@list Point)) (pts_sorted: (@list Point)) (k: Z) (i: Z)  __default_Point (PreH1 : (k >= 2)) (PreH2 : (0 <= i)) (PreH3 : (i < n_pre)) (PreH4 : (0 <= k)) (PreH5 : (k <= i)) (PreH6 : ((0 < i) -> (1 <= k))) (PreH7 : (2 <= n_pre)) (PreH8 : (n_pre <= 50000)) (PreH9 : ((Zlength (pts_l_low_level_spec)) = n_pre)) (PreH10 : ((Zlength (pts_sorted)) = n_pre)) (PreH11 : (points_in_bound pts_sorted )) (PreH12 : (point_permutation pts_l_low_level_spec pts_sorted )) (PreH13 : (point_xy_sorted pts_sorted )) (PreH14 : (point_in_bound (Znth i pts_sorted __default_Point) )) (PreH15 : (andrew_lower_scan_inv pts_sorted lower i k )) (PreH16 : (andrew_lower_remaining_cont pts_sorted lower i X_low_level_spec )) ,
   ((( &( "i" ) )) # Int  |-> i)
   **  ((( &( "n" ) )) # Int  |-> n_pre)
   **  ((( &( "k" ) )) # Int  |-> k)
@@ -2129,8 +2093,8 @@ forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list
   &&  “ ((INT_MIN) <= (k - 2 )) ”
 .
 
-Definition andrew_monotone_chain_safety_wit_11 := 
-forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list Point) -> Prop))) (pts_l_low_level_spec: (@list Point)) (lower: (@list Point)) (pts_sorted: (@list Point)) (k: Z) (i: Z)  __default_Point (PreH1 : (k >= 2)) (PreH2 : (0 <= i)) (PreH3 : (i < n_pre)) (PreH4 : (0 <= k)) (PreH5 : (k <= i)) (PreH6 : (2 <= n_pre)) (PreH7 : (n_pre <= 50000)) (PreH8 : ((Zlength (pts_l_low_level_spec)) = n_pre)) (PreH9 : ((Zlength (pts_sorted)) = n_pre)) (PreH10 : (points_in_bound pts_sorted )) (PreH11 : (point_permutation pts_l_low_level_spec pts_sorted )) (PreH12 : (point_xy_sorted pts_sorted )) (PreH13 : (point_in_bound (Znth i pts_sorted __default_Point) )) (PreH14 : (andrew_lower_scan_inv pts_sorted lower i k )) (PreH15 : (safeExec (equiv (lower)) (build_chain ((sublist (i) (n_pre) (pts_sorted)))) X_low_level_spec )) ,
+Definition andrew_build_from_sorted_safety_wit_8 := 
+forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list Point) -> Prop))) (pts_l_low_level_spec: (@list Point)) (lower: (@list Point)) (pts_sorted: (@list Point)) (k: Z) (i: Z)  __default_Point (PreH1 : (k >= 2)) (PreH2 : (0 <= i)) (PreH3 : (i < n_pre)) (PreH4 : (0 <= k)) (PreH5 : (k <= i)) (PreH6 : ((0 < i) -> (1 <= k))) (PreH7 : (2 <= n_pre)) (PreH8 : (n_pre <= 50000)) (PreH9 : ((Zlength (pts_l_low_level_spec)) = n_pre)) (PreH10 : ((Zlength (pts_sorted)) = n_pre)) (PreH11 : (points_in_bound pts_sorted )) (PreH12 : (point_permutation pts_l_low_level_spec pts_sorted )) (PreH13 : (point_xy_sorted pts_sorted )) (PreH14 : (point_in_bound (Znth i pts_sorted __default_Point) )) (PreH15 : (andrew_lower_scan_inv pts_sorted lower i k )) (PreH16 : (andrew_lower_remaining_cont pts_sorted lower i X_low_level_spec )) ,
   ((( &( "i" ) )) # Int  |-> i)
   **  ((( &( "n" ) )) # Int  |-> n_pre)
   **  ((( &( "k" ) )) # Int  |-> k)
@@ -2144,8 +2108,8 @@ forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list
   &&  “ ((INT_MIN) <= 2) ”
 .
 
-Definition andrew_monotone_chain_safety_wit_12 := 
-forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list Point) -> Prop))) (pts_l_low_level_spec: (@list Point)) (lower: (@list Point)) (pts_sorted: (@list Point)) (k: Z) (i: Z)  __default_Point (PreH1 : (k >= 2)) (PreH2 : (0 <= i)) (PreH3 : (i < n_pre)) (PreH4 : (0 <= k)) (PreH5 : (k <= i)) (PreH6 : (2 <= n_pre)) (PreH7 : (n_pre <= 50000)) (PreH8 : ((Zlength (pts_l_low_level_spec)) = n_pre)) (PreH9 : ((Zlength (pts_sorted)) = n_pre)) (PreH10 : (points_in_bound pts_sorted )) (PreH11 : (point_permutation pts_l_low_level_spec pts_sorted )) (PreH12 : (point_xy_sorted pts_sorted )) (PreH13 : (point_in_bound (Znth i pts_sorted __default_Point) )) (PreH14 : (andrew_lower_scan_inv pts_sorted lower i k )) (PreH15 : (safeExec (equiv (lower)) (build_chain ((sublist (i) (n_pre) (pts_sorted)))) X_low_level_spec )) ,
+Definition andrew_build_from_sorted_safety_wit_9 := 
+forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list Point) -> Prop))) (pts_l_low_level_spec: (@list Point)) (lower: (@list Point)) (pts_sorted: (@list Point)) (k: Z) (i: Z)  __default_Point (PreH1 : (k >= 2)) (PreH2 : (0 <= i)) (PreH3 : (i < n_pre)) (PreH4 : (0 <= k)) (PreH5 : (k <= i)) (PreH6 : ((0 < i) -> (1 <= k))) (PreH7 : (2 <= n_pre)) (PreH8 : (n_pre <= 50000)) (PreH9 : ((Zlength (pts_l_low_level_spec)) = n_pre)) (PreH10 : ((Zlength (pts_sorted)) = n_pre)) (PreH11 : (points_in_bound pts_sorted )) (PreH12 : (point_permutation pts_l_low_level_spec pts_sorted )) (PreH13 : (point_xy_sorted pts_sorted )) (PreH14 : (point_in_bound (Znth i pts_sorted __default_Point) )) (PreH15 : (andrew_lower_scan_inv pts_sorted lower i k )) (PreH16 : (andrew_lower_remaining_cont pts_sorted lower i X_low_level_spec )) ,
   (PointArray.seg hull_pre 0 k lower )
   **  ((( &( "i" ) )) # Int  |-> i)
   **  ((( &( "n" ) )) # Int  |-> n_pre)
@@ -2159,8 +2123,8 @@ forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list
   &&  “ ((INT_MIN) <= 2) ”
 .
 
-Definition andrew_monotone_chain_safety_wit_13 := 
-forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list Point) -> Prop))) (pts_l_low_level_spec: (@list Point)) (lower: (@list Point)) (pts_sorted: (@list Point)) (k: Z) (i: Z)  __default_Point (PreH1 : (k >= 2)) (PreH2 : (0 <= i)) (PreH3 : (i < n_pre)) (PreH4 : (0 <= k)) (PreH5 : (k <= i)) (PreH6 : (2 <= n_pre)) (PreH7 : (n_pre <= 50000)) (PreH8 : ((Zlength (pts_l_low_level_spec)) = n_pre)) (PreH9 : ((Zlength (pts_sorted)) = n_pre)) (PreH10 : (points_in_bound pts_sorted )) (PreH11 : (point_permutation pts_l_low_level_spec pts_sorted )) (PreH12 : (point_xy_sorted pts_sorted )) (PreH13 : (point_in_bound (Znth i pts_sorted __default_Point) )) (PreH14 : (andrew_lower_scan_inv pts_sorted lower i k )) (PreH15 : (safeExec (equiv (lower)) (build_chain ((sublist (i) (n_pre) (pts_sorted)))) X_low_level_spec )) ,
+Definition andrew_build_from_sorted_safety_wit_10 := 
+forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list Point) -> Prop))) (pts_l_low_level_spec: (@list Point)) (lower: (@list Point)) (pts_sorted: (@list Point)) (k: Z) (i: Z)  __default_Point (PreH1 : (k >= 2)) (PreH2 : (0 <= i)) (PreH3 : (i < n_pre)) (PreH4 : (0 <= k)) (PreH5 : (k <= i)) (PreH6 : ((0 < i) -> (1 <= k))) (PreH7 : (2 <= n_pre)) (PreH8 : (n_pre <= 50000)) (PreH9 : ((Zlength (pts_l_low_level_spec)) = n_pre)) (PreH10 : ((Zlength (pts_sorted)) = n_pre)) (PreH11 : (points_in_bound pts_sorted )) (PreH12 : (point_permutation pts_l_low_level_spec pts_sorted )) (PreH13 : (point_xy_sorted pts_sorted )) (PreH14 : (point_in_bound (Znth i pts_sorted __default_Point) )) (PreH15 : (andrew_lower_scan_inv pts_sorted lower i k )) (PreH16 : (andrew_lower_remaining_cont pts_sorted lower i X_low_level_spec )) ,
   (PointArray.seg hull_pre 0 k lower )
   **  ((( &( "i" ) )) # Int  |-> i)
   **  ((( &( "n" ) )) # Int  |-> n_pre)
@@ -2174,8 +2138,8 @@ forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list
   &&  “ ((INT_MIN) <= 1) ”
 .
 
-Definition andrew_monotone_chain_safety_wit_14 := 
-forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list Point) -> Prop))) (pts_l_low_level_spec: (@list Point)) (lower: (@list Point)) (pts_sorted: (@list Point)) (k: Z) (i: Z)  __default_Point (PreH1 : (k >= 2)) (PreH2 : (0 <= i)) (PreH3 : (i < n_pre)) (PreH4 : (0 <= k)) (PreH5 : (k <= i)) (PreH6 : (2 <= n_pre)) (PreH7 : (n_pre <= 50000)) (PreH8 : ((Zlength (pts_l_low_level_spec)) = n_pre)) (PreH9 : ((Zlength (pts_sorted)) = n_pre)) (PreH10 : (points_in_bound pts_sorted )) (PreH11 : (point_permutation pts_l_low_level_spec pts_sorted )) (PreH12 : (point_xy_sorted pts_sorted )) (PreH13 : (point_in_bound (Znth i pts_sorted __default_Point) )) (PreH14 : (andrew_lower_scan_inv pts_sorted lower i k )) (PreH15 : (safeExec (equiv (lower)) (build_chain ((sublist (i) (n_pre) (pts_sorted)))) X_low_level_spec )) ,
+Definition andrew_build_from_sorted_safety_wit_11 := 
+forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list Point) -> Prop))) (pts_l_low_level_spec: (@list Point)) (lower: (@list Point)) (pts_sorted: (@list Point)) (k: Z) (i: Z)  __default_Point (PreH1 : (k >= 2)) (PreH2 : (0 <= i)) (PreH3 : (i < n_pre)) (PreH4 : (0 <= k)) (PreH5 : (k <= i)) (PreH6 : ((0 < i) -> (1 <= k))) (PreH7 : (2 <= n_pre)) (PreH8 : (n_pre <= 50000)) (PreH9 : ((Zlength (pts_l_low_level_spec)) = n_pre)) (PreH10 : ((Zlength (pts_sorted)) = n_pre)) (PreH11 : (points_in_bound pts_sorted )) (PreH12 : (point_permutation pts_l_low_level_spec pts_sorted )) (PreH13 : (point_xy_sorted pts_sorted )) (PreH14 : (point_in_bound (Znth i pts_sorted __default_Point) )) (PreH15 : (andrew_lower_scan_inv pts_sorted lower i k )) (PreH16 : (andrew_lower_remaining_cont pts_sorted lower i X_low_level_spec )) ,
   (PointArray.seg hull_pre 0 k lower )
   **  ((( &( "i" ) )) # Int  |-> i)
   **  ((( &( "n" ) )) # Int  |-> n_pre)
@@ -2189,8 +2153,8 @@ forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list
   &&  “ ((INT_MIN) <= 1) ”
 .
 
-Definition andrew_monotone_chain_safety_wit_15 := 
-forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list Point) -> Prop))) (pts_l_low_level_spec: (@list Point)) (lower: (@list Point)) (pts_sorted: (@list Point)) (k: Z) (i: Z) (retval: Z)  __default_Point (PreH1 : (retval = (point_cross_by_value ((point_x ((Znth ((k - 2 ) - 0 ) lower __default_Point)))) ((point_y ((Znth ((k - 2 ) - 0 ) lower __default_Point)))) ((point_x ((Znth ((k - 1 ) - 0 ) lower __default_Point)))) ((point_y ((Znth ((k - 1 ) - 0 ) lower __default_Point)))) ((point_x ((Znth i pts_sorted __default_Point)))) ((point_y ((Znth i pts_sorted __default_Point))))))) (PreH2 : (k >= 2)) (PreH3 : (0 <= i)) (PreH4 : (i < n_pre)) (PreH5 : (0 <= k)) (PreH6 : (k <= i)) (PreH7 : (2 <= n_pre)) (PreH8 : (n_pre <= 50000)) (PreH9 : ((Zlength (pts_l_low_level_spec)) = n_pre)) (PreH10 : ((Zlength (pts_sorted)) = n_pre)) (PreH11 : (points_in_bound pts_sorted )) (PreH12 : (point_permutation pts_l_low_level_spec pts_sorted )) (PreH13 : (point_xy_sorted pts_sorted )) (PreH14 : (point_in_bound (Znth i pts_sorted __default_Point) )) (PreH15 : (andrew_lower_scan_inv pts_sorted lower i k )) (PreH16 : (safeExec (equiv (lower)) (build_chain ((sublist (i) (n_pre) (pts_sorted)))) X_low_level_spec )) ,
+Definition andrew_build_from_sorted_safety_wit_12 := 
+forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list Point) -> Prop))) (pts_l_low_level_spec: (@list Point)) (lower: (@list Point)) (pts_sorted: (@list Point)) (k: Z) (i: Z) (retval: Z)  __default_Point (PreH1 : (retval = (point_cross_by_value ((point_x ((Znth ((k - 2 ) - 0 ) lower __default_Point)))) ((point_y ((Znth ((k - 2 ) - 0 ) lower __default_Point)))) ((point_x ((Znth ((k - 1 ) - 0 ) lower __default_Point)))) ((point_y ((Znth ((k - 1 ) - 0 ) lower __default_Point)))) ((point_x ((Znth i pts_sorted __default_Point)))) ((point_y ((Znth i pts_sorted __default_Point))))))) (PreH2 : (k >= 2)) (PreH3 : (0 <= i)) (PreH4 : (i < n_pre)) (PreH5 : (0 <= k)) (PreH6 : (k <= i)) (PreH7 : ((0 < i) -> (1 <= k))) (PreH8 : (2 <= n_pre)) (PreH9 : (n_pre <= 50000)) (PreH10 : ((Zlength (pts_l_low_level_spec)) = n_pre)) (PreH11 : ((Zlength (pts_sorted)) = n_pre)) (PreH12 : (points_in_bound pts_sorted )) (PreH13 : (point_permutation pts_l_low_level_spec pts_sorted )) (PreH14 : (point_xy_sorted pts_sorted )) (PreH15 : (point_in_bound (Znth i pts_sorted __default_Point) )) (PreH16 : (andrew_lower_scan_inv pts_sorted lower i k )) (PreH17 : (andrew_lower_remaining_cont pts_sorted lower i X_low_level_spec )) ,
   (PointArray.full pts_pre n_pre pts_sorted )
   **  (PointArray.seg hull_pre 0 k lower )
   **  ((( &( "i" ) )) # Int  |-> i)
@@ -2204,8 +2168,8 @@ forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list
   &&  “ ((INT_MIN) <= 0) ”
 .
 
-Definition andrew_monotone_chain_safety_wit_16 := 
-forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list Point) -> Prop))) (pts_l_low_level_spec: (@list Point)) (lower: (@list Point)) (pts_sorted: (@list Point)) (k: Z) (i: Z) (retval: Z)  __default_Point (PreH1 : (retval <= 0)) (PreH2 : (retval = (point_cross_by_value ((point_x ((Znth ((k - 2 ) - 0 ) lower __default_Point)))) ((point_y ((Znth ((k - 2 ) - 0 ) lower __default_Point)))) ((point_x ((Znth ((k - 1 ) - 0 ) lower __default_Point)))) ((point_y ((Znth ((k - 1 ) - 0 ) lower __default_Point)))) ((point_x ((Znth i pts_sorted __default_Point)))) ((point_y ((Znth i pts_sorted __default_Point))))))) (PreH3 : (k >= 2)) (PreH4 : (0 <= i)) (PreH5 : (i < n_pre)) (PreH6 : (0 <= k)) (PreH7 : (k <= i)) (PreH8 : (2 <= n_pre)) (PreH9 : (n_pre <= 50000)) (PreH10 : ((Zlength (pts_l_low_level_spec)) = n_pre)) (PreH11 : ((Zlength (pts_sorted)) = n_pre)) (PreH12 : (points_in_bound pts_sorted )) (PreH13 : (point_permutation pts_l_low_level_spec pts_sorted )) (PreH14 : (point_xy_sorted pts_sorted )) (PreH15 : (point_in_bound (Znth i pts_sorted __default_Point) )) (PreH16 : (andrew_lower_scan_inv pts_sorted lower i k )) (PreH17 : (safeExec (equiv (lower)) (build_chain ((sublist (i) (n_pre) (pts_sorted)))) X_low_level_spec )) ,
+Definition andrew_build_from_sorted_safety_wit_13 := 
+forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list Point) -> Prop))) (pts_l_low_level_spec: (@list Point)) (lower: (@list Point)) (pts_sorted: (@list Point)) (k: Z) (i: Z) (retval: Z)  __default_Point (PreH1 : (retval <= 0)) (PreH2 : (retval = (point_cross_by_value ((point_x ((Znth ((k - 2 ) - 0 ) lower __default_Point)))) ((point_y ((Znth ((k - 2 ) - 0 ) lower __default_Point)))) ((point_x ((Znth ((k - 1 ) - 0 ) lower __default_Point)))) ((point_y ((Znth ((k - 1 ) - 0 ) lower __default_Point)))) ((point_x ((Znth i pts_sorted __default_Point)))) ((point_y ((Znth i pts_sorted __default_Point))))))) (PreH3 : (k >= 2)) (PreH4 : (0 <= i)) (PreH5 : (i < n_pre)) (PreH6 : (0 <= k)) (PreH7 : (k <= i)) (PreH8 : ((0 < i) -> (1 <= k))) (PreH9 : (2 <= n_pre)) (PreH10 : (n_pre <= 50000)) (PreH11 : ((Zlength (pts_l_low_level_spec)) = n_pre)) (PreH12 : ((Zlength (pts_sorted)) = n_pre)) (PreH13 : (points_in_bound pts_sorted )) (PreH14 : (point_permutation pts_l_low_level_spec pts_sorted )) (PreH15 : (point_xy_sorted pts_sorted )) (PreH16 : (point_in_bound (Znth i pts_sorted __default_Point) )) (PreH17 : (andrew_lower_scan_inv pts_sorted lower i k )) (PreH18 : (andrew_lower_remaining_cont pts_sorted lower i X_low_level_spec )) ,
   (PointArray.full pts_pre n_pre pts_sorted )
   **  (PointArray.seg hull_pre 0 k lower )
   **  ((( &( "i" ) )) # Int  |-> i)
@@ -2219,8 +2183,8 @@ forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list
   &&  “ ((INT_MIN) <= (k - 1 )) ”
 .
 
-Definition andrew_monotone_chain_safety_wit_17 := 
-forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list Point) -> Prop))) (pts_l_low_level_spec: (@list Point)) (lower: (@list Point)) (pts_sorted: (@list Point)) (k: Z) (i: Z)  __default_Point (PreH1 : (k < 2)) (PreH2 : (0 <= i)) (PreH3 : (i < n_pre)) (PreH4 : (0 <= k)) (PreH5 : (k <= i)) (PreH6 : (2 <= n_pre)) (PreH7 : (n_pre <= 50000)) (PreH8 : ((Zlength (pts_l_low_level_spec)) = n_pre)) (PreH9 : ((Zlength (pts_sorted)) = n_pre)) (PreH10 : (points_in_bound pts_sorted )) (PreH11 : (point_permutation pts_l_low_level_spec pts_sorted )) (PreH12 : (point_xy_sorted pts_sorted )) (PreH13 : (point_in_bound (Znth i pts_sorted __default_Point) )) (PreH14 : (andrew_lower_scan_inv pts_sorted lower i k )) (PreH15 : (safeExec (equiv (lower)) (build_chain ((sublist (i) (n_pre) (pts_sorted)))) X_low_level_spec )) ,
+Definition andrew_build_from_sorted_safety_wit_14 := 
+forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list Point) -> Prop))) (pts_l_low_level_spec: (@list Point)) (lower: (@list Point)) (pts_sorted: (@list Point)) (k: Z) (i: Z)  __default_Point (PreH1 : (k < 2)) (PreH2 : (0 <= i)) (PreH3 : (i < n_pre)) (PreH4 : (0 <= k)) (PreH5 : (k <= i)) (PreH6 : ((0 < i) -> (1 <= k))) (PreH7 : (2 <= n_pre)) (PreH8 : (n_pre <= 50000)) (PreH9 : ((Zlength (pts_l_low_level_spec)) = n_pre)) (PreH10 : ((Zlength (pts_sorted)) = n_pre)) (PreH11 : (points_in_bound pts_sorted )) (PreH12 : (point_permutation pts_l_low_level_spec pts_sorted )) (PreH13 : (point_xy_sorted pts_sorted )) (PreH14 : (point_in_bound (Znth i pts_sorted __default_Point) )) (PreH15 : (andrew_lower_scan_inv pts_sorted lower i k )) (PreH16 : (andrew_lower_remaining_cont pts_sorted lower i X_low_level_spec )) ,
   (PointArray.full pts_pre n_pre pts_sorted )
   **  ((&(((hull_pre + (k * sizeof( "Point" ) ) ))  # "Point" ->ₛ "x")) # Int  |-> (point_x ((Znth i pts_sorted __default_Point))))
   **  (PointArray.undef_seg hull_pre (k + 1 ) (2 * n_pre ) )
@@ -2236,8 +2200,8 @@ forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list
   &&  “ ((INT_MIN) <= (k + 1 )) ”
 .
 
-Definition andrew_monotone_chain_safety_wit_18 := 
-forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list Point) -> Prop))) (pts_l_low_level_spec: (@list Point)) (lower: (@list Point)) (pts_sorted: (@list Point)) (k: Z) (i: Z) (retval: Z)  __default_Point (PreH1 : (retval > 0)) (PreH2 : (retval = (point_cross_by_value ((point_x ((Znth ((k - 2 ) - 0 ) lower __default_Point)))) ((point_y ((Znth ((k - 2 ) - 0 ) lower __default_Point)))) ((point_x ((Znth ((k - 1 ) - 0 ) lower __default_Point)))) ((point_y ((Znth ((k - 1 ) - 0 ) lower __default_Point)))) ((point_x ((Znth i pts_sorted __default_Point)))) ((point_y ((Znth i pts_sorted __default_Point))))))) (PreH3 : (k >= 2)) (PreH4 : (0 <= i)) (PreH5 : (i < n_pre)) (PreH6 : (0 <= k)) (PreH7 : (k <= i)) (PreH8 : (2 <= n_pre)) (PreH9 : (n_pre <= 50000)) (PreH10 : ((Zlength (pts_l_low_level_spec)) = n_pre)) (PreH11 : ((Zlength (pts_sorted)) = n_pre)) (PreH12 : (points_in_bound pts_sorted )) (PreH13 : (point_permutation pts_l_low_level_spec pts_sorted )) (PreH14 : (point_xy_sorted pts_sorted )) (PreH15 : (point_in_bound (Znth i pts_sorted __default_Point) )) (PreH16 : (andrew_lower_scan_inv pts_sorted lower i k )) (PreH17 : (safeExec (equiv (lower)) (build_chain ((sublist (i) (n_pre) (pts_sorted)))) X_low_level_spec )) ,
+Definition andrew_build_from_sorted_safety_wit_15 := 
+forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list Point) -> Prop))) (pts_l_low_level_spec: (@list Point)) (lower: (@list Point)) (pts_sorted: (@list Point)) (k: Z) (i: Z) (retval: Z)  __default_Point (PreH1 : (retval > 0)) (PreH2 : (retval = (point_cross_by_value ((point_x ((Znth ((k - 2 ) - 0 ) lower __default_Point)))) ((point_y ((Znth ((k - 2 ) - 0 ) lower __default_Point)))) ((point_x ((Znth ((k - 1 ) - 0 ) lower __default_Point)))) ((point_y ((Znth ((k - 1 ) - 0 ) lower __default_Point)))) ((point_x ((Znth i pts_sorted __default_Point)))) ((point_y ((Znth i pts_sorted __default_Point))))))) (PreH3 : (k >= 2)) (PreH4 : (0 <= i)) (PreH5 : (i < n_pre)) (PreH6 : (0 <= k)) (PreH7 : (k <= i)) (PreH8 : ((0 < i) -> (1 <= k))) (PreH9 : (2 <= n_pre)) (PreH10 : (n_pre <= 50000)) (PreH11 : ((Zlength (pts_l_low_level_spec)) = n_pre)) (PreH12 : ((Zlength (pts_sorted)) = n_pre)) (PreH13 : (points_in_bound pts_sorted )) (PreH14 : (point_permutation pts_l_low_level_spec pts_sorted )) (PreH15 : (point_xy_sorted pts_sorted )) (PreH16 : (point_in_bound (Znth i pts_sorted __default_Point) )) (PreH17 : (andrew_lower_scan_inv pts_sorted lower i k )) (PreH18 : (andrew_lower_remaining_cont pts_sorted lower i X_low_level_spec )) ,
   (PointArray.full pts_pre n_pre pts_sorted )
   **  ((&(((hull_pre + (k * sizeof( "Point" ) ) ))  # "Point" ->ₛ "x")) # Int  |-> (point_x ((Znth i pts_sorted __default_Point))))
   **  (PointArray.undef_seg hull_pre (k + 1 ) (2 * n_pre ) )
@@ -2253,8 +2217,8 @@ forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list
   &&  “ ((INT_MIN) <= (k + 1 )) ”
 .
 
-Definition andrew_monotone_chain_safety_wit_19 := 
-forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list Point) -> Prop))) (pts_l_low_level_spec: (@list Point)) (lower: (@list Point)) (pts_sorted: (@list Point)) (k: Z) (i: Z)  __default_Point (PreH1 : (k < 2)) (PreH2 : (0 <= i)) (PreH3 : (i < n_pre)) (PreH4 : (0 <= k)) (PreH5 : (k <= i)) (PreH6 : (2 <= n_pre)) (PreH7 : (n_pre <= 50000)) (PreH8 : ((Zlength (pts_l_low_level_spec)) = n_pre)) (PreH9 : ((Zlength (pts_sorted)) = n_pre)) (PreH10 : (points_in_bound pts_sorted )) (PreH11 : (point_permutation pts_l_low_level_spec pts_sorted )) (PreH12 : (point_xy_sorted pts_sorted )) (PreH13 : (point_in_bound (Znth i pts_sorted __default_Point) )) (PreH14 : (andrew_lower_scan_inv pts_sorted lower i k )) (PreH15 : (safeExec (equiv (lower)) (build_chain ((sublist (i) (n_pre) (pts_sorted)))) X_low_level_spec )) ,
+Definition andrew_build_from_sorted_safety_wit_16 := 
+forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list Point) -> Prop))) (pts_l_low_level_spec: (@list Point)) (lower: (@list Point)) (pts_sorted: (@list Point)) (k: Z) (i: Z)  __default_Point (PreH1 : (k < 2)) (PreH2 : (0 <= i)) (PreH3 : (i < n_pre)) (PreH4 : (0 <= k)) (PreH5 : (k <= i)) (PreH6 : ((0 < i) -> (1 <= k))) (PreH7 : (2 <= n_pre)) (PreH8 : (n_pre <= 50000)) (PreH9 : ((Zlength (pts_l_low_level_spec)) = n_pre)) (PreH10 : ((Zlength (pts_sorted)) = n_pre)) (PreH11 : (points_in_bound pts_sorted )) (PreH12 : (point_permutation pts_l_low_level_spec pts_sorted )) (PreH13 : (point_xy_sorted pts_sorted )) (PreH14 : (point_in_bound (Znth i pts_sorted __default_Point) )) (PreH15 : (andrew_lower_scan_inv pts_sorted lower i k )) (PreH16 : (andrew_lower_remaining_cont pts_sorted lower i X_low_level_spec )) ,
   (PointArray.full pts_pre n_pre pts_sorted )
   **  ((&(((hull_pre + (k * sizeof( "Point" ) ) ))  # "Point" ->ₛ "x")) # Int  |-> (point_x ((Znth i pts_sorted __default_Point))))
   **  (PointArray.undef_seg hull_pre (k + 1 ) (2 * n_pre ) )
@@ -2270,8 +2234,8 @@ forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list
   &&  “ ((INT_MIN) <= (i + 1 )) ”
 .
 
-Definition andrew_monotone_chain_safety_wit_20 := 
-forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list Point) -> Prop))) (pts_l_low_level_spec: (@list Point)) (lower: (@list Point)) (pts_sorted: (@list Point)) (k: Z) (i: Z) (retval: Z)  __default_Point (PreH1 : (retval > 0)) (PreH2 : (retval = (point_cross_by_value ((point_x ((Znth ((k - 2 ) - 0 ) lower __default_Point)))) ((point_y ((Znth ((k - 2 ) - 0 ) lower __default_Point)))) ((point_x ((Znth ((k - 1 ) - 0 ) lower __default_Point)))) ((point_y ((Znth ((k - 1 ) - 0 ) lower __default_Point)))) ((point_x ((Znth i pts_sorted __default_Point)))) ((point_y ((Znth i pts_sorted __default_Point))))))) (PreH3 : (k >= 2)) (PreH4 : (0 <= i)) (PreH5 : (i < n_pre)) (PreH6 : (0 <= k)) (PreH7 : (k <= i)) (PreH8 : (2 <= n_pre)) (PreH9 : (n_pre <= 50000)) (PreH10 : ((Zlength (pts_l_low_level_spec)) = n_pre)) (PreH11 : ((Zlength (pts_sorted)) = n_pre)) (PreH12 : (points_in_bound pts_sorted )) (PreH13 : (point_permutation pts_l_low_level_spec pts_sorted )) (PreH14 : (point_xy_sorted pts_sorted )) (PreH15 : (point_in_bound (Znth i pts_sorted __default_Point) )) (PreH16 : (andrew_lower_scan_inv pts_sorted lower i k )) (PreH17 : (safeExec (equiv (lower)) (build_chain ((sublist (i) (n_pre) (pts_sorted)))) X_low_level_spec )) ,
+Definition andrew_build_from_sorted_safety_wit_17 := 
+forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list Point) -> Prop))) (pts_l_low_level_spec: (@list Point)) (lower: (@list Point)) (pts_sorted: (@list Point)) (k: Z) (i: Z) (retval: Z)  __default_Point (PreH1 : (retval > 0)) (PreH2 : (retval = (point_cross_by_value ((point_x ((Znth ((k - 2 ) - 0 ) lower __default_Point)))) ((point_y ((Znth ((k - 2 ) - 0 ) lower __default_Point)))) ((point_x ((Znth ((k - 1 ) - 0 ) lower __default_Point)))) ((point_y ((Znth ((k - 1 ) - 0 ) lower __default_Point)))) ((point_x ((Znth i pts_sorted __default_Point)))) ((point_y ((Znth i pts_sorted __default_Point))))))) (PreH3 : (k >= 2)) (PreH4 : (0 <= i)) (PreH5 : (i < n_pre)) (PreH6 : (0 <= k)) (PreH7 : (k <= i)) (PreH8 : ((0 < i) -> (1 <= k))) (PreH9 : (2 <= n_pre)) (PreH10 : (n_pre <= 50000)) (PreH11 : ((Zlength (pts_l_low_level_spec)) = n_pre)) (PreH12 : ((Zlength (pts_sorted)) = n_pre)) (PreH13 : (points_in_bound pts_sorted )) (PreH14 : (point_permutation pts_l_low_level_spec pts_sorted )) (PreH15 : (point_xy_sorted pts_sorted )) (PreH16 : (point_in_bound (Znth i pts_sorted __default_Point) )) (PreH17 : (andrew_lower_scan_inv pts_sorted lower i k )) (PreH18 : (andrew_lower_remaining_cont pts_sorted lower i X_low_level_spec )) ,
   (PointArray.full pts_pre n_pre pts_sorted )
   **  ((&(((hull_pre + (k * sizeof( "Point" ) ) ))  # "Point" ->ₛ "x")) # Int  |-> (point_x ((Znth i pts_sorted __default_Point))))
   **  (PointArray.undef_seg hull_pre (k + 1 ) (2 * n_pre ) )
@@ -2287,8 +2251,8 @@ forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list
   &&  “ ((INT_MIN) <= (i + 1 )) ”
 .
 
-Definition andrew_monotone_chain_safety_wit_21 := 
-forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list Point) -> Prop))) (pts_l_low_level_spec: (@list Point)) (lower: (@list Point)) (pts_sorted: (@list Point)) (k: Z) (i: Z) (PreH1 : (i >= n_pre)) (PreH2 : (0 <= i)) (PreH3 : (i <= n_pre)) (PreH4 : (0 <= k)) (PreH5 : (k <= i)) (PreH6 : (2 <= n_pre)) (PreH7 : (n_pre <= 50000)) (PreH8 : ((Zlength (pts_l_low_level_spec)) = n_pre)) (PreH9 : ((Zlength (pts_sorted)) = n_pre)) (PreH10 : (points_in_bound pts_sorted )) (PreH11 : (point_permutation pts_l_low_level_spec pts_sorted )) (PreH12 : (point_xy_sorted pts_sorted )) (PreH13 : (andrew_lower_scan_inv pts_sorted lower i k )) (PreH14 : (safeExec (equiv (lower)) (build_chain ((sublist (i) (n_pre) (pts_sorted)))) X_low_level_spec )) ,
+Definition andrew_build_from_sorted_safety_wit_18 := 
+forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list Point) -> Prop))) (pts_l_low_level_spec: (@list Point)) (lower: (@list Point)) (pts_sorted: (@list Point)) (k: Z) (i: Z) (PreH1 : (i >= n_pre)) (PreH2 : (0 <= i)) (PreH3 : (i <= n_pre)) (PreH4 : (0 <= k)) (PreH5 : (k <= i)) (PreH6 : ((0 < i) -> (1 <= k))) (PreH7 : (2 <= n_pre)) (PreH8 : (n_pre <= 50000)) (PreH9 : ((Zlength (pts_l_low_level_spec)) = n_pre)) (PreH10 : ((Zlength (pts_sorted)) = n_pre)) (PreH11 : (points_in_bound pts_sorted )) (PreH12 : (point_permutation pts_l_low_level_spec pts_sorted )) (PreH13 : (point_xy_sorted pts_sorted )) (PreH14 : (andrew_lower_scan_inv pts_sorted lower i k )) (PreH15 : (andrew_lower_remaining_cont pts_sorted lower i X_low_level_spec )) ,
   ((( &( "i" ) )) # Int  |->_)
   **  ((( &( "lower_n" ) )) # Int  |-> k)
   **  ((( &( "n" ) )) # Int  |-> n_pre)
@@ -2303,8 +2267,8 @@ forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list
   &&  “ ((INT_MIN) <= (n_pre - 2 )) ”
 .
 
-Definition andrew_monotone_chain_safety_wit_22 := 
-forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list Point) -> Prop))) (pts_l_low_level_spec: (@list Point)) (lower: (@list Point)) (pts_sorted: (@list Point)) (k: Z) (i: Z) (PreH1 : (i >= n_pre)) (PreH2 : (0 <= i)) (PreH3 : (i <= n_pre)) (PreH4 : (0 <= k)) (PreH5 : (k <= i)) (PreH6 : (2 <= n_pre)) (PreH7 : (n_pre <= 50000)) (PreH8 : ((Zlength (pts_l_low_level_spec)) = n_pre)) (PreH9 : ((Zlength (pts_sorted)) = n_pre)) (PreH10 : (points_in_bound pts_sorted )) (PreH11 : (point_permutation pts_l_low_level_spec pts_sorted )) (PreH12 : (point_xy_sorted pts_sorted )) (PreH13 : (andrew_lower_scan_inv pts_sorted lower i k )) (PreH14 : (safeExec (equiv (lower)) (build_chain ((sublist (i) (n_pre) (pts_sorted)))) X_low_level_spec )) ,
+Definition andrew_build_from_sorted_safety_wit_19 := 
+forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list Point) -> Prop))) (pts_l_low_level_spec: (@list Point)) (lower: (@list Point)) (pts_sorted: (@list Point)) (k: Z) (i: Z) (PreH1 : (i >= n_pre)) (PreH2 : (0 <= i)) (PreH3 : (i <= n_pre)) (PreH4 : (0 <= k)) (PreH5 : (k <= i)) (PreH6 : ((0 < i) -> (1 <= k))) (PreH7 : (2 <= n_pre)) (PreH8 : (n_pre <= 50000)) (PreH9 : ((Zlength (pts_l_low_level_spec)) = n_pre)) (PreH10 : ((Zlength (pts_sorted)) = n_pre)) (PreH11 : (points_in_bound pts_sorted )) (PreH12 : (point_permutation pts_l_low_level_spec pts_sorted )) (PreH13 : (point_xy_sorted pts_sorted )) (PreH14 : (andrew_lower_scan_inv pts_sorted lower i k )) (PreH15 : (andrew_lower_remaining_cont pts_sorted lower i X_low_level_spec )) ,
   ((( &( "i" ) )) # Int  |->_)
   **  ((( &( "lower_n" ) )) # Int  |-> k)
   **  ((( &( "n" ) )) # Int  |-> n_pre)
@@ -2319,8 +2283,8 @@ forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list
   &&  “ ((INT_MIN) <= 2) ”
 .
 
-Definition andrew_monotone_chain_safety_wit_23 := 
-forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list Point) -> Prop))) (pts_l_low_level_spec: (@list Point)) (hull_cur: (@list Point)) (pts_sorted: (@list Point)) (k: Z) (lower_n: Z) (i: Z) (PreH1 : (0 <= (i + 1 ))) (PreH2 : ((i + 1 ) <= (n_pre - 1 ))) (PreH3 : (2 <= lower_n)) (PreH4 : (lower_n <= k)) (PreH5 : (k <= (2 * n_pre ))) (PreH6 : (2 <= n_pre)) (PreH7 : (n_pre <= 50000)) (PreH8 : ((Zlength (pts_l_low_level_spec)) = n_pre)) (PreH9 : ((Zlength (pts_sorted)) = n_pre)) (PreH10 : (points_in_bound pts_sorted )) (PreH11 : (point_permutation pts_l_low_level_spec pts_sorted )) (PreH12 : (point_xy_sorted pts_sorted )) (PreH13 : (andrew_upper_scan_inv pts_sorted hull_cur (i + 1 ) k lower_n )) (PreH14 : (safeExec (equiv (hull_cur)) (build_upper_chain_cont (pts_sorted) ((sublist (0) (lower_n) (hull_cur)))) X_low_level_spec )) ,
+Definition andrew_build_from_sorted_safety_wit_20 := 
+forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list Point) -> Prop))) (pts_l_low_level_spec: (@list Point)) (hull_cur: (@list Point)) (pts_sorted: (@list Point)) (k: Z) (lower_n: Z) (i: Z) (PreH1 : (0 <= (i + 1 ))) (PreH2 : ((i + 1 ) <= (n_pre - 1 ))) (PreH3 : (2 <= lower_n)) (PreH4 : (lower_n <= k)) (PreH5 : (k <= (2 * n_pre ))) (PreH6 : (2 <= n_pre)) (PreH7 : (n_pre <= 50000)) (PreH8 : ((Zlength (pts_l_low_level_spec)) = n_pre)) (PreH9 : ((Zlength (pts_sorted)) = n_pre)) (PreH10 : (points_in_bound pts_sorted )) (PreH11 : (point_permutation pts_l_low_level_spec pts_sorted )) (PreH12 : (point_xy_sorted pts_sorted )) (PreH13 : (andrew_upper_scan_inv pts_sorted hull_cur (i + 1 ) k lower_n )) (PreH14 : (andrew_upper_remaining_cont pts_sorted hull_cur (i + 1 ) lower_n X_low_level_spec )) ,
   ((( &( "i" ) )) # Int  |-> i)
   **  ((( &( "n" ) )) # Int  |-> n_pre)
   **  ((( &( "lower_n" ) )) # Int  |-> lower_n)
@@ -2331,12 +2295,12 @@ forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list
   **  (PointArray.seg hull_pre 0 k hull_cur )
   **  (PointArray.undef_seg hull_pre k (2 * n_pre ) )
 |--
-  “ (1 <= INT_MAX) ” 
-  &&  “ ((INT_MIN) <= 1) ”
+  “ (0 <= INT_MAX) ” 
+  &&  “ ((INT_MIN) <= 0) ”
 .
 
-Definition andrew_monotone_chain_safety_wit_24 := 
-forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list Point) -> Prop))) (pts_l_low_level_spec: (@list Point)) (hull_cur: (@list Point)) (pts_sorted: (@list Point)) (k: Z) (lower_n: Z) (i: Z)  __default_Point (PreH1 : (k > lower_n)) (PreH2 : (1 <= i)) (PreH3 : (i <= (n_pre - 2 ))) (PreH4 : (2 <= lower_n)) (PreH5 : (lower_n <= k)) (PreH6 : (k < (2 * n_pre ))) (PreH7 : (2 <= n_pre)) (PreH8 : (n_pre <= 50000)) (PreH9 : ((Zlength (pts_l_low_level_spec)) = n_pre)) (PreH10 : ((Zlength (pts_sorted)) = n_pre)) (PreH11 : (points_in_bound pts_sorted )) (PreH12 : (point_permutation pts_l_low_level_spec pts_sorted )) (PreH13 : (point_xy_sorted pts_sorted )) (PreH14 : (point_in_bound (Znth i pts_sorted __default_Point) )) (PreH15 : (andrew_upper_scan_inv pts_sorted hull_cur (i + 1 ) k lower_n )) (PreH16 : (safeExec (equiv (hull_cur)) (build_upper_chain_cont (pts_sorted) ((sublist (0) (lower_n) (hull_cur)))) X_low_level_spec )) ,
+Definition andrew_build_from_sorted_safety_wit_21 := 
+forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list Point) -> Prop))) (pts_l_low_level_spec: (@list Point)) (hull_cur: (@list Point)) (pts_sorted: (@list Point)) (k: Z) (lower_n: Z) (i: Z)  __default_Point (PreH1 : (k > lower_n)) (PreH2 : (0 <= i)) (PreH3 : (i <= (n_pre - 2 ))) (PreH4 : (2 <= lower_n)) (PreH5 : (lower_n <= k)) (PreH6 : (k < (2 * n_pre ))) (PreH7 : (2 <= n_pre)) (PreH8 : (n_pre <= 50000)) (PreH9 : ((Zlength (pts_l_low_level_spec)) = n_pre)) (PreH10 : ((Zlength (pts_sorted)) = n_pre)) (PreH11 : (points_in_bound pts_sorted )) (PreH12 : (point_permutation pts_l_low_level_spec pts_sorted )) (PreH13 : (point_xy_sorted pts_sorted )) (PreH14 : (point_in_bound (Znth i pts_sorted __default_Point) )) (PreH15 : (andrew_upper_scan_inv pts_sorted hull_cur (i + 1 ) k lower_n )) (PreH16 : (andrew_upper_remaining_cont pts_sorted hull_cur (i + 1 ) lower_n X_low_level_spec )) ,
   (PointArray.seg hull_pre 0 k hull_cur )
   **  ((( &( "i" ) )) # Int  |-> i)
   **  ((( &( "n" ) )) # Int  |-> n_pre)
@@ -2351,8 +2315,8 @@ forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list
   &&  “ ((INT_MIN) <= (k - 1 )) ”
 .
 
-Definition andrew_monotone_chain_safety_wit_25 := 
-forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list Point) -> Prop))) (pts_l_low_level_spec: (@list Point)) (hull_cur: (@list Point)) (pts_sorted: (@list Point)) (k: Z) (lower_n: Z) (i: Z)  __default_Point (PreH1 : (k > lower_n)) (PreH2 : (1 <= i)) (PreH3 : (i <= (n_pre - 2 ))) (PreH4 : (2 <= lower_n)) (PreH5 : (lower_n <= k)) (PreH6 : (k < (2 * n_pre ))) (PreH7 : (2 <= n_pre)) (PreH8 : (n_pre <= 50000)) (PreH9 : ((Zlength (pts_l_low_level_spec)) = n_pre)) (PreH10 : ((Zlength (pts_sorted)) = n_pre)) (PreH11 : (points_in_bound pts_sorted )) (PreH12 : (point_permutation pts_l_low_level_spec pts_sorted )) (PreH13 : (point_xy_sorted pts_sorted )) (PreH14 : (point_in_bound (Znth i pts_sorted __default_Point) )) (PreH15 : (andrew_upper_scan_inv pts_sorted hull_cur (i + 1 ) k lower_n )) (PreH16 : (safeExec (equiv (hull_cur)) (build_upper_chain_cont (pts_sorted) ((sublist (0) (lower_n) (hull_cur)))) X_low_level_spec )) ,
+Definition andrew_build_from_sorted_safety_wit_22 := 
+forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list Point) -> Prop))) (pts_l_low_level_spec: (@list Point)) (hull_cur: (@list Point)) (pts_sorted: (@list Point)) (k: Z) (lower_n: Z) (i: Z)  __default_Point (PreH1 : (k > lower_n)) (PreH2 : (0 <= i)) (PreH3 : (i <= (n_pre - 2 ))) (PreH4 : (2 <= lower_n)) (PreH5 : (lower_n <= k)) (PreH6 : (k < (2 * n_pre ))) (PreH7 : (2 <= n_pre)) (PreH8 : (n_pre <= 50000)) (PreH9 : ((Zlength (pts_l_low_level_spec)) = n_pre)) (PreH10 : ((Zlength (pts_sorted)) = n_pre)) (PreH11 : (points_in_bound pts_sorted )) (PreH12 : (point_permutation pts_l_low_level_spec pts_sorted )) (PreH13 : (point_xy_sorted pts_sorted )) (PreH14 : (point_in_bound (Znth i pts_sorted __default_Point) )) (PreH15 : (andrew_upper_scan_inv pts_sorted hull_cur (i + 1 ) k lower_n )) (PreH16 : (andrew_upper_remaining_cont pts_sorted hull_cur (i + 1 ) lower_n X_low_level_spec )) ,
   (PointArray.seg hull_pre 0 k hull_cur )
   **  ((( &( "i" ) )) # Int  |-> i)
   **  ((( &( "n" ) )) # Int  |-> n_pre)
@@ -2367,8 +2331,8 @@ forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list
   &&  “ ((INT_MIN) <= (k - 1 )) ”
 .
 
-Definition andrew_monotone_chain_safety_wit_26 := 
-forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list Point) -> Prop))) (pts_l_low_level_spec: (@list Point)) (hull_cur: (@list Point)) (pts_sorted: (@list Point)) (k: Z) (lower_n: Z) (i: Z)  __default_Point (PreH1 : (k > lower_n)) (PreH2 : (1 <= i)) (PreH3 : (i <= (n_pre - 2 ))) (PreH4 : (2 <= lower_n)) (PreH5 : (lower_n <= k)) (PreH6 : (k < (2 * n_pre ))) (PreH7 : (2 <= n_pre)) (PreH8 : (n_pre <= 50000)) (PreH9 : ((Zlength (pts_l_low_level_spec)) = n_pre)) (PreH10 : ((Zlength (pts_sorted)) = n_pre)) (PreH11 : (points_in_bound pts_sorted )) (PreH12 : (point_permutation pts_l_low_level_spec pts_sorted )) (PreH13 : (point_xy_sorted pts_sorted )) (PreH14 : (point_in_bound (Znth i pts_sorted __default_Point) )) (PreH15 : (andrew_upper_scan_inv pts_sorted hull_cur (i + 1 ) k lower_n )) (PreH16 : (safeExec (equiv (hull_cur)) (build_upper_chain_cont (pts_sorted) ((sublist (0) (lower_n) (hull_cur)))) X_low_level_spec )) ,
+Definition andrew_build_from_sorted_safety_wit_23 := 
+forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list Point) -> Prop))) (pts_l_low_level_spec: (@list Point)) (hull_cur: (@list Point)) (pts_sorted: (@list Point)) (k: Z) (lower_n: Z) (i: Z)  __default_Point (PreH1 : (k > lower_n)) (PreH2 : (0 <= i)) (PreH3 : (i <= (n_pre - 2 ))) (PreH4 : (2 <= lower_n)) (PreH5 : (lower_n <= k)) (PreH6 : (k < (2 * n_pre ))) (PreH7 : (2 <= n_pre)) (PreH8 : (n_pre <= 50000)) (PreH9 : ((Zlength (pts_l_low_level_spec)) = n_pre)) (PreH10 : ((Zlength (pts_sorted)) = n_pre)) (PreH11 : (points_in_bound pts_sorted )) (PreH12 : (point_permutation pts_l_low_level_spec pts_sorted )) (PreH13 : (point_xy_sorted pts_sorted )) (PreH14 : (point_in_bound (Znth i pts_sorted __default_Point) )) (PreH15 : (andrew_upper_scan_inv pts_sorted hull_cur (i + 1 ) k lower_n )) (PreH16 : (andrew_upper_remaining_cont pts_sorted hull_cur (i + 1 ) lower_n X_low_level_spec )) ,
   (PointArray.seg hull_pre 0 k hull_cur )
   **  ((( &( "i" ) )) # Int  |-> i)
   **  ((( &( "n" ) )) # Int  |-> n_pre)
@@ -2383,8 +2347,8 @@ forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list
   &&  “ ((INT_MIN) <= (k - 2 )) ”
 .
 
-Definition andrew_monotone_chain_safety_wit_27 := 
-forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list Point) -> Prop))) (pts_l_low_level_spec: (@list Point)) (hull_cur: (@list Point)) (pts_sorted: (@list Point)) (k: Z) (lower_n: Z) (i: Z)  __default_Point (PreH1 : (k > lower_n)) (PreH2 : (1 <= i)) (PreH3 : (i <= (n_pre - 2 ))) (PreH4 : (2 <= lower_n)) (PreH5 : (lower_n <= k)) (PreH6 : (k < (2 * n_pre ))) (PreH7 : (2 <= n_pre)) (PreH8 : (n_pre <= 50000)) (PreH9 : ((Zlength (pts_l_low_level_spec)) = n_pre)) (PreH10 : ((Zlength (pts_sorted)) = n_pre)) (PreH11 : (points_in_bound pts_sorted )) (PreH12 : (point_permutation pts_l_low_level_spec pts_sorted )) (PreH13 : (point_xy_sorted pts_sorted )) (PreH14 : (point_in_bound (Znth i pts_sorted __default_Point) )) (PreH15 : (andrew_upper_scan_inv pts_sorted hull_cur (i + 1 ) k lower_n )) (PreH16 : (safeExec (equiv (hull_cur)) (build_upper_chain_cont (pts_sorted) ((sublist (0) (lower_n) (hull_cur)))) X_low_level_spec )) ,
+Definition andrew_build_from_sorted_safety_wit_24 := 
+forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list Point) -> Prop))) (pts_l_low_level_spec: (@list Point)) (hull_cur: (@list Point)) (pts_sorted: (@list Point)) (k: Z) (lower_n: Z) (i: Z)  __default_Point (PreH1 : (k > lower_n)) (PreH2 : (0 <= i)) (PreH3 : (i <= (n_pre - 2 ))) (PreH4 : (2 <= lower_n)) (PreH5 : (lower_n <= k)) (PreH6 : (k < (2 * n_pre ))) (PreH7 : (2 <= n_pre)) (PreH8 : (n_pre <= 50000)) (PreH9 : ((Zlength (pts_l_low_level_spec)) = n_pre)) (PreH10 : ((Zlength (pts_sorted)) = n_pre)) (PreH11 : (points_in_bound pts_sorted )) (PreH12 : (point_permutation pts_l_low_level_spec pts_sorted )) (PreH13 : (point_xy_sorted pts_sorted )) (PreH14 : (point_in_bound (Znth i pts_sorted __default_Point) )) (PreH15 : (andrew_upper_scan_inv pts_sorted hull_cur (i + 1 ) k lower_n )) (PreH16 : (andrew_upper_remaining_cont pts_sorted hull_cur (i + 1 ) lower_n X_low_level_spec )) ,
   ((( &( "i" ) )) # Int  |-> i)
   **  ((( &( "n" ) )) # Int  |-> n_pre)
   **  ((( &( "lower_n" ) )) # Int  |-> lower_n)
@@ -2399,8 +2363,8 @@ forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list
   &&  “ ((INT_MIN) <= (k - 2 )) ”
 .
 
-Definition andrew_monotone_chain_safety_wit_28 := 
-forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list Point) -> Prop))) (pts_l_low_level_spec: (@list Point)) (hull_cur: (@list Point)) (pts_sorted: (@list Point)) (k: Z) (lower_n: Z) (i: Z)  __default_Point (PreH1 : (k > lower_n)) (PreH2 : (1 <= i)) (PreH3 : (i <= (n_pre - 2 ))) (PreH4 : (2 <= lower_n)) (PreH5 : (lower_n <= k)) (PreH6 : (k < (2 * n_pre ))) (PreH7 : (2 <= n_pre)) (PreH8 : (n_pre <= 50000)) (PreH9 : ((Zlength (pts_l_low_level_spec)) = n_pre)) (PreH10 : ((Zlength (pts_sorted)) = n_pre)) (PreH11 : (points_in_bound pts_sorted )) (PreH12 : (point_permutation pts_l_low_level_spec pts_sorted )) (PreH13 : (point_xy_sorted pts_sorted )) (PreH14 : (point_in_bound (Znth i pts_sorted __default_Point) )) (PreH15 : (andrew_upper_scan_inv pts_sorted hull_cur (i + 1 ) k lower_n )) (PreH16 : (safeExec (equiv (hull_cur)) (build_upper_chain_cont (pts_sorted) ((sublist (0) (lower_n) (hull_cur)))) X_low_level_spec )) ,
+Definition andrew_build_from_sorted_safety_wit_25 := 
+forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list Point) -> Prop))) (pts_l_low_level_spec: (@list Point)) (hull_cur: (@list Point)) (pts_sorted: (@list Point)) (k: Z) (lower_n: Z) (i: Z)  __default_Point (PreH1 : (k > lower_n)) (PreH2 : (0 <= i)) (PreH3 : (i <= (n_pre - 2 ))) (PreH4 : (2 <= lower_n)) (PreH5 : (lower_n <= k)) (PreH6 : (k < (2 * n_pre ))) (PreH7 : (2 <= n_pre)) (PreH8 : (n_pre <= 50000)) (PreH9 : ((Zlength (pts_l_low_level_spec)) = n_pre)) (PreH10 : ((Zlength (pts_sorted)) = n_pre)) (PreH11 : (points_in_bound pts_sorted )) (PreH12 : (point_permutation pts_l_low_level_spec pts_sorted )) (PreH13 : (point_xy_sorted pts_sorted )) (PreH14 : (point_in_bound (Znth i pts_sorted __default_Point) )) (PreH15 : (andrew_upper_scan_inv pts_sorted hull_cur (i + 1 ) k lower_n )) (PreH16 : (andrew_upper_remaining_cont pts_sorted hull_cur (i + 1 ) lower_n X_low_level_spec )) ,
   ((( &( "i" ) )) # Int  |-> i)
   **  ((( &( "n" ) )) # Int  |-> n_pre)
   **  ((( &( "lower_n" ) )) # Int  |-> lower_n)
@@ -2415,8 +2379,8 @@ forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list
   &&  “ ((INT_MIN) <= 2) ”
 .
 
-Definition andrew_monotone_chain_safety_wit_29 := 
-forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list Point) -> Prop))) (pts_l_low_level_spec: (@list Point)) (hull_cur: (@list Point)) (pts_sorted: (@list Point)) (k: Z) (lower_n: Z) (i: Z)  __default_Point (PreH1 : (k > lower_n)) (PreH2 : (1 <= i)) (PreH3 : (i <= (n_pre - 2 ))) (PreH4 : (2 <= lower_n)) (PreH5 : (lower_n <= k)) (PreH6 : (k < (2 * n_pre ))) (PreH7 : (2 <= n_pre)) (PreH8 : (n_pre <= 50000)) (PreH9 : ((Zlength (pts_l_low_level_spec)) = n_pre)) (PreH10 : ((Zlength (pts_sorted)) = n_pre)) (PreH11 : (points_in_bound pts_sorted )) (PreH12 : (point_permutation pts_l_low_level_spec pts_sorted )) (PreH13 : (point_xy_sorted pts_sorted )) (PreH14 : (point_in_bound (Znth i pts_sorted __default_Point) )) (PreH15 : (andrew_upper_scan_inv pts_sorted hull_cur (i + 1 ) k lower_n )) (PreH16 : (safeExec (equiv (hull_cur)) (build_upper_chain_cont (pts_sorted) ((sublist (0) (lower_n) (hull_cur)))) X_low_level_spec )) ,
+Definition andrew_build_from_sorted_safety_wit_26 := 
+forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list Point) -> Prop))) (pts_l_low_level_spec: (@list Point)) (hull_cur: (@list Point)) (pts_sorted: (@list Point)) (k: Z) (lower_n: Z) (i: Z)  __default_Point (PreH1 : (k > lower_n)) (PreH2 : (0 <= i)) (PreH3 : (i <= (n_pre - 2 ))) (PreH4 : (2 <= lower_n)) (PreH5 : (lower_n <= k)) (PreH6 : (k < (2 * n_pre ))) (PreH7 : (2 <= n_pre)) (PreH8 : (n_pre <= 50000)) (PreH9 : ((Zlength (pts_l_low_level_spec)) = n_pre)) (PreH10 : ((Zlength (pts_sorted)) = n_pre)) (PreH11 : (points_in_bound pts_sorted )) (PreH12 : (point_permutation pts_l_low_level_spec pts_sorted )) (PreH13 : (point_xy_sorted pts_sorted )) (PreH14 : (point_in_bound (Znth i pts_sorted __default_Point) )) (PreH15 : (andrew_upper_scan_inv pts_sorted hull_cur (i + 1 ) k lower_n )) (PreH16 : (andrew_upper_remaining_cont pts_sorted hull_cur (i + 1 ) lower_n X_low_level_spec )) ,
   (PointArray.seg hull_pre 0 k hull_cur )
   **  ((( &( "i" ) )) # Int  |-> i)
   **  ((( &( "n" ) )) # Int  |-> n_pre)
@@ -2431,8 +2395,8 @@ forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list
   &&  “ ((INT_MIN) <= 2) ”
 .
 
-Definition andrew_monotone_chain_safety_wit_30 := 
-forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list Point) -> Prop))) (pts_l_low_level_spec: (@list Point)) (hull_cur: (@list Point)) (pts_sorted: (@list Point)) (k: Z) (lower_n: Z) (i: Z)  __default_Point (PreH1 : (k > lower_n)) (PreH2 : (1 <= i)) (PreH3 : (i <= (n_pre - 2 ))) (PreH4 : (2 <= lower_n)) (PreH5 : (lower_n <= k)) (PreH6 : (k < (2 * n_pre ))) (PreH7 : (2 <= n_pre)) (PreH8 : (n_pre <= 50000)) (PreH9 : ((Zlength (pts_l_low_level_spec)) = n_pre)) (PreH10 : ((Zlength (pts_sorted)) = n_pre)) (PreH11 : (points_in_bound pts_sorted )) (PreH12 : (point_permutation pts_l_low_level_spec pts_sorted )) (PreH13 : (point_xy_sorted pts_sorted )) (PreH14 : (point_in_bound (Znth i pts_sorted __default_Point) )) (PreH15 : (andrew_upper_scan_inv pts_sorted hull_cur (i + 1 ) k lower_n )) (PreH16 : (safeExec (equiv (hull_cur)) (build_upper_chain_cont (pts_sorted) ((sublist (0) (lower_n) (hull_cur)))) X_low_level_spec )) ,
+Definition andrew_build_from_sorted_safety_wit_27 := 
+forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list Point) -> Prop))) (pts_l_low_level_spec: (@list Point)) (hull_cur: (@list Point)) (pts_sorted: (@list Point)) (k: Z) (lower_n: Z) (i: Z)  __default_Point (PreH1 : (k > lower_n)) (PreH2 : (0 <= i)) (PreH3 : (i <= (n_pre - 2 ))) (PreH4 : (2 <= lower_n)) (PreH5 : (lower_n <= k)) (PreH6 : (k < (2 * n_pre ))) (PreH7 : (2 <= n_pre)) (PreH8 : (n_pre <= 50000)) (PreH9 : ((Zlength (pts_l_low_level_spec)) = n_pre)) (PreH10 : ((Zlength (pts_sorted)) = n_pre)) (PreH11 : (points_in_bound pts_sorted )) (PreH12 : (point_permutation pts_l_low_level_spec pts_sorted )) (PreH13 : (point_xy_sorted pts_sorted )) (PreH14 : (point_in_bound (Znth i pts_sorted __default_Point) )) (PreH15 : (andrew_upper_scan_inv pts_sorted hull_cur (i + 1 ) k lower_n )) (PreH16 : (andrew_upper_remaining_cont pts_sorted hull_cur (i + 1 ) lower_n X_low_level_spec )) ,
   (PointArray.seg hull_pre 0 k hull_cur )
   **  ((( &( "i" ) )) # Int  |-> i)
   **  ((( &( "n" ) )) # Int  |-> n_pre)
@@ -2447,8 +2411,8 @@ forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list
   &&  “ ((INT_MIN) <= 1) ”
 .
 
-Definition andrew_monotone_chain_safety_wit_31 := 
-forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list Point) -> Prop))) (pts_l_low_level_spec: (@list Point)) (hull_cur: (@list Point)) (pts_sorted: (@list Point)) (k: Z) (lower_n: Z) (i: Z)  __default_Point (PreH1 : (k > lower_n)) (PreH2 : (1 <= i)) (PreH3 : (i <= (n_pre - 2 ))) (PreH4 : (2 <= lower_n)) (PreH5 : (lower_n <= k)) (PreH6 : (k < (2 * n_pre ))) (PreH7 : (2 <= n_pre)) (PreH8 : (n_pre <= 50000)) (PreH9 : ((Zlength (pts_l_low_level_spec)) = n_pre)) (PreH10 : ((Zlength (pts_sorted)) = n_pre)) (PreH11 : (points_in_bound pts_sorted )) (PreH12 : (point_permutation pts_l_low_level_spec pts_sorted )) (PreH13 : (point_xy_sorted pts_sorted )) (PreH14 : (point_in_bound (Znth i pts_sorted __default_Point) )) (PreH15 : (andrew_upper_scan_inv pts_sorted hull_cur (i + 1 ) k lower_n )) (PreH16 : (safeExec (equiv (hull_cur)) (build_upper_chain_cont (pts_sorted) ((sublist (0) (lower_n) (hull_cur)))) X_low_level_spec )) ,
+Definition andrew_build_from_sorted_safety_wit_28 := 
+forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list Point) -> Prop))) (pts_l_low_level_spec: (@list Point)) (hull_cur: (@list Point)) (pts_sorted: (@list Point)) (k: Z) (lower_n: Z) (i: Z)  __default_Point (PreH1 : (k > lower_n)) (PreH2 : (0 <= i)) (PreH3 : (i <= (n_pre - 2 ))) (PreH4 : (2 <= lower_n)) (PreH5 : (lower_n <= k)) (PreH6 : (k < (2 * n_pre ))) (PreH7 : (2 <= n_pre)) (PreH8 : (n_pre <= 50000)) (PreH9 : ((Zlength (pts_l_low_level_spec)) = n_pre)) (PreH10 : ((Zlength (pts_sorted)) = n_pre)) (PreH11 : (points_in_bound pts_sorted )) (PreH12 : (point_permutation pts_l_low_level_spec pts_sorted )) (PreH13 : (point_xy_sorted pts_sorted )) (PreH14 : (point_in_bound (Znth i pts_sorted __default_Point) )) (PreH15 : (andrew_upper_scan_inv pts_sorted hull_cur (i + 1 ) k lower_n )) (PreH16 : (andrew_upper_remaining_cont pts_sorted hull_cur (i + 1 ) lower_n X_low_level_spec )) ,
   (PointArray.seg hull_pre 0 k hull_cur )
   **  ((( &( "i" ) )) # Int  |-> i)
   **  ((( &( "n" ) )) # Int  |-> n_pre)
@@ -2463,8 +2427,8 @@ forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list
   &&  “ ((INT_MIN) <= 1) ”
 .
 
-Definition andrew_monotone_chain_safety_wit_32 := 
-forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list Point) -> Prop))) (pts_l_low_level_spec: (@list Point)) (hull_cur: (@list Point)) (pts_sorted: (@list Point)) (k: Z) (lower_n: Z) (i: Z) (retval: Z)  __default_Point (PreH1 : (retval = (point_cross_by_value ((point_x ((Znth ((k - 2 ) - 0 ) hull_cur __default_Point)))) ((point_y ((Znth ((k - 2 ) - 0 ) hull_cur __default_Point)))) ((point_x ((Znth ((k - 1 ) - 0 ) hull_cur __default_Point)))) ((point_y ((Znth ((k - 1 ) - 0 ) hull_cur __default_Point)))) ((point_x ((Znth i pts_sorted __default_Point)))) ((point_y ((Znth i pts_sorted __default_Point))))))) (PreH2 : (k > lower_n)) (PreH3 : (1 <= i)) (PreH4 : (i <= (n_pre - 2 ))) (PreH5 : (2 <= lower_n)) (PreH6 : (lower_n <= k)) (PreH7 : (k < (2 * n_pre ))) (PreH8 : (2 <= n_pre)) (PreH9 : (n_pre <= 50000)) (PreH10 : ((Zlength (pts_l_low_level_spec)) = n_pre)) (PreH11 : ((Zlength (pts_sorted)) = n_pre)) (PreH12 : (points_in_bound pts_sorted )) (PreH13 : (point_permutation pts_l_low_level_spec pts_sorted )) (PreH14 : (point_xy_sorted pts_sorted )) (PreH15 : (point_in_bound (Znth i pts_sorted __default_Point) )) (PreH16 : (andrew_upper_scan_inv pts_sorted hull_cur (i + 1 ) k lower_n )) (PreH17 : (safeExec (equiv (hull_cur)) (build_upper_chain_cont (pts_sorted) ((sublist (0) (lower_n) (hull_cur)))) X_low_level_spec )) ,
+Definition andrew_build_from_sorted_safety_wit_29 := 
+forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list Point) -> Prop))) (pts_l_low_level_spec: (@list Point)) (hull_cur: (@list Point)) (pts_sorted: (@list Point)) (k: Z) (lower_n: Z) (i: Z) (retval: Z)  __default_Point (PreH1 : (retval = (point_cross_by_value ((point_x ((Znth ((k - 2 ) - 0 ) hull_cur __default_Point)))) ((point_y ((Znth ((k - 2 ) - 0 ) hull_cur __default_Point)))) ((point_x ((Znth ((k - 1 ) - 0 ) hull_cur __default_Point)))) ((point_y ((Znth ((k - 1 ) - 0 ) hull_cur __default_Point)))) ((point_x ((Znth i pts_sorted __default_Point)))) ((point_y ((Znth i pts_sorted __default_Point))))))) (PreH2 : (k > lower_n)) (PreH3 : (0 <= i)) (PreH4 : (i <= (n_pre - 2 ))) (PreH5 : (2 <= lower_n)) (PreH6 : (lower_n <= k)) (PreH7 : (k < (2 * n_pre ))) (PreH8 : (2 <= n_pre)) (PreH9 : (n_pre <= 50000)) (PreH10 : ((Zlength (pts_l_low_level_spec)) = n_pre)) (PreH11 : ((Zlength (pts_sorted)) = n_pre)) (PreH12 : (points_in_bound pts_sorted )) (PreH13 : (point_permutation pts_l_low_level_spec pts_sorted )) (PreH14 : (point_xy_sorted pts_sorted )) (PreH15 : (point_in_bound (Znth i pts_sorted __default_Point) )) (PreH16 : (andrew_upper_scan_inv pts_sorted hull_cur (i + 1 ) k lower_n )) (PreH17 : (andrew_upper_remaining_cont pts_sorted hull_cur (i + 1 ) lower_n X_low_level_spec )) ,
   (PointArray.full pts_pre n_pre pts_sorted )
   **  (PointArray.seg hull_pre 0 k hull_cur )
   **  ((( &( "i" ) )) # Int  |-> i)
@@ -2479,8 +2443,8 @@ forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list
   &&  “ ((INT_MIN) <= 0) ”
 .
 
-Definition andrew_monotone_chain_safety_wit_33 := 
-forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list Point) -> Prop))) (pts_l_low_level_spec: (@list Point)) (hull_cur: (@list Point)) (pts_sorted: (@list Point)) (k: Z) (lower_n: Z) (i: Z) (retval: Z)  __default_Point (PreH1 : (retval <= 0)) (PreH2 : (retval = (point_cross_by_value ((point_x ((Znth ((k - 2 ) - 0 ) hull_cur __default_Point)))) ((point_y ((Znth ((k - 2 ) - 0 ) hull_cur __default_Point)))) ((point_x ((Znth ((k - 1 ) - 0 ) hull_cur __default_Point)))) ((point_y ((Znth ((k - 1 ) - 0 ) hull_cur __default_Point)))) ((point_x ((Znth i pts_sorted __default_Point)))) ((point_y ((Znth i pts_sorted __default_Point))))))) (PreH3 : (k > lower_n)) (PreH4 : (1 <= i)) (PreH5 : (i <= (n_pre - 2 ))) (PreH6 : (2 <= lower_n)) (PreH7 : (lower_n <= k)) (PreH8 : (k < (2 * n_pre ))) (PreH9 : (2 <= n_pre)) (PreH10 : (n_pre <= 50000)) (PreH11 : ((Zlength (pts_l_low_level_spec)) = n_pre)) (PreH12 : ((Zlength (pts_sorted)) = n_pre)) (PreH13 : (points_in_bound pts_sorted )) (PreH14 : (point_permutation pts_l_low_level_spec pts_sorted )) (PreH15 : (point_xy_sorted pts_sorted )) (PreH16 : (point_in_bound (Znth i pts_sorted __default_Point) )) (PreH17 : (andrew_upper_scan_inv pts_sorted hull_cur (i + 1 ) k lower_n )) (PreH18 : (safeExec (equiv (hull_cur)) (build_upper_chain_cont (pts_sorted) ((sublist (0) (lower_n) (hull_cur)))) X_low_level_spec )) ,
+Definition andrew_build_from_sorted_safety_wit_30 := 
+forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list Point) -> Prop))) (pts_l_low_level_spec: (@list Point)) (hull_cur: (@list Point)) (pts_sorted: (@list Point)) (k: Z) (lower_n: Z) (i: Z) (retval: Z)  __default_Point (PreH1 : (retval <= 0)) (PreH2 : (retval = (point_cross_by_value ((point_x ((Znth ((k - 2 ) - 0 ) hull_cur __default_Point)))) ((point_y ((Znth ((k - 2 ) - 0 ) hull_cur __default_Point)))) ((point_x ((Znth ((k - 1 ) - 0 ) hull_cur __default_Point)))) ((point_y ((Znth ((k - 1 ) - 0 ) hull_cur __default_Point)))) ((point_x ((Znth i pts_sorted __default_Point)))) ((point_y ((Znth i pts_sorted __default_Point))))))) (PreH3 : (k > lower_n)) (PreH4 : (0 <= i)) (PreH5 : (i <= (n_pre - 2 ))) (PreH6 : (2 <= lower_n)) (PreH7 : (lower_n <= k)) (PreH8 : (k < (2 * n_pre ))) (PreH9 : (2 <= n_pre)) (PreH10 : (n_pre <= 50000)) (PreH11 : ((Zlength (pts_l_low_level_spec)) = n_pre)) (PreH12 : ((Zlength (pts_sorted)) = n_pre)) (PreH13 : (points_in_bound pts_sorted )) (PreH14 : (point_permutation pts_l_low_level_spec pts_sorted )) (PreH15 : (point_xy_sorted pts_sorted )) (PreH16 : (point_in_bound (Znth i pts_sorted __default_Point) )) (PreH17 : (andrew_upper_scan_inv pts_sorted hull_cur (i + 1 ) k lower_n )) (PreH18 : (andrew_upper_remaining_cont pts_sorted hull_cur (i + 1 ) lower_n X_low_level_spec )) ,
   (PointArray.full pts_pre n_pre pts_sorted )
   **  (PointArray.seg hull_pre 0 k hull_cur )
   **  ((( &( "i" ) )) # Int  |-> i)
@@ -2495,8 +2459,8 @@ forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list
   &&  “ ((INT_MIN) <= (k - 1 )) ”
 .
 
-Definition andrew_monotone_chain_safety_wit_34 := 
-forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list Point) -> Prop))) (pts_l_low_level_spec: (@list Point)) (hull_cur: (@list Point)) (pts_sorted: (@list Point)) (k: Z) (lower_n: Z) (i: Z)  __default_Point (PreH1 : (k <= lower_n)) (PreH2 : (1 <= i)) (PreH3 : (i <= (n_pre - 2 ))) (PreH4 : (2 <= lower_n)) (PreH5 : (lower_n <= k)) (PreH6 : (k < (2 * n_pre ))) (PreH7 : (2 <= n_pre)) (PreH8 : (n_pre <= 50000)) (PreH9 : ((Zlength (pts_l_low_level_spec)) = n_pre)) (PreH10 : ((Zlength (pts_sorted)) = n_pre)) (PreH11 : (points_in_bound pts_sorted )) (PreH12 : (point_permutation pts_l_low_level_spec pts_sorted )) (PreH13 : (point_xy_sorted pts_sorted )) (PreH14 : (point_in_bound (Znth i pts_sorted __default_Point) )) (PreH15 : (andrew_upper_scan_inv pts_sorted hull_cur (i + 1 ) k lower_n )) (PreH16 : (safeExec (equiv (hull_cur)) (build_upper_chain_cont (pts_sorted) ((sublist (0) (lower_n) (hull_cur)))) X_low_level_spec )) ,
+Definition andrew_build_from_sorted_safety_wit_31 := 
+forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list Point) -> Prop))) (pts_l_low_level_spec: (@list Point)) (hull_cur: (@list Point)) (pts_sorted: (@list Point)) (k: Z) (lower_n: Z) (i: Z)  __default_Point (PreH1 : (k <= lower_n)) (PreH2 : (0 <= i)) (PreH3 : (i <= (n_pre - 2 ))) (PreH4 : (2 <= lower_n)) (PreH5 : (lower_n <= k)) (PreH6 : (k < (2 * n_pre ))) (PreH7 : (2 <= n_pre)) (PreH8 : (n_pre <= 50000)) (PreH9 : ((Zlength (pts_l_low_level_spec)) = n_pre)) (PreH10 : ((Zlength (pts_sorted)) = n_pre)) (PreH11 : (points_in_bound pts_sorted )) (PreH12 : (point_permutation pts_l_low_level_spec pts_sorted )) (PreH13 : (point_xy_sorted pts_sorted )) (PreH14 : (point_in_bound (Znth i pts_sorted __default_Point) )) (PreH15 : (andrew_upper_scan_inv pts_sorted hull_cur (i + 1 ) k lower_n )) (PreH16 : (andrew_upper_remaining_cont pts_sorted hull_cur (i + 1 ) lower_n X_low_level_spec )) ,
   (PointArray.full pts_pre n_pre pts_sorted )
   **  ((&(((hull_pre + (k * sizeof( "Point" ) ) ))  # "Point" ->ₛ "x")) # Int  |-> (point_x ((Znth i pts_sorted __default_Point))))
   **  (PointArray.undef_seg hull_pre (k + 1 ) (2 * n_pre ) )
@@ -2513,8 +2477,8 @@ forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list
   &&  “ ((INT_MIN) <= (k + 1 )) ”
 .
 
-Definition andrew_monotone_chain_safety_wit_35 := 
-forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list Point) -> Prop))) (pts_l_low_level_spec: (@list Point)) (hull_cur: (@list Point)) (pts_sorted: (@list Point)) (k: Z) (lower_n: Z) (i: Z) (retval: Z)  __default_Point (PreH1 : (retval > 0)) (PreH2 : (retval = (point_cross_by_value ((point_x ((Znth ((k - 2 ) - 0 ) hull_cur __default_Point)))) ((point_y ((Znth ((k - 2 ) - 0 ) hull_cur __default_Point)))) ((point_x ((Znth ((k - 1 ) - 0 ) hull_cur __default_Point)))) ((point_y ((Znth ((k - 1 ) - 0 ) hull_cur __default_Point)))) ((point_x ((Znth i pts_sorted __default_Point)))) ((point_y ((Znth i pts_sorted __default_Point))))))) (PreH3 : (k > lower_n)) (PreH4 : (1 <= i)) (PreH5 : (i <= (n_pre - 2 ))) (PreH6 : (2 <= lower_n)) (PreH7 : (lower_n <= k)) (PreH8 : (k < (2 * n_pre ))) (PreH9 : (2 <= n_pre)) (PreH10 : (n_pre <= 50000)) (PreH11 : ((Zlength (pts_l_low_level_spec)) = n_pre)) (PreH12 : ((Zlength (pts_sorted)) = n_pre)) (PreH13 : (points_in_bound pts_sorted )) (PreH14 : (point_permutation pts_l_low_level_spec pts_sorted )) (PreH15 : (point_xy_sorted pts_sorted )) (PreH16 : (point_in_bound (Znth i pts_sorted __default_Point) )) (PreH17 : (andrew_upper_scan_inv pts_sorted hull_cur (i + 1 ) k lower_n )) (PreH18 : (safeExec (equiv (hull_cur)) (build_upper_chain_cont (pts_sorted) ((sublist (0) (lower_n) (hull_cur)))) X_low_level_spec )) ,
+Definition andrew_build_from_sorted_safety_wit_32 := 
+forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list Point) -> Prop))) (pts_l_low_level_spec: (@list Point)) (hull_cur: (@list Point)) (pts_sorted: (@list Point)) (k: Z) (lower_n: Z) (i: Z) (retval: Z)  __default_Point (PreH1 : (retval > 0)) (PreH2 : (retval = (point_cross_by_value ((point_x ((Znth ((k - 2 ) - 0 ) hull_cur __default_Point)))) ((point_y ((Znth ((k - 2 ) - 0 ) hull_cur __default_Point)))) ((point_x ((Znth ((k - 1 ) - 0 ) hull_cur __default_Point)))) ((point_y ((Znth ((k - 1 ) - 0 ) hull_cur __default_Point)))) ((point_x ((Znth i pts_sorted __default_Point)))) ((point_y ((Znth i pts_sorted __default_Point))))))) (PreH3 : (k > lower_n)) (PreH4 : (0 <= i)) (PreH5 : (i <= (n_pre - 2 ))) (PreH6 : (2 <= lower_n)) (PreH7 : (lower_n <= k)) (PreH8 : (k < (2 * n_pre ))) (PreH9 : (2 <= n_pre)) (PreH10 : (n_pre <= 50000)) (PreH11 : ((Zlength (pts_l_low_level_spec)) = n_pre)) (PreH12 : ((Zlength (pts_sorted)) = n_pre)) (PreH13 : (points_in_bound pts_sorted )) (PreH14 : (point_permutation pts_l_low_level_spec pts_sorted )) (PreH15 : (point_xy_sorted pts_sorted )) (PreH16 : (point_in_bound (Znth i pts_sorted __default_Point) )) (PreH17 : (andrew_upper_scan_inv pts_sorted hull_cur (i + 1 ) k lower_n )) (PreH18 : (andrew_upper_remaining_cont pts_sorted hull_cur (i + 1 ) lower_n X_low_level_spec )) ,
   (PointArray.full pts_pre n_pre pts_sorted )
   **  ((&(((hull_pre + (k * sizeof( "Point" ) ) ))  # "Point" ->ₛ "x")) # Int  |-> (point_x ((Znth i pts_sorted __default_Point))))
   **  (PointArray.undef_seg hull_pre (k + 1 ) (2 * n_pre ) )
@@ -2531,8 +2495,8 @@ forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list
   &&  “ ((INT_MIN) <= (k + 1 )) ”
 .
 
-Definition andrew_monotone_chain_safety_wit_36 := 
-forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list Point) -> Prop))) (pts_l_low_level_spec: (@list Point)) (hull_cur: (@list Point)) (pts_sorted: (@list Point)) (k: Z) (lower_n: Z) (i: Z)  __default_Point (PreH1 : (k <= lower_n)) (PreH2 : (1 <= i)) (PreH3 : (i <= (n_pre - 2 ))) (PreH4 : (2 <= lower_n)) (PreH5 : (lower_n <= k)) (PreH6 : (k < (2 * n_pre ))) (PreH7 : (2 <= n_pre)) (PreH8 : (n_pre <= 50000)) (PreH9 : ((Zlength (pts_l_low_level_spec)) = n_pre)) (PreH10 : ((Zlength (pts_sorted)) = n_pre)) (PreH11 : (points_in_bound pts_sorted )) (PreH12 : (point_permutation pts_l_low_level_spec pts_sorted )) (PreH13 : (point_xy_sorted pts_sorted )) (PreH14 : (point_in_bound (Znth i pts_sorted __default_Point) )) (PreH15 : (andrew_upper_scan_inv pts_sorted hull_cur (i + 1 ) k lower_n )) (PreH16 : (safeExec (equiv (hull_cur)) (build_upper_chain_cont (pts_sorted) ((sublist (0) (lower_n) (hull_cur)))) X_low_level_spec )) ,
+Definition andrew_build_from_sorted_safety_wit_33 := 
+forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list Point) -> Prop))) (pts_l_low_level_spec: (@list Point)) (hull_cur: (@list Point)) (pts_sorted: (@list Point)) (k: Z) (lower_n: Z) (i: Z)  __default_Point (PreH1 : (k <= lower_n)) (PreH2 : (0 <= i)) (PreH3 : (i <= (n_pre - 2 ))) (PreH4 : (2 <= lower_n)) (PreH5 : (lower_n <= k)) (PreH6 : (k < (2 * n_pre ))) (PreH7 : (2 <= n_pre)) (PreH8 : (n_pre <= 50000)) (PreH9 : ((Zlength (pts_l_low_level_spec)) = n_pre)) (PreH10 : ((Zlength (pts_sorted)) = n_pre)) (PreH11 : (points_in_bound pts_sorted )) (PreH12 : (point_permutation pts_l_low_level_spec pts_sorted )) (PreH13 : (point_xy_sorted pts_sorted )) (PreH14 : (point_in_bound (Znth i pts_sorted __default_Point) )) (PreH15 : (andrew_upper_scan_inv pts_sorted hull_cur (i + 1 ) k lower_n )) (PreH16 : (andrew_upper_remaining_cont pts_sorted hull_cur (i + 1 ) lower_n X_low_level_spec )) ,
   (PointArray.full pts_pre n_pre pts_sorted )
   **  ((&(((hull_pre + (k * sizeof( "Point" ) ) ))  # "Point" ->ₛ "x")) # Int  |-> (point_x ((Znth i pts_sorted __default_Point))))
   **  (PointArray.undef_seg hull_pre (k + 1 ) (2 * n_pre ) )
@@ -2549,8 +2513,8 @@ forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list
   &&  “ ((INT_MIN) <= (i - 1 )) ”
 .
 
-Definition andrew_monotone_chain_safety_wit_37 := 
-forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list Point) -> Prop))) (pts_l_low_level_spec: (@list Point)) (hull_cur: (@list Point)) (pts_sorted: (@list Point)) (k: Z) (lower_n: Z) (i: Z) (retval: Z)  __default_Point (PreH1 : (retval > 0)) (PreH2 : (retval = (point_cross_by_value ((point_x ((Znth ((k - 2 ) - 0 ) hull_cur __default_Point)))) ((point_y ((Znth ((k - 2 ) - 0 ) hull_cur __default_Point)))) ((point_x ((Znth ((k - 1 ) - 0 ) hull_cur __default_Point)))) ((point_y ((Znth ((k - 1 ) - 0 ) hull_cur __default_Point)))) ((point_x ((Znth i pts_sorted __default_Point)))) ((point_y ((Znth i pts_sorted __default_Point))))))) (PreH3 : (k > lower_n)) (PreH4 : (1 <= i)) (PreH5 : (i <= (n_pre - 2 ))) (PreH6 : (2 <= lower_n)) (PreH7 : (lower_n <= k)) (PreH8 : (k < (2 * n_pre ))) (PreH9 : (2 <= n_pre)) (PreH10 : (n_pre <= 50000)) (PreH11 : ((Zlength (pts_l_low_level_spec)) = n_pre)) (PreH12 : ((Zlength (pts_sorted)) = n_pre)) (PreH13 : (points_in_bound pts_sorted )) (PreH14 : (point_permutation pts_l_low_level_spec pts_sorted )) (PreH15 : (point_xy_sorted pts_sorted )) (PreH16 : (point_in_bound (Znth i pts_sorted __default_Point) )) (PreH17 : (andrew_upper_scan_inv pts_sorted hull_cur (i + 1 ) k lower_n )) (PreH18 : (safeExec (equiv (hull_cur)) (build_upper_chain_cont (pts_sorted) ((sublist (0) (lower_n) (hull_cur)))) X_low_level_spec )) ,
+Definition andrew_build_from_sorted_safety_wit_34 := 
+forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list Point) -> Prop))) (pts_l_low_level_spec: (@list Point)) (hull_cur: (@list Point)) (pts_sorted: (@list Point)) (k: Z) (lower_n: Z) (i: Z) (retval: Z)  __default_Point (PreH1 : (retval > 0)) (PreH2 : (retval = (point_cross_by_value ((point_x ((Znth ((k - 2 ) - 0 ) hull_cur __default_Point)))) ((point_y ((Znth ((k - 2 ) - 0 ) hull_cur __default_Point)))) ((point_x ((Znth ((k - 1 ) - 0 ) hull_cur __default_Point)))) ((point_y ((Znth ((k - 1 ) - 0 ) hull_cur __default_Point)))) ((point_x ((Znth i pts_sorted __default_Point)))) ((point_y ((Znth i pts_sorted __default_Point))))))) (PreH3 : (k > lower_n)) (PreH4 : (0 <= i)) (PreH5 : (i <= (n_pre - 2 ))) (PreH6 : (2 <= lower_n)) (PreH7 : (lower_n <= k)) (PreH8 : (k < (2 * n_pre ))) (PreH9 : (2 <= n_pre)) (PreH10 : (n_pre <= 50000)) (PreH11 : ((Zlength (pts_l_low_level_spec)) = n_pre)) (PreH12 : ((Zlength (pts_sorted)) = n_pre)) (PreH13 : (points_in_bound pts_sorted )) (PreH14 : (point_permutation pts_l_low_level_spec pts_sorted )) (PreH15 : (point_xy_sorted pts_sorted )) (PreH16 : (point_in_bound (Znth i pts_sorted __default_Point) )) (PreH17 : (andrew_upper_scan_inv pts_sorted hull_cur (i + 1 ) k lower_n )) (PreH18 : (andrew_upper_remaining_cont pts_sorted hull_cur (i + 1 ) lower_n X_low_level_spec )) ,
   (PointArray.full pts_pre n_pre pts_sorted )
   **  ((&(((hull_pre + (k * sizeof( "Point" ) ) ))  # "Point" ->ₛ "x")) # Int  |-> (point_x ((Znth i pts_sorted __default_Point))))
   **  (PointArray.undef_seg hull_pre (k + 1 ) (2 * n_pre ) )
@@ -2567,10 +2531,159 @@ forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list
   &&  “ ((INT_MIN) <= (i - 1 )) ”
 .
 
-Definition andrew_monotone_chain_entail_wit_1 := 
+Definition andrew_build_from_sorted_safety_wit_35 := 
+forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list Point) -> Prop))) (pts_l_low_level_spec: (@list Point)) (hull_cur: (@list Point)) (pts_sorted: (@list Point)) (k: Z) (lower_n: Z) (i: Z) (PreH1 : (i < 0)) (PreH2 : (0 <= (i + 1 ))) (PreH3 : ((i + 1 ) <= (n_pre - 1 ))) (PreH4 : (2 <= lower_n)) (PreH5 : (lower_n <= k)) (PreH6 : (k <= (2 * n_pre ))) (PreH7 : (2 <= n_pre)) (PreH8 : (n_pre <= 50000)) (PreH9 : ((Zlength (pts_l_low_level_spec)) = n_pre)) (PreH10 : ((Zlength (pts_sorted)) = n_pre)) (PreH11 : (points_in_bound pts_sorted )) (PreH12 : (point_permutation pts_l_low_level_spec pts_sorted )) (PreH13 : (point_xy_sorted pts_sorted )) (PreH14 : (andrew_upper_scan_inv pts_sorted hull_cur (i + 1 ) k lower_n )) (PreH15 : (andrew_upper_remaining_cont pts_sorted hull_cur (i + 1 ) lower_n X_low_level_spec )) ,
+  ((( &( "n" ) )) # Int  |-> n_pre)
+  **  ((( &( "lower_n" ) )) # Int  |-> lower_n)
+  **  ((( &( "k" ) )) # Int  |-> k)
+  **  ((( &( "pts" ) )) # Ptr  |-> pts_pre)
+  **  ((( &( "hull" ) )) # Ptr  |-> hull_pre)
+  **  (PointArray.full pts_pre n_pre pts_sorted )
+  **  (PointArray.seg hull_pre 0 k hull_cur )
+  **  (PointArray.undef_seg hull_pre k (2 * n_pre ) )
+|--
+  “ ((k - 1 ) <= INT_MAX) ” 
+  &&  “ ((INT_MIN) <= (k - 1 )) ”
+.
+
+Definition andrew_build_from_sorted_safety_wit_36 := 
+forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list Point) -> Prop))) (pts_l_low_level_spec: (@list Point)) (pts_sorted: (@list Point)) (hull_closed: (@list Point)) (hull_original: (@list Point)) (k: Z) (lower_n_addr_v: Z) (PreH1 : (2 <= n_pre)) (PreH2 : (n_pre <= 50000)) (PreH3 : (2 <= k)) (PreH4 : (k <= (2 * n_pre ))) (PreH5 : ((Zlength (pts_l_low_level_spec)) = n_pre)) (PreH6 : ((Zlength (pts_sorted)) = n_pre)) (PreH7 : ((Zlength (hull_closed)) = (k + 1 ))) (PreH8 : ((Zlength (hull_original)) = k)) (PreH9 : (points_in_bound pts_sorted )) (PreH10 : (point_permutation pts_l_low_level_spec pts_sorted )) (PreH11 : (point_xy_sorted pts_sorted )) (PreH12 : (hull_original = (sublist (0) (k) (hull_closed)))) (PreH13 : (safeExec (equiv ((rev (hull_original)))) (return (tt)) X_low_level_spec )) ,
+  ((( &( "left" ) )) # Int  |->_)
+  **  ((( &( "pts" ) )) # Ptr  |-> pts_pre)
+  **  ((( &( "hull" ) )) # Ptr  |-> hull_pre)
+  **  ((( &( "n" ) )) # Int  |-> n_pre)
+  **  ((( &( "k" ) )) # Int  |-> k)
+  **  ((( &( "lower_n" ) )) # Int  |-> lower_n_addr_v)
+  **  (PointArray.full pts_pre n_pre pts_sorted )
+  **  (PointArray.seg hull_pre 0 k hull_original )
+  **  (PointArray.undef_seg hull_pre k (2 * n_pre ) )
+|--
+  “ (0 <= INT_MAX) ” 
+  &&  “ ((INT_MIN) <= 0) ”
+.
+
+Definition andrew_build_from_sorted_safety_wit_37 := 
+forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list Point) -> Prop))) (pts_l_low_level_spec: (@list Point)) (lower_n_addr_v: Z) (hull_out: (@list Point)) (hull_cur: (@list Point)) (hull_original: (@list Point)) (pts_sorted: (@list Point)) (k: Z) (left: Z) (PreH1 : (0 <= left)) (PreH2 : (left <= (k ÷ 2 ))) (PreH3 : (2 <= k)) (PreH4 : (k <= (2 * n_pre ))) (PreH5 : (2 <= n_pre)) (PreH6 : (n_pre <= 50000)) (PreH7 : ((Zlength (pts_l_low_level_spec)) = n_pre)) (PreH8 : ((Zlength (pts_sorted)) = n_pre)) (PreH9 : ((Zlength (hull_original)) = k)) (PreH10 : ((Zlength (hull_cur)) = k)) (PreH11 : ((Zlength (hull_out)) = k)) (PreH12 : (points_in_bound pts_sorted )) (PreH13 : (point_permutation pts_l_low_level_spec pts_sorted )) (PreH14 : (point_xy_sorted pts_sorted )) (PreH15 : (hull_out = (rev (hull_original)))) (PreH16 : (point_prefix_reverse_state hull_original hull_cur k left )) (PreH17 : (safeExec (equiv (hull_out)) (return (tt)) X_low_level_spec )) ,
+  ((( &( "left" ) )) # Int  |-> left)
+  **  ((( &( "k" ) )) # Int  |-> k)
+  **  ((( &( "n" ) )) # Int  |-> n_pre)
+  **  ((( &( "pts" ) )) # Ptr  |-> pts_pre)
+  **  ((( &( "hull" ) )) # Ptr  |-> hull_pre)
+  **  ((( &( "lower_n" ) )) # Int  |-> lower_n_addr_v)
+  **  (PointArray.full pts_pre n_pre pts_sorted )
+  **  (PointArray.seg hull_pre 0 k hull_cur )
+  **  (PointArray.undef_seg hull_pre k (2 * n_pre ) )
+|--
+  “ (((k - 1 ) - left ) <= INT_MAX) ” 
+  &&  “ ((INT_MIN) <= ((k - 1 ) - left )) ”
+.
+
+Definition andrew_build_from_sorted_safety_wit_38 := 
+forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list Point) -> Prop))) (pts_l_low_level_spec: (@list Point)) (lower_n_addr_v: Z) (hull_out: (@list Point)) (hull_cur: (@list Point)) (hull_original: (@list Point)) (pts_sorted: (@list Point)) (k: Z) (left: Z) (PreH1 : (0 <= left)) (PreH2 : (left <= (k ÷ 2 ))) (PreH3 : (2 <= k)) (PreH4 : (k <= (2 * n_pre ))) (PreH5 : (2 <= n_pre)) (PreH6 : (n_pre <= 50000)) (PreH7 : ((Zlength (pts_l_low_level_spec)) = n_pre)) (PreH8 : ((Zlength (pts_sorted)) = n_pre)) (PreH9 : ((Zlength (hull_original)) = k)) (PreH10 : ((Zlength (hull_cur)) = k)) (PreH11 : ((Zlength (hull_out)) = k)) (PreH12 : (points_in_bound pts_sorted )) (PreH13 : (point_permutation pts_l_low_level_spec pts_sorted )) (PreH14 : (point_xy_sorted pts_sorted )) (PreH15 : (hull_out = (rev (hull_original)))) (PreH16 : (point_prefix_reverse_state hull_original hull_cur k left )) (PreH17 : (safeExec (equiv (hull_out)) (return (tt)) X_low_level_spec )) ,
+  ((( &( "left" ) )) # Int  |-> left)
+  **  ((( &( "k" ) )) # Int  |-> k)
+  **  ((( &( "n" ) )) # Int  |-> n_pre)
+  **  ((( &( "pts" ) )) # Ptr  |-> pts_pre)
+  **  ((( &( "hull" ) )) # Ptr  |-> hull_pre)
+  **  ((( &( "lower_n" ) )) # Int  |-> lower_n_addr_v)
+  **  (PointArray.full pts_pre n_pre pts_sorted )
+  **  (PointArray.seg hull_pre 0 k hull_cur )
+  **  (PointArray.undef_seg hull_pre k (2 * n_pre ) )
+|--
+  “ ((k - 1 ) <= INT_MAX) ” 
+  &&  “ ((INT_MIN) <= (k - 1 )) ”
+.
+
+Definition andrew_build_from_sorted_safety_wit_39 := 
+forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list Point) -> Prop))) (pts_l_low_level_spec: (@list Point)) (lower_n_addr_v: Z) (hull_out: (@list Point)) (hull_cur: (@list Point)) (hull_original: (@list Point)) (pts_sorted: (@list Point)) (k: Z) (left: Z) (PreH1 : (0 <= left)) (PreH2 : (left <= (k ÷ 2 ))) (PreH3 : (2 <= k)) (PreH4 : (k <= (2 * n_pre ))) (PreH5 : (2 <= n_pre)) (PreH6 : (n_pre <= 50000)) (PreH7 : ((Zlength (pts_l_low_level_spec)) = n_pre)) (PreH8 : ((Zlength (pts_sorted)) = n_pre)) (PreH9 : ((Zlength (hull_original)) = k)) (PreH10 : ((Zlength (hull_cur)) = k)) (PreH11 : ((Zlength (hull_out)) = k)) (PreH12 : (points_in_bound pts_sorted )) (PreH13 : (point_permutation pts_l_low_level_spec pts_sorted )) (PreH14 : (point_xy_sorted pts_sorted )) (PreH15 : (hull_out = (rev (hull_original)))) (PreH16 : (point_prefix_reverse_state hull_original hull_cur k left )) (PreH17 : (safeExec (equiv (hull_out)) (return (tt)) X_low_level_spec )) ,
+  ((( &( "left" ) )) # Int  |-> left)
+  **  ((( &( "k" ) )) # Int  |-> k)
+  **  ((( &( "n" ) )) # Int  |-> n_pre)
+  **  ((( &( "pts" ) )) # Ptr  |-> pts_pre)
+  **  ((( &( "hull" ) )) # Ptr  |-> hull_pre)
+  **  ((( &( "lower_n" ) )) # Int  |-> lower_n_addr_v)
+  **  (PointArray.full pts_pre n_pre pts_sorted )
+  **  (PointArray.seg hull_pre 0 k hull_cur )
+  **  (PointArray.undef_seg hull_pre k (2 * n_pre ) )
+|--
+  “ (1 <= INT_MAX) ” 
+  &&  “ ((INT_MIN) <= 1) ”
+.
+
+Definition andrew_build_from_sorted_safety_wit_40 := 
+forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list Point) -> Prop))) (pts_l_low_level_spec: (@list Point)) (lower_n_addr_v: Z) (hull_out: (@list Point)) (hull_cur: (@list Point)) (hull_original: (@list Point)) (pts_sorted: (@list Point)) (k: Z) (left: Z) (PreH1 : (left < ((k - 1 ) - left ))) (PreH2 : (0 <= left)) (PreH3 : (left <= (k ÷ 2 ))) (PreH4 : (2 <= k)) (PreH5 : (k <= (2 * n_pre ))) (PreH6 : (2 <= n_pre)) (PreH7 : (n_pre <= 50000)) (PreH8 : ((Zlength (pts_l_low_level_spec)) = n_pre)) (PreH9 : ((Zlength (pts_sorted)) = n_pre)) (PreH10 : ((Zlength (hull_original)) = k)) (PreH11 : ((Zlength (hull_cur)) = k)) (PreH12 : ((Zlength (hull_out)) = k)) (PreH13 : (points_in_bound pts_sorted )) (PreH14 : (point_permutation pts_l_low_level_spec pts_sorted )) (PreH15 : (point_xy_sorted pts_sorted )) (PreH16 : (hull_out = (rev (hull_original)))) (PreH17 : (point_prefix_reverse_state hull_original hull_cur k left )) (PreH18 : (safeExec (equiv (hull_out)) (return (tt)) X_low_level_spec )) ,
+  ((( &( "right" ) )) # Int  |->_)
+  **  ((( &( "left" ) )) # Int  |-> left)
+  **  ((( &( "k" ) )) # Int  |-> k)
+  **  ((( &( "n" ) )) # Int  |-> n_pre)
+  **  ((( &( "pts" ) )) # Ptr  |-> pts_pre)
+  **  ((( &( "hull" ) )) # Ptr  |-> hull_pre)
+  **  ((( &( "lower_n" ) )) # Int  |-> lower_n_addr_v)
+  **  (PointArray.full pts_pre n_pre pts_sorted )
+  **  (PointArray.seg hull_pre 0 k hull_cur )
+  **  (PointArray.undef_seg hull_pre k (2 * n_pre ) )
+|--
+  “ (((k - 1 ) - left ) <= INT_MAX) ” 
+  &&  “ ((INT_MIN) <= ((k - 1 ) - left )) ”
+.
+
+Definition andrew_build_from_sorted_safety_wit_41 := 
+forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list Point) -> Prop))) (pts_l_low_level_spec: (@list Point)) (lower_n_addr_v: Z) (hull_out: (@list Point)) (hull_cur: (@list Point)) (hull_original: (@list Point)) (pts_sorted: (@list Point)) (k: Z) (left: Z) (PreH1 : (left < ((k - 1 ) - left ))) (PreH2 : (0 <= left)) (PreH3 : (left <= (k ÷ 2 ))) (PreH4 : (2 <= k)) (PreH5 : (k <= (2 * n_pre ))) (PreH6 : (2 <= n_pre)) (PreH7 : (n_pre <= 50000)) (PreH8 : ((Zlength (pts_l_low_level_spec)) = n_pre)) (PreH9 : ((Zlength (pts_sorted)) = n_pre)) (PreH10 : ((Zlength (hull_original)) = k)) (PreH11 : ((Zlength (hull_cur)) = k)) (PreH12 : ((Zlength (hull_out)) = k)) (PreH13 : (points_in_bound pts_sorted )) (PreH14 : (point_permutation pts_l_low_level_spec pts_sorted )) (PreH15 : (point_xy_sorted pts_sorted )) (PreH16 : (hull_out = (rev (hull_original)))) (PreH17 : (point_prefix_reverse_state hull_original hull_cur k left )) (PreH18 : (safeExec (equiv (hull_out)) (return (tt)) X_low_level_spec )) ,
+  ((( &( "right" ) )) # Int  |->_)
+  **  ((( &( "left" ) )) # Int  |-> left)
+  **  ((( &( "k" ) )) # Int  |-> k)
+  **  ((( &( "n" ) )) # Int  |-> n_pre)
+  **  ((( &( "pts" ) )) # Ptr  |-> pts_pre)
+  **  ((( &( "hull" ) )) # Ptr  |-> hull_pre)
+  **  ((( &( "lower_n" ) )) # Int  |-> lower_n_addr_v)
+  **  (PointArray.full pts_pre n_pre pts_sorted )
+  **  (PointArray.seg hull_pre 0 k hull_cur )
+  **  (PointArray.undef_seg hull_pre k (2 * n_pre ) )
+|--
+  “ ((k - 1 ) <= INT_MAX) ” 
+  &&  “ ((INT_MIN) <= (k - 1 )) ”
+.
+
+Definition andrew_build_from_sorted_safety_wit_42 := 
+forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list Point) -> Prop))) (pts_l_low_level_spec: (@list Point)) (lower_n_addr_v: Z) (hull_out: (@list Point)) (hull_cur: (@list Point)) (hull_original: (@list Point)) (pts_sorted: (@list Point)) (k: Z) (left: Z) (PreH1 : (left < ((k - 1 ) - left ))) (PreH2 : (0 <= left)) (PreH3 : (left <= (k ÷ 2 ))) (PreH4 : (2 <= k)) (PreH5 : (k <= (2 * n_pre ))) (PreH6 : (2 <= n_pre)) (PreH7 : (n_pre <= 50000)) (PreH8 : ((Zlength (pts_l_low_level_spec)) = n_pre)) (PreH9 : ((Zlength (pts_sorted)) = n_pre)) (PreH10 : ((Zlength (hull_original)) = k)) (PreH11 : ((Zlength (hull_cur)) = k)) (PreH12 : ((Zlength (hull_out)) = k)) (PreH13 : (points_in_bound pts_sorted )) (PreH14 : (point_permutation pts_l_low_level_spec pts_sorted )) (PreH15 : (point_xy_sorted pts_sorted )) (PreH16 : (hull_out = (rev (hull_original)))) (PreH17 : (point_prefix_reverse_state hull_original hull_cur k left )) (PreH18 : (safeExec (equiv (hull_out)) (return (tt)) X_low_level_spec )) ,
+  ((( &( "right" ) )) # Int  |->_)
+  **  ((( &( "left" ) )) # Int  |-> left)
+  **  ((( &( "k" ) )) # Int  |-> k)
+  **  ((( &( "n" ) )) # Int  |-> n_pre)
+  **  ((( &( "pts" ) )) # Ptr  |-> pts_pre)
+  **  ((( &( "hull" ) )) # Ptr  |-> hull_pre)
+  **  ((( &( "lower_n" ) )) # Int  |-> lower_n_addr_v)
+  **  (PointArray.full pts_pre n_pre pts_sorted )
+  **  (PointArray.seg hull_pre 0 k hull_cur )
+  **  (PointArray.undef_seg hull_pre k (2 * n_pre ) )
+|--
+  “ (1 <= INT_MAX) ” 
+  &&  “ ((INT_MIN) <= 1) ”
+.
+
+Definition andrew_build_from_sorted_safety_wit_43 := 
+forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list Point) -> Prop))) (pts_l_low_level_spec: (@list Point)) (lower_n_addr_v: Z) (hull_out: (@list Point)) (hull_cur: (@list Point)) (hull_original: (@list Point)) (pts_sorted: (@list Point)) (k: Z) (left: Z)  __default_Point (PreH1 : (left < ((k - 1 ) - left ))) (PreH2 : (0 <= left)) (PreH3 : (left <= (k ÷ 2 ))) (PreH4 : (2 <= k)) (PreH5 : (k <= (2 * n_pre ))) (PreH6 : (2 <= n_pre)) (PreH7 : (n_pre <= 50000)) (PreH8 : ((Zlength (pts_l_low_level_spec)) = n_pre)) (PreH9 : ((Zlength (pts_sorted)) = n_pre)) (PreH10 : ((Zlength (hull_original)) = k)) (PreH11 : ((Zlength (hull_cur)) = k)) (PreH12 : ((Zlength (hull_out)) = k)) (PreH13 : (points_in_bound pts_sorted )) (PreH14 : (point_permutation pts_l_low_level_spec pts_sorted )) (PreH15 : (point_xy_sorted pts_sorted )) (PreH16 : (hull_out = (rev (hull_original)))) (PreH17 : (point_prefix_reverse_state hull_original hull_cur k left )) (PreH18 : (safeExec (equiv (hull_out)) (return (tt)) X_low_level_spec )) ,
+  (PointArray.full hull_pre k (replace_Znth (((k - 1 ) - left )) ((point_mk ((point_x ((Znth ((k - 1 ) - left ) (replace_Znth (((k - 1 ) - left )) ((point_mk ((point_x ((Znth (left - 0 ) hull_cur __default_Point)))) ((point_y ((Znth ((k - 1 ) - left ) (replace_Znth (left) ((point_mk ((point_x ((Znth left (replace_Znth (left) ((point_mk ((point_x ((Znth (((k - 1 ) - left ) - 0 ) hull_cur __default_Point)))) ((point_y ((Znth (left - 0 ) hull_cur __default_Point)))))) (hull_cur)) __default_Point)))) ((point_y ((Znth ((k - 1 ) - left ) (replace_Znth (left) ((point_mk ((point_x ((Znth (((k - 1 ) - left ) - 0 ) hull_cur __default_Point)))) ((point_y ((Znth (left - 0 ) hull_cur __default_Point)))))) (hull_cur)) __default_Point)))))) ((replace_Znth (left) ((point_mk ((point_x ((Znth (((k - 1 ) - left ) - 0 ) hull_cur __default_Point)))) ((point_y ((Znth (left - 0 ) hull_cur __default_Point)))))) (hull_cur)))) __default_Point)))))) ((replace_Znth (left) ((point_mk ((point_x ((Znth left (replace_Znth (left) ((point_mk ((point_x ((Znth (((k - 1 ) - left ) - 0 ) hull_cur __default_Point)))) ((point_y ((Znth (left - 0 ) hull_cur __default_Point)))))) (hull_cur)) __default_Point)))) ((point_y ((Znth ((k - 1 ) - left ) (replace_Znth (left) ((point_mk ((point_x ((Znth (((k - 1 ) - left ) - 0 ) hull_cur __default_Point)))) ((point_y ((Znth (left - 0 ) hull_cur __default_Point)))))) (hull_cur)) __default_Point)))))) ((replace_Znth (left) ((point_mk ((point_x ((Znth (((k - 1 ) - left ) - 0 ) hull_cur __default_Point)))) ((point_y ((Znth (left - 0 ) hull_cur __default_Point)))))) (hull_cur)))))) __default_Point)))) ((point_y ((Znth (left - 0 ) hull_cur __default_Point)))))) ((replace_Znth (((k - 1 ) - left )) ((point_mk ((point_x ((Znth (left - 0 ) hull_cur __default_Point)))) ((point_y ((Znth ((k - 1 ) - left ) (replace_Znth (left) ((point_mk ((point_x ((Znth left (replace_Znth (left) ((point_mk ((point_x ((Znth (((k - 1 ) - left ) - 0 ) hull_cur __default_Point)))) ((point_y ((Znth (left - 0 ) hull_cur __default_Point)))))) (hull_cur)) __default_Point)))) ((point_y ((Znth ((k - 1 ) - left ) (replace_Znth (left) ((point_mk ((point_x ((Znth (((k - 1 ) - left ) - 0 ) hull_cur __default_Point)))) ((point_y ((Znth (left - 0 ) hull_cur __default_Point)))))) (hull_cur)) __default_Point)))))) ((replace_Znth (left) ((point_mk ((point_x ((Znth (((k - 1 ) - left ) - 0 ) hull_cur __default_Point)))) ((point_y ((Znth (left - 0 ) hull_cur __default_Point)))))) (hull_cur)))) __default_Point)))))) ((replace_Znth (left) ((point_mk ((point_x ((Znth left (replace_Znth (left) ((point_mk ((point_x ((Znth (((k - 1 ) - left ) - 0 ) hull_cur __default_Point)))) ((point_y ((Znth (left - 0 ) hull_cur __default_Point)))))) (hull_cur)) __default_Point)))) ((point_y ((Znth ((k - 1 ) - left ) (replace_Znth (left) ((point_mk ((point_x ((Znth (((k - 1 ) - left ) - 0 ) hull_cur __default_Point)))) ((point_y ((Znth (left - 0 ) hull_cur __default_Point)))))) (hull_cur)) __default_Point)))))) ((replace_Znth (left) ((point_mk ((point_x ((Znth (((k - 1 ) - left ) - 0 ) hull_cur __default_Point)))) ((point_y ((Znth (left - 0 ) hull_cur __default_Point)))))) (hull_cur)))))))) )
+  **  ((( &( "tmp_y" ) )) # Int  |-> (point_y ((Znth (left - 0 ) hull_cur __default_Point))))
+  **  ((( &( "tmp_x" ) )) # Int  |-> (point_x ((Znth (left - 0 ) hull_cur __default_Point))))
+  **  ((( &( "right" ) )) # Int  |-> ((k - 1 ) - left ))
+  **  ((( &( "left" ) )) # Int  |-> left)
+  **  ((( &( "k" ) )) # Int  |-> k)
+  **  ((( &( "n" ) )) # Int  |-> n_pre)
+  **  ((( &( "pts" ) )) # Ptr  |-> pts_pre)
+  **  ((( &( "hull" ) )) # Ptr  |-> hull_pre)
+  **  ((( &( "lower_n" ) )) # Int  |-> lower_n_addr_v)
+  **  (PointArray.full pts_pre n_pre pts_sorted )
+  **  (PointArray.undef_seg hull_pre k (2 * n_pre ) )
+|--
+  “ ((left + 1 ) <= INT_MAX) ” 
+  &&  “ ((INT_MIN) <= (left + 1 )) ”
+.
+
+Definition andrew_build_from_sorted_entail_wit_1 := 
 (
-forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list Point) -> Prop))) (pts_l_low_level_spec: (@list Point)) (pts_out: (@list Point)) (PreH1 : ((Zlength (pts_out)) = n_pre)) (PreH2 : (points_in_bound pts_out )) (PreH3 : (point_permutation pts_l_low_level_spec pts_out )) (PreH4 : (point_same_outside_range pts_l_low_level_spec pts_out 0 (n_pre - 1 ) )) (PreH5 : (point_xy_sorted_range pts_out 0 (n_pre - 1 ) )) (PreH6 : (2 <= n_pre)) (PreH7 : (n_pre <= 50000)) (PreH8 : ((Zlength (pts_l_low_level_spec)) = n_pre)) (PreH9 : (points_in_bound pts_l_low_level_spec )) (PreH10 : (points_not_all_same pts_l_low_level_spec )) (PreH11 : (safeExec (equiv (empty_point_stack)) (andrew_monotone_chain_m (pts_l_low_level_spec)) X_low_level_spec )) ,
-  (PointArray.full pts_pre n_pre pts_out )
+forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list Point) -> Prop))) (pts_l_low_level_spec: (@list Point)) (PreH1 : (2 <= n_pre)) (PreH2 : (n_pre <= 50000)) (PreH3 : ((Zlength (pts_l_low_level_spec)) = n_pre)) (PreH4 : (points_in_bound pts_l_low_level_spec )) (PreH5 : (points_not_all_same pts_l_low_level_spec )) (PreH6 : (point_xy_sorted pts_l_low_level_spec )) (PreH7 : (safeExec (equiv (empty_point_stack)) (andrew_monotone_chain_m (pts_l_low_level_spec)) X_low_level_spec )) ,
+  (PointArray.full pts_pre n_pre pts_l_low_level_spec )
   **  (PointArray.undef_full hull_pre (2 * n_pre ) )
 |--
   EX (lower: (@list Point))  (pts_sorted: (@list Point)) ,
@@ -2578,6 +2691,7 @@ forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list
   &&  “ (0 <= n_pre) ” 
   &&  “ (0 <= 0) ” 
   &&  “ (0 <= 0) ” 
+  &&  “ ((0 < 0) -> (1 <= 0)) ” 
   &&  “ (2 <= n_pre) ” 
   &&  “ (n_pre <= 50000) ” 
   &&  “ ((Zlength (pts_l_low_level_spec)) = n_pre) ” 
@@ -2586,52 +2700,52 @@ forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list
   &&  “ (point_permutation pts_l_low_level_spec pts_sorted ) ” 
   &&  “ (point_xy_sorted pts_sorted ) ” 
   &&  “ (andrew_lower_scan_inv pts_sorted lower 0 0 ) ” 
-  &&  “ (safeExec (equiv (lower)) (build_chain ((sublist (0) (n_pre) (pts_sorted)))) X_low_level_spec ) ”
+  &&  “ (andrew_lower_remaining_cont pts_sorted lower 0 X_low_level_spec ) ”
   &&  (PointArray.full pts_pre n_pre pts_sorted )
   **  (PointArray.seg hull_pre 0 0 lower )
   **  (PointArray.undef_seg hull_pre 0 (2 * n_pre ) )
 ) \/
 (
-forall (hull_pre: Z) (n_pre: Z) (X_low_level_spec: (unit -> ((@list Point) -> Prop))) (pts_l_low_level_spec: (@list Point)) (pts_out: (@list Point)) (PreH1 : ((Zlength (pts_out)) = n_pre)) (PreH2 : (points_in_bound pts_out )) (PreH3 : (point_permutation pts_l_low_level_spec pts_out )) (PreH4 : (point_same_outside_range pts_l_low_level_spec pts_out 0 (n_pre - 1 ) )) (PreH5 : (point_xy_sorted_range pts_out 0 (n_pre - 1 ) )) (PreH6 : (2 <= n_pre)) (PreH7 : (n_pre <= 50000)) (PreH8 : ((Zlength (pts_l_low_level_spec)) = n_pre)) (PreH9 : (points_in_bound pts_l_low_level_spec )) (PreH10 : (points_not_all_same pts_l_low_level_spec )) (PreH11 : (safeExec (equiv (empty_point_stack)) (andrew_monotone_chain_m (pts_l_low_level_spec)) X_low_level_spec )) ,
+forall (hull_pre: Z) (n_pre: Z) (X_low_level_spec: (unit -> ((@list Point) -> Prop))) (pts_l_low_level_spec: (@list Point)) (PreH1 : (2 <= n_pre)) (PreH2 : (n_pre <= 50000)) (PreH3 : ((Zlength (pts_l_low_level_spec)) = n_pre)) (PreH4 : (points_in_bound pts_l_low_level_spec )) (PreH5 : (points_not_all_same pts_l_low_level_spec )) (PreH6 : (point_xy_sorted pts_l_low_level_spec )) (PreH7 : (safeExec (equiv (empty_point_stack)) (andrew_monotone_chain_m (pts_l_low_level_spec)) X_low_level_spec )) ,
   (PointArray.undef_full hull_pre (2 * n_pre ) )
 |--
-  “ (safeExec (equiv ((@nil Point))) (build_chain ((sublist (0) (n_pre) (pts_out)))) X_low_level_spec ) ” 
-  &&  “ (andrew_lower_scan_inv pts_out (@nil Point) 0 0 ) ” 
-  &&  “ (point_xy_sorted pts_out ) ”
+  “ (andrew_lower_remaining_cont pts_l_low_level_spec (@nil Point) 0 X_low_level_spec ) ” 
+  &&  “ (andrew_lower_scan_inv pts_l_low_level_spec (@nil Point) 0 0 ) ” 
+  &&  “ (point_permutation pts_l_low_level_spec pts_l_low_level_spec ) ”
   &&  (PointArray.undef_seg hull_pre 0 (2 * n_pre ) )
 ).
 
-Definition andrew_monotone_chain_entail_wit_1_split_goal_1 := 
-forall (hull_pre: Z) (n_pre: Z) (X_low_level_spec: (unit -> ((@list Point) -> Prop))) (pts_l_low_level_spec: (@list Point)) (pts_out: (@list Point)) (PreH1 : ((Zlength (pts_out)) = n_pre)) (PreH2 : (points_in_bound pts_out )) (PreH3 : (point_permutation pts_l_low_level_spec pts_out )) (PreH4 : (point_same_outside_range pts_l_low_level_spec pts_out 0 (n_pre - 1 ) )) (PreH5 : (point_xy_sorted_range pts_out 0 (n_pre - 1 ) )) (PreH6 : (2 <= n_pre)) (PreH7 : (n_pre <= 50000)) (PreH8 : ((Zlength (pts_l_low_level_spec)) = n_pre)) (PreH9 : (points_in_bound pts_l_low_level_spec )) (PreH10 : (points_not_all_same pts_l_low_level_spec )) (PreH11 : (safeExec (equiv (empty_point_stack)) (andrew_monotone_chain_m (pts_l_low_level_spec)) X_low_level_spec )) ,
+Definition andrew_build_from_sorted_entail_wit_1_split_goal_1 := 
+forall (hull_pre: Z) (n_pre: Z) (X_low_level_spec: (unit -> ((@list Point) -> Prop))) (pts_l_low_level_spec: (@list Point)) (PreH1 : (2 <= n_pre)) (PreH2 : (n_pre <= 50000)) (PreH3 : ((Zlength (pts_l_low_level_spec)) = n_pre)) (PreH4 : (points_in_bound pts_l_low_level_spec )) (PreH5 : (points_not_all_same pts_l_low_level_spec )) (PreH6 : (point_xy_sorted pts_l_low_level_spec )) (PreH7 : (safeExec (equiv (empty_point_stack)) (andrew_monotone_chain_m (pts_l_low_level_spec)) X_low_level_spec )) ,
   (PointArray.undef_full hull_pre (2 * n_pre ) )
 |--
-  “ (safeExec (equiv ((@nil Point))) (build_chain ((sublist (0) (n_pre) (pts_out)))) X_low_level_spec ) ”
+  “ (andrew_lower_remaining_cont pts_l_low_level_spec (@nil Point) 0 X_low_level_spec ) ”
 .
 
-Definition andrew_monotone_chain_entail_wit_1_split_goal_2 := 
-forall (hull_pre: Z) (n_pre: Z) (X_low_level_spec: (unit -> ((@list Point) -> Prop))) (pts_l_low_level_spec: (@list Point)) (pts_out: (@list Point)) (PreH1 : ((Zlength (pts_out)) = n_pre)) (PreH2 : (points_in_bound pts_out )) (PreH3 : (point_permutation pts_l_low_level_spec pts_out )) (PreH4 : (point_same_outside_range pts_l_low_level_spec pts_out 0 (n_pre - 1 ) )) (PreH5 : (point_xy_sorted_range pts_out 0 (n_pre - 1 ) )) (PreH6 : (2 <= n_pre)) (PreH7 : (n_pre <= 50000)) (PreH8 : ((Zlength (pts_l_low_level_spec)) = n_pre)) (PreH9 : (points_in_bound pts_l_low_level_spec )) (PreH10 : (points_not_all_same pts_l_low_level_spec )) (PreH11 : (safeExec (equiv (empty_point_stack)) (andrew_monotone_chain_m (pts_l_low_level_spec)) X_low_level_spec )) ,
+Definition andrew_build_from_sorted_entail_wit_1_split_goal_2 := 
+forall (hull_pre: Z) (n_pre: Z) (X_low_level_spec: (unit -> ((@list Point) -> Prop))) (pts_l_low_level_spec: (@list Point)) (PreH1 : (2 <= n_pre)) (PreH2 : (n_pre <= 50000)) (PreH3 : ((Zlength (pts_l_low_level_spec)) = n_pre)) (PreH4 : (points_in_bound pts_l_low_level_spec )) (PreH5 : (points_not_all_same pts_l_low_level_spec )) (PreH6 : (point_xy_sorted pts_l_low_level_spec )) (PreH7 : (safeExec (equiv (empty_point_stack)) (andrew_monotone_chain_m (pts_l_low_level_spec)) X_low_level_spec )) ,
   (PointArray.undef_full hull_pre (2 * n_pre ) )
 |--
-  “ (andrew_lower_scan_inv pts_out (@nil Point) 0 0 ) ”
+  “ (andrew_lower_scan_inv pts_l_low_level_spec (@nil Point) 0 0 ) ”
 .
 
-Definition andrew_monotone_chain_entail_wit_1_split_goal_3 := 
-forall (hull_pre: Z) (n_pre: Z) (X_low_level_spec: (unit -> ((@list Point) -> Prop))) (pts_l_low_level_spec: (@list Point)) (pts_out: (@list Point)) (PreH1 : ((Zlength (pts_out)) = n_pre)) (PreH2 : (points_in_bound pts_out )) (PreH3 : (point_permutation pts_l_low_level_spec pts_out )) (PreH4 : (point_same_outside_range pts_l_low_level_spec pts_out 0 (n_pre - 1 ) )) (PreH5 : (point_xy_sorted_range pts_out 0 (n_pre - 1 ) )) (PreH6 : (2 <= n_pre)) (PreH7 : (n_pre <= 50000)) (PreH8 : ((Zlength (pts_l_low_level_spec)) = n_pre)) (PreH9 : (points_in_bound pts_l_low_level_spec )) (PreH10 : (points_not_all_same pts_l_low_level_spec )) (PreH11 : (safeExec (equiv (empty_point_stack)) (andrew_monotone_chain_m (pts_l_low_level_spec)) X_low_level_spec )) ,
+Definition andrew_build_from_sorted_entail_wit_1_split_goal_3 := 
+forall (hull_pre: Z) (n_pre: Z) (X_low_level_spec: (unit -> ((@list Point) -> Prop))) (pts_l_low_level_spec: (@list Point)) (PreH1 : (2 <= n_pre)) (PreH2 : (n_pre <= 50000)) (PreH3 : ((Zlength (pts_l_low_level_spec)) = n_pre)) (PreH4 : (points_in_bound pts_l_low_level_spec )) (PreH5 : (points_not_all_same pts_l_low_level_spec )) (PreH6 : (point_xy_sorted pts_l_low_level_spec )) (PreH7 : (safeExec (equiv (empty_point_stack)) (andrew_monotone_chain_m (pts_l_low_level_spec)) X_low_level_spec )) ,
   (PointArray.undef_full hull_pre (2 * n_pre ) )
 |--
-  “ (point_xy_sorted pts_out ) ”
+  “ (point_permutation pts_l_low_level_spec pts_l_low_level_spec ) ”
 .
 
-Definition andrew_monotone_chain_entail_wit_1_split_goal_spatial := 
-forall (hull_pre: Z) (n_pre: Z) (X_low_level_spec: (unit -> ((@list Point) -> Prop))) (pts_l_low_level_spec: (@list Point)) (pts_out: (@list Point)) (PreH1 : ((Zlength (pts_out)) = n_pre)) (PreH2 : (points_in_bound pts_out )) (PreH3 : (point_permutation pts_l_low_level_spec pts_out )) (PreH4 : (point_same_outside_range pts_l_low_level_spec pts_out 0 (n_pre - 1 ) )) (PreH5 : (point_xy_sorted_range pts_out 0 (n_pre - 1 ) )) (PreH6 : (2 <= n_pre)) (PreH7 : (n_pre <= 50000)) (PreH8 : ((Zlength (pts_l_low_level_spec)) = n_pre)) (PreH9 : (points_in_bound pts_l_low_level_spec )) (PreH10 : (points_not_all_same pts_l_low_level_spec )) (PreH11 : (safeExec (equiv (empty_point_stack)) (andrew_monotone_chain_m (pts_l_low_level_spec)) X_low_level_spec )) ,
+Definition andrew_build_from_sorted_entail_wit_1_split_goal_spatial := 
+forall (hull_pre: Z) (n_pre: Z) (X_low_level_spec: (unit -> ((@list Point) -> Prop))) (pts_l_low_level_spec: (@list Point)) (PreH1 : (2 <= n_pre)) (PreH2 : (n_pre <= 50000)) (PreH3 : ((Zlength (pts_l_low_level_spec)) = n_pre)) (PreH4 : (points_in_bound pts_l_low_level_spec )) (PreH5 : (points_not_all_same pts_l_low_level_spec )) (PreH6 : (point_xy_sorted pts_l_low_level_spec )) (PreH7 : (safeExec (equiv (empty_point_stack)) (andrew_monotone_chain_m (pts_l_low_level_spec)) X_low_level_spec )) ,
   (PointArray.undef_full hull_pre (2 * n_pre ) )
 |--
   (PointArray.undef_seg hull_pre 0 (2 * n_pre ) )
 .
 
-Definition andrew_monotone_chain_entail_wit_2 := 
+Definition andrew_build_from_sorted_entail_wit_2 := 
 (
-forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list Point) -> Prop))) (pts_l_low_level_spec: (@list Point)) (lower_2: (@list Point)) (pts_sorted_2: (@list Point)) (k: Z) (i: Z)  __default_Point (PreH1 : (i < n_pre)) (PreH2 : (0 <= i)) (PreH3 : (i <= n_pre)) (PreH4 : (0 <= k)) (PreH5 : (k <= i)) (PreH6 : (2 <= n_pre)) (PreH7 : (n_pre <= 50000)) (PreH8 : ((Zlength (pts_l_low_level_spec)) = n_pre)) (PreH9 : ((Zlength (pts_sorted_2)) = n_pre)) (PreH10 : (points_in_bound pts_sorted_2 )) (PreH11 : (point_permutation pts_l_low_level_spec pts_sorted_2 )) (PreH12 : (point_xy_sorted pts_sorted_2 )) (PreH13 : (andrew_lower_scan_inv pts_sorted_2 lower_2 i k )) (PreH14 : (safeExec (equiv (lower_2)) (build_chain ((sublist (i) (n_pre) (pts_sorted_2)))) X_low_level_spec )) ,
+forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list Point) -> Prop))) (pts_l_low_level_spec: (@list Point)) (lower_2: (@list Point)) (pts_sorted_2: (@list Point)) (k: Z) (i: Z)  __default_Point (PreH1 : (i < n_pre)) (PreH2 : (0 <= i)) (PreH3 : (i <= n_pre)) (PreH4 : (0 <= k)) (PreH5 : (k <= i)) (PreH6 : ((0 < i) -> (1 <= k))) (PreH7 : (2 <= n_pre)) (PreH8 : (n_pre <= 50000)) (PreH9 : ((Zlength (pts_l_low_level_spec)) = n_pre)) (PreH10 : ((Zlength (pts_sorted_2)) = n_pre)) (PreH11 : (points_in_bound pts_sorted_2 )) (PreH12 : (point_permutation pts_l_low_level_spec pts_sorted_2 )) (PreH13 : (point_xy_sorted pts_sorted_2 )) (PreH14 : (andrew_lower_scan_inv pts_sorted_2 lower_2 i k )) (PreH15 : (andrew_lower_remaining_cont pts_sorted_2 lower_2 i X_low_level_spec )) ,
   (PointArray.full pts_pre n_pre pts_sorted_2 )
   **  (PointArray.seg hull_pre 0 k lower_2 )
   **  (PointArray.undef_seg hull_pre k (2 * n_pre ) )
@@ -2641,6 +2755,7 @@ forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list
   &&  “ (i < n_pre) ” 
   &&  “ (0 <= k) ” 
   &&  “ (k <= i) ” 
+  &&  “ ((0 < i) -> (1 <= k)) ” 
   &&  “ (2 <= n_pre) ” 
   &&  “ (n_pre <= 50000) ” 
   &&  “ ((Zlength (pts_l_low_level_spec)) = n_pre) ” 
@@ -2650,36 +2765,36 @@ forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list
   &&  “ (point_xy_sorted pts_sorted ) ” 
   &&  “ (point_in_bound (Znth i pts_sorted __default_Point) ) ” 
   &&  “ (andrew_lower_scan_inv pts_sorted lower i k ) ” 
-  &&  “ (safeExec (equiv (lower)) (build_chain ((sublist (i) (n_pre) (pts_sorted)))) X_low_level_spec ) ”
+  &&  “ (andrew_lower_remaining_cont pts_sorted lower i X_low_level_spec ) ”
   &&  (PointArray.full pts_pre n_pre pts_sorted )
   **  (PointArray.seg hull_pre 0 k lower )
   **  (PointArray.undef_seg hull_pre k (2 * n_pre ) )
 ) \/
 (
-forall (hull_pre: Z) (n_pre: Z) (pts_l_low_level_spec: (@list Point)) (lower_2: (@list Point)) (pts_sorted_2: (@list Point)) (k: Z) (i: Z)  __default_Point (PreH1 : (i < n_pre)) (PreH2 : (0 <= i)) (PreH3 : (i <= n_pre)) (PreH4 : (0 <= k)) (PreH5 : (k <= i)) (PreH6 : (2 <= n_pre)) (PreH7 : (n_pre <= 50000)) (PreH8 : ((Zlength (pts_l_low_level_spec)) = n_pre)) (PreH9 : ((Zlength (pts_sorted_2)) = n_pre)) (PreH10 : (points_in_bound pts_sorted_2 )) (PreH11 : (point_permutation pts_l_low_level_spec pts_sorted_2 )) (PreH12 : (point_xy_sorted pts_sorted_2 )) (PreH13 : (andrew_lower_scan_inv pts_sorted_2 lower_2 i k )) ,
+forall (hull_pre: Z) (n_pre: Z) (X_low_level_spec: (unit -> ((@list Point) -> Prop))) (pts_l_low_level_spec: (@list Point)) (lower_2: (@list Point)) (pts_sorted_2: (@list Point)) (k: Z) (i: Z)  __default_Point (PreH1 : (i < n_pre)) (PreH2 : (0 <= i)) (PreH3 : (i <= n_pre)) (PreH4 : (0 <= k)) (PreH5 : (k <= i)) (PreH6 : ((0 < i) -> (1 <= k))) (PreH7 : (2 <= n_pre)) (PreH8 : (n_pre <= 50000)) (PreH9 : ((Zlength (pts_l_low_level_spec)) = n_pre)) (PreH10 : ((Zlength (pts_sorted_2)) = n_pre)) (PreH11 : (points_in_bound pts_sorted_2 )) (PreH12 : (point_permutation pts_l_low_level_spec pts_sorted_2 )) (PreH13 : (point_xy_sorted pts_sorted_2 )) (PreH14 : (andrew_lower_scan_inv pts_sorted_2 lower_2 i k )) (PreH15 : (andrew_lower_remaining_cont pts_sorted_2 lower_2 i X_low_level_spec )) ,
   (PointArray.undef_seg hull_pre k (2 * n_pre ) )
 |--
   “ (point_in_bound (Znth i pts_sorted_2 __default_Point) ) ”
   &&  (PointArray.undef_seg hull_pre k (2 * n_pre ) )
 ).
 
-Definition andrew_monotone_chain_entail_wit_2_split_goal_1 := 
-forall (hull_pre: Z) (n_pre: Z) (pts_l_low_level_spec: (@list Point)) (lower_2: (@list Point)) (pts_sorted_2: (@list Point)) (k: Z) (i: Z)  __default_Point (PreH1 : (i < n_pre)) (PreH2 : (0 <= i)) (PreH3 : (i <= n_pre)) (PreH4 : (0 <= k)) (PreH5 : (k <= i)) (PreH6 : (2 <= n_pre)) (PreH7 : (n_pre <= 50000)) (PreH8 : ((Zlength (pts_l_low_level_spec)) = n_pre)) (PreH9 : ((Zlength (pts_sorted_2)) = n_pre)) (PreH10 : (points_in_bound pts_sorted_2 )) (PreH11 : (point_permutation pts_l_low_level_spec pts_sorted_2 )) (PreH12 : (point_xy_sorted pts_sorted_2 )) (PreH13 : (andrew_lower_scan_inv pts_sorted_2 lower_2 i k )) ,
+Definition andrew_build_from_sorted_entail_wit_2_split_goal_1 := 
+forall (hull_pre: Z) (n_pre: Z) (X_low_level_spec: (unit -> ((@list Point) -> Prop))) (pts_l_low_level_spec: (@list Point)) (lower_2: (@list Point)) (pts_sorted_2: (@list Point)) (k: Z) (i: Z)  __default_Point (PreH1 : (i < n_pre)) (PreH2 : (0 <= i)) (PreH3 : (i <= n_pre)) (PreH4 : (0 <= k)) (PreH5 : (k <= i)) (PreH6 : ((0 < i) -> (1 <= k))) (PreH7 : (2 <= n_pre)) (PreH8 : (n_pre <= 50000)) (PreH9 : ((Zlength (pts_l_low_level_spec)) = n_pre)) (PreH10 : ((Zlength (pts_sorted_2)) = n_pre)) (PreH11 : (points_in_bound pts_sorted_2 )) (PreH12 : (point_permutation pts_l_low_level_spec pts_sorted_2 )) (PreH13 : (point_xy_sorted pts_sorted_2 )) (PreH14 : (andrew_lower_scan_inv pts_sorted_2 lower_2 i k )) (PreH15 : (andrew_lower_remaining_cont pts_sorted_2 lower_2 i X_low_level_spec )) ,
   (PointArray.undef_seg hull_pre k (2 * n_pre ) )
 |--
   “ (point_in_bound (Znth i pts_sorted_2 __default_Point) ) ”
 .
 
-Definition andrew_monotone_chain_entail_wit_2_split_goal_spatial := 
-forall (hull_pre: Z) (n_pre: Z) (pts_l_low_level_spec: (@list Point)) (lower_2: (@list Point)) (pts_sorted_2: (@list Point)) (k: Z) (i: Z) (PreH1 : (i < n_pre)) (PreH2 : (0 <= i)) (PreH3 : (i <= n_pre)) (PreH4 : (0 <= k)) (PreH5 : (k <= i)) (PreH6 : (2 <= n_pre)) (PreH7 : (n_pre <= 50000)) (PreH8 : ((Zlength (pts_l_low_level_spec)) = n_pre)) (PreH9 : ((Zlength (pts_sorted_2)) = n_pre)) (PreH10 : (points_in_bound pts_sorted_2 )) (PreH11 : (point_permutation pts_l_low_level_spec pts_sorted_2 )) (PreH12 : (point_xy_sorted pts_sorted_2 )) (PreH13 : (andrew_lower_scan_inv pts_sorted_2 lower_2 i k )) ,
+Definition andrew_build_from_sorted_entail_wit_2_split_goal_spatial := 
+forall (hull_pre: Z) (n_pre: Z) (X_low_level_spec: (unit -> ((@list Point) -> Prop))) (pts_l_low_level_spec: (@list Point)) (lower_2: (@list Point)) (pts_sorted_2: (@list Point)) (k: Z) (i: Z) (PreH1 : (i < n_pre)) (PreH2 : (0 <= i)) (PreH3 : (i <= n_pre)) (PreH4 : (0 <= k)) (PreH5 : (k <= i)) (PreH6 : ((0 < i) -> (1 <= k))) (PreH7 : (2 <= n_pre)) (PreH8 : (n_pre <= 50000)) (PreH9 : ((Zlength (pts_l_low_level_spec)) = n_pre)) (PreH10 : ((Zlength (pts_sorted_2)) = n_pre)) (PreH11 : (points_in_bound pts_sorted_2 )) (PreH12 : (point_permutation pts_l_low_level_spec pts_sorted_2 )) (PreH13 : (point_xy_sorted pts_sorted_2 )) (PreH14 : (andrew_lower_scan_inv pts_sorted_2 lower_2 i k )) (PreH15 : (andrew_lower_remaining_cont pts_sorted_2 lower_2 i X_low_level_spec )) ,
   (PointArray.undef_seg hull_pre k (2 * n_pre ) )
 |--
   (PointArray.undef_seg hull_pre k (2 * n_pre ) )
 .
 
-Definition andrew_monotone_chain_entail_wit_3 := 
+Definition andrew_build_from_sorted_entail_wit_3 := 
 (
-forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list Point) -> Prop))) (pts_l_low_level_spec: (@list Point)) (lower_2: (@list Point)) (pts_sorted_2: (@list Point)) (k: Z) (i: Z) (retval: Z)  __default_Point (PreH1 : (retval <= 0)) (PreH2 : (retval = (point_cross_by_value ((point_x ((Znth ((k - 2 ) - 0 ) lower_2 __default_Point)))) ((point_y ((Znth ((k - 2 ) - 0 ) lower_2 __default_Point)))) ((point_x ((Znth ((k - 1 ) - 0 ) lower_2 __default_Point)))) ((point_y ((Znth ((k - 1 ) - 0 ) lower_2 __default_Point)))) ((point_x ((Znth i pts_sorted_2 __default_Point)))) ((point_y ((Znth i pts_sorted_2 __default_Point))))))) (PreH3 : (k >= 2)) (PreH4 : (0 <= i)) (PreH5 : (i < n_pre)) (PreH6 : (0 <= k)) (PreH7 : (k <= i)) (PreH8 : (2 <= n_pre)) (PreH9 : (n_pre <= 50000)) (PreH10 : ((Zlength (pts_l_low_level_spec)) = n_pre)) (PreH11 : ((Zlength (pts_sorted_2)) = n_pre)) (PreH12 : (points_in_bound pts_sorted_2 )) (PreH13 : (point_permutation pts_l_low_level_spec pts_sorted_2 )) (PreH14 : (point_xy_sorted pts_sorted_2 )) (PreH15 : (point_in_bound (Znth i pts_sorted_2 __default_Point) )) (PreH16 : (andrew_lower_scan_inv pts_sorted_2 lower_2 i k )) (PreH17 : (safeExec (equiv (lower_2)) (build_chain ((sublist (i) (n_pre) (pts_sorted_2)))) X_low_level_spec )) ,
+forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list Point) -> Prop))) (pts_l_low_level_spec: (@list Point)) (lower_2: (@list Point)) (pts_sorted_2: (@list Point)) (k: Z) (i: Z) (retval: Z)  __default_Point (PreH1 : (retval <= 0)) (PreH2 : (retval = (point_cross_by_value ((point_x ((Znth ((k - 2 ) - 0 ) lower_2 __default_Point)))) ((point_y ((Znth ((k - 2 ) - 0 ) lower_2 __default_Point)))) ((point_x ((Znth ((k - 1 ) - 0 ) lower_2 __default_Point)))) ((point_y ((Znth ((k - 1 ) - 0 ) lower_2 __default_Point)))) ((point_x ((Znth i pts_sorted_2 __default_Point)))) ((point_y ((Znth i pts_sorted_2 __default_Point))))))) (PreH3 : (k >= 2)) (PreH4 : (0 <= i)) (PreH5 : (i < n_pre)) (PreH6 : (0 <= k)) (PreH7 : (k <= i)) (PreH8 : ((0 < i) -> (1 <= k))) (PreH9 : (2 <= n_pre)) (PreH10 : (n_pre <= 50000)) (PreH11 : ((Zlength (pts_l_low_level_spec)) = n_pre)) (PreH12 : ((Zlength (pts_sorted_2)) = n_pre)) (PreH13 : (points_in_bound pts_sorted_2 )) (PreH14 : (point_permutation pts_l_low_level_spec pts_sorted_2 )) (PreH15 : (point_xy_sorted pts_sorted_2 )) (PreH16 : (point_in_bound (Znth i pts_sorted_2 __default_Point) )) (PreH17 : (andrew_lower_scan_inv pts_sorted_2 lower_2 i k )) (PreH18 : (andrew_lower_remaining_cont pts_sorted_2 lower_2 i X_low_level_spec )) ,
   (PointArray.full pts_pre n_pre pts_sorted_2 )
   **  (PointArray.seg hull_pre 0 k lower_2 )
   **  (PointArray.undef_seg hull_pre k (2 * n_pre ) )
@@ -2689,6 +2804,7 @@ forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list
   &&  “ (i < n_pre) ” 
   &&  “ (0 <= (k - 1 )) ” 
   &&  “ ((k - 1 ) <= i) ” 
+  &&  “ ((0 < i) -> (1 <= (k - 1 ))) ” 
   &&  “ (2 <= n_pre) ” 
   &&  “ (n_pre <= 50000) ” 
   &&  “ ((Zlength (pts_l_low_level_spec)) = n_pre) ” 
@@ -2698,13 +2814,13 @@ forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list
   &&  “ (point_xy_sorted pts_sorted ) ” 
   &&  “ (point_in_bound (Znth i pts_sorted __default_Point) ) ” 
   &&  “ (andrew_lower_scan_inv pts_sorted lower i (k - 1 ) ) ” 
-  &&  “ (safeExec (equiv (lower)) (build_chain ((sublist (i) (n_pre) (pts_sorted)))) X_low_level_spec ) ”
+  &&  “ (andrew_lower_remaining_cont pts_sorted lower i X_low_level_spec ) ”
   &&  (PointArray.full pts_pre n_pre pts_sorted )
   **  (PointArray.seg hull_pre 0 (k - 1 ) lower )
   **  (PointArray.undef_seg hull_pre (k - 1 ) (2 * n_pre ) )
 ) \/
 (
-forall (hull_pre: Z) (n_pre: Z) (X_low_level_spec: (unit -> ((@list Point) -> Prop))) (pts_l_low_level_spec: (@list Point)) (lower_2: (@list Point)) (pts_sorted_2: (@list Point)) (k: Z) (i: Z) (retval: Z)  __default_Point (PreH1 : (retval <= 0)) (PreH2 : (retval = (point_cross_by_value ((point_x ((Znth ((k - 2 ) - 0 ) lower_2 __default_Point)))) ((point_y ((Znth ((k - 2 ) - 0 ) lower_2 __default_Point)))) ((point_x ((Znth ((k - 1 ) - 0 ) lower_2 __default_Point)))) ((point_y ((Znth ((k - 1 ) - 0 ) lower_2 __default_Point)))) ((point_x ((Znth i pts_sorted_2 __default_Point)))) ((point_y ((Znth i pts_sorted_2 __default_Point))))))) (PreH3 : (k >= 2)) (PreH4 : (0 <= i)) (PreH5 : (i < n_pre)) (PreH6 : (0 <= k)) (PreH7 : (k <= i)) (PreH8 : (2 <= n_pre)) (PreH9 : (n_pre <= 50000)) (PreH10 : ((Zlength (pts_l_low_level_spec)) = n_pre)) (PreH11 : ((Zlength (pts_sorted_2)) = n_pre)) (PreH12 : (points_in_bound pts_sorted_2 )) (PreH13 : (point_permutation pts_l_low_level_spec pts_sorted_2 )) (PreH14 : (point_xy_sorted pts_sorted_2 )) (PreH15 : (point_in_bound (Znth i pts_sorted_2 __default_Point) )) (PreH16 : (andrew_lower_scan_inv pts_sorted_2 lower_2 i k )) (PreH17 : (safeExec (equiv (lower_2)) (build_chain ((sublist (i) (n_pre) (pts_sorted_2)))) X_low_level_spec )) ,
+forall (hull_pre: Z) (n_pre: Z) (X_low_level_spec: (unit -> ((@list Point) -> Prop))) (pts_l_low_level_spec: (@list Point)) (lower_2: (@list Point)) (pts_sorted_2: (@list Point)) (k: Z) (i: Z) (retval: Z)  __default_Point (PreH1 : (retval <= 0)) (PreH2 : (retval = (point_cross_by_value ((point_x ((Znth ((k - 2 ) - 0 ) lower_2 __default_Point)))) ((point_y ((Znth ((k - 2 ) - 0 ) lower_2 __default_Point)))) ((point_x ((Znth ((k - 1 ) - 0 ) lower_2 __default_Point)))) ((point_y ((Znth ((k - 1 ) - 0 ) lower_2 __default_Point)))) ((point_x ((Znth i pts_sorted_2 __default_Point)))) ((point_y ((Znth i pts_sorted_2 __default_Point))))))) (PreH3 : (k >= 2)) (PreH4 : (0 <= i)) (PreH5 : (i < n_pre)) (PreH6 : (0 <= k)) (PreH7 : (k <= i)) (PreH8 : ((0 < i) -> (1 <= k))) (PreH9 : (2 <= n_pre)) (PreH10 : (n_pre <= 50000)) (PreH11 : ((Zlength (pts_l_low_level_spec)) = n_pre)) (PreH12 : ((Zlength (pts_sorted_2)) = n_pre)) (PreH13 : (points_in_bound pts_sorted_2 )) (PreH14 : (point_permutation pts_l_low_level_spec pts_sorted_2 )) (PreH15 : (point_xy_sorted pts_sorted_2 )) (PreH16 : (point_in_bound (Znth i pts_sorted_2 __default_Point) )) (PreH17 : (andrew_lower_scan_inv pts_sorted_2 lower_2 i k )) (PreH18 : (andrew_lower_remaining_cont pts_sorted_2 lower_2 i X_low_level_spec )) ,
   (PointArray.seg hull_pre 0 k lower_2 )
   **  (PointArray.undef_seg hull_pre k (2 * n_pre ) )
 |--
@@ -2713,6 +2829,7 @@ forall (hull_pre: Z) (n_pre: Z) (X_low_level_spec: (unit -> ((@list Point) -> Pr
   &&  “ (i < n_pre) ” 
   &&  “ (0 <= (k - 1 )) ” 
   &&  “ ((k - 1 ) <= i) ” 
+  &&  “ ((0 < i) -> (1 <= (k - 1 ))) ” 
   &&  “ (2 <= n_pre) ” 
   &&  “ (n_pre <= 50000) ” 
   &&  “ ((Zlength (pts_l_low_level_spec)) = n_pre) ” 
@@ -2722,14 +2839,14 @@ forall (hull_pre: Z) (n_pre: Z) (X_low_level_spec: (unit -> ((@list Point) -> Pr
   &&  “ (point_xy_sorted pts_sorted_2 ) ” 
   &&  “ (point_in_bound (Znth i pts_sorted_2 __default_Point) ) ” 
   &&  “ (andrew_lower_scan_inv pts_sorted_2 lower i (k - 1 ) ) ” 
-  &&  “ (safeExec (equiv (lower)) (build_chain ((sublist (i) (n_pre) (pts_sorted_2)))) X_low_level_spec ) ”
+  &&  “ (andrew_lower_remaining_cont pts_sorted_2 lower i X_low_level_spec ) ”
   &&  (PointArray.seg hull_pre 0 (k - 1 ) lower )
   **  (PointArray.undef_seg hull_pre (k - 1 ) (2 * n_pre ) )
 ).
 
-Definition andrew_monotone_chain_entail_wit_4_1 := 
+Definition andrew_build_from_sorted_entail_wit_4_1 := 
 (
-forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list Point) -> Prop))) (pts_l_low_level_spec: (@list Point)) (lower_2: (@list Point)) (pts_sorted_2: (@list Point)) (k: Z) (i: Z)  __default_Point (PreH1 : (k < 2)) (PreH2 : (0 <= i)) (PreH3 : (i < n_pre)) (PreH4 : (0 <= k)) (PreH5 : (k <= i)) (PreH6 : (2 <= n_pre)) (PreH7 : (n_pre <= 50000)) (PreH8 : ((Zlength (pts_l_low_level_spec)) = n_pre)) (PreH9 : ((Zlength (pts_sorted_2)) = n_pre)) (PreH10 : (points_in_bound pts_sorted_2 )) (PreH11 : (point_permutation pts_l_low_level_spec pts_sorted_2 )) (PreH12 : (point_xy_sorted pts_sorted_2 )) (PreH13 : (point_in_bound (Znth i pts_sorted_2 __default_Point) )) (PreH14 : (andrew_lower_scan_inv pts_sorted_2 lower_2 i k )) (PreH15 : (safeExec (equiv (lower_2)) (build_chain ((sublist (i) (n_pre) (pts_sorted_2)))) X_low_level_spec )) ,
+forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list Point) -> Prop))) (pts_l_low_level_spec: (@list Point)) (lower_2: (@list Point)) (pts_sorted_2: (@list Point)) (k: Z) (i: Z)  __default_Point (PreH1 : (k < 2)) (PreH2 : (0 <= i)) (PreH3 : (i < n_pre)) (PreH4 : (0 <= k)) (PreH5 : (k <= i)) (PreH6 : ((0 < i) -> (1 <= k))) (PreH7 : (2 <= n_pre)) (PreH8 : (n_pre <= 50000)) (PreH9 : ((Zlength (pts_l_low_level_spec)) = n_pre)) (PreH10 : ((Zlength (pts_sorted_2)) = n_pre)) (PreH11 : (points_in_bound pts_sorted_2 )) (PreH12 : (point_permutation pts_l_low_level_spec pts_sorted_2 )) (PreH13 : (point_xy_sorted pts_sorted_2 )) (PreH14 : (point_in_bound (Znth i pts_sorted_2 __default_Point) )) (PreH15 : (andrew_lower_scan_inv pts_sorted_2 lower_2 i k )) (PreH16 : (andrew_lower_remaining_cont pts_sorted_2 lower_2 i X_low_level_spec )) ,
   (PointArray.full pts_pre n_pre pts_sorted_2 )
   **  ((&(((hull_pre + (k * sizeof( "Point" ) ) ))  # "Point" ->ₛ "x")) # Int  |-> (point_x ((Znth i pts_sorted_2 __default_Point))))
   **  (PointArray.undef_seg hull_pre (k + 1 ) (2 * n_pre ) )
@@ -2741,6 +2858,7 @@ forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list
   &&  “ ((i + 1 ) <= n_pre) ” 
   &&  “ (0 <= (k + 1 )) ” 
   &&  “ ((k + 1 ) <= (i + 1 )) ” 
+  &&  “ ((0 < (i + 1 )) -> (1 <= (k + 1 ))) ” 
   &&  “ (2 <= n_pre) ” 
   &&  “ (n_pre <= 50000) ” 
   &&  “ ((Zlength (pts_l_low_level_spec)) = n_pre) ” 
@@ -2749,13 +2867,13 @@ forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list
   &&  “ (point_permutation pts_l_low_level_spec pts_sorted ) ” 
   &&  “ (point_xy_sorted pts_sorted ) ” 
   &&  “ (andrew_lower_scan_inv pts_sorted lower (i + 1 ) (k + 1 ) ) ” 
-  &&  “ (safeExec (equiv (lower)) (build_chain ((sublist ((i + 1 )) (n_pre) (pts_sorted)))) X_low_level_spec ) ”
+  &&  “ (andrew_lower_remaining_cont pts_sorted lower (i + 1 ) X_low_level_spec ) ”
   &&  (PointArray.full pts_pre n_pre pts_sorted )
   **  (PointArray.seg hull_pre 0 (k + 1 ) lower )
   **  (PointArray.undef_seg hull_pre (k + 1 ) (2 * n_pre ) )
 ) \/
 (
-forall (hull_pre: Z) (n_pre: Z) (X_low_level_spec: (unit -> ((@list Point) -> Prop))) (pts_l_low_level_spec: (@list Point)) (lower_2: (@list Point)) (pts_sorted_2: (@list Point)) (k: Z) (i: Z)  __default_Point (PreH1 : ((point_y ((Znth i pts_sorted_2 __default_Point))) <= INT_MAX)) (PreH2 : ((point_x ((Znth i pts_sorted_2 __default_Point))) <= INT_MAX)) (PreH3 : ((point_y ((Znth i pts_sorted_2 __default_Point))) >= INT_MIN)) (PreH4 : ((point_x ((Znth i pts_sorted_2 __default_Point))) >= INT_MIN)) (PreH5 : (k < 2)) (PreH6 : (0 <= i)) (PreH7 : (i < n_pre)) (PreH8 : (0 <= k)) (PreH9 : (k <= i)) (PreH10 : (2 <= n_pre)) (PreH11 : (n_pre <= 50000)) (PreH12 : ((Zlength (pts_l_low_level_spec)) = n_pre)) (PreH13 : ((Zlength (pts_sorted_2)) = n_pre)) (PreH14 : (points_in_bound pts_sorted_2 )) (PreH15 : (point_permutation pts_l_low_level_spec pts_sorted_2 )) (PreH16 : (point_xy_sorted pts_sorted_2 )) (PreH17 : (point_in_bound (Znth i pts_sorted_2 __default_Point) )) (PreH18 : (andrew_lower_scan_inv pts_sorted_2 lower_2 i k )) (PreH19 : (safeExec (equiv (lower_2)) (build_chain ((sublist (i) (n_pre) (pts_sorted_2)))) X_low_level_spec )) ,
+forall (hull_pre: Z) (n_pre: Z) (X_low_level_spec: (unit -> ((@list Point) -> Prop))) (pts_l_low_level_spec: (@list Point)) (lower_2: (@list Point)) (pts_sorted_2: (@list Point)) (k: Z) (i: Z)  __default_Point (PreH1 : ((point_y ((Znth i pts_sorted_2 __default_Point))) <= INT_MAX)) (PreH2 : ((point_x ((Znth i pts_sorted_2 __default_Point))) <= INT_MAX)) (PreH3 : ((point_y ((Znth i pts_sorted_2 __default_Point))) >= INT_MIN)) (PreH4 : ((point_x ((Znth i pts_sorted_2 __default_Point))) >= INT_MIN)) (PreH5 : (k < 2)) (PreH6 : (0 <= i)) (PreH7 : (i < n_pre)) (PreH8 : (0 <= k)) (PreH9 : (k <= i)) (PreH10 : ((0 < i) -> (1 <= k))) (PreH11 : (2 <= n_pre)) (PreH12 : (n_pre <= 50000)) (PreH13 : ((Zlength (pts_l_low_level_spec)) = n_pre)) (PreH14 : ((Zlength (pts_sorted_2)) = n_pre)) (PreH15 : (points_in_bound pts_sorted_2 )) (PreH16 : (point_permutation pts_l_low_level_spec pts_sorted_2 )) (PreH17 : (point_xy_sorted pts_sorted_2 )) (PreH18 : (point_in_bound (Znth i pts_sorted_2 __default_Point) )) (PreH19 : (andrew_lower_scan_inv pts_sorted_2 lower_2 i k )) (PreH20 : (andrew_lower_remaining_cont pts_sorted_2 lower_2 i X_low_level_spec )) ,
   ((&(((hull_pre + (k * sizeof( "Point" ) ) ))  # "Point" ->ₛ "x")) # Int  |-> (point_x ((Znth i pts_sorted_2 __default_Point))))
   **  (PointArray.undef_seg hull_pre (k + 1 ) (2 * n_pre ) )
   **  ((&(((hull_pre + (k * sizeof( "Point" ) ) ))  # "Point" ->ₛ "y")) # Int  |-> (point_y ((Znth i pts_sorted_2 __default_Point))))
@@ -2766,6 +2884,7 @@ forall (hull_pre: Z) (n_pre: Z) (X_low_level_spec: (unit -> ((@list Point) -> Pr
   &&  “ ((i + 1 ) <= n_pre) ” 
   &&  “ (0 <= (k + 1 )) ” 
   &&  “ ((k + 1 ) <= (i + 1 )) ” 
+  &&  “ ((0 < (i + 1 )) -> (1 <= (k + 1 ))) ” 
   &&  “ (2 <= n_pre) ” 
   &&  “ (n_pre <= 50000) ” 
   &&  “ ((Zlength (pts_l_low_level_spec)) = n_pre) ” 
@@ -2774,14 +2893,14 @@ forall (hull_pre: Z) (n_pre: Z) (X_low_level_spec: (unit -> ((@list Point) -> Pr
   &&  “ (point_permutation pts_l_low_level_spec pts_sorted_2 ) ” 
   &&  “ (point_xy_sorted pts_sorted_2 ) ” 
   &&  “ (andrew_lower_scan_inv pts_sorted_2 lower (i + 1 ) (k + 1 ) ) ” 
-  &&  “ (safeExec (equiv (lower)) (build_chain ((sublist ((i + 1 )) (n_pre) (pts_sorted_2)))) X_low_level_spec ) ”
+  &&  “ (andrew_lower_remaining_cont pts_sorted_2 lower (i + 1 ) X_low_level_spec ) ”
   &&  (PointArray.seg hull_pre 0 (k + 1 ) lower )
   **  (PointArray.undef_seg hull_pre (k + 1 ) (2 * n_pre ) )
 ).
 
-Definition andrew_monotone_chain_entail_wit_4_2 := 
+Definition andrew_build_from_sorted_entail_wit_4_2 := 
 (
-forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list Point) -> Prop))) (pts_l_low_level_spec: (@list Point)) (lower_2: (@list Point)) (pts_sorted_2: (@list Point)) (k: Z) (i: Z) (retval: Z)  __default_Point (PreH1 : (retval > 0)) (PreH2 : (retval = (point_cross_by_value ((point_x ((Znth ((k - 2 ) - 0 ) lower_2 __default_Point)))) ((point_y ((Znth ((k - 2 ) - 0 ) lower_2 __default_Point)))) ((point_x ((Znth ((k - 1 ) - 0 ) lower_2 __default_Point)))) ((point_y ((Znth ((k - 1 ) - 0 ) lower_2 __default_Point)))) ((point_x ((Znth i pts_sorted_2 __default_Point)))) ((point_y ((Znth i pts_sorted_2 __default_Point))))))) (PreH3 : (k >= 2)) (PreH4 : (0 <= i)) (PreH5 : (i < n_pre)) (PreH6 : (0 <= k)) (PreH7 : (k <= i)) (PreH8 : (2 <= n_pre)) (PreH9 : (n_pre <= 50000)) (PreH10 : ((Zlength (pts_l_low_level_spec)) = n_pre)) (PreH11 : ((Zlength (pts_sorted_2)) = n_pre)) (PreH12 : (points_in_bound pts_sorted_2 )) (PreH13 : (point_permutation pts_l_low_level_spec pts_sorted_2 )) (PreH14 : (point_xy_sorted pts_sorted_2 )) (PreH15 : (point_in_bound (Znth i pts_sorted_2 __default_Point) )) (PreH16 : (andrew_lower_scan_inv pts_sorted_2 lower_2 i k )) (PreH17 : (safeExec (equiv (lower_2)) (build_chain ((sublist (i) (n_pre) (pts_sorted_2)))) X_low_level_spec )) ,
+forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list Point) -> Prop))) (pts_l_low_level_spec: (@list Point)) (lower_2: (@list Point)) (pts_sorted_2: (@list Point)) (k: Z) (i: Z) (retval: Z)  __default_Point (PreH1 : (retval > 0)) (PreH2 : (retval = (point_cross_by_value ((point_x ((Znth ((k - 2 ) - 0 ) lower_2 __default_Point)))) ((point_y ((Znth ((k - 2 ) - 0 ) lower_2 __default_Point)))) ((point_x ((Znth ((k - 1 ) - 0 ) lower_2 __default_Point)))) ((point_y ((Znth ((k - 1 ) - 0 ) lower_2 __default_Point)))) ((point_x ((Znth i pts_sorted_2 __default_Point)))) ((point_y ((Znth i pts_sorted_2 __default_Point))))))) (PreH3 : (k >= 2)) (PreH4 : (0 <= i)) (PreH5 : (i < n_pre)) (PreH6 : (0 <= k)) (PreH7 : (k <= i)) (PreH8 : ((0 < i) -> (1 <= k))) (PreH9 : (2 <= n_pre)) (PreH10 : (n_pre <= 50000)) (PreH11 : ((Zlength (pts_l_low_level_spec)) = n_pre)) (PreH12 : ((Zlength (pts_sorted_2)) = n_pre)) (PreH13 : (points_in_bound pts_sorted_2 )) (PreH14 : (point_permutation pts_l_low_level_spec pts_sorted_2 )) (PreH15 : (point_xy_sorted pts_sorted_2 )) (PreH16 : (point_in_bound (Znth i pts_sorted_2 __default_Point) )) (PreH17 : (andrew_lower_scan_inv pts_sorted_2 lower_2 i k )) (PreH18 : (andrew_lower_remaining_cont pts_sorted_2 lower_2 i X_low_level_spec )) ,
   (PointArray.full pts_pre n_pre pts_sorted_2 )
   **  ((&(((hull_pre + (k * sizeof( "Point" ) ) ))  # "Point" ->ₛ "x")) # Int  |-> (point_x ((Znth i pts_sorted_2 __default_Point))))
   **  (PointArray.undef_seg hull_pre (k + 1 ) (2 * n_pre ) )
@@ -2793,6 +2912,7 @@ forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list
   &&  “ ((i + 1 ) <= n_pre) ” 
   &&  “ (0 <= (k + 1 )) ” 
   &&  “ ((k + 1 ) <= (i + 1 )) ” 
+  &&  “ ((0 < (i + 1 )) -> (1 <= (k + 1 ))) ” 
   &&  “ (2 <= n_pre) ” 
   &&  “ (n_pre <= 50000) ” 
   &&  “ ((Zlength (pts_l_low_level_spec)) = n_pre) ” 
@@ -2801,13 +2921,13 @@ forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list
   &&  “ (point_permutation pts_l_low_level_spec pts_sorted ) ” 
   &&  “ (point_xy_sorted pts_sorted ) ” 
   &&  “ (andrew_lower_scan_inv pts_sorted lower (i + 1 ) (k + 1 ) ) ” 
-  &&  “ (safeExec (equiv (lower)) (build_chain ((sublist ((i + 1 )) (n_pre) (pts_sorted)))) X_low_level_spec ) ”
+  &&  “ (andrew_lower_remaining_cont pts_sorted lower (i + 1 ) X_low_level_spec ) ”
   &&  (PointArray.full pts_pre n_pre pts_sorted )
   **  (PointArray.seg hull_pre 0 (k + 1 ) lower )
   **  (PointArray.undef_seg hull_pre (k + 1 ) (2 * n_pre ) )
 ) \/
 (
-forall (hull_pre: Z) (n_pre: Z) (X_low_level_spec: (unit -> ((@list Point) -> Prop))) (pts_l_low_level_spec: (@list Point)) (lower_2: (@list Point)) (pts_sorted_2: (@list Point)) (k: Z) (i: Z) (retval: Z)  __default_Point (PreH1 : ((point_y ((Znth i pts_sorted_2 __default_Point))) <= INT_MAX)) (PreH2 : ((point_x ((Znth i pts_sorted_2 __default_Point))) <= INT_MAX)) (PreH3 : ((point_y ((Znth i pts_sorted_2 __default_Point))) >= INT_MIN)) (PreH4 : ((point_x ((Znth i pts_sorted_2 __default_Point))) >= INT_MIN)) (PreH5 : (retval > 0)) (PreH6 : (retval = (point_cross_by_value ((point_x ((Znth ((k - 2 ) - 0 ) lower_2 __default_Point)))) ((point_y ((Znth ((k - 2 ) - 0 ) lower_2 __default_Point)))) ((point_x ((Znth ((k - 1 ) - 0 ) lower_2 __default_Point)))) ((point_y ((Znth ((k - 1 ) - 0 ) lower_2 __default_Point)))) ((point_x ((Znth i pts_sorted_2 __default_Point)))) ((point_y ((Znth i pts_sorted_2 __default_Point))))))) (PreH7 : (k >= 2)) (PreH8 : (0 <= i)) (PreH9 : (i < n_pre)) (PreH10 : (0 <= k)) (PreH11 : (k <= i)) (PreH12 : (2 <= n_pre)) (PreH13 : (n_pre <= 50000)) (PreH14 : ((Zlength (pts_l_low_level_spec)) = n_pre)) (PreH15 : ((Zlength (pts_sorted_2)) = n_pre)) (PreH16 : (points_in_bound pts_sorted_2 )) (PreH17 : (point_permutation pts_l_low_level_spec pts_sorted_2 )) (PreH18 : (point_xy_sorted pts_sorted_2 )) (PreH19 : (point_in_bound (Znth i pts_sorted_2 __default_Point) )) (PreH20 : (andrew_lower_scan_inv pts_sorted_2 lower_2 i k )) (PreH21 : (safeExec (equiv (lower_2)) (build_chain ((sublist (i) (n_pre) (pts_sorted_2)))) X_low_level_spec )) ,
+forall (hull_pre: Z) (n_pre: Z) (X_low_level_spec: (unit -> ((@list Point) -> Prop))) (pts_l_low_level_spec: (@list Point)) (lower_2: (@list Point)) (pts_sorted_2: (@list Point)) (k: Z) (i: Z) (retval: Z)  __default_Point (PreH1 : ((point_y ((Znth i pts_sorted_2 __default_Point))) <= INT_MAX)) (PreH2 : ((point_x ((Znth i pts_sorted_2 __default_Point))) <= INT_MAX)) (PreH3 : ((point_y ((Znth i pts_sorted_2 __default_Point))) >= INT_MIN)) (PreH4 : ((point_x ((Znth i pts_sorted_2 __default_Point))) >= INT_MIN)) (PreH5 : (retval > 0)) (PreH6 : (retval = (point_cross_by_value ((point_x ((Znth ((k - 2 ) - 0 ) lower_2 __default_Point)))) ((point_y ((Znth ((k - 2 ) - 0 ) lower_2 __default_Point)))) ((point_x ((Znth ((k - 1 ) - 0 ) lower_2 __default_Point)))) ((point_y ((Znth ((k - 1 ) - 0 ) lower_2 __default_Point)))) ((point_x ((Znth i pts_sorted_2 __default_Point)))) ((point_y ((Znth i pts_sorted_2 __default_Point))))))) (PreH7 : (k >= 2)) (PreH8 : (0 <= i)) (PreH9 : (i < n_pre)) (PreH10 : (0 <= k)) (PreH11 : (k <= i)) (PreH12 : ((0 < i) -> (1 <= k))) (PreH13 : (2 <= n_pre)) (PreH14 : (n_pre <= 50000)) (PreH15 : ((Zlength (pts_l_low_level_spec)) = n_pre)) (PreH16 : ((Zlength (pts_sorted_2)) = n_pre)) (PreH17 : (points_in_bound pts_sorted_2 )) (PreH18 : (point_permutation pts_l_low_level_spec pts_sorted_2 )) (PreH19 : (point_xy_sorted pts_sorted_2 )) (PreH20 : (point_in_bound (Znth i pts_sorted_2 __default_Point) )) (PreH21 : (andrew_lower_scan_inv pts_sorted_2 lower_2 i k )) (PreH22 : (andrew_lower_remaining_cont pts_sorted_2 lower_2 i X_low_level_spec )) ,
   ((&(((hull_pre + (k * sizeof( "Point" ) ) ))  # "Point" ->ₛ "x")) # Int  |-> (point_x ((Znth i pts_sorted_2 __default_Point))))
   **  (PointArray.undef_seg hull_pre (k + 1 ) (2 * n_pre ) )
   **  ((&(((hull_pre + (k * sizeof( "Point" ) ) ))  # "Point" ->ₛ "y")) # Int  |-> (point_y ((Znth i pts_sorted_2 __default_Point))))
@@ -2818,6 +2938,7 @@ forall (hull_pre: Z) (n_pre: Z) (X_low_level_spec: (unit -> ((@list Point) -> Pr
   &&  “ ((i + 1 ) <= n_pre) ” 
   &&  “ (0 <= (k + 1 )) ” 
   &&  “ ((k + 1 ) <= (i + 1 )) ” 
+  &&  “ ((0 < (i + 1 )) -> (1 <= (k + 1 ))) ” 
   &&  “ (2 <= n_pre) ” 
   &&  “ (n_pre <= 50000) ” 
   &&  “ ((Zlength (pts_l_low_level_spec)) = n_pre) ” 
@@ -2826,14 +2947,14 @@ forall (hull_pre: Z) (n_pre: Z) (X_low_level_spec: (unit -> ((@list Point) -> Pr
   &&  “ (point_permutation pts_l_low_level_spec pts_sorted_2 ) ” 
   &&  “ (point_xy_sorted pts_sorted_2 ) ” 
   &&  “ (andrew_lower_scan_inv pts_sorted_2 lower (i + 1 ) (k + 1 ) ) ” 
-  &&  “ (safeExec (equiv (lower)) (build_chain ((sublist ((i + 1 )) (n_pre) (pts_sorted_2)))) X_low_level_spec ) ”
+  &&  “ (andrew_lower_remaining_cont pts_sorted_2 lower (i + 1 ) X_low_level_spec ) ”
   &&  (PointArray.seg hull_pre 0 (k + 1 ) lower )
   **  (PointArray.undef_seg hull_pre (k + 1 ) (2 * n_pre ) )
 ).
 
-Definition andrew_monotone_chain_entail_wit_5 := 
+Definition andrew_build_from_sorted_entail_wit_5 := 
 (
-forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list Point) -> Prop))) (pts_l_low_level_spec: (@list Point)) (lower: (@list Point)) (pts_sorted_2: (@list Point)) (k: Z) (i: Z) (PreH1 : (i >= n_pre)) (PreH2 : (0 <= i)) (PreH3 : (i <= n_pre)) (PreH4 : (0 <= k)) (PreH5 : (k <= i)) (PreH6 : (2 <= n_pre)) (PreH7 : (n_pre <= 50000)) (PreH8 : ((Zlength (pts_l_low_level_spec)) = n_pre)) (PreH9 : ((Zlength (pts_sorted_2)) = n_pre)) (PreH10 : (points_in_bound pts_sorted_2 )) (PreH11 : (point_permutation pts_l_low_level_spec pts_sorted_2 )) (PreH12 : (point_xy_sorted pts_sorted_2 )) (PreH13 : (andrew_lower_scan_inv pts_sorted_2 lower i k )) (PreH14 : (safeExec (equiv (lower)) (build_chain ((sublist (i) (n_pre) (pts_sorted_2)))) X_low_level_spec )) ,
+forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list Point) -> Prop))) (pts_l_low_level_spec: (@list Point)) (lower: (@list Point)) (pts_sorted_2: (@list Point)) (k: Z) (i: Z) (PreH1 : (i >= n_pre)) (PreH2 : (0 <= i)) (PreH3 : (i <= n_pre)) (PreH4 : (0 <= k)) (PreH5 : (k <= i)) (PreH6 : ((0 < i) -> (1 <= k))) (PreH7 : (2 <= n_pre)) (PreH8 : (n_pre <= 50000)) (PreH9 : ((Zlength (pts_l_low_level_spec)) = n_pre)) (PreH10 : ((Zlength (pts_sorted_2)) = n_pre)) (PreH11 : (points_in_bound pts_sorted_2 )) (PreH12 : (point_permutation pts_l_low_level_spec pts_sorted_2 )) (PreH13 : (point_xy_sorted pts_sorted_2 )) (PreH14 : (andrew_lower_scan_inv pts_sorted_2 lower i k )) (PreH15 : (andrew_lower_remaining_cont pts_sorted_2 lower i X_low_level_spec )) ,
   (PointArray.full pts_pre n_pre pts_sorted_2 )
   **  (PointArray.seg hull_pre 0 k lower )
   **  (PointArray.undef_seg hull_pre k (2 * n_pre ) )
@@ -2852,58 +2973,58 @@ forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list
   &&  “ (point_permutation pts_l_low_level_spec pts_sorted ) ” 
   &&  “ (point_xy_sorted pts_sorted ) ” 
   &&  “ (andrew_upper_scan_inv pts_sorted hull_cur ((n_pre - 2 ) + 1 ) k k ) ” 
-  &&  “ (safeExec (equiv (hull_cur)) (build_upper_chain_cont (pts_sorted) ((sublist (0) (k) (hull_cur)))) X_low_level_spec ) ”
+  &&  “ (andrew_upper_remaining_cont pts_sorted hull_cur ((n_pre - 2 ) + 1 ) k X_low_level_spec ) ”
   &&  (PointArray.full pts_pre n_pre pts_sorted )
   **  (PointArray.seg hull_pre 0 k hull_cur )
   **  (PointArray.undef_seg hull_pre k (2 * n_pre ) )
 ) \/
 (
-forall (hull_pre: Z) (n_pre: Z) (pts_l_low_level_spec: (@list Point)) (lower: (@list Point)) (pts_sorted_2: (@list Point)) (k: Z) (i: Z) (PreH1 : (i >= n_pre)) (PreH2 : (0 <= i)) (PreH3 : (i <= n_pre)) (PreH4 : (0 <= k)) (PreH5 : (k <= i)) (PreH6 : (2 <= n_pre)) (PreH7 : (n_pre <= 50000)) (PreH8 : ((Zlength (pts_l_low_level_spec)) = n_pre)) (PreH9 : ((Zlength (pts_sorted_2)) = n_pre)) (PreH10 : (points_in_bound pts_sorted_2 )) (PreH11 : (point_permutation pts_l_low_level_spec pts_sorted_2 )) (PreH12 : (point_xy_sorted pts_sorted_2 )) (PreH13 : (andrew_lower_scan_inv pts_sorted_2 lower i k )) ,
+forall (hull_pre: Z) (n_pre: Z) (X_low_level_spec: (unit -> ((@list Point) -> Prop))) (pts_l_low_level_spec: (@list Point)) (lower: (@list Point)) (pts_sorted_2: (@list Point)) (k: Z) (i: Z) (PreH1 : (i >= n_pre)) (PreH2 : (0 <= i)) (PreH3 : (i <= n_pre)) (PreH4 : (0 <= k)) (PreH5 : (k <= i)) (PreH6 : ((0 < i) -> (1 <= k))) (PreH7 : (2 <= n_pre)) (PreH8 : (n_pre <= 50000)) (PreH9 : ((Zlength (pts_l_low_level_spec)) = n_pre)) (PreH10 : ((Zlength (pts_sorted_2)) = n_pre)) (PreH11 : (points_in_bound pts_sorted_2 )) (PreH12 : (point_permutation pts_l_low_level_spec pts_sorted_2 )) (PreH13 : (point_xy_sorted pts_sorted_2 )) (PreH14 : (andrew_lower_scan_inv pts_sorted_2 lower i k )) (PreH15 : (andrew_lower_remaining_cont pts_sorted_2 lower i X_low_level_spec )) ,
   (PointArray.undef_seg hull_pre k (2 * n_pre ) )
 |--
-  “ (andrew_upper_scan_inv pts_sorted_2 lower ((n_pre - 2 ) + 1 ) k k ) ” 
-  &&  “ (2 <= k) ” 
-  &&  “ (equiv (build_chain ((sublist (i) (n_pre) (pts_sorted_2)))) (build_upper_chain_cont (pts_sorted_2) ((sublist (0) (k) (lower)))) ) ”
+  “ (andrew_upper_remaining_cont pts_sorted_2 lower ((n_pre - 2 ) + 1 ) k X_low_level_spec ) ” 
+  &&  “ (andrew_upper_scan_inv pts_sorted_2 lower ((n_pre - 2 ) + 1 ) k k ) ” 
+  &&  “ (2 <= k) ”
   &&  (PointArray.undef_seg hull_pre k (2 * n_pre ) )
 ).
 
-Definition andrew_monotone_chain_entail_wit_5_split_goal_1 := 
-forall (hull_pre: Z) (n_pre: Z) (pts_l_low_level_spec: (@list Point)) (lower: (@list Point)) (pts_sorted_2: (@list Point)) (k: Z) (i: Z) (PreH1 : (i >= n_pre)) (PreH2 : (0 <= i)) (PreH3 : (i <= n_pre)) (PreH4 : (0 <= k)) (PreH5 : (k <= i)) (PreH6 : (2 <= n_pre)) (PreH7 : (n_pre <= 50000)) (PreH8 : ((Zlength (pts_l_low_level_spec)) = n_pre)) (PreH9 : ((Zlength (pts_sorted_2)) = n_pre)) (PreH10 : (points_in_bound pts_sorted_2 )) (PreH11 : (point_permutation pts_l_low_level_spec pts_sorted_2 )) (PreH12 : (point_xy_sorted pts_sorted_2 )) (PreH13 : (andrew_lower_scan_inv pts_sorted_2 lower i k )) ,
+Definition andrew_build_from_sorted_entail_wit_5_split_goal_1 := 
+forall (hull_pre: Z) (n_pre: Z) (X_low_level_spec: (unit -> ((@list Point) -> Prop))) (pts_l_low_level_spec: (@list Point)) (lower: (@list Point)) (pts_sorted_2: (@list Point)) (k: Z) (i: Z) (PreH1 : (i >= n_pre)) (PreH2 : (0 <= i)) (PreH3 : (i <= n_pre)) (PreH4 : (0 <= k)) (PreH5 : (k <= i)) (PreH6 : ((0 < i) -> (1 <= k))) (PreH7 : (2 <= n_pre)) (PreH8 : (n_pre <= 50000)) (PreH9 : ((Zlength (pts_l_low_level_spec)) = n_pre)) (PreH10 : ((Zlength (pts_sorted_2)) = n_pre)) (PreH11 : (points_in_bound pts_sorted_2 )) (PreH12 : (point_permutation pts_l_low_level_spec pts_sorted_2 )) (PreH13 : (point_xy_sorted pts_sorted_2 )) (PreH14 : (andrew_lower_scan_inv pts_sorted_2 lower i k )) (PreH15 : (andrew_lower_remaining_cont pts_sorted_2 lower i X_low_level_spec )) ,
+  (PointArray.undef_seg hull_pre k (2 * n_pre ) )
+|--
+  “ (andrew_upper_remaining_cont pts_sorted_2 lower ((n_pre - 2 ) + 1 ) k X_low_level_spec ) ”
+.
+
+Definition andrew_build_from_sorted_entail_wit_5_split_goal_2 := 
+forall (hull_pre: Z) (n_pre: Z) (X_low_level_spec: (unit -> ((@list Point) -> Prop))) (pts_l_low_level_spec: (@list Point)) (lower: (@list Point)) (pts_sorted_2: (@list Point)) (k: Z) (i: Z) (PreH1 : (i >= n_pre)) (PreH2 : (0 <= i)) (PreH3 : (i <= n_pre)) (PreH4 : (0 <= k)) (PreH5 : (k <= i)) (PreH6 : ((0 < i) -> (1 <= k))) (PreH7 : (2 <= n_pre)) (PreH8 : (n_pre <= 50000)) (PreH9 : ((Zlength (pts_l_low_level_spec)) = n_pre)) (PreH10 : ((Zlength (pts_sorted_2)) = n_pre)) (PreH11 : (points_in_bound pts_sorted_2 )) (PreH12 : (point_permutation pts_l_low_level_spec pts_sorted_2 )) (PreH13 : (point_xy_sorted pts_sorted_2 )) (PreH14 : (andrew_lower_scan_inv pts_sorted_2 lower i k )) (PreH15 : (andrew_lower_remaining_cont pts_sorted_2 lower i X_low_level_spec )) ,
   (PointArray.undef_seg hull_pre k (2 * n_pre ) )
 |--
   “ (andrew_upper_scan_inv pts_sorted_2 lower ((n_pre - 2 ) + 1 ) k k ) ”
 .
 
-Definition andrew_monotone_chain_entail_wit_5_split_goal_2 := 
-forall (hull_pre: Z) (n_pre: Z) (pts_l_low_level_spec: (@list Point)) (lower: (@list Point)) (pts_sorted_2: (@list Point)) (k: Z) (i: Z) (PreH1 : (i >= n_pre)) (PreH2 : (0 <= i)) (PreH3 : (i <= n_pre)) (PreH4 : (0 <= k)) (PreH5 : (k <= i)) (PreH6 : (2 <= n_pre)) (PreH7 : (n_pre <= 50000)) (PreH8 : ((Zlength (pts_l_low_level_spec)) = n_pre)) (PreH9 : ((Zlength (pts_sorted_2)) = n_pre)) (PreH10 : (points_in_bound pts_sorted_2 )) (PreH11 : (point_permutation pts_l_low_level_spec pts_sorted_2 )) (PreH12 : (point_xy_sorted pts_sorted_2 )) (PreH13 : (andrew_lower_scan_inv pts_sorted_2 lower i k )) ,
+Definition andrew_build_from_sorted_entail_wit_5_split_goal_3 := 
+forall (hull_pre: Z) (n_pre: Z) (X_low_level_spec: (unit -> ((@list Point) -> Prop))) (pts_l_low_level_spec: (@list Point)) (lower: (@list Point)) (pts_sorted_2: (@list Point)) (k: Z) (i: Z) (PreH1 : (i >= n_pre)) (PreH2 : (0 <= i)) (PreH3 : (i <= n_pre)) (PreH4 : (0 <= k)) (PreH5 : (k <= i)) (PreH6 : ((0 < i) -> (1 <= k))) (PreH7 : (2 <= n_pre)) (PreH8 : (n_pre <= 50000)) (PreH9 : ((Zlength (pts_l_low_level_spec)) = n_pre)) (PreH10 : ((Zlength (pts_sorted_2)) = n_pre)) (PreH11 : (points_in_bound pts_sorted_2 )) (PreH12 : (point_permutation pts_l_low_level_spec pts_sorted_2 )) (PreH13 : (point_xy_sorted pts_sorted_2 )) (PreH14 : (andrew_lower_scan_inv pts_sorted_2 lower i k )) (PreH15 : (andrew_lower_remaining_cont pts_sorted_2 lower i X_low_level_spec )) ,
   (PointArray.undef_seg hull_pre k (2 * n_pre ) )
 |--
   “ (2 <= k) ”
 .
 
-Definition andrew_monotone_chain_entail_wit_5_split_goal_3 := 
-forall (hull_pre: Z) (n_pre: Z) (pts_l_low_level_spec: (@list Point)) (lower: (@list Point)) (pts_sorted_2: (@list Point)) (k: Z) (i: Z) (PreH1 : (i >= n_pre)) (PreH2 : (0 <= i)) (PreH3 : (i <= n_pre)) (PreH4 : (0 <= k)) (PreH5 : (k <= i)) (PreH6 : (2 <= n_pre)) (PreH7 : (n_pre <= 50000)) (PreH8 : ((Zlength (pts_l_low_level_spec)) = n_pre)) (PreH9 : ((Zlength (pts_sorted_2)) = n_pre)) (PreH10 : (points_in_bound pts_sorted_2 )) (PreH11 : (point_permutation pts_l_low_level_spec pts_sorted_2 )) (PreH12 : (point_xy_sorted pts_sorted_2 )) (PreH13 : (andrew_lower_scan_inv pts_sorted_2 lower i k )) ,
-  (PointArray.undef_seg hull_pre k (2 * n_pre ) )
-|--
-  “ (equiv (build_chain ((sublist (i) (n_pre) (pts_sorted_2)))) (build_upper_chain_cont (pts_sorted_2) ((sublist (0) (k) (lower)))) ) ”
-.
-
-Definition andrew_monotone_chain_entail_wit_5_split_goal_spatial := 
-forall (hull_pre: Z) (n_pre: Z) (pts_l_low_level_spec: (@list Point)) (lower: (@list Point)) (pts_sorted_2: (@list Point)) (k: Z) (i: Z) (PreH1 : (i >= n_pre)) (PreH2 : (0 <= i)) (PreH3 : (i <= n_pre)) (PreH4 : (0 <= k)) (PreH5 : (k <= i)) (PreH6 : (2 <= n_pre)) (PreH7 : (n_pre <= 50000)) (PreH8 : ((Zlength (pts_l_low_level_spec)) = n_pre)) (PreH9 : ((Zlength (pts_sorted_2)) = n_pre)) (PreH10 : (points_in_bound pts_sorted_2 )) (PreH11 : (point_permutation pts_l_low_level_spec pts_sorted_2 )) (PreH12 : (point_xy_sorted pts_sorted_2 )) (PreH13 : (andrew_lower_scan_inv pts_sorted_2 lower i k )) ,
+Definition andrew_build_from_sorted_entail_wit_5_split_goal_spatial := 
+forall (hull_pre: Z) (n_pre: Z) (X_low_level_spec: (unit -> ((@list Point) -> Prop))) (pts_l_low_level_spec: (@list Point)) (lower: (@list Point)) (pts_sorted_2: (@list Point)) (k: Z) (i: Z) (PreH1 : (i >= n_pre)) (PreH2 : (0 <= i)) (PreH3 : (i <= n_pre)) (PreH4 : (0 <= k)) (PreH5 : (k <= i)) (PreH6 : ((0 < i) -> (1 <= k))) (PreH7 : (2 <= n_pre)) (PreH8 : (n_pre <= 50000)) (PreH9 : ((Zlength (pts_l_low_level_spec)) = n_pre)) (PreH10 : ((Zlength (pts_sorted_2)) = n_pre)) (PreH11 : (points_in_bound pts_sorted_2 )) (PreH12 : (point_permutation pts_l_low_level_spec pts_sorted_2 )) (PreH13 : (point_xy_sorted pts_sorted_2 )) (PreH14 : (andrew_lower_scan_inv pts_sorted_2 lower i k )) (PreH15 : (andrew_lower_remaining_cont pts_sorted_2 lower i X_low_level_spec )) ,
   (PointArray.undef_seg hull_pre k (2 * n_pre ) )
 |--
   (PointArray.undef_seg hull_pre k (2 * n_pre ) )
 .
 
-Definition andrew_monotone_chain_entail_wit_6 := 
+Definition andrew_build_from_sorted_entail_wit_6 := 
 (
-forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list Point) -> Prop))) (pts_l_low_level_spec: (@list Point)) (hull_cur_2: (@list Point)) (pts_sorted_2: (@list Point)) (k: Z) (lower_n: Z) (i: Z)  __default_Point (PreH1 : (i >= 1)) (PreH2 : (0 <= (i + 1 ))) (PreH3 : ((i + 1 ) <= (n_pre - 1 ))) (PreH4 : (2 <= lower_n)) (PreH5 : (lower_n <= k)) (PreH6 : (k <= (2 * n_pre ))) (PreH7 : (2 <= n_pre)) (PreH8 : (n_pre <= 50000)) (PreH9 : ((Zlength (pts_l_low_level_spec)) = n_pre)) (PreH10 : ((Zlength (pts_sorted_2)) = n_pre)) (PreH11 : (points_in_bound pts_sorted_2 )) (PreH12 : (point_permutation pts_l_low_level_spec pts_sorted_2 )) (PreH13 : (point_xy_sorted pts_sorted_2 )) (PreH14 : (andrew_upper_scan_inv pts_sorted_2 hull_cur_2 (i + 1 ) k lower_n )) (PreH15 : (safeExec (equiv (hull_cur_2)) (build_upper_chain_cont (pts_sorted_2) ((sublist (0) (lower_n) (hull_cur_2)))) X_low_level_spec )) ,
+forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list Point) -> Prop))) (pts_l_low_level_spec: (@list Point)) (hull_cur_2: (@list Point)) (pts_sorted_2: (@list Point)) (k: Z) (lower_n: Z) (i: Z)  __default_Point (PreH1 : (i >= 0)) (PreH2 : (0 <= (i + 1 ))) (PreH3 : ((i + 1 ) <= (n_pre - 1 ))) (PreH4 : (2 <= lower_n)) (PreH5 : (lower_n <= k)) (PreH6 : (k <= (2 * n_pre ))) (PreH7 : (2 <= n_pre)) (PreH8 : (n_pre <= 50000)) (PreH9 : ((Zlength (pts_l_low_level_spec)) = n_pre)) (PreH10 : ((Zlength (pts_sorted_2)) = n_pre)) (PreH11 : (points_in_bound pts_sorted_2 )) (PreH12 : (point_permutation pts_l_low_level_spec pts_sorted_2 )) (PreH13 : (point_xy_sorted pts_sorted_2 )) (PreH14 : (andrew_upper_scan_inv pts_sorted_2 hull_cur_2 (i + 1 ) k lower_n )) (PreH15 : (andrew_upper_remaining_cont pts_sorted_2 hull_cur_2 (i + 1 ) lower_n X_low_level_spec )) ,
   (PointArray.full pts_pre n_pre pts_sorted_2 )
   **  (PointArray.seg hull_pre 0 k hull_cur_2 )
   **  (PointArray.undef_seg hull_pre k (2 * n_pre ) )
 |--
   EX (hull_cur: (@list Point))  (pts_sorted: (@list Point)) ,
-  “ (1 <= i) ” 
+  “ (0 <= i) ” 
   &&  “ (i <= (n_pre - 2 )) ” 
   &&  “ (2 <= lower_n) ” 
   &&  “ (lower_n <= k) ” 
@@ -2917,13 +3038,13 @@ forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list
   &&  “ (point_xy_sorted pts_sorted ) ” 
   &&  “ (point_in_bound (Znth i pts_sorted __default_Point) ) ” 
   &&  “ (andrew_upper_scan_inv pts_sorted hull_cur (i + 1 ) k lower_n ) ” 
-  &&  “ (safeExec (equiv (hull_cur)) (build_upper_chain_cont (pts_sorted) ((sublist (0) (lower_n) (hull_cur)))) X_low_level_spec ) ”
+  &&  “ (andrew_upper_remaining_cont pts_sorted hull_cur (i + 1 ) lower_n X_low_level_spec ) ”
   &&  (PointArray.full pts_pre n_pre pts_sorted )
   **  (PointArray.seg hull_pre 0 k hull_cur )
   **  (PointArray.undef_seg hull_pre k (2 * n_pre ) )
 ) \/
 (
-forall (hull_pre: Z) (n_pre: Z) (pts_l_low_level_spec: (@list Point)) (hull_cur_2: (@list Point)) (pts_sorted_2: (@list Point)) (k: Z) (lower_n: Z) (i: Z)  __default_Point (PreH1 : (i >= 1)) (PreH2 : (0 <= (i + 1 ))) (PreH3 : ((i + 1 ) <= (n_pre - 1 ))) (PreH4 : (2 <= lower_n)) (PreH5 : (lower_n <= k)) (PreH6 : (k <= (2 * n_pre ))) (PreH7 : (2 <= n_pre)) (PreH8 : (n_pre <= 50000)) (PreH9 : ((Zlength (pts_l_low_level_spec)) = n_pre)) (PreH10 : ((Zlength (pts_sorted_2)) = n_pre)) (PreH11 : (points_in_bound pts_sorted_2 )) (PreH12 : (point_permutation pts_l_low_level_spec pts_sorted_2 )) (PreH13 : (point_xy_sorted pts_sorted_2 )) (PreH14 : (andrew_upper_scan_inv pts_sorted_2 hull_cur_2 (i + 1 ) k lower_n )) ,
+forall (hull_pre: Z) (n_pre: Z) (X_low_level_spec: (unit -> ((@list Point) -> Prop))) (pts_l_low_level_spec: (@list Point)) (hull_cur_2: (@list Point)) (pts_sorted_2: (@list Point)) (k: Z) (lower_n: Z) (i: Z)  __default_Point (PreH1 : (i >= 0)) (PreH2 : (0 <= (i + 1 ))) (PreH3 : ((i + 1 ) <= (n_pre - 1 ))) (PreH4 : (2 <= lower_n)) (PreH5 : (lower_n <= k)) (PreH6 : (k <= (2 * n_pre ))) (PreH7 : (2 <= n_pre)) (PreH8 : (n_pre <= 50000)) (PreH9 : ((Zlength (pts_l_low_level_spec)) = n_pre)) (PreH10 : ((Zlength (pts_sorted_2)) = n_pre)) (PreH11 : (points_in_bound pts_sorted_2 )) (PreH12 : (point_permutation pts_l_low_level_spec pts_sorted_2 )) (PreH13 : (point_xy_sorted pts_sorted_2 )) (PreH14 : (andrew_upper_scan_inv pts_sorted_2 hull_cur_2 (i + 1 ) k lower_n )) (PreH15 : (andrew_upper_remaining_cont pts_sorted_2 hull_cur_2 (i + 1 ) lower_n X_low_level_spec )) ,
   (PointArray.undef_seg hull_pre k (2 * n_pre ) )
 |--
   “ (point_in_bound (Znth i pts_sorted_2 __default_Point) ) ” 
@@ -2931,36 +3052,36 @@ forall (hull_pre: Z) (n_pre: Z) (pts_l_low_level_spec: (@list Point)) (hull_cur_
   &&  (PointArray.undef_seg hull_pre k (2 * n_pre ) )
 ).
 
-Definition andrew_monotone_chain_entail_wit_6_split_goal_1 := 
-forall (hull_pre: Z) (n_pre: Z) (pts_l_low_level_spec: (@list Point)) (hull_cur_2: (@list Point)) (pts_sorted_2: (@list Point)) (k: Z) (lower_n: Z) (i: Z)  __default_Point (PreH1 : (i >= 1)) (PreH2 : (0 <= (i + 1 ))) (PreH3 : ((i + 1 ) <= (n_pre - 1 ))) (PreH4 : (2 <= lower_n)) (PreH5 : (lower_n <= k)) (PreH6 : (k <= (2 * n_pre ))) (PreH7 : (2 <= n_pre)) (PreH8 : (n_pre <= 50000)) (PreH9 : ((Zlength (pts_l_low_level_spec)) = n_pre)) (PreH10 : ((Zlength (pts_sorted_2)) = n_pre)) (PreH11 : (points_in_bound pts_sorted_2 )) (PreH12 : (point_permutation pts_l_low_level_spec pts_sorted_2 )) (PreH13 : (point_xy_sorted pts_sorted_2 )) (PreH14 : (andrew_upper_scan_inv pts_sorted_2 hull_cur_2 (i + 1 ) k lower_n )) ,
+Definition andrew_build_from_sorted_entail_wit_6_split_goal_1 := 
+forall (hull_pre: Z) (n_pre: Z) (X_low_level_spec: (unit -> ((@list Point) -> Prop))) (pts_l_low_level_spec: (@list Point)) (hull_cur_2: (@list Point)) (pts_sorted_2: (@list Point)) (k: Z) (lower_n: Z) (i: Z)  __default_Point (PreH1 : (i >= 0)) (PreH2 : (0 <= (i + 1 ))) (PreH3 : ((i + 1 ) <= (n_pre - 1 ))) (PreH4 : (2 <= lower_n)) (PreH5 : (lower_n <= k)) (PreH6 : (k <= (2 * n_pre ))) (PreH7 : (2 <= n_pre)) (PreH8 : (n_pre <= 50000)) (PreH9 : ((Zlength (pts_l_low_level_spec)) = n_pre)) (PreH10 : ((Zlength (pts_sorted_2)) = n_pre)) (PreH11 : (points_in_bound pts_sorted_2 )) (PreH12 : (point_permutation pts_l_low_level_spec pts_sorted_2 )) (PreH13 : (point_xy_sorted pts_sorted_2 )) (PreH14 : (andrew_upper_scan_inv pts_sorted_2 hull_cur_2 (i + 1 ) k lower_n )) (PreH15 : (andrew_upper_remaining_cont pts_sorted_2 hull_cur_2 (i + 1 ) lower_n X_low_level_spec )) ,
   (PointArray.undef_seg hull_pre k (2 * n_pre ) )
 |--
   “ (point_in_bound (Znth i pts_sorted_2 __default_Point) ) ”
 .
 
-Definition andrew_monotone_chain_entail_wit_6_split_goal_2 := 
-forall (hull_pre: Z) (n_pre: Z) (pts_l_low_level_spec: (@list Point)) (hull_cur_2: (@list Point)) (pts_sorted_2: (@list Point)) (k: Z) (lower_n: Z) (i: Z) (PreH1 : (i >= 1)) (PreH2 : (0 <= (i + 1 ))) (PreH3 : ((i + 1 ) <= (n_pre - 1 ))) (PreH4 : (2 <= lower_n)) (PreH5 : (lower_n <= k)) (PreH6 : (k <= (2 * n_pre ))) (PreH7 : (2 <= n_pre)) (PreH8 : (n_pre <= 50000)) (PreH9 : ((Zlength (pts_l_low_level_spec)) = n_pre)) (PreH10 : ((Zlength (pts_sorted_2)) = n_pre)) (PreH11 : (points_in_bound pts_sorted_2 )) (PreH12 : (point_permutation pts_l_low_level_spec pts_sorted_2 )) (PreH13 : (point_xy_sorted pts_sorted_2 )) (PreH14 : (andrew_upper_scan_inv pts_sorted_2 hull_cur_2 (i + 1 ) k lower_n )) ,
+Definition andrew_build_from_sorted_entail_wit_6_split_goal_2 := 
+forall (hull_pre: Z) (n_pre: Z) (X_low_level_spec: (unit -> ((@list Point) -> Prop))) (pts_l_low_level_spec: (@list Point)) (hull_cur_2: (@list Point)) (pts_sorted_2: (@list Point)) (k: Z) (lower_n: Z) (i: Z) (PreH1 : (i >= 0)) (PreH2 : (0 <= (i + 1 ))) (PreH3 : ((i + 1 ) <= (n_pre - 1 ))) (PreH4 : (2 <= lower_n)) (PreH5 : (lower_n <= k)) (PreH6 : (k <= (2 * n_pre ))) (PreH7 : (2 <= n_pre)) (PreH8 : (n_pre <= 50000)) (PreH9 : ((Zlength (pts_l_low_level_spec)) = n_pre)) (PreH10 : ((Zlength (pts_sorted_2)) = n_pre)) (PreH11 : (points_in_bound pts_sorted_2 )) (PreH12 : (point_permutation pts_l_low_level_spec pts_sorted_2 )) (PreH13 : (point_xy_sorted pts_sorted_2 )) (PreH14 : (andrew_upper_scan_inv pts_sorted_2 hull_cur_2 (i + 1 ) k lower_n )) (PreH15 : (andrew_upper_remaining_cont pts_sorted_2 hull_cur_2 (i + 1 ) lower_n X_low_level_spec )) ,
   (PointArray.undef_seg hull_pre k (2 * n_pre ) )
 |--
   “ (k < (2 * n_pre )) ”
 .
 
-Definition andrew_monotone_chain_entail_wit_6_split_goal_spatial := 
-forall (hull_pre: Z) (n_pre: Z) (pts_l_low_level_spec: (@list Point)) (hull_cur_2: (@list Point)) (pts_sorted_2: (@list Point)) (k: Z) (lower_n: Z) (i: Z) (PreH1 : (i >= 1)) (PreH2 : (0 <= (i + 1 ))) (PreH3 : ((i + 1 ) <= (n_pre - 1 ))) (PreH4 : (2 <= lower_n)) (PreH5 : (lower_n <= k)) (PreH6 : (k <= (2 * n_pre ))) (PreH7 : (2 <= n_pre)) (PreH8 : (n_pre <= 50000)) (PreH9 : ((Zlength (pts_l_low_level_spec)) = n_pre)) (PreH10 : ((Zlength (pts_sorted_2)) = n_pre)) (PreH11 : (points_in_bound pts_sorted_2 )) (PreH12 : (point_permutation pts_l_low_level_spec pts_sorted_2 )) (PreH13 : (point_xy_sorted pts_sorted_2 )) (PreH14 : (andrew_upper_scan_inv pts_sorted_2 hull_cur_2 (i + 1 ) k lower_n )) ,
+Definition andrew_build_from_sorted_entail_wit_6_split_goal_spatial := 
+forall (hull_pre: Z) (n_pre: Z) (X_low_level_spec: (unit -> ((@list Point) -> Prop))) (pts_l_low_level_spec: (@list Point)) (hull_cur_2: (@list Point)) (pts_sorted_2: (@list Point)) (k: Z) (lower_n: Z) (i: Z) (PreH1 : (i >= 0)) (PreH2 : (0 <= (i + 1 ))) (PreH3 : ((i + 1 ) <= (n_pre - 1 ))) (PreH4 : (2 <= lower_n)) (PreH5 : (lower_n <= k)) (PreH6 : (k <= (2 * n_pre ))) (PreH7 : (2 <= n_pre)) (PreH8 : (n_pre <= 50000)) (PreH9 : ((Zlength (pts_l_low_level_spec)) = n_pre)) (PreH10 : ((Zlength (pts_sorted_2)) = n_pre)) (PreH11 : (points_in_bound pts_sorted_2 )) (PreH12 : (point_permutation pts_l_low_level_spec pts_sorted_2 )) (PreH13 : (point_xy_sorted pts_sorted_2 )) (PreH14 : (andrew_upper_scan_inv pts_sorted_2 hull_cur_2 (i + 1 ) k lower_n )) (PreH15 : (andrew_upper_remaining_cont pts_sorted_2 hull_cur_2 (i + 1 ) lower_n X_low_level_spec )) ,
   (PointArray.undef_seg hull_pre k (2 * n_pre ) )
 |--
   (PointArray.undef_seg hull_pre k (2 * n_pre ) )
 .
 
-Definition andrew_monotone_chain_entail_wit_7 := 
+Definition andrew_build_from_sorted_entail_wit_7 := 
 (
-forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list Point) -> Prop))) (pts_l_low_level_spec: (@list Point)) (hull_cur_2: (@list Point)) (pts_sorted_2: (@list Point)) (k: Z) (lower_n: Z) (i: Z) (retval: Z)  __default_Point (PreH1 : (retval <= 0)) (PreH2 : (retval = (point_cross_by_value ((point_x ((Znth ((k - 2 ) - 0 ) hull_cur_2 __default_Point)))) ((point_y ((Znth ((k - 2 ) - 0 ) hull_cur_2 __default_Point)))) ((point_x ((Znth ((k - 1 ) - 0 ) hull_cur_2 __default_Point)))) ((point_y ((Znth ((k - 1 ) - 0 ) hull_cur_2 __default_Point)))) ((point_x ((Znth i pts_sorted_2 __default_Point)))) ((point_y ((Znth i pts_sorted_2 __default_Point))))))) (PreH3 : (k > lower_n)) (PreH4 : (1 <= i)) (PreH5 : (i <= (n_pre - 2 ))) (PreH6 : (2 <= lower_n)) (PreH7 : (lower_n <= k)) (PreH8 : (k < (2 * n_pre ))) (PreH9 : (2 <= n_pre)) (PreH10 : (n_pre <= 50000)) (PreH11 : ((Zlength (pts_l_low_level_spec)) = n_pre)) (PreH12 : ((Zlength (pts_sorted_2)) = n_pre)) (PreH13 : (points_in_bound pts_sorted_2 )) (PreH14 : (point_permutation pts_l_low_level_spec pts_sorted_2 )) (PreH15 : (point_xy_sorted pts_sorted_2 )) (PreH16 : (point_in_bound (Znth i pts_sorted_2 __default_Point) )) (PreH17 : (andrew_upper_scan_inv pts_sorted_2 hull_cur_2 (i + 1 ) k lower_n )) (PreH18 : (safeExec (equiv (hull_cur_2)) (build_upper_chain_cont (pts_sorted_2) ((sublist (0) (lower_n) (hull_cur_2)))) X_low_level_spec )) ,
+forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list Point) -> Prop))) (pts_l_low_level_spec: (@list Point)) (hull_cur_2: (@list Point)) (pts_sorted_2: (@list Point)) (k: Z) (lower_n: Z) (i: Z) (retval: Z)  __default_Point (PreH1 : (retval <= 0)) (PreH2 : (retval = (point_cross_by_value ((point_x ((Znth ((k - 2 ) - 0 ) hull_cur_2 __default_Point)))) ((point_y ((Znth ((k - 2 ) - 0 ) hull_cur_2 __default_Point)))) ((point_x ((Znth ((k - 1 ) - 0 ) hull_cur_2 __default_Point)))) ((point_y ((Znth ((k - 1 ) - 0 ) hull_cur_2 __default_Point)))) ((point_x ((Znth i pts_sorted_2 __default_Point)))) ((point_y ((Znth i pts_sorted_2 __default_Point))))))) (PreH3 : (k > lower_n)) (PreH4 : (0 <= i)) (PreH5 : (i <= (n_pre - 2 ))) (PreH6 : (2 <= lower_n)) (PreH7 : (lower_n <= k)) (PreH8 : (k < (2 * n_pre ))) (PreH9 : (2 <= n_pre)) (PreH10 : (n_pre <= 50000)) (PreH11 : ((Zlength (pts_l_low_level_spec)) = n_pre)) (PreH12 : ((Zlength (pts_sorted_2)) = n_pre)) (PreH13 : (points_in_bound pts_sorted_2 )) (PreH14 : (point_permutation pts_l_low_level_spec pts_sorted_2 )) (PreH15 : (point_xy_sorted pts_sorted_2 )) (PreH16 : (point_in_bound (Znth i pts_sorted_2 __default_Point) )) (PreH17 : (andrew_upper_scan_inv pts_sorted_2 hull_cur_2 (i + 1 ) k lower_n )) (PreH18 : (andrew_upper_remaining_cont pts_sorted_2 hull_cur_2 (i + 1 ) lower_n X_low_level_spec )) ,
   (PointArray.full pts_pre n_pre pts_sorted_2 )
   **  (PointArray.seg hull_pre 0 k hull_cur_2 )
   **  (PointArray.undef_seg hull_pre k (2 * n_pre ) )
 |--
   EX (hull_cur: (@list Point))  (pts_sorted: (@list Point)) ,
-  “ (1 <= i) ” 
+  “ (0 <= i) ” 
   &&  “ (i <= (n_pre - 2 )) ” 
   &&  “ (2 <= lower_n) ” 
   &&  “ (lower_n <= (k - 1 )) ” 
@@ -2974,18 +3095,18 @@ forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list
   &&  “ (point_xy_sorted pts_sorted ) ” 
   &&  “ (point_in_bound (Znth i pts_sorted __default_Point) ) ” 
   &&  “ (andrew_upper_scan_inv pts_sorted hull_cur (i + 1 ) (k - 1 ) lower_n ) ” 
-  &&  “ (safeExec (equiv (hull_cur)) (build_upper_chain_cont (pts_sorted) ((sublist (0) (lower_n) (hull_cur)))) X_low_level_spec ) ”
+  &&  “ (andrew_upper_remaining_cont pts_sorted hull_cur (i + 1 ) lower_n X_low_level_spec ) ”
   &&  (PointArray.full pts_pre n_pre pts_sorted )
   **  (PointArray.seg hull_pre 0 (k - 1 ) hull_cur )
   **  (PointArray.undef_seg hull_pre (k - 1 ) (2 * n_pre ) )
 ) \/
 (
-forall (hull_pre: Z) (n_pre: Z) (X_low_level_spec: (unit -> ((@list Point) -> Prop))) (pts_l_low_level_spec: (@list Point)) (hull_cur_2: (@list Point)) (pts_sorted_2: (@list Point)) (k: Z) (lower_n: Z) (i: Z) (retval: Z)  __default_Point (PreH1 : (retval <= 0)) (PreH2 : (retval = (point_cross_by_value ((point_x ((Znth ((k - 2 ) - 0 ) hull_cur_2 __default_Point)))) ((point_y ((Znth ((k - 2 ) - 0 ) hull_cur_2 __default_Point)))) ((point_x ((Znth ((k - 1 ) - 0 ) hull_cur_2 __default_Point)))) ((point_y ((Znth ((k - 1 ) - 0 ) hull_cur_2 __default_Point)))) ((point_x ((Znth i pts_sorted_2 __default_Point)))) ((point_y ((Znth i pts_sorted_2 __default_Point))))))) (PreH3 : (k > lower_n)) (PreH4 : (1 <= i)) (PreH5 : (i <= (n_pre - 2 ))) (PreH6 : (2 <= lower_n)) (PreH7 : (lower_n <= k)) (PreH8 : (k < (2 * n_pre ))) (PreH9 : (2 <= n_pre)) (PreH10 : (n_pre <= 50000)) (PreH11 : ((Zlength (pts_l_low_level_spec)) = n_pre)) (PreH12 : ((Zlength (pts_sorted_2)) = n_pre)) (PreH13 : (points_in_bound pts_sorted_2 )) (PreH14 : (point_permutation pts_l_low_level_spec pts_sorted_2 )) (PreH15 : (point_xy_sorted pts_sorted_2 )) (PreH16 : (point_in_bound (Znth i pts_sorted_2 __default_Point) )) (PreH17 : (andrew_upper_scan_inv pts_sorted_2 hull_cur_2 (i + 1 ) k lower_n )) (PreH18 : (safeExec (equiv (hull_cur_2)) (build_upper_chain_cont (pts_sorted_2) ((sublist (0) (lower_n) (hull_cur_2)))) X_low_level_spec )) ,
+forall (hull_pre: Z) (n_pre: Z) (X_low_level_spec: (unit -> ((@list Point) -> Prop))) (pts_l_low_level_spec: (@list Point)) (hull_cur_2: (@list Point)) (pts_sorted_2: (@list Point)) (k: Z) (lower_n: Z) (i: Z) (retval: Z)  __default_Point (PreH1 : (retval <= 0)) (PreH2 : (retval = (point_cross_by_value ((point_x ((Znth ((k - 2 ) - 0 ) hull_cur_2 __default_Point)))) ((point_y ((Znth ((k - 2 ) - 0 ) hull_cur_2 __default_Point)))) ((point_x ((Znth ((k - 1 ) - 0 ) hull_cur_2 __default_Point)))) ((point_y ((Znth ((k - 1 ) - 0 ) hull_cur_2 __default_Point)))) ((point_x ((Znth i pts_sorted_2 __default_Point)))) ((point_y ((Znth i pts_sorted_2 __default_Point))))))) (PreH3 : (k > lower_n)) (PreH4 : (0 <= i)) (PreH5 : (i <= (n_pre - 2 ))) (PreH6 : (2 <= lower_n)) (PreH7 : (lower_n <= k)) (PreH8 : (k < (2 * n_pre ))) (PreH9 : (2 <= n_pre)) (PreH10 : (n_pre <= 50000)) (PreH11 : ((Zlength (pts_l_low_level_spec)) = n_pre)) (PreH12 : ((Zlength (pts_sorted_2)) = n_pre)) (PreH13 : (points_in_bound pts_sorted_2 )) (PreH14 : (point_permutation pts_l_low_level_spec pts_sorted_2 )) (PreH15 : (point_xy_sorted pts_sorted_2 )) (PreH16 : (point_in_bound (Znth i pts_sorted_2 __default_Point) )) (PreH17 : (andrew_upper_scan_inv pts_sorted_2 hull_cur_2 (i + 1 ) k lower_n )) (PreH18 : (andrew_upper_remaining_cont pts_sorted_2 hull_cur_2 (i + 1 ) lower_n X_low_level_spec )) ,
   (PointArray.seg hull_pre 0 k hull_cur_2 )
   **  (PointArray.undef_seg hull_pre k (2 * n_pre ) )
 |--
   EX (hull_cur: (@list Point)) ,
-  “ (1 <= i) ” 
+  “ (0 <= i) ” 
   &&  “ (i <= (n_pre - 2 )) ” 
   &&  “ (2 <= lower_n) ” 
   &&  “ (lower_n <= (k - 1 )) ” 
@@ -2999,14 +3120,14 @@ forall (hull_pre: Z) (n_pre: Z) (X_low_level_spec: (unit -> ((@list Point) -> Pr
   &&  “ (point_xy_sorted pts_sorted_2 ) ” 
   &&  “ (point_in_bound (Znth i pts_sorted_2 __default_Point) ) ” 
   &&  “ (andrew_upper_scan_inv pts_sorted_2 hull_cur (i + 1 ) (k - 1 ) lower_n ) ” 
-  &&  “ (safeExec (equiv (hull_cur)) (build_upper_chain_cont (pts_sorted_2) ((sublist (0) (lower_n) (hull_cur)))) X_low_level_spec ) ”
+  &&  “ (andrew_upper_remaining_cont pts_sorted_2 hull_cur (i + 1 ) lower_n X_low_level_spec ) ”
   &&  (PointArray.seg hull_pre 0 (k - 1 ) hull_cur )
   **  (PointArray.undef_seg hull_pre (k - 1 ) (2 * n_pre ) )
 ).
 
-Definition andrew_monotone_chain_entail_wit_8_1 := 
+Definition andrew_build_from_sorted_entail_wit_8_1 := 
 (
-forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list Point) -> Prop))) (pts_l_low_level_spec: (@list Point)) (hull_cur_2: (@list Point)) (pts_sorted_2: (@list Point)) (k: Z) (lower_n: Z) (i: Z)  __default_Point (PreH1 : (k <= lower_n)) (PreH2 : (1 <= i)) (PreH3 : (i <= (n_pre - 2 ))) (PreH4 : (2 <= lower_n)) (PreH5 : (lower_n <= k)) (PreH6 : (k < (2 * n_pre ))) (PreH7 : (2 <= n_pre)) (PreH8 : (n_pre <= 50000)) (PreH9 : ((Zlength (pts_l_low_level_spec)) = n_pre)) (PreH10 : ((Zlength (pts_sorted_2)) = n_pre)) (PreH11 : (points_in_bound pts_sorted_2 )) (PreH12 : (point_permutation pts_l_low_level_spec pts_sorted_2 )) (PreH13 : (point_xy_sorted pts_sorted_2 )) (PreH14 : (point_in_bound (Znth i pts_sorted_2 __default_Point) )) (PreH15 : (andrew_upper_scan_inv pts_sorted_2 hull_cur_2 (i + 1 ) k lower_n )) (PreH16 : (safeExec (equiv (hull_cur_2)) (build_upper_chain_cont (pts_sorted_2) ((sublist (0) (lower_n) (hull_cur_2)))) X_low_level_spec )) ,
+forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list Point) -> Prop))) (pts_l_low_level_spec: (@list Point)) (hull_cur_2: (@list Point)) (pts_sorted_2: (@list Point)) (k: Z) (lower_n: Z) (i: Z)  __default_Point (PreH1 : (k <= lower_n)) (PreH2 : (0 <= i)) (PreH3 : (i <= (n_pre - 2 ))) (PreH4 : (2 <= lower_n)) (PreH5 : (lower_n <= k)) (PreH6 : (k < (2 * n_pre ))) (PreH7 : (2 <= n_pre)) (PreH8 : (n_pre <= 50000)) (PreH9 : ((Zlength (pts_l_low_level_spec)) = n_pre)) (PreH10 : ((Zlength (pts_sorted_2)) = n_pre)) (PreH11 : (points_in_bound pts_sorted_2 )) (PreH12 : (point_permutation pts_l_low_level_spec pts_sorted_2 )) (PreH13 : (point_xy_sorted pts_sorted_2 )) (PreH14 : (point_in_bound (Znth i pts_sorted_2 __default_Point) )) (PreH15 : (andrew_upper_scan_inv pts_sorted_2 hull_cur_2 (i + 1 ) k lower_n )) (PreH16 : (andrew_upper_remaining_cont pts_sorted_2 hull_cur_2 (i + 1 ) lower_n X_low_level_spec )) ,
   (PointArray.full pts_pre n_pre pts_sorted_2 )
   **  ((&(((hull_pre + (k * sizeof( "Point" ) ) ))  # "Point" ->ₛ "x")) # Int  |-> (point_x ((Znth i pts_sorted_2 __default_Point))))
   **  (PointArray.undef_seg hull_pre (k + 1 ) (2 * n_pre ) )
@@ -3027,13 +3148,13 @@ forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list
   &&  “ (point_permutation pts_l_low_level_spec pts_sorted ) ” 
   &&  “ (point_xy_sorted pts_sorted ) ” 
   &&  “ (andrew_upper_scan_inv pts_sorted hull_cur ((i - 1 ) + 1 ) (k + 1 ) lower_n ) ” 
-  &&  “ (safeExec (equiv (hull_cur)) (build_upper_chain_cont (pts_sorted) ((sublist (0) (lower_n) (hull_cur)))) X_low_level_spec ) ”
+  &&  “ (andrew_upper_remaining_cont pts_sorted hull_cur ((i - 1 ) + 1 ) lower_n X_low_level_spec ) ”
   &&  (PointArray.full pts_pre n_pre pts_sorted )
   **  (PointArray.seg hull_pre 0 (k + 1 ) hull_cur )
   **  (PointArray.undef_seg hull_pre (k + 1 ) (2 * n_pre ) )
 ) \/
 (
-forall (hull_pre: Z) (n_pre: Z) (X_low_level_spec: (unit -> ((@list Point) -> Prop))) (pts_l_low_level_spec: (@list Point)) (hull_cur_2: (@list Point)) (pts_sorted_2: (@list Point)) (k: Z) (lower_n: Z) (i: Z)  __default_Point (PreH1 : ((point_y ((Znth i pts_sorted_2 __default_Point))) <= INT_MAX)) (PreH2 : ((point_x ((Znth i pts_sorted_2 __default_Point))) <= INT_MAX)) (PreH3 : ((point_y ((Znth i pts_sorted_2 __default_Point))) >= INT_MIN)) (PreH4 : ((point_x ((Znth i pts_sorted_2 __default_Point))) >= INT_MIN)) (PreH5 : (k <= lower_n)) (PreH6 : (1 <= i)) (PreH7 : (i <= (n_pre - 2 ))) (PreH8 : (2 <= lower_n)) (PreH9 : (lower_n <= k)) (PreH10 : (k < (2 * n_pre ))) (PreH11 : (2 <= n_pre)) (PreH12 : (n_pre <= 50000)) (PreH13 : ((Zlength (pts_l_low_level_spec)) = n_pre)) (PreH14 : ((Zlength (pts_sorted_2)) = n_pre)) (PreH15 : (points_in_bound pts_sorted_2 )) (PreH16 : (point_permutation pts_l_low_level_spec pts_sorted_2 )) (PreH17 : (point_xy_sorted pts_sorted_2 )) (PreH18 : (point_in_bound (Znth i pts_sorted_2 __default_Point) )) (PreH19 : (andrew_upper_scan_inv pts_sorted_2 hull_cur_2 (i + 1 ) k lower_n )) (PreH20 : (safeExec (equiv (hull_cur_2)) (build_upper_chain_cont (pts_sorted_2) ((sublist (0) (lower_n) (hull_cur_2)))) X_low_level_spec )) ,
+forall (hull_pre: Z) (n_pre: Z) (X_low_level_spec: (unit -> ((@list Point) -> Prop))) (pts_l_low_level_spec: (@list Point)) (hull_cur_2: (@list Point)) (pts_sorted_2: (@list Point)) (k: Z) (lower_n: Z) (i: Z)  __default_Point (PreH1 : ((point_y ((Znth i pts_sorted_2 __default_Point))) <= INT_MAX)) (PreH2 : ((point_x ((Znth i pts_sorted_2 __default_Point))) <= INT_MAX)) (PreH3 : ((point_y ((Znth i pts_sorted_2 __default_Point))) >= INT_MIN)) (PreH4 : ((point_x ((Znth i pts_sorted_2 __default_Point))) >= INT_MIN)) (PreH5 : (k <= lower_n)) (PreH6 : (0 <= i)) (PreH7 : (i <= (n_pre - 2 ))) (PreH8 : (2 <= lower_n)) (PreH9 : (lower_n <= k)) (PreH10 : (k < (2 * n_pre ))) (PreH11 : (2 <= n_pre)) (PreH12 : (n_pre <= 50000)) (PreH13 : ((Zlength (pts_l_low_level_spec)) = n_pre)) (PreH14 : ((Zlength (pts_sorted_2)) = n_pre)) (PreH15 : (points_in_bound pts_sorted_2 )) (PreH16 : (point_permutation pts_l_low_level_spec pts_sorted_2 )) (PreH17 : (point_xy_sorted pts_sorted_2 )) (PreH18 : (point_in_bound (Znth i pts_sorted_2 __default_Point) )) (PreH19 : (andrew_upper_scan_inv pts_sorted_2 hull_cur_2 (i + 1 ) k lower_n )) (PreH20 : (andrew_upper_remaining_cont pts_sorted_2 hull_cur_2 (i + 1 ) lower_n X_low_level_spec )) ,
   ((&(((hull_pre + (k * sizeof( "Point" ) ) ))  # "Point" ->ₛ "x")) # Int  |-> (point_x ((Znth i pts_sorted_2 __default_Point))))
   **  (PointArray.undef_seg hull_pre (k + 1 ) (2 * n_pre ) )
   **  ((&(((hull_pre + (k * sizeof( "Point" ) ) ))  # "Point" ->ₛ "y")) # Int  |-> (point_y ((Znth i pts_sorted_2 __default_Point))))
@@ -3053,14 +3174,14 @@ forall (hull_pre: Z) (n_pre: Z) (X_low_level_spec: (unit -> ((@list Point) -> Pr
   &&  “ (point_permutation pts_l_low_level_spec pts_sorted_2 ) ” 
   &&  “ (point_xy_sorted pts_sorted_2 ) ” 
   &&  “ (andrew_upper_scan_inv pts_sorted_2 hull_cur ((i - 1 ) + 1 ) (k + 1 ) lower_n ) ” 
-  &&  “ (safeExec (equiv (hull_cur)) (build_upper_chain_cont (pts_sorted_2) ((sublist (0) (lower_n) (hull_cur)))) X_low_level_spec ) ”
+  &&  “ (andrew_upper_remaining_cont pts_sorted_2 hull_cur ((i - 1 ) + 1 ) lower_n X_low_level_spec ) ”
   &&  (PointArray.seg hull_pre 0 (k + 1 ) hull_cur )
   **  (PointArray.undef_seg hull_pre (k + 1 ) (2 * n_pre ) )
 ).
 
-Definition andrew_monotone_chain_entail_wit_8_2 := 
+Definition andrew_build_from_sorted_entail_wit_8_2 := 
 (
-forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list Point) -> Prop))) (pts_l_low_level_spec: (@list Point)) (hull_cur_2: (@list Point)) (pts_sorted_2: (@list Point)) (k: Z) (lower_n: Z) (i: Z) (retval: Z)  __default_Point (PreH1 : (retval > 0)) (PreH2 : (retval = (point_cross_by_value ((point_x ((Znth ((k - 2 ) - 0 ) hull_cur_2 __default_Point)))) ((point_y ((Znth ((k - 2 ) - 0 ) hull_cur_2 __default_Point)))) ((point_x ((Znth ((k - 1 ) - 0 ) hull_cur_2 __default_Point)))) ((point_y ((Znth ((k - 1 ) - 0 ) hull_cur_2 __default_Point)))) ((point_x ((Znth i pts_sorted_2 __default_Point)))) ((point_y ((Znth i pts_sorted_2 __default_Point))))))) (PreH3 : (k > lower_n)) (PreH4 : (1 <= i)) (PreH5 : (i <= (n_pre - 2 ))) (PreH6 : (2 <= lower_n)) (PreH7 : (lower_n <= k)) (PreH8 : (k < (2 * n_pre ))) (PreH9 : (2 <= n_pre)) (PreH10 : (n_pre <= 50000)) (PreH11 : ((Zlength (pts_l_low_level_spec)) = n_pre)) (PreH12 : ((Zlength (pts_sorted_2)) = n_pre)) (PreH13 : (points_in_bound pts_sorted_2 )) (PreH14 : (point_permutation pts_l_low_level_spec pts_sorted_2 )) (PreH15 : (point_xy_sorted pts_sorted_2 )) (PreH16 : (point_in_bound (Znth i pts_sorted_2 __default_Point) )) (PreH17 : (andrew_upper_scan_inv pts_sorted_2 hull_cur_2 (i + 1 ) k lower_n )) (PreH18 : (safeExec (equiv (hull_cur_2)) (build_upper_chain_cont (pts_sorted_2) ((sublist (0) (lower_n) (hull_cur_2)))) X_low_level_spec )) ,
+forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list Point) -> Prop))) (pts_l_low_level_spec: (@list Point)) (hull_cur_2: (@list Point)) (pts_sorted_2: (@list Point)) (k: Z) (lower_n: Z) (i: Z) (retval: Z)  __default_Point (PreH1 : (retval > 0)) (PreH2 : (retval = (point_cross_by_value ((point_x ((Znth ((k - 2 ) - 0 ) hull_cur_2 __default_Point)))) ((point_y ((Znth ((k - 2 ) - 0 ) hull_cur_2 __default_Point)))) ((point_x ((Znth ((k - 1 ) - 0 ) hull_cur_2 __default_Point)))) ((point_y ((Znth ((k - 1 ) - 0 ) hull_cur_2 __default_Point)))) ((point_x ((Znth i pts_sorted_2 __default_Point)))) ((point_y ((Znth i pts_sorted_2 __default_Point))))))) (PreH3 : (k > lower_n)) (PreH4 : (0 <= i)) (PreH5 : (i <= (n_pre - 2 ))) (PreH6 : (2 <= lower_n)) (PreH7 : (lower_n <= k)) (PreH8 : (k < (2 * n_pre ))) (PreH9 : (2 <= n_pre)) (PreH10 : (n_pre <= 50000)) (PreH11 : ((Zlength (pts_l_low_level_spec)) = n_pre)) (PreH12 : ((Zlength (pts_sorted_2)) = n_pre)) (PreH13 : (points_in_bound pts_sorted_2 )) (PreH14 : (point_permutation pts_l_low_level_spec pts_sorted_2 )) (PreH15 : (point_xy_sorted pts_sorted_2 )) (PreH16 : (point_in_bound (Znth i pts_sorted_2 __default_Point) )) (PreH17 : (andrew_upper_scan_inv pts_sorted_2 hull_cur_2 (i + 1 ) k lower_n )) (PreH18 : (andrew_upper_remaining_cont pts_sorted_2 hull_cur_2 (i + 1 ) lower_n X_low_level_spec )) ,
   (PointArray.full pts_pre n_pre pts_sorted_2 )
   **  ((&(((hull_pre + (k * sizeof( "Point" ) ) ))  # "Point" ->ₛ "x")) # Int  |-> (point_x ((Znth i pts_sorted_2 __default_Point))))
   **  (PointArray.undef_seg hull_pre (k + 1 ) (2 * n_pre ) )
@@ -3081,13 +3202,13 @@ forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list
   &&  “ (point_permutation pts_l_low_level_spec pts_sorted ) ” 
   &&  “ (point_xy_sorted pts_sorted ) ” 
   &&  “ (andrew_upper_scan_inv pts_sorted hull_cur ((i - 1 ) + 1 ) (k + 1 ) lower_n ) ” 
-  &&  “ (safeExec (equiv (hull_cur)) (build_upper_chain_cont (pts_sorted) ((sublist (0) (lower_n) (hull_cur)))) X_low_level_spec ) ”
+  &&  “ (andrew_upper_remaining_cont pts_sorted hull_cur ((i - 1 ) + 1 ) lower_n X_low_level_spec ) ”
   &&  (PointArray.full pts_pre n_pre pts_sorted )
   **  (PointArray.seg hull_pre 0 (k + 1 ) hull_cur )
   **  (PointArray.undef_seg hull_pre (k + 1 ) (2 * n_pre ) )
 ) \/
 (
-forall (hull_pre: Z) (n_pre: Z) (X_low_level_spec: (unit -> ((@list Point) -> Prop))) (pts_l_low_level_spec: (@list Point)) (hull_cur_2: (@list Point)) (pts_sorted_2: (@list Point)) (k: Z) (lower_n: Z) (i: Z) (retval: Z)  __default_Point (PreH1 : ((point_y ((Znth i pts_sorted_2 __default_Point))) <= INT_MAX)) (PreH2 : ((point_x ((Znth i pts_sorted_2 __default_Point))) <= INT_MAX)) (PreH3 : ((point_y ((Znth i pts_sorted_2 __default_Point))) >= INT_MIN)) (PreH4 : ((point_x ((Znth i pts_sorted_2 __default_Point))) >= INT_MIN)) (PreH5 : (retval > 0)) (PreH6 : (retval = (point_cross_by_value ((point_x ((Znth ((k - 2 ) - 0 ) hull_cur_2 __default_Point)))) ((point_y ((Znth ((k - 2 ) - 0 ) hull_cur_2 __default_Point)))) ((point_x ((Znth ((k - 1 ) - 0 ) hull_cur_2 __default_Point)))) ((point_y ((Znth ((k - 1 ) - 0 ) hull_cur_2 __default_Point)))) ((point_x ((Znth i pts_sorted_2 __default_Point)))) ((point_y ((Znth i pts_sorted_2 __default_Point))))))) (PreH7 : (k > lower_n)) (PreH8 : (1 <= i)) (PreH9 : (i <= (n_pre - 2 ))) (PreH10 : (2 <= lower_n)) (PreH11 : (lower_n <= k)) (PreH12 : (k < (2 * n_pre ))) (PreH13 : (2 <= n_pre)) (PreH14 : (n_pre <= 50000)) (PreH15 : ((Zlength (pts_l_low_level_spec)) = n_pre)) (PreH16 : ((Zlength (pts_sorted_2)) = n_pre)) (PreH17 : (points_in_bound pts_sorted_2 )) (PreH18 : (point_permutation pts_l_low_level_spec pts_sorted_2 )) (PreH19 : (point_xy_sorted pts_sorted_2 )) (PreH20 : (point_in_bound (Znth i pts_sorted_2 __default_Point) )) (PreH21 : (andrew_upper_scan_inv pts_sorted_2 hull_cur_2 (i + 1 ) k lower_n )) (PreH22 : (safeExec (equiv (hull_cur_2)) (build_upper_chain_cont (pts_sorted_2) ((sublist (0) (lower_n) (hull_cur_2)))) X_low_level_spec )) ,
+forall (hull_pre: Z) (n_pre: Z) (X_low_level_spec: (unit -> ((@list Point) -> Prop))) (pts_l_low_level_spec: (@list Point)) (hull_cur_2: (@list Point)) (pts_sorted_2: (@list Point)) (k: Z) (lower_n: Z) (i: Z) (retval: Z)  __default_Point (PreH1 : ((point_y ((Znth i pts_sorted_2 __default_Point))) <= INT_MAX)) (PreH2 : ((point_x ((Znth i pts_sorted_2 __default_Point))) <= INT_MAX)) (PreH3 : ((point_y ((Znth i pts_sorted_2 __default_Point))) >= INT_MIN)) (PreH4 : ((point_x ((Znth i pts_sorted_2 __default_Point))) >= INT_MIN)) (PreH5 : (retval > 0)) (PreH6 : (retval = (point_cross_by_value ((point_x ((Znth ((k - 2 ) - 0 ) hull_cur_2 __default_Point)))) ((point_y ((Znth ((k - 2 ) - 0 ) hull_cur_2 __default_Point)))) ((point_x ((Znth ((k - 1 ) - 0 ) hull_cur_2 __default_Point)))) ((point_y ((Znth ((k - 1 ) - 0 ) hull_cur_2 __default_Point)))) ((point_x ((Znth i pts_sorted_2 __default_Point)))) ((point_y ((Znth i pts_sorted_2 __default_Point))))))) (PreH7 : (k > lower_n)) (PreH8 : (0 <= i)) (PreH9 : (i <= (n_pre - 2 ))) (PreH10 : (2 <= lower_n)) (PreH11 : (lower_n <= k)) (PreH12 : (k < (2 * n_pre ))) (PreH13 : (2 <= n_pre)) (PreH14 : (n_pre <= 50000)) (PreH15 : ((Zlength (pts_l_low_level_spec)) = n_pre)) (PreH16 : ((Zlength (pts_sorted_2)) = n_pre)) (PreH17 : (points_in_bound pts_sorted_2 )) (PreH18 : (point_permutation pts_l_low_level_spec pts_sorted_2 )) (PreH19 : (point_xy_sorted pts_sorted_2 )) (PreH20 : (point_in_bound (Znth i pts_sorted_2 __default_Point) )) (PreH21 : (andrew_upper_scan_inv pts_sorted_2 hull_cur_2 (i + 1 ) k lower_n )) (PreH22 : (andrew_upper_remaining_cont pts_sorted_2 hull_cur_2 (i + 1 ) lower_n X_low_level_spec )) ,
   ((&(((hull_pre + (k * sizeof( "Point" ) ) ))  # "Point" ->ₛ "x")) # Int  |-> (point_x ((Znth i pts_sorted_2 __default_Point))))
   **  (PointArray.undef_seg hull_pre (k + 1 ) (2 * n_pre ) )
   **  ((&(((hull_pre + (k * sizeof( "Point" ) ) ))  # "Point" ->ₛ "y")) # Int  |-> (point_y ((Znth i pts_sorted_2 __default_Point))))
@@ -3107,14 +3228,169 @@ forall (hull_pre: Z) (n_pre: Z) (X_low_level_spec: (unit -> ((@list Point) -> Pr
   &&  “ (point_permutation pts_l_low_level_spec pts_sorted_2 ) ” 
   &&  “ (point_xy_sorted pts_sorted_2 ) ” 
   &&  “ (andrew_upper_scan_inv pts_sorted_2 hull_cur ((i - 1 ) + 1 ) (k + 1 ) lower_n ) ” 
-  &&  “ (safeExec (equiv (hull_cur)) (build_upper_chain_cont (pts_sorted_2) ((sublist (0) (lower_n) (hull_cur)))) X_low_level_spec ) ”
+  &&  “ (andrew_upper_remaining_cont pts_sorted_2 hull_cur ((i - 1 ) + 1 ) lower_n X_low_level_spec ) ”
   &&  (PointArray.seg hull_pre 0 (k + 1 ) hull_cur )
   **  (PointArray.undef_seg hull_pre (k + 1 ) (2 * n_pre ) )
 ).
 
-Definition andrew_monotone_chain_entail_wit_9 := 
+Definition andrew_build_from_sorted_entail_wit_9 := 
 (
-forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list Point) -> Prop))) (pts_l_low_level_spec: (@list Point)) (hull_cur: (@list Point)) (pts_sorted_2: (@list Point)) (k: Z) (lower_n: Z) (i: Z) (PreH1 : (i < 1)) (PreH2 : (0 <= (i + 1 ))) (PreH3 : ((i + 1 ) <= (n_pre - 1 ))) (PreH4 : (2 <= lower_n)) (PreH5 : (lower_n <= k)) (PreH6 : (k <= (2 * n_pre ))) (PreH7 : (2 <= n_pre)) (PreH8 : (n_pre <= 50000)) (PreH9 : ((Zlength (pts_l_low_level_spec)) = n_pre)) (PreH10 : ((Zlength (pts_sorted_2)) = n_pre)) (PreH11 : (points_in_bound pts_sorted_2 )) (PreH12 : (point_permutation pts_l_low_level_spec pts_sorted_2 )) (PreH13 : (point_xy_sorted pts_sorted_2 )) (PreH14 : (andrew_upper_scan_inv pts_sorted_2 hull_cur (i + 1 ) k lower_n )) (PreH15 : (safeExec (equiv (hull_cur)) (build_upper_chain_cont (pts_sorted_2) ((sublist (0) (lower_n) (hull_cur)))) X_low_level_spec )) ,
+forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list Point) -> Prop))) (pts_l_low_level_spec: (@list Point)) (hull_cur: (@list Point)) (pts_sorted_2: (@list Point)) (k: Z) (lower_n: Z) (i: Z) (PreH1 : (i < 0)) (PreH2 : (0 <= (i + 1 ))) (PreH3 : ((i + 1 ) <= (n_pre - 1 ))) (PreH4 : (2 <= lower_n)) (PreH5 : (lower_n <= k)) (PreH6 : (k <= (2 * n_pre ))) (PreH7 : (2 <= n_pre)) (PreH8 : (n_pre <= 50000)) (PreH9 : ((Zlength (pts_l_low_level_spec)) = n_pre)) (PreH10 : ((Zlength (pts_sorted_2)) = n_pre)) (PreH11 : (points_in_bound pts_sorted_2 )) (PreH12 : (point_permutation pts_l_low_level_spec pts_sorted_2 )) (PreH13 : (point_xy_sorted pts_sorted_2 )) (PreH14 : (andrew_upper_scan_inv pts_sorted_2 hull_cur (i + 1 ) k lower_n )) (PreH15 : (andrew_upper_remaining_cont pts_sorted_2 hull_cur (i + 1 ) lower_n X_low_level_spec )) ,
+  (PointArray.full pts_pre n_pre pts_sorted_2 )
+  **  (PointArray.seg hull_pre 0 k hull_cur )
+  **  (PointArray.undef_seg hull_pre k (2 * n_pre ) )
+|--
+  EX (hull_original: (@list Point))  (hull_closed: (@list Point))  (pts_sorted: (@list Point)) ,
+  “ (2 <= n_pre) ” 
+  &&  “ (n_pre <= 50000) ” 
+  &&  “ (2 <= (k - 1 )) ” 
+  &&  “ ((k - 1 ) <= (2 * n_pre )) ” 
+  &&  “ ((Zlength (pts_l_low_level_spec)) = n_pre) ” 
+  &&  “ ((Zlength (pts_sorted)) = n_pre) ” 
+  &&  “ ((Zlength (hull_closed)) = ((k - 1 ) + 1 )) ” 
+  &&  “ ((Zlength (hull_original)) = (k - 1 )) ” 
+  &&  “ (points_in_bound pts_sorted ) ” 
+  &&  “ (point_permutation pts_l_low_level_spec pts_sorted ) ” 
+  &&  “ (point_xy_sorted pts_sorted ) ” 
+  &&  “ (hull_original = (sublist (0) ((k - 1 )) (hull_closed))) ” 
+  &&  “ (safeExec (equiv ((rev (hull_original)))) (return (tt)) X_low_level_spec ) ”
+  &&  (PointArray.full pts_pre n_pre pts_sorted )
+  **  (PointArray.seg hull_pre 0 (k - 1 ) hull_original )
+  **  (PointArray.undef_seg hull_pre (k - 1 ) (2 * n_pre ) )
+) \/
+(
+forall (hull_pre: Z) (n_pre: Z) (X_low_level_spec: (unit -> ((@list Point) -> Prop))) (pts_l_low_level_spec: (@list Point)) (hull_cur: (@list Point)) (pts_sorted_2: (@list Point)) (k: Z) (lower_n: Z) (i: Z) (PreH1 : (i < 0)) (PreH2 : (0 <= (i + 1 ))) (PreH3 : ((i + 1 ) <= (n_pre - 1 ))) (PreH4 : (2 <= lower_n)) (PreH5 : (lower_n <= k)) (PreH6 : (k <= (2 * n_pre ))) (PreH7 : (2 <= n_pre)) (PreH8 : (n_pre <= 50000)) (PreH9 : ((Zlength (pts_l_low_level_spec)) = n_pre)) (PreH10 : ((Zlength (pts_sorted_2)) = n_pre)) (PreH11 : (points_in_bound pts_sorted_2 )) (PreH12 : (point_permutation pts_l_low_level_spec pts_sorted_2 )) (PreH13 : (point_xy_sorted pts_sorted_2 )) (PreH14 : (andrew_upper_scan_inv pts_sorted_2 hull_cur (i + 1 ) k lower_n )) (PreH15 : (andrew_upper_remaining_cont pts_sorted_2 hull_cur (i + 1 ) lower_n X_low_level_spec )) ,
+  (PointArray.seg hull_pre 0 k hull_cur )
+  **  (PointArray.undef_seg hull_pre k (2 * n_pre ) )
+|--
+  EX (hull_closed: (@list Point)) ,
+  “ (2 <= n_pre) ” 
+  &&  “ (n_pre <= 50000) ” 
+  &&  “ (2 <= (k - 1 )) ” 
+  &&  “ ((k - 1 ) <= (2 * n_pre )) ” 
+  &&  “ ((Zlength (pts_l_low_level_spec)) = n_pre) ” 
+  &&  “ ((Zlength (pts_sorted_2)) = n_pre) ” 
+  &&  “ ((Zlength (hull_closed)) = ((k - 1 ) + 1 )) ” 
+  &&  “ ((Zlength ((sublist (0) ((k - 1 )) (hull_closed)))) = (k - 1 )) ” 
+  &&  “ (points_in_bound pts_sorted_2 ) ” 
+  &&  “ (point_permutation pts_l_low_level_spec pts_sorted_2 ) ” 
+  &&  “ (point_xy_sorted pts_sorted_2 ) ” 
+  &&  “ (safeExec (equiv ((rev ((sublist (0) ((k - 1 )) (hull_closed)))))) (return (tt)) X_low_level_spec ) ”
+  &&  (PointArray.seg hull_pre 0 (k - 1 ) (sublist (0) ((k - 1 )) (hull_closed)) )
+  **  (PointArray.undef_seg hull_pre (k - 1 ) (2 * n_pre ) )
+).
+
+Definition andrew_build_from_sorted_entail_wit_10 := 
+(
+forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list Point) -> Prop))) (pts_l_low_level_spec: (@list Point)) (pts_sorted_2: (@list Point)) (hull_closed: (@list Point)) (hull_original_2: (@list Point)) (k: Z) (PreH1 : (2 <= n_pre)) (PreH2 : (n_pre <= 50000)) (PreH3 : (2 <= k)) (PreH4 : (k <= (2 * n_pre ))) (PreH5 : ((Zlength (pts_l_low_level_spec)) = n_pre)) (PreH6 : ((Zlength (pts_sorted_2)) = n_pre)) (PreH7 : ((Zlength (hull_closed)) = (k + 1 ))) (PreH8 : ((Zlength (hull_original_2)) = k)) (PreH9 : (points_in_bound pts_sorted_2 )) (PreH10 : (point_permutation pts_l_low_level_spec pts_sorted_2 )) (PreH11 : (point_xy_sorted pts_sorted_2 )) (PreH12 : (hull_original_2 = (sublist (0) (k) (hull_closed)))) (PreH13 : (safeExec (equiv ((rev (hull_original_2)))) (return (tt)) X_low_level_spec )) ,
+  (PointArray.full pts_pre n_pre pts_sorted_2 )
+  **  (PointArray.seg hull_pre 0 k hull_original_2 )
+  **  (PointArray.undef_seg hull_pre k (2 * n_pre ) )
+|--
+  EX (hull_out: (@list Point))  (hull_cur: (@list Point))  (hull_original: (@list Point))  (pts_sorted: (@list Point)) ,
+  “ (0 <= 0) ” 
+  &&  “ (0 <= (k ÷ 2 )) ” 
+  &&  “ (2 <= k) ” 
+  &&  “ (k <= (2 * n_pre )) ” 
+  &&  “ (2 <= n_pre) ” 
+  &&  “ (n_pre <= 50000) ” 
+  &&  “ ((Zlength (pts_l_low_level_spec)) = n_pre) ” 
+  &&  “ ((Zlength (pts_sorted)) = n_pre) ” 
+  &&  “ ((Zlength (hull_original)) = k) ” 
+  &&  “ ((Zlength (hull_cur)) = k) ” 
+  &&  “ ((Zlength (hull_out)) = k) ” 
+  &&  “ (points_in_bound pts_sorted ) ” 
+  &&  “ (point_permutation pts_l_low_level_spec pts_sorted ) ” 
+  &&  “ (point_xy_sorted pts_sorted ) ” 
+  &&  “ (hull_out = (rev (hull_original))) ” 
+  &&  “ (point_prefix_reverse_state hull_original hull_cur k 0 ) ” 
+  &&  “ (safeExec (equiv (hull_out)) (return (tt)) X_low_level_spec ) ”
+  &&  (PointArray.full pts_pre n_pre pts_sorted )
+  **  (PointArray.seg hull_pre 0 k hull_cur )
+  **  (PointArray.undef_seg hull_pre k (2 * n_pre ) )
+) \/
+(
+forall (hull_pre: Z) (n_pre: Z) (X_low_level_spec: (unit -> ((@list Point) -> Prop))) (pts_l_low_level_spec: (@list Point)) (pts_sorted_2: (@list Point)) (hull_closed: (@list Point)) (hull_original_2: (@list Point)) (k: Z) (PreH1 : (2 <= n_pre)) (PreH2 : (n_pre <= 50000)) (PreH3 : (2 <= k)) (PreH4 : (k <= (2 * n_pre ))) (PreH5 : ((Zlength (pts_l_low_level_spec)) = n_pre)) (PreH6 : ((Zlength (pts_sorted_2)) = n_pre)) (PreH7 : ((Zlength (hull_closed)) = (k + 1 ))) (PreH8 : ((Zlength (hull_original_2)) = k)) (PreH9 : (points_in_bound pts_sorted_2 )) (PreH10 : (point_permutation pts_l_low_level_spec pts_sorted_2 )) (PreH11 : (point_xy_sorted pts_sorted_2 )) (PreH12 : (hull_original_2 = (sublist (0) (k) (hull_closed)))) (PreH13 : (safeExec (equiv ((rev (hull_original_2)))) (return (tt)) X_low_level_spec )) ,
+  (PointArray.undef_seg hull_pre k (2 * n_pre ) )
+|--
+  EX (hull_original: (@list Point)) ,
+  “ (0 <= 0) ” 
+  &&  “ (0 <= (k ÷ 2 )) ” 
+  &&  “ (2 <= k) ” 
+  &&  “ (k <= (2 * n_pre )) ” 
+  &&  “ (2 <= n_pre) ” 
+  &&  “ (n_pre <= 50000) ” 
+  &&  “ ((Zlength (pts_l_low_level_spec)) = n_pre) ” 
+  &&  “ ((Zlength (pts_sorted_2)) = n_pre) ” 
+  &&  “ ((Zlength (hull_original)) = k) ” 
+  &&  “ ((Zlength (hull_original_2)) = k) ” 
+  &&  “ ((Zlength ((rev (hull_original)))) = k) ” 
+  &&  “ (points_in_bound pts_sorted_2 ) ” 
+  &&  “ (point_permutation pts_l_low_level_spec pts_sorted_2 ) ” 
+  &&  “ (point_xy_sorted pts_sorted_2 ) ” 
+  &&  “ (point_prefix_reverse_state hull_original hull_original_2 k 0 ) ” 
+  &&  “ (safeExec (equiv ((rev (hull_original)))) (return (tt)) X_low_level_spec ) ”
+  &&  (PointArray.undef_seg hull_pre k (2 * n_pre ) )
+).
+
+Definition andrew_build_from_sorted_entail_wit_11 := 
+(
+forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list Point) -> Prop))) (pts_l_low_level_spec: (@list Point)) (hull_out_2: (@list Point)) (hull_cur_2: (@list Point)) (hull_original_2: (@list Point)) (pts_sorted_2: (@list Point)) (k: Z) (left: Z)  __default_Point (PreH1 : (left < ((k - 1 ) - left ))) (PreH2 : (0 <= left)) (PreH3 : (left <= (k ÷ 2 ))) (PreH4 : (2 <= k)) (PreH5 : (k <= (2 * n_pre ))) (PreH6 : (2 <= n_pre)) (PreH7 : (n_pre <= 50000)) (PreH8 : ((Zlength (pts_l_low_level_spec)) = n_pre)) (PreH9 : ((Zlength (pts_sorted_2)) = n_pre)) (PreH10 : ((Zlength (hull_original_2)) = k)) (PreH11 : ((Zlength (hull_cur_2)) = k)) (PreH12 : ((Zlength (hull_out_2)) = k)) (PreH13 : (points_in_bound pts_sorted_2 )) (PreH14 : (point_permutation pts_l_low_level_spec pts_sorted_2 )) (PreH15 : (point_xy_sorted pts_sorted_2 )) (PreH16 : (hull_out_2 = (rev (hull_original_2)))) (PreH17 : (point_prefix_reverse_state hull_original_2 hull_cur_2 k left )) (PreH18 : (safeExec (equiv (hull_out_2)) (return (tt)) X_low_level_spec )) ,
+  (PointArray.full hull_pre k (replace_Znth (((k - 1 ) - left )) ((point_mk ((point_x ((Znth ((k - 1 ) - left ) (replace_Znth (((k - 1 ) - left )) ((point_mk ((point_x ((Znth (left - 0 ) hull_cur_2 __default_Point)))) ((point_y ((Znth ((k - 1 ) - left ) (replace_Znth (left) ((point_mk ((point_x ((Znth left (replace_Znth (left) ((point_mk ((point_x ((Znth (((k - 1 ) - left ) - 0 ) hull_cur_2 __default_Point)))) ((point_y ((Znth (left - 0 ) hull_cur_2 __default_Point)))))) (hull_cur_2)) __default_Point)))) ((point_y ((Znth ((k - 1 ) - left ) (replace_Znth (left) ((point_mk ((point_x ((Znth (((k - 1 ) - left ) - 0 ) hull_cur_2 __default_Point)))) ((point_y ((Znth (left - 0 ) hull_cur_2 __default_Point)))))) (hull_cur_2)) __default_Point)))))) ((replace_Znth (left) ((point_mk ((point_x ((Znth (((k - 1 ) - left ) - 0 ) hull_cur_2 __default_Point)))) ((point_y ((Znth (left - 0 ) hull_cur_2 __default_Point)))))) (hull_cur_2)))) __default_Point)))))) ((replace_Znth (left) ((point_mk ((point_x ((Znth left (replace_Znth (left) ((point_mk ((point_x ((Znth (((k - 1 ) - left ) - 0 ) hull_cur_2 __default_Point)))) ((point_y ((Znth (left - 0 ) hull_cur_2 __default_Point)))))) (hull_cur_2)) __default_Point)))) ((point_y ((Znth ((k - 1 ) - left ) (replace_Znth (left) ((point_mk ((point_x ((Znth (((k - 1 ) - left ) - 0 ) hull_cur_2 __default_Point)))) ((point_y ((Znth (left - 0 ) hull_cur_2 __default_Point)))))) (hull_cur_2)) __default_Point)))))) ((replace_Znth (left) ((point_mk ((point_x ((Znth (((k - 1 ) - left ) - 0 ) hull_cur_2 __default_Point)))) ((point_y ((Znth (left - 0 ) hull_cur_2 __default_Point)))))) (hull_cur_2)))))) __default_Point)))) ((point_y ((Znth (left - 0 ) hull_cur_2 __default_Point)))))) ((replace_Znth (((k - 1 ) - left )) ((point_mk ((point_x ((Znth (left - 0 ) hull_cur_2 __default_Point)))) ((point_y ((Znth ((k - 1 ) - left ) (replace_Znth (left) ((point_mk ((point_x ((Znth left (replace_Znth (left) ((point_mk ((point_x ((Znth (((k - 1 ) - left ) - 0 ) hull_cur_2 __default_Point)))) ((point_y ((Znth (left - 0 ) hull_cur_2 __default_Point)))))) (hull_cur_2)) __default_Point)))) ((point_y ((Znth ((k - 1 ) - left ) (replace_Znth (left) ((point_mk ((point_x ((Znth (((k - 1 ) - left ) - 0 ) hull_cur_2 __default_Point)))) ((point_y ((Znth (left - 0 ) hull_cur_2 __default_Point)))))) (hull_cur_2)) __default_Point)))))) ((replace_Znth (left) ((point_mk ((point_x ((Znth (((k - 1 ) - left ) - 0 ) hull_cur_2 __default_Point)))) ((point_y ((Znth (left - 0 ) hull_cur_2 __default_Point)))))) (hull_cur_2)))) __default_Point)))))) ((replace_Znth (left) ((point_mk ((point_x ((Znth left (replace_Znth (left) ((point_mk ((point_x ((Znth (((k - 1 ) - left ) - 0 ) hull_cur_2 __default_Point)))) ((point_y ((Znth (left - 0 ) hull_cur_2 __default_Point)))))) (hull_cur_2)) __default_Point)))) ((point_y ((Znth ((k - 1 ) - left ) (replace_Znth (left) ((point_mk ((point_x ((Znth (((k - 1 ) - left ) - 0 ) hull_cur_2 __default_Point)))) ((point_y ((Znth (left - 0 ) hull_cur_2 __default_Point)))))) (hull_cur_2)) __default_Point)))))) ((replace_Znth (left) ((point_mk ((point_x ((Znth (((k - 1 ) - left ) - 0 ) hull_cur_2 __default_Point)))) ((point_y ((Znth (left - 0 ) hull_cur_2 __default_Point)))))) (hull_cur_2)))))))) )
+  **  (PointArray.full pts_pre n_pre pts_sorted_2 )
+  **  (PointArray.undef_seg hull_pre k (2 * n_pre ) )
+|--
+  EX (hull_out: (@list Point))  (hull_cur: (@list Point))  (hull_original: (@list Point))  (pts_sorted: (@list Point)) ,
+  “ (0 <= (left + 1 )) ” 
+  &&  “ ((left + 1 ) <= (k ÷ 2 )) ” 
+  &&  “ (2 <= k) ” 
+  &&  “ (k <= (2 * n_pre )) ” 
+  &&  “ (2 <= n_pre) ” 
+  &&  “ (n_pre <= 50000) ” 
+  &&  “ ((Zlength (pts_l_low_level_spec)) = n_pre) ” 
+  &&  “ ((Zlength (pts_sorted)) = n_pre) ” 
+  &&  “ ((Zlength (hull_original)) = k) ” 
+  &&  “ ((Zlength (hull_cur)) = k) ” 
+  &&  “ ((Zlength (hull_out)) = k) ” 
+  &&  “ (points_in_bound pts_sorted ) ” 
+  &&  “ (point_permutation pts_l_low_level_spec pts_sorted ) ” 
+  &&  “ (point_xy_sorted pts_sorted ) ” 
+  &&  “ (hull_out = (rev (hull_original))) ” 
+  &&  “ (point_prefix_reverse_state hull_original hull_cur k (left + 1 ) ) ” 
+  &&  “ (safeExec (equiv (hull_out)) (return (tt)) X_low_level_spec ) ”
+  &&  (PointArray.full pts_pre n_pre pts_sorted )
+  **  (PointArray.seg hull_pre 0 k hull_cur )
+  **  (PointArray.undef_seg hull_pre k (2 * n_pre ) )
+) \/
+(
+forall (hull_pre: Z) (n_pre: Z) (X_low_level_spec: (unit -> ((@list Point) -> Prop))) (pts_l_low_level_spec: (@list Point)) (hull_out_2: (@list Point)) (hull_cur_2: (@list Point)) (hull_original_2: (@list Point)) (pts_sorted_2: (@list Point)) (k: Z) (left: Z)  __default_Point (PreH1 : (left < ((k - 1 ) - left ))) (PreH2 : (0 <= left)) (PreH3 : (left <= (k ÷ 2 ))) (PreH4 : (2 <= k)) (PreH5 : (k <= (2 * n_pre ))) (PreH6 : (2 <= n_pre)) (PreH7 : (n_pre <= 50000)) (PreH8 : ((Zlength (pts_l_low_level_spec)) = n_pre)) (PreH9 : ((Zlength (pts_sorted_2)) = n_pre)) (PreH10 : ((Zlength (hull_original_2)) = k)) (PreH11 : ((Zlength (hull_cur_2)) = k)) (PreH12 : ((Zlength (hull_out_2)) = k)) (PreH13 : (points_in_bound pts_sorted_2 )) (PreH14 : (point_permutation pts_l_low_level_spec pts_sorted_2 )) (PreH15 : (point_xy_sorted pts_sorted_2 )) (PreH16 : (hull_out_2 = (rev (hull_original_2)))) (PreH17 : (point_prefix_reverse_state hull_original_2 hull_cur_2 k left )) (PreH18 : (safeExec (equiv (hull_out_2)) (return (tt)) X_low_level_spec )) ,
+  (PointArray.full hull_pre k (replace_Znth (((k - 1 ) - left )) ((point_mk ((point_x ((Znth ((k - 1 ) - left ) (replace_Znth (((k - 1 ) - left )) ((point_mk ((point_x ((Znth (left - 0 ) hull_cur_2 __default_Point)))) ((point_y ((Znth ((k - 1 ) - left ) (replace_Znth (left) ((point_mk ((point_x ((Znth left (replace_Znth (left) ((point_mk ((point_x ((Znth (((k - 1 ) - left ) - 0 ) hull_cur_2 __default_Point)))) ((point_y ((Znth (left - 0 ) hull_cur_2 __default_Point)))))) (hull_cur_2)) __default_Point)))) ((point_y ((Znth ((k - 1 ) - left ) (replace_Znth (left) ((point_mk ((point_x ((Znth (((k - 1 ) - left ) - 0 ) hull_cur_2 __default_Point)))) ((point_y ((Znth (left - 0 ) hull_cur_2 __default_Point)))))) (hull_cur_2)) __default_Point)))))) ((replace_Znth (left) ((point_mk ((point_x ((Znth (((k - 1 ) - left ) - 0 ) hull_cur_2 __default_Point)))) ((point_y ((Znth (left - 0 ) hull_cur_2 __default_Point)))))) (hull_cur_2)))) __default_Point)))))) ((replace_Znth (left) ((point_mk ((point_x ((Znth left (replace_Znth (left) ((point_mk ((point_x ((Znth (((k - 1 ) - left ) - 0 ) hull_cur_2 __default_Point)))) ((point_y ((Znth (left - 0 ) hull_cur_2 __default_Point)))))) (hull_cur_2)) __default_Point)))) ((point_y ((Znth ((k - 1 ) - left ) (replace_Znth (left) ((point_mk ((point_x ((Znth (((k - 1 ) - left ) - 0 ) hull_cur_2 __default_Point)))) ((point_y ((Znth (left - 0 ) hull_cur_2 __default_Point)))))) (hull_cur_2)) __default_Point)))))) ((replace_Znth (left) ((point_mk ((point_x ((Znth (((k - 1 ) - left ) - 0 ) hull_cur_2 __default_Point)))) ((point_y ((Znth (left - 0 ) hull_cur_2 __default_Point)))))) (hull_cur_2)))))) __default_Point)))) ((point_y ((Znth (left - 0 ) hull_cur_2 __default_Point)))))) ((replace_Znth (((k - 1 ) - left )) ((point_mk ((point_x ((Znth (left - 0 ) hull_cur_2 __default_Point)))) ((point_y ((Znth ((k - 1 ) - left ) (replace_Znth (left) ((point_mk ((point_x ((Znth left (replace_Znth (left) ((point_mk ((point_x ((Znth (((k - 1 ) - left ) - 0 ) hull_cur_2 __default_Point)))) ((point_y ((Znth (left - 0 ) hull_cur_2 __default_Point)))))) (hull_cur_2)) __default_Point)))) ((point_y ((Znth ((k - 1 ) - left ) (replace_Znth (left) ((point_mk ((point_x ((Znth (((k - 1 ) - left ) - 0 ) hull_cur_2 __default_Point)))) ((point_y ((Znth (left - 0 ) hull_cur_2 __default_Point)))))) (hull_cur_2)) __default_Point)))))) ((replace_Znth (left) ((point_mk ((point_x ((Znth (((k - 1 ) - left ) - 0 ) hull_cur_2 __default_Point)))) ((point_y ((Znth (left - 0 ) hull_cur_2 __default_Point)))))) (hull_cur_2)))) __default_Point)))))) ((replace_Znth (left) ((point_mk ((point_x ((Znth left (replace_Znth (left) ((point_mk ((point_x ((Znth (((k - 1 ) - left ) - 0 ) hull_cur_2 __default_Point)))) ((point_y ((Znth (left - 0 ) hull_cur_2 __default_Point)))))) (hull_cur_2)) __default_Point)))) ((point_y ((Znth ((k - 1 ) - left ) (replace_Znth (left) ((point_mk ((point_x ((Znth (((k - 1 ) - left ) - 0 ) hull_cur_2 __default_Point)))) ((point_y ((Znth (left - 0 ) hull_cur_2 __default_Point)))))) (hull_cur_2)) __default_Point)))))) ((replace_Znth (left) ((point_mk ((point_x ((Znth (((k - 1 ) - left ) - 0 ) hull_cur_2 __default_Point)))) ((point_y ((Znth (left - 0 ) hull_cur_2 __default_Point)))))) (hull_cur_2)))))))) )
+  **  (PointArray.undef_seg hull_pre k (2 * n_pre ) )
+|--
+  EX (hull_cur: (@list Point))  (hull_original: (@list Point)) ,
+  “ (0 <= (left + 1 )) ” 
+  &&  “ ((left + 1 ) <= (k ÷ 2 )) ” 
+  &&  “ (2 <= k) ” 
+  &&  “ (k <= (2 * n_pre )) ” 
+  &&  “ (2 <= n_pre) ” 
+  &&  “ (n_pre <= 50000) ” 
+  &&  “ ((Zlength (pts_l_low_level_spec)) = n_pre) ” 
+  &&  “ ((Zlength (pts_sorted_2)) = n_pre) ” 
+  &&  “ ((Zlength (hull_original)) = k) ” 
+  &&  “ ((Zlength (hull_cur)) = k) ” 
+  &&  “ ((Zlength ((rev (hull_original)))) = k) ” 
+  &&  “ (points_in_bound pts_sorted_2 ) ” 
+  &&  “ (point_permutation pts_l_low_level_spec pts_sorted_2 ) ” 
+  &&  “ (point_xy_sorted pts_sorted_2 ) ” 
+  &&  “ (point_prefix_reverse_state hull_original hull_cur k (left + 1 ) ) ” 
+  &&  “ (safeExec (equiv ((rev (hull_original)))) (return (tt)) X_low_level_spec ) ”
+  &&  (PointArray.seg hull_pre 0 k hull_cur )
+  **  (PointArray.undef_seg hull_pre k (2 * n_pre ) )
+).
+
+Definition andrew_build_from_sorted_entail_wit_12 := 
+(
+forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list Point) -> Prop))) (pts_l_low_level_spec: (@list Point)) (hull_out_2: (@list Point)) (hull_cur: (@list Point)) (hull_original: (@list Point)) (pts_sorted_2: (@list Point)) (k: Z) (left: Z) (PreH1 : (left >= ((k - 1 ) - left ))) (PreH2 : (0 <= left)) (PreH3 : (left <= (k ÷ 2 ))) (PreH4 : (2 <= k)) (PreH5 : (k <= (2 * n_pre ))) (PreH6 : (2 <= n_pre)) (PreH7 : (n_pre <= 50000)) (PreH8 : ((Zlength (pts_l_low_level_spec)) = n_pre)) (PreH9 : ((Zlength (pts_sorted_2)) = n_pre)) (PreH10 : ((Zlength (hull_original)) = k)) (PreH11 : ((Zlength (hull_cur)) = k)) (PreH12 : ((Zlength (hull_out_2)) = k)) (PreH13 : (points_in_bound pts_sorted_2 )) (PreH14 : (point_permutation pts_l_low_level_spec pts_sorted_2 )) (PreH15 : (point_xy_sorted pts_sorted_2 )) (PreH16 : (hull_out_2 = (rev (hull_original)))) (PreH17 : (point_prefix_reverse_state hull_original hull_cur k left )) (PreH18 : (safeExec (equiv (hull_out_2)) (return (tt)) X_low_level_spec )) ,
   (PointArray.full pts_pre n_pre pts_sorted_2 )
   **  (PointArray.seg hull_pre 0 k hull_cur )
   **  (PointArray.undef_seg hull_pre k (2 * n_pre ) )
@@ -3128,52 +3404,35 @@ forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list
   &&  “ (points_in_bound pts_sorted ) ” 
   &&  “ (point_permutation pts_l_low_level_spec pts_sorted ) ” 
   &&  “ (point_xy_sorted pts_sorted ) ” 
-  &&  “ (andrew_complete_hull_shape pts_sorted hull_out ) ” 
   &&  “ (safeExec (equiv (hull_out)) (return (tt)) X_low_level_spec ) ”
   &&  (PointArray.full pts_pre n_pre pts_sorted )
   **  (PointArray.seg hull_pre 0 k hull_out )
   **  (PointArray.undef_seg hull_pre k (2 * n_pre ) )
 ) \/
 (
-forall (hull_pre: Z) (n_pre: Z) (pts_l_low_level_spec: (@list Point)) (hull_cur: (@list Point)) (pts_sorted_2: (@list Point)) (k: Z) (lower_n: Z) (i: Z) (PreH1 : (i < 1)) (PreH2 : (0 <= (i + 1 ))) (PreH3 : ((i + 1 ) <= (n_pre - 1 ))) (PreH4 : (2 <= lower_n)) (PreH5 : (lower_n <= k)) (PreH6 : (k <= (2 * n_pre ))) (PreH7 : (2 <= n_pre)) (PreH8 : (n_pre <= 50000)) (PreH9 : ((Zlength (pts_l_low_level_spec)) = n_pre)) (PreH10 : ((Zlength (pts_sorted_2)) = n_pre)) (PreH11 : (points_in_bound pts_sorted_2 )) (PreH12 : (point_permutation pts_l_low_level_spec pts_sorted_2 )) (PreH13 : (point_xy_sorted pts_sorted_2 )) (PreH14 : (andrew_upper_scan_inv pts_sorted_2 hull_cur (i + 1 ) k lower_n )) ,
+forall (hull_pre: Z) (n_pre: Z) (X_low_level_spec: (unit -> ((@list Point) -> Prop))) (pts_l_low_level_spec: (@list Point)) (hull_out_2: (@list Point)) (hull_cur: (@list Point)) (hull_original: (@list Point)) (pts_sorted_2: (@list Point)) (k: Z) (left: Z) (PreH1 : (left >= ((k - 1 ) - left ))) (PreH2 : (0 <= left)) (PreH3 : (left <= (k ÷ 2 ))) (PreH4 : (2 <= k)) (PreH5 : (k <= (2 * n_pre ))) (PreH6 : (2 <= n_pre)) (PreH7 : (n_pre <= 50000)) (PreH8 : ((Zlength (pts_l_low_level_spec)) = n_pre)) (PreH9 : ((Zlength (pts_sorted_2)) = n_pre)) (PreH10 : ((Zlength (hull_original)) = k)) (PreH11 : ((Zlength (hull_cur)) = k)) (PreH12 : ((Zlength (hull_out_2)) = k)) (PreH13 : (points_in_bound pts_sorted_2 )) (PreH14 : (point_permutation pts_l_low_level_spec pts_sorted_2 )) (PreH15 : (point_xy_sorted pts_sorted_2 )) (PreH16 : (hull_out_2 = (rev (hull_original)))) (PreH17 : (point_prefix_reverse_state hull_original hull_cur k left )) (PreH18 : (safeExec (equiv (hull_out_2)) (return (tt)) X_low_level_spec )) ,
   (PointArray.undef_seg hull_pre k (2 * n_pre ) )
 |--
-  “ (andrew_complete_hull_shape pts_sorted_2 hull_cur ) ” 
-  &&  “ ((Zlength (hull_cur)) = k) ” 
-  &&  “ (equiv (build_upper_chain_cont (pts_sorted_2) ((sublist (0) (lower_n) (hull_cur)))) (return (tt)) ) ”
+  “ (safeExec (equiv (hull_cur)) (return (tt)) X_low_level_spec ) ”
   &&  (PointArray.undef_seg hull_pre k (2 * n_pre ) )
 ).
 
-Definition andrew_monotone_chain_entail_wit_9_split_goal_1 := 
-forall (hull_pre: Z) (n_pre: Z) (pts_l_low_level_spec: (@list Point)) (hull_cur: (@list Point)) (pts_sorted_2: (@list Point)) (k: Z) (lower_n: Z) (i: Z) (PreH1 : (i < 1)) (PreH2 : (0 <= (i + 1 ))) (PreH3 : ((i + 1 ) <= (n_pre - 1 ))) (PreH4 : (2 <= lower_n)) (PreH5 : (lower_n <= k)) (PreH6 : (k <= (2 * n_pre ))) (PreH7 : (2 <= n_pre)) (PreH8 : (n_pre <= 50000)) (PreH9 : ((Zlength (pts_l_low_level_spec)) = n_pre)) (PreH10 : ((Zlength (pts_sorted_2)) = n_pre)) (PreH11 : (points_in_bound pts_sorted_2 )) (PreH12 : (point_permutation pts_l_low_level_spec pts_sorted_2 )) (PreH13 : (point_xy_sorted pts_sorted_2 )) (PreH14 : (andrew_upper_scan_inv pts_sorted_2 hull_cur (i + 1 ) k lower_n )) ,
+Definition andrew_build_from_sorted_entail_wit_12_split_goal_1 := 
+forall (hull_pre: Z) (n_pre: Z) (X_low_level_spec: (unit -> ((@list Point) -> Prop))) (pts_l_low_level_spec: (@list Point)) (hull_out_2: (@list Point)) (hull_cur: (@list Point)) (hull_original: (@list Point)) (pts_sorted_2: (@list Point)) (k: Z) (left: Z) (PreH1 : (left >= ((k - 1 ) - left ))) (PreH2 : (0 <= left)) (PreH3 : (left <= (k ÷ 2 ))) (PreH4 : (2 <= k)) (PreH5 : (k <= (2 * n_pre ))) (PreH6 : (2 <= n_pre)) (PreH7 : (n_pre <= 50000)) (PreH8 : ((Zlength (pts_l_low_level_spec)) = n_pre)) (PreH9 : ((Zlength (pts_sorted_2)) = n_pre)) (PreH10 : ((Zlength (hull_original)) = k)) (PreH11 : ((Zlength (hull_cur)) = k)) (PreH12 : ((Zlength (hull_out_2)) = k)) (PreH13 : (points_in_bound pts_sorted_2 )) (PreH14 : (point_permutation pts_l_low_level_spec pts_sorted_2 )) (PreH15 : (point_xy_sorted pts_sorted_2 )) (PreH16 : (hull_out_2 = (rev (hull_original)))) (PreH17 : (point_prefix_reverse_state hull_original hull_cur k left )) (PreH18 : (safeExec (equiv (hull_out_2)) (return (tt)) X_low_level_spec )) ,
   (PointArray.undef_seg hull_pre k (2 * n_pre ) )
 |--
-  “ (andrew_complete_hull_shape pts_sorted_2 hull_cur ) ”
+  “ (safeExec (equiv (hull_cur)) (return (tt)) X_low_level_spec ) ”
 .
 
-Definition andrew_monotone_chain_entail_wit_9_split_goal_2 := 
-forall (hull_pre: Z) (n_pre: Z) (pts_l_low_level_spec: (@list Point)) (hull_cur: (@list Point)) (pts_sorted_2: (@list Point)) (k: Z) (lower_n: Z) (i: Z) (PreH1 : (i < 1)) (PreH2 : (0 <= (i + 1 ))) (PreH3 : ((i + 1 ) <= (n_pre - 1 ))) (PreH4 : (2 <= lower_n)) (PreH5 : (lower_n <= k)) (PreH6 : (k <= (2 * n_pre ))) (PreH7 : (2 <= n_pre)) (PreH8 : (n_pre <= 50000)) (PreH9 : ((Zlength (pts_l_low_level_spec)) = n_pre)) (PreH10 : ((Zlength (pts_sorted_2)) = n_pre)) (PreH11 : (points_in_bound pts_sorted_2 )) (PreH12 : (point_permutation pts_l_low_level_spec pts_sorted_2 )) (PreH13 : (point_xy_sorted pts_sorted_2 )) (PreH14 : (andrew_upper_scan_inv pts_sorted_2 hull_cur (i + 1 ) k lower_n )) ,
-  (PointArray.undef_seg hull_pre k (2 * n_pre ) )
-|--
-  “ ((Zlength (hull_cur)) = k) ”
-.
-
-Definition andrew_monotone_chain_entail_wit_9_split_goal_3 := 
-forall (hull_pre: Z) (n_pre: Z) (pts_l_low_level_spec: (@list Point)) (hull_cur: (@list Point)) (pts_sorted_2: (@list Point)) (k: Z) (lower_n: Z) (i: Z) (PreH1 : (i < 1)) (PreH2 : (0 <= (i + 1 ))) (PreH3 : ((i + 1 ) <= (n_pre - 1 ))) (PreH4 : (2 <= lower_n)) (PreH5 : (lower_n <= k)) (PreH6 : (k <= (2 * n_pre ))) (PreH7 : (2 <= n_pre)) (PreH8 : (n_pre <= 50000)) (PreH9 : ((Zlength (pts_l_low_level_spec)) = n_pre)) (PreH10 : ((Zlength (pts_sorted_2)) = n_pre)) (PreH11 : (points_in_bound pts_sorted_2 )) (PreH12 : (point_permutation pts_l_low_level_spec pts_sorted_2 )) (PreH13 : (point_xy_sorted pts_sorted_2 )) (PreH14 : (andrew_upper_scan_inv pts_sorted_2 hull_cur (i + 1 ) k lower_n )) ,
-  (PointArray.undef_seg hull_pre k (2 * n_pre ) )
-|--
-  “ (equiv (build_upper_chain_cont (pts_sorted_2) ((sublist (0) (lower_n) (hull_cur)))) (return (tt)) ) ”
-.
-
-Definition andrew_monotone_chain_entail_wit_9_split_goal_spatial := 
-forall (hull_pre: Z) (n_pre: Z) (pts_l_low_level_spec: (@list Point)) (hull_cur: (@list Point)) (pts_sorted_2: (@list Point)) (k: Z) (lower_n: Z) (i: Z) (PreH1 : (i < 1)) (PreH2 : (0 <= (i + 1 ))) (PreH3 : ((i + 1 ) <= (n_pre - 1 ))) (PreH4 : (2 <= lower_n)) (PreH5 : (lower_n <= k)) (PreH6 : (k <= (2 * n_pre ))) (PreH7 : (2 <= n_pre)) (PreH8 : (n_pre <= 50000)) (PreH9 : ((Zlength (pts_l_low_level_spec)) = n_pre)) (PreH10 : ((Zlength (pts_sorted_2)) = n_pre)) (PreH11 : (points_in_bound pts_sorted_2 )) (PreH12 : (point_permutation pts_l_low_level_spec pts_sorted_2 )) (PreH13 : (point_xy_sorted pts_sorted_2 )) (PreH14 : (andrew_upper_scan_inv pts_sorted_2 hull_cur (i + 1 ) k lower_n )) ,
+Definition andrew_build_from_sorted_entail_wit_12_split_goal_spatial := 
+forall (hull_pre: Z) (n_pre: Z) (X_low_level_spec: (unit -> ((@list Point) -> Prop))) (pts_l_low_level_spec: (@list Point)) (hull_out_2: (@list Point)) (hull_cur: (@list Point)) (hull_original: (@list Point)) (pts_sorted_2: (@list Point)) (k: Z) (left: Z) (PreH1 : (left >= ((k - 1 ) - left ))) (PreH2 : (0 <= left)) (PreH3 : (left <= (k ÷ 2 ))) (PreH4 : (2 <= k)) (PreH5 : (k <= (2 * n_pre ))) (PreH6 : (2 <= n_pre)) (PreH7 : (n_pre <= 50000)) (PreH8 : ((Zlength (pts_l_low_level_spec)) = n_pre)) (PreH9 : ((Zlength (pts_sorted_2)) = n_pre)) (PreH10 : ((Zlength (hull_original)) = k)) (PreH11 : ((Zlength (hull_cur)) = k)) (PreH12 : ((Zlength (hull_out_2)) = k)) (PreH13 : (points_in_bound pts_sorted_2 )) (PreH14 : (point_permutation pts_l_low_level_spec pts_sorted_2 )) (PreH15 : (point_xy_sorted pts_sorted_2 )) (PreH16 : (hull_out_2 = (rev (hull_original)))) (PreH17 : (point_prefix_reverse_state hull_original hull_cur k left )) (PreH18 : (safeExec (equiv (hull_out_2)) (return (tt)) X_low_level_spec )) ,
   (PointArray.undef_seg hull_pre k (2 * n_pre ) )
 |--
   (PointArray.undef_seg hull_pre k (2 * n_pre ) )
 .
 
-Definition andrew_monotone_chain_return_wit_1 := 
-forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list Point) -> Prop))) (pts_l_low_level_spec: (@list Point)) (pts_sorted: (@list Point)) (hull_out_2: (@list Point)) (k: Z) (PreH1 : (2 <= k)) (PreH2 : (k <= (2 * n_pre ))) (PreH3 : ((Zlength (pts_l_low_level_spec)) = n_pre)) (PreH4 : ((Zlength (pts_sorted)) = n_pre)) (PreH5 : ((Zlength (hull_out_2)) = k)) (PreH6 : (points_in_bound pts_sorted )) (PreH7 : (point_permutation pts_l_low_level_spec pts_sorted )) (PreH8 : (point_xy_sorted pts_sorted )) (PreH9 : (andrew_complete_hull_shape pts_sorted hull_out_2 )) (PreH10 : (safeExec (equiv (hull_out_2)) (return (tt)) X_low_level_spec )) ,
+Definition andrew_build_from_sorted_return_wit_1 := 
+forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list Point) -> Prop))) (pts_l_low_level_spec: (@list Point)) (pts_sorted: (@list Point)) (hull_out_2: (@list Point)) (k: Z) (PreH1 : (2 <= k)) (PreH2 : (k <= (2 * n_pre ))) (PreH3 : ((Zlength (pts_l_low_level_spec)) = n_pre)) (PreH4 : ((Zlength (pts_sorted)) = n_pre)) (PreH5 : ((Zlength (hull_out_2)) = k)) (PreH6 : (points_in_bound pts_sorted )) (PreH7 : (point_permutation pts_l_low_level_spec pts_sorted )) (PreH8 : (point_xy_sorted pts_sorted )) (PreH9 : (safeExec (equiv (hull_out_2)) (return (tt)) X_low_level_spec )) ,
   (PointArray.full pts_pre n_pre pts_sorted )
   **  (PointArray.seg hull_pre 0 k hull_out_2 )
   **  (PointArray.undef_seg hull_pre k (2 * n_pre ) )
@@ -3186,56 +3445,14 @@ forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list
   &&  “ (points_in_bound pts_out ) ” 
   &&  “ (point_permutation pts_l_low_level_spec pts_out ) ” 
   &&  “ (point_xy_sorted pts_out ) ” 
-  &&  “ (andrew_complete_hull_shape pts_out hull_out ) ” 
   &&  “ (safeExec (equiv (hull_out)) (return (tt)) X_low_level_spec ) ”
   &&  (PointArray.full pts_pre n_pre pts_out )
   **  (PointArray.seg hull_pre 0 k hull_out )
   **  (PointArray.undef_seg hull_pre k (2 * n_pre ) )
 .
 
-Definition andrew_monotone_chain_partial_solve_wit_1_pure := 
-forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list Point) -> Prop))) (pts_l_low_level_spec: (@list Point)) (PreH1 : (2 <= n_pre)) (PreH2 : (n_pre <= 50000)) (PreH3 : ((Zlength (pts_l_low_level_spec)) = n_pre)) (PreH4 : (points_in_bound pts_l_low_level_spec )) (PreH5 : (points_not_all_same pts_l_low_level_spec )) (PreH6 : (safeExec (equiv (empty_point_stack)) (andrew_monotone_chain_m (pts_l_low_level_spec)) X_low_level_spec )) ,
-  ((( &( "hull" ) )) # Ptr  |-> hull_pre)
-  **  ((( &( "n" ) )) # Int  |-> n_pre)
-  **  ((( &( "pts" ) )) # Ptr  |-> pts_pre)
-  **  (PointArray.full pts_pre n_pre pts_l_low_level_spec )
-  **  (PointArray.undef_full hull_pre (2 * n_pre ) )
-|--
-  “ (0 <= n_pre) ” 
-  &&  “ (n_pre <= 50000) ” 
-  &&  “ (0 <= 0) ” 
-  &&  “ ((-1) <= (n_pre - 1 )) ” 
-  &&  “ ((n_pre - 1 ) < n_pre) ” 
-  &&  “ ((Zlength (pts_l_low_level_spec)) = n_pre) ” 
-  &&  “ (points_in_bound pts_l_low_level_spec ) ”
-.
-
-Definition andrew_monotone_chain_partial_solve_wit_1_aux := 
-forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list Point) -> Prop))) (pts_l_low_level_spec: (@list Point)) (PreH1 : (2 <= n_pre)) (PreH2 : (n_pre <= 50000)) (PreH3 : ((Zlength (pts_l_low_level_spec)) = n_pre)) (PreH4 : (points_in_bound pts_l_low_level_spec )) (PreH5 : (points_not_all_same pts_l_low_level_spec )) (PreH6 : (safeExec (equiv (empty_point_stack)) (andrew_monotone_chain_m (pts_l_low_level_spec)) X_low_level_spec )) ,
-  (PointArray.full pts_pre n_pre pts_l_low_level_spec )
-  **  (PointArray.undef_full hull_pre (2 * n_pre ) )
-|--
-  “ (0 <= n_pre) ” 
-  &&  “ (n_pre <= 50000) ” 
-  &&  “ (0 <= 0) ” 
-  &&  “ ((-1) <= (n_pre - 1 )) ” 
-  &&  “ ((n_pre - 1 ) < n_pre) ” 
-  &&  “ ((Zlength (pts_l_low_level_spec)) = n_pre) ” 
-  &&  “ (points_in_bound pts_l_low_level_spec ) ” 
-  &&  “ (2 <= n_pre) ” 
-  &&  “ (n_pre <= 50000) ” 
-  &&  “ ((Zlength (pts_l_low_level_spec)) = n_pre) ” 
-  &&  “ (points_in_bound pts_l_low_level_spec ) ” 
-  &&  “ (points_not_all_same pts_l_low_level_spec ) ” 
-  &&  “ (safeExec (equiv (empty_point_stack)) (andrew_monotone_chain_m (pts_l_low_level_spec)) X_low_level_spec ) ”
-  &&  (PointArray.full pts_pre n_pre pts_l_low_level_spec )
-  **  (PointArray.undef_full hull_pre (2 * n_pre ) )
-.
-
-Definition andrew_monotone_chain_partial_solve_wit_1 := andrew_monotone_chain_partial_solve_wit_1_pure -> andrew_monotone_chain_partial_solve_wit_1_aux.
-
-Definition andrew_monotone_chain_partial_solve_wit_2 := 
-forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list Point) -> Prop))) (pts_l_low_level_spec: (@list Point)) (lower: (@list Point)) (pts_sorted: (@list Point)) (k: Z) (i: Z)  __default_Point (PreH1 : (k >= 2)) (PreH2 : (0 <= i)) (PreH3 : (i < n_pre)) (PreH4 : (0 <= k)) (PreH5 : (k <= i)) (PreH6 : (2 <= n_pre)) (PreH7 : (n_pre <= 50000)) (PreH8 : ((Zlength (pts_l_low_level_spec)) = n_pre)) (PreH9 : ((Zlength (pts_sorted)) = n_pre)) (PreH10 : (points_in_bound pts_sorted )) (PreH11 : (point_permutation pts_l_low_level_spec pts_sorted )) (PreH12 : (point_xy_sorted pts_sorted )) (PreH13 : (point_in_bound (Znth i pts_sorted __default_Point) )) (PreH14 : (andrew_lower_scan_inv pts_sorted lower i k )) (PreH15 : (safeExec (equiv (lower)) (build_chain ((sublist (i) (n_pre) (pts_sorted)))) X_low_level_spec )) ,
+Definition andrew_build_from_sorted_partial_solve_wit_1 := 
+forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list Point) -> Prop))) (pts_l_low_level_spec: (@list Point)) (lower: (@list Point)) (pts_sorted: (@list Point)) (k: Z) (i: Z)  __default_Point (PreH1 : (k >= 2)) (PreH2 : (0 <= i)) (PreH3 : (i < n_pre)) (PreH4 : (0 <= k)) (PreH5 : (k <= i)) (PreH6 : ((0 < i) -> (1 <= k))) (PreH7 : (2 <= n_pre)) (PreH8 : (n_pre <= 50000)) (PreH9 : ((Zlength (pts_l_low_level_spec)) = n_pre)) (PreH10 : ((Zlength (pts_sorted)) = n_pre)) (PreH11 : (points_in_bound pts_sorted )) (PreH12 : (point_permutation pts_l_low_level_spec pts_sorted )) (PreH13 : (point_xy_sorted pts_sorted )) (PreH14 : (point_in_bound (Znth i pts_sorted __default_Point) )) (PreH15 : (andrew_lower_scan_inv pts_sorted lower i k )) (PreH16 : (andrew_lower_remaining_cont pts_sorted lower i X_low_level_spec )) ,
   (PointArray.full pts_pre n_pre pts_sorted )
   **  (PointArray.seg hull_pre 0 k lower )
   **  (PointArray.undef_seg hull_pre k (2 * n_pre ) )
@@ -3245,6 +3462,7 @@ forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list
   &&  “ (i < n_pre) ” 
   &&  “ (0 <= k) ” 
   &&  “ (k <= i) ” 
+  &&  “ ((0 < i) -> (1 <= k)) ” 
   &&  “ (2 <= n_pre) ” 
   &&  “ (n_pre <= 50000) ” 
   &&  “ ((Zlength (pts_l_low_level_spec)) = n_pre) ” 
@@ -3254,7 +3472,7 @@ forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list
   &&  “ (point_xy_sorted pts_sorted ) ” 
   &&  “ (point_in_bound (Znth i pts_sorted __default_Point) ) ” 
   &&  “ (andrew_lower_scan_inv pts_sorted lower i k ) ” 
-  &&  “ (safeExec (equiv (lower)) (build_chain ((sublist (i) (n_pre) (pts_sorted)))) X_low_level_spec ) ”
+  &&  “ (andrew_lower_remaining_cont pts_sorted lower i X_low_level_spec ) ”
   &&  ((&(((hull_pre + ((k - 2 ) * sizeof( "Point" ) ) ))  # "Point" ->ₛ "x")) # Int  |-> (point_x ((Znth ((k - 2 ) - 0 ) lower __default_Point))))
   **  (PointArray.missing_i hull_pre (k - 2 ) 0 k lower )
   **  ((&(((hull_pre + ((k - 2 ) * sizeof( "Point" ) ) ))  # "Point" ->ₛ "y")) # Int  |-> (point_y ((Znth ((k - 2 ) - 0 ) lower __default_Point))))
@@ -3262,8 +3480,8 @@ forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list
   **  (PointArray.undef_seg hull_pre k (2 * n_pre ) )
 .
 
-Definition andrew_monotone_chain_partial_solve_wit_3 := 
-forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list Point) -> Prop))) (pts_l_low_level_spec: (@list Point)) (lower: (@list Point)) (pts_sorted: (@list Point)) (k: Z) (i: Z)  __default_Point (PreH1 : (k >= 2)) (PreH2 : (0 <= i)) (PreH3 : (i < n_pre)) (PreH4 : (0 <= k)) (PreH5 : (k <= i)) (PreH6 : (2 <= n_pre)) (PreH7 : (n_pre <= 50000)) (PreH8 : ((Zlength (pts_l_low_level_spec)) = n_pre)) (PreH9 : ((Zlength (pts_sorted)) = n_pre)) (PreH10 : (points_in_bound pts_sorted )) (PreH11 : (point_permutation pts_l_low_level_spec pts_sorted )) (PreH12 : (point_xy_sorted pts_sorted )) (PreH13 : (point_in_bound (Znth i pts_sorted __default_Point) )) (PreH14 : (andrew_lower_scan_inv pts_sorted lower i k )) (PreH15 : (safeExec (equiv (lower)) (build_chain ((sublist (i) (n_pre) (pts_sorted)))) X_low_level_spec )) ,
+Definition andrew_build_from_sorted_partial_solve_wit_2 := 
+forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list Point) -> Prop))) (pts_l_low_level_spec: (@list Point)) (lower: (@list Point)) (pts_sorted: (@list Point)) (k: Z) (i: Z)  __default_Point (PreH1 : (k >= 2)) (PreH2 : (0 <= i)) (PreH3 : (i < n_pre)) (PreH4 : (0 <= k)) (PreH5 : (k <= i)) (PreH6 : ((0 < i) -> (1 <= k))) (PreH7 : (2 <= n_pre)) (PreH8 : (n_pre <= 50000)) (PreH9 : ((Zlength (pts_l_low_level_spec)) = n_pre)) (PreH10 : ((Zlength (pts_sorted)) = n_pre)) (PreH11 : (points_in_bound pts_sorted )) (PreH12 : (point_permutation pts_l_low_level_spec pts_sorted )) (PreH13 : (point_xy_sorted pts_sorted )) (PreH14 : (point_in_bound (Znth i pts_sorted __default_Point) )) (PreH15 : (andrew_lower_scan_inv pts_sorted lower i k )) (PreH16 : (andrew_lower_remaining_cont pts_sorted lower i X_low_level_spec )) ,
   (PointArray.seg hull_pre 0 k lower )
   **  (PointArray.full pts_pre n_pre pts_sorted )
   **  (PointArray.undef_seg hull_pre k (2 * n_pre ) )
@@ -3273,6 +3491,7 @@ forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list
   &&  “ (i < n_pre) ” 
   &&  “ (0 <= k) ” 
   &&  “ (k <= i) ” 
+  &&  “ ((0 < i) -> (1 <= k)) ” 
   &&  “ (2 <= n_pre) ” 
   &&  “ (n_pre <= 50000) ” 
   &&  “ ((Zlength (pts_l_low_level_spec)) = n_pre) ” 
@@ -3282,7 +3501,7 @@ forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list
   &&  “ (point_xy_sorted pts_sorted ) ” 
   &&  “ (point_in_bound (Znth i pts_sorted __default_Point) ) ” 
   &&  “ (andrew_lower_scan_inv pts_sorted lower i k ) ” 
-  &&  “ (safeExec (equiv (lower)) (build_chain ((sublist (i) (n_pre) (pts_sorted)))) X_low_level_spec ) ”
+  &&  “ (andrew_lower_remaining_cont pts_sorted lower i X_low_level_spec ) ”
   &&  ((&(((hull_pre + ((k - 2 ) * sizeof( "Point" ) ) ))  # "Point" ->ₛ "y")) # Int  |-> (point_y ((Znth ((k - 2 ) - 0 ) lower __default_Point))))
   **  (PointArray.missing_i hull_pre (k - 2 ) 0 k lower )
   **  ((&(((hull_pre + ((k - 2 ) * sizeof( "Point" ) ) ))  # "Point" ->ₛ "x")) # Int  |-> (point_x ((Znth ((k - 2 ) - 0 ) lower __default_Point))))
@@ -3290,8 +3509,8 @@ forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list
   **  (PointArray.undef_seg hull_pre k (2 * n_pre ) )
 .
 
-Definition andrew_monotone_chain_partial_solve_wit_4 := 
-forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list Point) -> Prop))) (pts_l_low_level_spec: (@list Point)) (lower: (@list Point)) (pts_sorted: (@list Point)) (k: Z) (i: Z)  __default_Point (PreH1 : (k >= 2)) (PreH2 : (0 <= i)) (PreH3 : (i < n_pre)) (PreH4 : (0 <= k)) (PreH5 : (k <= i)) (PreH6 : (2 <= n_pre)) (PreH7 : (n_pre <= 50000)) (PreH8 : ((Zlength (pts_l_low_level_spec)) = n_pre)) (PreH9 : ((Zlength (pts_sorted)) = n_pre)) (PreH10 : (points_in_bound pts_sorted )) (PreH11 : (point_permutation pts_l_low_level_spec pts_sorted )) (PreH12 : (point_xy_sorted pts_sorted )) (PreH13 : (point_in_bound (Znth i pts_sorted __default_Point) )) (PreH14 : (andrew_lower_scan_inv pts_sorted lower i k )) (PreH15 : (safeExec (equiv (lower)) (build_chain ((sublist (i) (n_pre) (pts_sorted)))) X_low_level_spec )) ,
+Definition andrew_build_from_sorted_partial_solve_wit_3 := 
+forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list Point) -> Prop))) (pts_l_low_level_spec: (@list Point)) (lower: (@list Point)) (pts_sorted: (@list Point)) (k: Z) (i: Z)  __default_Point (PreH1 : (k >= 2)) (PreH2 : (0 <= i)) (PreH3 : (i < n_pre)) (PreH4 : (0 <= k)) (PreH5 : (k <= i)) (PreH6 : ((0 < i) -> (1 <= k))) (PreH7 : (2 <= n_pre)) (PreH8 : (n_pre <= 50000)) (PreH9 : ((Zlength (pts_l_low_level_spec)) = n_pre)) (PreH10 : ((Zlength (pts_sorted)) = n_pre)) (PreH11 : (points_in_bound pts_sorted )) (PreH12 : (point_permutation pts_l_low_level_spec pts_sorted )) (PreH13 : (point_xy_sorted pts_sorted )) (PreH14 : (point_in_bound (Znth i pts_sorted __default_Point) )) (PreH15 : (andrew_lower_scan_inv pts_sorted lower i k )) (PreH16 : (andrew_lower_remaining_cont pts_sorted lower i X_low_level_spec )) ,
   (PointArray.seg hull_pre 0 k lower )
   **  (PointArray.full pts_pre n_pre pts_sorted )
   **  (PointArray.undef_seg hull_pre k (2 * n_pre ) )
@@ -3301,6 +3520,7 @@ forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list
   &&  “ (i < n_pre) ” 
   &&  “ (0 <= k) ” 
   &&  “ (k <= i) ” 
+  &&  “ ((0 < i) -> (1 <= k)) ” 
   &&  “ (2 <= n_pre) ” 
   &&  “ (n_pre <= 50000) ” 
   &&  “ ((Zlength (pts_l_low_level_spec)) = n_pre) ” 
@@ -3310,7 +3530,7 @@ forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list
   &&  “ (point_xy_sorted pts_sorted ) ” 
   &&  “ (point_in_bound (Znth i pts_sorted __default_Point) ) ” 
   &&  “ (andrew_lower_scan_inv pts_sorted lower i k ) ” 
-  &&  “ (safeExec (equiv (lower)) (build_chain ((sublist (i) (n_pre) (pts_sorted)))) X_low_level_spec ) ”
+  &&  “ (andrew_lower_remaining_cont pts_sorted lower i X_low_level_spec ) ”
   &&  ((&(((hull_pre + ((k - 1 ) * sizeof( "Point" ) ) ))  # "Point" ->ₛ "x")) # Int  |-> (point_x ((Znth ((k - 1 ) - 0 ) lower __default_Point))))
   **  (PointArray.missing_i hull_pre (k - 1 ) 0 k lower )
   **  ((&(((hull_pre + ((k - 1 ) * sizeof( "Point" ) ) ))  # "Point" ->ₛ "y")) # Int  |-> (point_y ((Znth ((k - 1 ) - 0 ) lower __default_Point))))
@@ -3318,8 +3538,8 @@ forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list
   **  (PointArray.undef_seg hull_pre k (2 * n_pre ) )
 .
 
-Definition andrew_monotone_chain_partial_solve_wit_5 := 
-forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list Point) -> Prop))) (pts_l_low_level_spec: (@list Point)) (lower: (@list Point)) (pts_sorted: (@list Point)) (k: Z) (i: Z)  __default_Point (PreH1 : (k >= 2)) (PreH2 : (0 <= i)) (PreH3 : (i < n_pre)) (PreH4 : (0 <= k)) (PreH5 : (k <= i)) (PreH6 : (2 <= n_pre)) (PreH7 : (n_pre <= 50000)) (PreH8 : ((Zlength (pts_l_low_level_spec)) = n_pre)) (PreH9 : ((Zlength (pts_sorted)) = n_pre)) (PreH10 : (points_in_bound pts_sorted )) (PreH11 : (point_permutation pts_l_low_level_spec pts_sorted )) (PreH12 : (point_xy_sorted pts_sorted )) (PreH13 : (point_in_bound (Znth i pts_sorted __default_Point) )) (PreH14 : (andrew_lower_scan_inv pts_sorted lower i k )) (PreH15 : (safeExec (equiv (lower)) (build_chain ((sublist (i) (n_pre) (pts_sorted)))) X_low_level_spec )) ,
+Definition andrew_build_from_sorted_partial_solve_wit_4 := 
+forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list Point) -> Prop))) (pts_l_low_level_spec: (@list Point)) (lower: (@list Point)) (pts_sorted: (@list Point)) (k: Z) (i: Z)  __default_Point (PreH1 : (k >= 2)) (PreH2 : (0 <= i)) (PreH3 : (i < n_pre)) (PreH4 : (0 <= k)) (PreH5 : (k <= i)) (PreH6 : ((0 < i) -> (1 <= k))) (PreH7 : (2 <= n_pre)) (PreH8 : (n_pre <= 50000)) (PreH9 : ((Zlength (pts_l_low_level_spec)) = n_pre)) (PreH10 : ((Zlength (pts_sorted)) = n_pre)) (PreH11 : (points_in_bound pts_sorted )) (PreH12 : (point_permutation pts_l_low_level_spec pts_sorted )) (PreH13 : (point_xy_sorted pts_sorted )) (PreH14 : (point_in_bound (Znth i pts_sorted __default_Point) )) (PreH15 : (andrew_lower_scan_inv pts_sorted lower i k )) (PreH16 : (andrew_lower_remaining_cont pts_sorted lower i X_low_level_spec )) ,
   (PointArray.seg hull_pre 0 k lower )
   **  (PointArray.full pts_pre n_pre pts_sorted )
   **  (PointArray.undef_seg hull_pre k (2 * n_pre ) )
@@ -3329,6 +3549,7 @@ forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list
   &&  “ (i < n_pre) ” 
   &&  “ (0 <= k) ” 
   &&  “ (k <= i) ” 
+  &&  “ ((0 < i) -> (1 <= k)) ” 
   &&  “ (2 <= n_pre) ” 
   &&  “ (n_pre <= 50000) ” 
   &&  “ ((Zlength (pts_l_low_level_spec)) = n_pre) ” 
@@ -3338,7 +3559,7 @@ forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list
   &&  “ (point_xy_sorted pts_sorted ) ” 
   &&  “ (point_in_bound (Znth i pts_sorted __default_Point) ) ” 
   &&  “ (andrew_lower_scan_inv pts_sorted lower i k ) ” 
-  &&  “ (safeExec (equiv (lower)) (build_chain ((sublist (i) (n_pre) (pts_sorted)))) X_low_level_spec ) ”
+  &&  “ (andrew_lower_remaining_cont pts_sorted lower i X_low_level_spec ) ”
   &&  ((&(((hull_pre + ((k - 1 ) * sizeof( "Point" ) ) ))  # "Point" ->ₛ "y")) # Int  |-> (point_y ((Znth ((k - 1 ) - 0 ) lower __default_Point))))
   **  (PointArray.missing_i hull_pre (k - 1 ) 0 k lower )
   **  ((&(((hull_pre + ((k - 1 ) * sizeof( "Point" ) ) ))  # "Point" ->ₛ "x")) # Int  |-> (point_x ((Znth ((k - 1 ) - 0 ) lower __default_Point))))
@@ -3346,8 +3567,8 @@ forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list
   **  (PointArray.undef_seg hull_pre k (2 * n_pre ) )
 .
 
-Definition andrew_monotone_chain_partial_solve_wit_6 := 
-forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list Point) -> Prop))) (pts_l_low_level_spec: (@list Point)) (lower: (@list Point)) (pts_sorted: (@list Point)) (k: Z) (i: Z)  __default_Point (PreH1 : (k >= 2)) (PreH2 : (0 <= i)) (PreH3 : (i < n_pre)) (PreH4 : (0 <= k)) (PreH5 : (k <= i)) (PreH6 : (2 <= n_pre)) (PreH7 : (n_pre <= 50000)) (PreH8 : ((Zlength (pts_l_low_level_spec)) = n_pre)) (PreH9 : ((Zlength (pts_sorted)) = n_pre)) (PreH10 : (points_in_bound pts_sorted )) (PreH11 : (point_permutation pts_l_low_level_spec pts_sorted )) (PreH12 : (point_xy_sorted pts_sorted )) (PreH13 : (point_in_bound (Znth i pts_sorted __default_Point) )) (PreH14 : (andrew_lower_scan_inv pts_sorted lower i k )) (PreH15 : (safeExec (equiv (lower)) (build_chain ((sublist (i) (n_pre) (pts_sorted)))) X_low_level_spec )) ,
+Definition andrew_build_from_sorted_partial_solve_wit_5 := 
+forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list Point) -> Prop))) (pts_l_low_level_spec: (@list Point)) (lower: (@list Point)) (pts_sorted: (@list Point)) (k: Z) (i: Z)  __default_Point (PreH1 : (k >= 2)) (PreH2 : (0 <= i)) (PreH3 : (i < n_pre)) (PreH4 : (0 <= k)) (PreH5 : (k <= i)) (PreH6 : ((0 < i) -> (1 <= k))) (PreH7 : (2 <= n_pre)) (PreH8 : (n_pre <= 50000)) (PreH9 : ((Zlength (pts_l_low_level_spec)) = n_pre)) (PreH10 : ((Zlength (pts_sorted)) = n_pre)) (PreH11 : (points_in_bound pts_sorted )) (PreH12 : (point_permutation pts_l_low_level_spec pts_sorted )) (PreH13 : (point_xy_sorted pts_sorted )) (PreH14 : (point_in_bound (Znth i pts_sorted __default_Point) )) (PreH15 : (andrew_lower_scan_inv pts_sorted lower i k )) (PreH16 : (andrew_lower_remaining_cont pts_sorted lower i X_low_level_spec )) ,
   (PointArray.seg hull_pre 0 k lower )
   **  (PointArray.full pts_pre n_pre pts_sorted )
   **  (PointArray.undef_seg hull_pre k (2 * n_pre ) )
@@ -3357,6 +3578,7 @@ forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list
   &&  “ (i < n_pre) ” 
   &&  “ (0 <= k) ” 
   &&  “ (k <= i) ” 
+  &&  “ ((0 < i) -> (1 <= k)) ” 
   &&  “ (2 <= n_pre) ” 
   &&  “ (n_pre <= 50000) ” 
   &&  “ ((Zlength (pts_l_low_level_spec)) = n_pre) ” 
@@ -3366,7 +3588,7 @@ forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list
   &&  “ (point_xy_sorted pts_sorted ) ” 
   &&  “ (point_in_bound (Znth i pts_sorted __default_Point) ) ” 
   &&  “ (andrew_lower_scan_inv pts_sorted lower i k ) ” 
-  &&  “ (safeExec (equiv (lower)) (build_chain ((sublist (i) (n_pre) (pts_sorted)))) X_low_level_spec ) ”
+  &&  “ (andrew_lower_remaining_cont pts_sorted lower i X_low_level_spec ) ”
   &&  ((&(((pts_pre + (i * sizeof( "Point" ) ) ))  # "Point" ->ₛ "x")) # Int  |-> (point_x ((Znth i pts_sorted __default_Point))))
   **  (PointArray.missing_i pts_pre i 0 n_pre pts_sorted )
   **  ((&(((pts_pre + (i * sizeof( "Point" ) ) ))  # "Point" ->ₛ "y")) # Int  |-> (point_y ((Znth i pts_sorted __default_Point))))
@@ -3374,8 +3596,8 @@ forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list
   **  (PointArray.undef_seg hull_pre k (2 * n_pre ) )
 .
 
-Definition andrew_monotone_chain_partial_solve_wit_7 := 
-forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list Point) -> Prop))) (pts_l_low_level_spec: (@list Point)) (lower: (@list Point)) (pts_sorted: (@list Point)) (k: Z) (i: Z)  __default_Point (PreH1 : (k >= 2)) (PreH2 : (0 <= i)) (PreH3 : (i < n_pre)) (PreH4 : (0 <= k)) (PreH5 : (k <= i)) (PreH6 : (2 <= n_pre)) (PreH7 : (n_pre <= 50000)) (PreH8 : ((Zlength (pts_l_low_level_spec)) = n_pre)) (PreH9 : ((Zlength (pts_sorted)) = n_pre)) (PreH10 : (points_in_bound pts_sorted )) (PreH11 : (point_permutation pts_l_low_level_spec pts_sorted )) (PreH12 : (point_xy_sorted pts_sorted )) (PreH13 : (point_in_bound (Znth i pts_sorted __default_Point) )) (PreH14 : (andrew_lower_scan_inv pts_sorted lower i k )) (PreH15 : (safeExec (equiv (lower)) (build_chain ((sublist (i) (n_pre) (pts_sorted)))) X_low_level_spec )) ,
+Definition andrew_build_from_sorted_partial_solve_wit_6 := 
+forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list Point) -> Prop))) (pts_l_low_level_spec: (@list Point)) (lower: (@list Point)) (pts_sorted: (@list Point)) (k: Z) (i: Z)  __default_Point (PreH1 : (k >= 2)) (PreH2 : (0 <= i)) (PreH3 : (i < n_pre)) (PreH4 : (0 <= k)) (PreH5 : (k <= i)) (PreH6 : ((0 < i) -> (1 <= k))) (PreH7 : (2 <= n_pre)) (PreH8 : (n_pre <= 50000)) (PreH9 : ((Zlength (pts_l_low_level_spec)) = n_pre)) (PreH10 : ((Zlength (pts_sorted)) = n_pre)) (PreH11 : (points_in_bound pts_sorted )) (PreH12 : (point_permutation pts_l_low_level_spec pts_sorted )) (PreH13 : (point_xy_sorted pts_sorted )) (PreH14 : (point_in_bound (Znth i pts_sorted __default_Point) )) (PreH15 : (andrew_lower_scan_inv pts_sorted lower i k )) (PreH16 : (andrew_lower_remaining_cont pts_sorted lower i X_low_level_spec )) ,
   (PointArray.full pts_pre n_pre pts_sorted )
   **  (PointArray.seg hull_pre 0 k lower )
   **  (PointArray.undef_seg hull_pre k (2 * n_pre ) )
@@ -3385,6 +3607,7 @@ forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list
   &&  “ (i < n_pre) ” 
   &&  “ (0 <= k) ” 
   &&  “ (k <= i) ” 
+  &&  “ ((0 < i) -> (1 <= k)) ” 
   &&  “ (2 <= n_pre) ” 
   &&  “ (n_pre <= 50000) ” 
   &&  “ ((Zlength (pts_l_low_level_spec)) = n_pre) ” 
@@ -3394,7 +3617,7 @@ forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list
   &&  “ (point_xy_sorted pts_sorted ) ” 
   &&  “ (point_in_bound (Znth i pts_sorted __default_Point) ) ” 
   &&  “ (andrew_lower_scan_inv pts_sorted lower i k ) ” 
-  &&  “ (safeExec (equiv (lower)) (build_chain ((sublist (i) (n_pre) (pts_sorted)))) X_low_level_spec ) ”
+  &&  “ (andrew_lower_remaining_cont pts_sorted lower i X_low_level_spec ) ”
   &&  ((&(((pts_pre + (i * sizeof( "Point" ) ) ))  # "Point" ->ₛ "y")) # Int  |-> (point_y ((Znth i pts_sorted __default_Point))))
   **  (PointArray.missing_i pts_pre i 0 n_pre pts_sorted )
   **  ((&(((pts_pre + (i * sizeof( "Point" ) ) ))  # "Point" ->ₛ "x")) # Int  |-> (point_x ((Znth i pts_sorted __default_Point))))
@@ -3402,9 +3625,9 @@ forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list
   **  (PointArray.undef_seg hull_pre k (2 * n_pre ) )
 .
 
-Definition andrew_monotone_chain_partial_solve_wit_8_pure := 
+Definition andrew_build_from_sorted_partial_solve_wit_7_pure := 
 (
-forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list Point) -> Prop))) (pts_l_low_level_spec: (@list Point)) (lower: (@list Point)) (pts_sorted: (@list Point)) (k: Z) (i: Z)  __default_Point (PreH1 : (k >= 2)) (PreH2 : (0 <= i)) (PreH3 : (i < n_pre)) (PreH4 : (0 <= k)) (PreH5 : (k <= i)) (PreH6 : (2 <= n_pre)) (PreH7 : (n_pre <= 50000)) (PreH8 : ((Zlength (pts_l_low_level_spec)) = n_pre)) (PreH9 : ((Zlength (pts_sorted)) = n_pre)) (PreH10 : (points_in_bound pts_sorted )) (PreH11 : (point_permutation pts_l_low_level_spec pts_sorted )) (PreH12 : (point_xy_sorted pts_sorted )) (PreH13 : (point_in_bound (Znth i pts_sorted __default_Point) )) (PreH14 : (andrew_lower_scan_inv pts_sorted lower i k )) (PreH15 : (safeExec (equiv (lower)) (build_chain ((sublist (i) (n_pre) (pts_sorted)))) X_low_level_spec )) ,
+forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list Point) -> Prop))) (pts_l_low_level_spec: (@list Point)) (lower: (@list Point)) (pts_sorted: (@list Point)) (k: Z) (i: Z)  __default_Point (PreH1 : (k >= 2)) (PreH2 : (0 <= i)) (PreH3 : (i < n_pre)) (PreH4 : (0 <= k)) (PreH5 : (k <= i)) (PreH6 : ((0 < i) -> (1 <= k))) (PreH7 : (2 <= n_pre)) (PreH8 : (n_pre <= 50000)) (PreH9 : ((Zlength (pts_l_low_level_spec)) = n_pre)) (PreH10 : ((Zlength (pts_sorted)) = n_pre)) (PreH11 : (points_in_bound pts_sorted )) (PreH12 : (point_permutation pts_l_low_level_spec pts_sorted )) (PreH13 : (point_xy_sorted pts_sorted )) (PreH14 : (point_in_bound (Znth i pts_sorted __default_Point) )) (PreH15 : (andrew_lower_scan_inv pts_sorted lower i k )) (PreH16 : (andrew_lower_remaining_cont pts_sorted lower i X_low_level_spec )) ,
   (PointArray.full pts_pre n_pre pts_sorted )
   **  (PointArray.seg hull_pre 0 k lower )
   **  ((( &( "i" ) )) # Int  |-> i)
@@ -3428,7 +3651,7 @@ forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list
   &&  “ ((-point_bound) <= (point_x ((Znth ((k - 2 ) - 0 ) lower __default_Point)))) ”
 ) \/
 (
-forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list Point) -> Prop))) (pts_l_low_level_spec: (@list Point)) (lower: (@list Point)) (pts_sorted: (@list Point)) (k: Z) (i: Z)  __default_Point (PreH1 : (k <= INT_MAX)) (PreH2 : (n_pre <= INT_MAX)) (PreH3 : (i <= INT_MAX)) (PreH4 : (k >= INT_MIN)) (PreH5 : (n_pre >= INT_MIN)) (PreH6 : (i >= INT_MIN)) (PreH7 : (k >= 2)) (PreH8 : (0 <= i)) (PreH9 : (i < n_pre)) (PreH10 : (0 <= k)) (PreH11 : (k <= i)) (PreH12 : (2 <= n_pre)) (PreH13 : (n_pre <= 50000)) (PreH14 : ((Zlength (pts_l_low_level_spec)) = n_pre)) (PreH15 : ((Zlength (pts_sorted)) = n_pre)) (PreH16 : (points_in_bound pts_sorted )) (PreH17 : (point_permutation pts_l_low_level_spec pts_sorted )) (PreH18 : (point_xy_sorted pts_sorted )) (PreH19 : (point_in_bound (Znth i pts_sorted __default_Point) )) (PreH20 : (andrew_lower_scan_inv pts_sorted lower i k )) (PreH21 : (safeExec (equiv (lower)) (build_chain ((sublist (i) (n_pre) (pts_sorted)))) X_low_level_spec )) ,
+forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list Point) -> Prop))) (pts_l_low_level_spec: (@list Point)) (lower: (@list Point)) (pts_sorted: (@list Point)) (k: Z) (i: Z)  __default_Point (PreH1 : (k <= INT_MAX)) (PreH2 : (n_pre <= INT_MAX)) (PreH3 : (i <= INT_MAX)) (PreH4 : (k >= INT_MIN)) (PreH5 : (n_pre >= INT_MIN)) (PreH6 : (i >= INT_MIN)) (PreH7 : (k >= 2)) (PreH8 : (0 <= i)) (PreH9 : (i < n_pre)) (PreH10 : (0 <= k)) (PreH11 : (k <= i)) (PreH12 : ((0 < i) -> (1 <= k))) (PreH13 : (2 <= n_pre)) (PreH14 : (n_pre <= 50000)) (PreH15 : ((Zlength (pts_l_low_level_spec)) = n_pre)) (PreH16 : ((Zlength (pts_sorted)) = n_pre)) (PreH17 : (points_in_bound pts_sorted )) (PreH18 : (point_permutation pts_l_low_level_spec pts_sorted )) (PreH19 : (point_xy_sorted pts_sorted )) (PreH20 : (point_in_bound (Znth i pts_sorted __default_Point) )) (PreH21 : (andrew_lower_scan_inv pts_sorted lower i k )) (PreH22 : (andrew_lower_remaining_cont pts_sorted lower i X_low_level_spec )) ,
   (PointArray.full pts_pre n_pre pts_sorted )
   **  (PointArray.seg hull_pre 0 k lower )
   **  ((( &( "i" ) )) # Int  |-> i)
@@ -3452,8 +3675,8 @@ forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list
   &&  “ ((point_y ((Znth i pts_sorted __default_Point))) <= point_bound) ”
 ).
 
-Definition andrew_monotone_chain_partial_solve_wit_8_pure_split_goal_1 := 
-forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list Point) -> Prop))) (pts_l_low_level_spec: (@list Point)) (lower: (@list Point)) (pts_sorted: (@list Point)) (k: Z) (i: Z)  __default_Point (PreH1 : (k <= INT_MAX)) (PreH2 : (n_pre <= INT_MAX)) (PreH3 : (i <= INT_MAX)) (PreH4 : (k >= INT_MIN)) (PreH5 : (n_pre >= INT_MIN)) (PreH6 : (i >= INT_MIN)) (PreH7 : (k >= 2)) (PreH8 : (0 <= i)) (PreH9 : (i < n_pre)) (PreH10 : (0 <= k)) (PreH11 : (k <= i)) (PreH12 : (2 <= n_pre)) (PreH13 : (n_pre <= 50000)) (PreH14 : ((Zlength (pts_l_low_level_spec)) = n_pre)) (PreH15 : ((Zlength (pts_sorted)) = n_pre)) (PreH16 : (points_in_bound pts_sorted )) (PreH17 : (point_permutation pts_l_low_level_spec pts_sorted )) (PreH18 : (point_xy_sorted pts_sorted )) (PreH19 : (point_in_bound (Znth i pts_sorted __default_Point) )) (PreH20 : (andrew_lower_scan_inv pts_sorted lower i k )) (PreH21 : (safeExec (equiv (lower)) (build_chain ((sublist (i) (n_pre) (pts_sorted)))) X_low_level_spec )) ,
+Definition andrew_build_from_sorted_partial_solve_wit_7_pure_split_goal_1 := 
+forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list Point) -> Prop))) (pts_l_low_level_spec: (@list Point)) (lower: (@list Point)) (pts_sorted: (@list Point)) (k: Z) (i: Z)  __default_Point (PreH1 : (k <= INT_MAX)) (PreH2 : (n_pre <= INT_MAX)) (PreH3 : (i <= INT_MAX)) (PreH4 : (k >= INT_MIN)) (PreH5 : (n_pre >= INT_MIN)) (PreH6 : (i >= INT_MIN)) (PreH7 : (k >= 2)) (PreH8 : (0 <= i)) (PreH9 : (i < n_pre)) (PreH10 : (0 <= k)) (PreH11 : (k <= i)) (PreH12 : ((0 < i) -> (1 <= k))) (PreH13 : (2 <= n_pre)) (PreH14 : (n_pre <= 50000)) (PreH15 : ((Zlength (pts_l_low_level_spec)) = n_pre)) (PreH16 : ((Zlength (pts_sorted)) = n_pre)) (PreH17 : (points_in_bound pts_sorted )) (PreH18 : (point_permutation pts_l_low_level_spec pts_sorted )) (PreH19 : (point_xy_sorted pts_sorted )) (PreH20 : (point_in_bound (Znth i pts_sorted __default_Point) )) (PreH21 : (andrew_lower_scan_inv pts_sorted lower i k )) (PreH22 : (andrew_lower_remaining_cont pts_sorted lower i X_low_level_spec )) ,
   (PointArray.full pts_pre n_pre pts_sorted )
   **  (PointArray.seg hull_pre 0 k lower )
   **  ((( &( "i" ) )) # Int  |-> i)
@@ -3466,8 +3689,8 @@ forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list
   “ ((-point_bound) <= (point_x ((Znth ((k - 2 ) - 0 ) lower __default_Point)))) ”
 .
 
-Definition andrew_monotone_chain_partial_solve_wit_8_pure_split_goal_2 := 
-forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list Point) -> Prop))) (pts_l_low_level_spec: (@list Point)) (lower: (@list Point)) (pts_sorted: (@list Point)) (k: Z) (i: Z)  __default_Point (PreH1 : (k <= INT_MAX)) (PreH2 : (n_pre <= INT_MAX)) (PreH3 : (i <= INT_MAX)) (PreH4 : (k >= INT_MIN)) (PreH5 : (n_pre >= INT_MIN)) (PreH6 : (i >= INT_MIN)) (PreH7 : (k >= 2)) (PreH8 : (0 <= i)) (PreH9 : (i < n_pre)) (PreH10 : (0 <= k)) (PreH11 : (k <= i)) (PreH12 : (2 <= n_pre)) (PreH13 : (n_pre <= 50000)) (PreH14 : ((Zlength (pts_l_low_level_spec)) = n_pre)) (PreH15 : ((Zlength (pts_sorted)) = n_pre)) (PreH16 : (points_in_bound pts_sorted )) (PreH17 : (point_permutation pts_l_low_level_spec pts_sorted )) (PreH18 : (point_xy_sorted pts_sorted )) (PreH19 : (point_in_bound (Znth i pts_sorted __default_Point) )) (PreH20 : (andrew_lower_scan_inv pts_sorted lower i k )) (PreH21 : (safeExec (equiv (lower)) (build_chain ((sublist (i) (n_pre) (pts_sorted)))) X_low_level_spec )) ,
+Definition andrew_build_from_sorted_partial_solve_wit_7_pure_split_goal_2 := 
+forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list Point) -> Prop))) (pts_l_low_level_spec: (@list Point)) (lower: (@list Point)) (pts_sorted: (@list Point)) (k: Z) (i: Z)  __default_Point (PreH1 : (k <= INT_MAX)) (PreH2 : (n_pre <= INT_MAX)) (PreH3 : (i <= INT_MAX)) (PreH4 : (k >= INT_MIN)) (PreH5 : (n_pre >= INT_MIN)) (PreH6 : (i >= INT_MIN)) (PreH7 : (k >= 2)) (PreH8 : (0 <= i)) (PreH9 : (i < n_pre)) (PreH10 : (0 <= k)) (PreH11 : (k <= i)) (PreH12 : ((0 < i) -> (1 <= k))) (PreH13 : (2 <= n_pre)) (PreH14 : (n_pre <= 50000)) (PreH15 : ((Zlength (pts_l_low_level_spec)) = n_pre)) (PreH16 : ((Zlength (pts_sorted)) = n_pre)) (PreH17 : (points_in_bound pts_sorted )) (PreH18 : (point_permutation pts_l_low_level_spec pts_sorted )) (PreH19 : (point_xy_sorted pts_sorted )) (PreH20 : (point_in_bound (Znth i pts_sorted __default_Point) )) (PreH21 : (andrew_lower_scan_inv pts_sorted lower i k )) (PreH22 : (andrew_lower_remaining_cont pts_sorted lower i X_low_level_spec )) ,
   (PointArray.full pts_pre n_pre pts_sorted )
   **  (PointArray.seg hull_pre 0 k lower )
   **  ((( &( "i" ) )) # Int  |-> i)
@@ -3480,8 +3703,8 @@ forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list
   “ ((point_x ((Znth ((k - 2 ) - 0 ) lower __default_Point))) <= point_bound) ”
 .
 
-Definition andrew_monotone_chain_partial_solve_wit_8_pure_split_goal_3 := 
-forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list Point) -> Prop))) (pts_l_low_level_spec: (@list Point)) (lower: (@list Point)) (pts_sorted: (@list Point)) (k: Z) (i: Z)  __default_Point (PreH1 : (k <= INT_MAX)) (PreH2 : (n_pre <= INT_MAX)) (PreH3 : (i <= INT_MAX)) (PreH4 : (k >= INT_MIN)) (PreH5 : (n_pre >= INT_MIN)) (PreH6 : (i >= INT_MIN)) (PreH7 : (k >= 2)) (PreH8 : (0 <= i)) (PreH9 : (i < n_pre)) (PreH10 : (0 <= k)) (PreH11 : (k <= i)) (PreH12 : (2 <= n_pre)) (PreH13 : (n_pre <= 50000)) (PreH14 : ((Zlength (pts_l_low_level_spec)) = n_pre)) (PreH15 : ((Zlength (pts_sorted)) = n_pre)) (PreH16 : (points_in_bound pts_sorted )) (PreH17 : (point_permutation pts_l_low_level_spec pts_sorted )) (PreH18 : (point_xy_sorted pts_sorted )) (PreH19 : (point_in_bound (Znth i pts_sorted __default_Point) )) (PreH20 : (andrew_lower_scan_inv pts_sorted lower i k )) (PreH21 : (safeExec (equiv (lower)) (build_chain ((sublist (i) (n_pre) (pts_sorted)))) X_low_level_spec )) ,
+Definition andrew_build_from_sorted_partial_solve_wit_7_pure_split_goal_3 := 
+forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list Point) -> Prop))) (pts_l_low_level_spec: (@list Point)) (lower: (@list Point)) (pts_sorted: (@list Point)) (k: Z) (i: Z)  __default_Point (PreH1 : (k <= INT_MAX)) (PreH2 : (n_pre <= INT_MAX)) (PreH3 : (i <= INT_MAX)) (PreH4 : (k >= INT_MIN)) (PreH5 : (n_pre >= INT_MIN)) (PreH6 : (i >= INT_MIN)) (PreH7 : (k >= 2)) (PreH8 : (0 <= i)) (PreH9 : (i < n_pre)) (PreH10 : (0 <= k)) (PreH11 : (k <= i)) (PreH12 : ((0 < i) -> (1 <= k))) (PreH13 : (2 <= n_pre)) (PreH14 : (n_pre <= 50000)) (PreH15 : ((Zlength (pts_l_low_level_spec)) = n_pre)) (PreH16 : ((Zlength (pts_sorted)) = n_pre)) (PreH17 : (points_in_bound pts_sorted )) (PreH18 : (point_permutation pts_l_low_level_spec pts_sorted )) (PreH19 : (point_xy_sorted pts_sorted )) (PreH20 : (point_in_bound (Znth i pts_sorted __default_Point) )) (PreH21 : (andrew_lower_scan_inv pts_sorted lower i k )) (PreH22 : (andrew_lower_remaining_cont pts_sorted lower i X_low_level_spec )) ,
   (PointArray.full pts_pre n_pre pts_sorted )
   **  (PointArray.seg hull_pre 0 k lower )
   **  ((( &( "i" ) )) # Int  |-> i)
@@ -3494,8 +3717,8 @@ forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list
   “ ((-point_bound) <= (point_y ((Znth ((k - 2 ) - 0 ) lower __default_Point)))) ”
 .
 
-Definition andrew_monotone_chain_partial_solve_wit_8_pure_split_goal_4 := 
-forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list Point) -> Prop))) (pts_l_low_level_spec: (@list Point)) (lower: (@list Point)) (pts_sorted: (@list Point)) (k: Z) (i: Z)  __default_Point (PreH1 : (k <= INT_MAX)) (PreH2 : (n_pre <= INT_MAX)) (PreH3 : (i <= INT_MAX)) (PreH4 : (k >= INT_MIN)) (PreH5 : (n_pre >= INT_MIN)) (PreH6 : (i >= INT_MIN)) (PreH7 : (k >= 2)) (PreH8 : (0 <= i)) (PreH9 : (i < n_pre)) (PreH10 : (0 <= k)) (PreH11 : (k <= i)) (PreH12 : (2 <= n_pre)) (PreH13 : (n_pre <= 50000)) (PreH14 : ((Zlength (pts_l_low_level_spec)) = n_pre)) (PreH15 : ((Zlength (pts_sorted)) = n_pre)) (PreH16 : (points_in_bound pts_sorted )) (PreH17 : (point_permutation pts_l_low_level_spec pts_sorted )) (PreH18 : (point_xy_sorted pts_sorted )) (PreH19 : (point_in_bound (Znth i pts_sorted __default_Point) )) (PreH20 : (andrew_lower_scan_inv pts_sorted lower i k )) (PreH21 : (safeExec (equiv (lower)) (build_chain ((sublist (i) (n_pre) (pts_sorted)))) X_low_level_spec )) ,
+Definition andrew_build_from_sorted_partial_solve_wit_7_pure_split_goal_4 := 
+forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list Point) -> Prop))) (pts_l_low_level_spec: (@list Point)) (lower: (@list Point)) (pts_sorted: (@list Point)) (k: Z) (i: Z)  __default_Point (PreH1 : (k <= INT_MAX)) (PreH2 : (n_pre <= INT_MAX)) (PreH3 : (i <= INT_MAX)) (PreH4 : (k >= INT_MIN)) (PreH5 : (n_pre >= INT_MIN)) (PreH6 : (i >= INT_MIN)) (PreH7 : (k >= 2)) (PreH8 : (0 <= i)) (PreH9 : (i < n_pre)) (PreH10 : (0 <= k)) (PreH11 : (k <= i)) (PreH12 : ((0 < i) -> (1 <= k))) (PreH13 : (2 <= n_pre)) (PreH14 : (n_pre <= 50000)) (PreH15 : ((Zlength (pts_l_low_level_spec)) = n_pre)) (PreH16 : ((Zlength (pts_sorted)) = n_pre)) (PreH17 : (points_in_bound pts_sorted )) (PreH18 : (point_permutation pts_l_low_level_spec pts_sorted )) (PreH19 : (point_xy_sorted pts_sorted )) (PreH20 : (point_in_bound (Znth i pts_sorted __default_Point) )) (PreH21 : (andrew_lower_scan_inv pts_sorted lower i k )) (PreH22 : (andrew_lower_remaining_cont pts_sorted lower i X_low_level_spec )) ,
   (PointArray.full pts_pre n_pre pts_sorted )
   **  (PointArray.seg hull_pre 0 k lower )
   **  ((( &( "i" ) )) # Int  |-> i)
@@ -3508,8 +3731,8 @@ forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list
   “ ((point_y ((Znth ((k - 2 ) - 0 ) lower __default_Point))) <= point_bound) ”
 .
 
-Definition andrew_monotone_chain_partial_solve_wit_8_pure_split_goal_5 := 
-forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list Point) -> Prop))) (pts_l_low_level_spec: (@list Point)) (lower: (@list Point)) (pts_sorted: (@list Point)) (k: Z) (i: Z)  __default_Point (PreH1 : (k <= INT_MAX)) (PreH2 : (n_pre <= INT_MAX)) (PreH3 : (i <= INT_MAX)) (PreH4 : (k >= INT_MIN)) (PreH5 : (n_pre >= INT_MIN)) (PreH6 : (i >= INT_MIN)) (PreH7 : (k >= 2)) (PreH8 : (0 <= i)) (PreH9 : (i < n_pre)) (PreH10 : (0 <= k)) (PreH11 : (k <= i)) (PreH12 : (2 <= n_pre)) (PreH13 : (n_pre <= 50000)) (PreH14 : ((Zlength (pts_l_low_level_spec)) = n_pre)) (PreH15 : ((Zlength (pts_sorted)) = n_pre)) (PreH16 : (points_in_bound pts_sorted )) (PreH17 : (point_permutation pts_l_low_level_spec pts_sorted )) (PreH18 : (point_xy_sorted pts_sorted )) (PreH19 : (point_in_bound (Znth i pts_sorted __default_Point) )) (PreH20 : (andrew_lower_scan_inv pts_sorted lower i k )) (PreH21 : (safeExec (equiv (lower)) (build_chain ((sublist (i) (n_pre) (pts_sorted)))) X_low_level_spec )) ,
+Definition andrew_build_from_sorted_partial_solve_wit_7_pure_split_goal_5 := 
+forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list Point) -> Prop))) (pts_l_low_level_spec: (@list Point)) (lower: (@list Point)) (pts_sorted: (@list Point)) (k: Z) (i: Z)  __default_Point (PreH1 : (k <= INT_MAX)) (PreH2 : (n_pre <= INT_MAX)) (PreH3 : (i <= INT_MAX)) (PreH4 : (k >= INT_MIN)) (PreH5 : (n_pre >= INT_MIN)) (PreH6 : (i >= INT_MIN)) (PreH7 : (k >= 2)) (PreH8 : (0 <= i)) (PreH9 : (i < n_pre)) (PreH10 : (0 <= k)) (PreH11 : (k <= i)) (PreH12 : ((0 < i) -> (1 <= k))) (PreH13 : (2 <= n_pre)) (PreH14 : (n_pre <= 50000)) (PreH15 : ((Zlength (pts_l_low_level_spec)) = n_pre)) (PreH16 : ((Zlength (pts_sorted)) = n_pre)) (PreH17 : (points_in_bound pts_sorted )) (PreH18 : (point_permutation pts_l_low_level_spec pts_sorted )) (PreH19 : (point_xy_sorted pts_sorted )) (PreH20 : (point_in_bound (Znth i pts_sorted __default_Point) )) (PreH21 : (andrew_lower_scan_inv pts_sorted lower i k )) (PreH22 : (andrew_lower_remaining_cont pts_sorted lower i X_low_level_spec )) ,
   (PointArray.full pts_pre n_pre pts_sorted )
   **  (PointArray.seg hull_pre 0 k lower )
   **  ((( &( "i" ) )) # Int  |-> i)
@@ -3522,8 +3745,8 @@ forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list
   “ ((-point_bound) <= (point_x ((Znth ((k - 1 ) - 0 ) lower __default_Point)))) ”
 .
 
-Definition andrew_monotone_chain_partial_solve_wit_8_pure_split_goal_6 := 
-forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list Point) -> Prop))) (pts_l_low_level_spec: (@list Point)) (lower: (@list Point)) (pts_sorted: (@list Point)) (k: Z) (i: Z)  __default_Point (PreH1 : (k <= INT_MAX)) (PreH2 : (n_pre <= INT_MAX)) (PreH3 : (i <= INT_MAX)) (PreH4 : (k >= INT_MIN)) (PreH5 : (n_pre >= INT_MIN)) (PreH6 : (i >= INT_MIN)) (PreH7 : (k >= 2)) (PreH8 : (0 <= i)) (PreH9 : (i < n_pre)) (PreH10 : (0 <= k)) (PreH11 : (k <= i)) (PreH12 : (2 <= n_pre)) (PreH13 : (n_pre <= 50000)) (PreH14 : ((Zlength (pts_l_low_level_spec)) = n_pre)) (PreH15 : ((Zlength (pts_sorted)) = n_pre)) (PreH16 : (points_in_bound pts_sorted )) (PreH17 : (point_permutation pts_l_low_level_spec pts_sorted )) (PreH18 : (point_xy_sorted pts_sorted )) (PreH19 : (point_in_bound (Znth i pts_sorted __default_Point) )) (PreH20 : (andrew_lower_scan_inv pts_sorted lower i k )) (PreH21 : (safeExec (equiv (lower)) (build_chain ((sublist (i) (n_pre) (pts_sorted)))) X_low_level_spec )) ,
+Definition andrew_build_from_sorted_partial_solve_wit_7_pure_split_goal_6 := 
+forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list Point) -> Prop))) (pts_l_low_level_spec: (@list Point)) (lower: (@list Point)) (pts_sorted: (@list Point)) (k: Z) (i: Z)  __default_Point (PreH1 : (k <= INT_MAX)) (PreH2 : (n_pre <= INT_MAX)) (PreH3 : (i <= INT_MAX)) (PreH4 : (k >= INT_MIN)) (PreH5 : (n_pre >= INT_MIN)) (PreH6 : (i >= INT_MIN)) (PreH7 : (k >= 2)) (PreH8 : (0 <= i)) (PreH9 : (i < n_pre)) (PreH10 : (0 <= k)) (PreH11 : (k <= i)) (PreH12 : ((0 < i) -> (1 <= k))) (PreH13 : (2 <= n_pre)) (PreH14 : (n_pre <= 50000)) (PreH15 : ((Zlength (pts_l_low_level_spec)) = n_pre)) (PreH16 : ((Zlength (pts_sorted)) = n_pre)) (PreH17 : (points_in_bound pts_sorted )) (PreH18 : (point_permutation pts_l_low_level_spec pts_sorted )) (PreH19 : (point_xy_sorted pts_sorted )) (PreH20 : (point_in_bound (Znth i pts_sorted __default_Point) )) (PreH21 : (andrew_lower_scan_inv pts_sorted lower i k )) (PreH22 : (andrew_lower_remaining_cont pts_sorted lower i X_low_level_spec )) ,
   (PointArray.full pts_pre n_pre pts_sorted )
   **  (PointArray.seg hull_pre 0 k lower )
   **  ((( &( "i" ) )) # Int  |-> i)
@@ -3536,8 +3759,8 @@ forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list
   “ ((point_x ((Znth ((k - 1 ) - 0 ) lower __default_Point))) <= point_bound) ”
 .
 
-Definition andrew_monotone_chain_partial_solve_wit_8_pure_split_goal_7 := 
-forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list Point) -> Prop))) (pts_l_low_level_spec: (@list Point)) (lower: (@list Point)) (pts_sorted: (@list Point)) (k: Z) (i: Z)  __default_Point (PreH1 : (k <= INT_MAX)) (PreH2 : (n_pre <= INT_MAX)) (PreH3 : (i <= INT_MAX)) (PreH4 : (k >= INT_MIN)) (PreH5 : (n_pre >= INT_MIN)) (PreH6 : (i >= INT_MIN)) (PreH7 : (k >= 2)) (PreH8 : (0 <= i)) (PreH9 : (i < n_pre)) (PreH10 : (0 <= k)) (PreH11 : (k <= i)) (PreH12 : (2 <= n_pre)) (PreH13 : (n_pre <= 50000)) (PreH14 : ((Zlength (pts_l_low_level_spec)) = n_pre)) (PreH15 : ((Zlength (pts_sorted)) = n_pre)) (PreH16 : (points_in_bound pts_sorted )) (PreH17 : (point_permutation pts_l_low_level_spec pts_sorted )) (PreH18 : (point_xy_sorted pts_sorted )) (PreH19 : (point_in_bound (Znth i pts_sorted __default_Point) )) (PreH20 : (andrew_lower_scan_inv pts_sorted lower i k )) (PreH21 : (safeExec (equiv (lower)) (build_chain ((sublist (i) (n_pre) (pts_sorted)))) X_low_level_spec )) ,
+Definition andrew_build_from_sorted_partial_solve_wit_7_pure_split_goal_7 := 
+forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list Point) -> Prop))) (pts_l_low_level_spec: (@list Point)) (lower: (@list Point)) (pts_sorted: (@list Point)) (k: Z) (i: Z)  __default_Point (PreH1 : (k <= INT_MAX)) (PreH2 : (n_pre <= INT_MAX)) (PreH3 : (i <= INT_MAX)) (PreH4 : (k >= INT_MIN)) (PreH5 : (n_pre >= INT_MIN)) (PreH6 : (i >= INT_MIN)) (PreH7 : (k >= 2)) (PreH8 : (0 <= i)) (PreH9 : (i < n_pre)) (PreH10 : (0 <= k)) (PreH11 : (k <= i)) (PreH12 : ((0 < i) -> (1 <= k))) (PreH13 : (2 <= n_pre)) (PreH14 : (n_pre <= 50000)) (PreH15 : ((Zlength (pts_l_low_level_spec)) = n_pre)) (PreH16 : ((Zlength (pts_sorted)) = n_pre)) (PreH17 : (points_in_bound pts_sorted )) (PreH18 : (point_permutation pts_l_low_level_spec pts_sorted )) (PreH19 : (point_xy_sorted pts_sorted )) (PreH20 : (point_in_bound (Znth i pts_sorted __default_Point) )) (PreH21 : (andrew_lower_scan_inv pts_sorted lower i k )) (PreH22 : (andrew_lower_remaining_cont pts_sorted lower i X_low_level_spec )) ,
   (PointArray.full pts_pre n_pre pts_sorted )
   **  (PointArray.seg hull_pre 0 k lower )
   **  ((( &( "i" ) )) # Int  |-> i)
@@ -3550,8 +3773,8 @@ forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list
   “ ((-point_bound) <= (point_y ((Znth ((k - 1 ) - 0 ) lower __default_Point)))) ”
 .
 
-Definition andrew_monotone_chain_partial_solve_wit_8_pure_split_goal_8 := 
-forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list Point) -> Prop))) (pts_l_low_level_spec: (@list Point)) (lower: (@list Point)) (pts_sorted: (@list Point)) (k: Z) (i: Z)  __default_Point (PreH1 : (k <= INT_MAX)) (PreH2 : (n_pre <= INT_MAX)) (PreH3 : (i <= INT_MAX)) (PreH4 : (k >= INT_MIN)) (PreH5 : (n_pre >= INT_MIN)) (PreH6 : (i >= INT_MIN)) (PreH7 : (k >= 2)) (PreH8 : (0 <= i)) (PreH9 : (i < n_pre)) (PreH10 : (0 <= k)) (PreH11 : (k <= i)) (PreH12 : (2 <= n_pre)) (PreH13 : (n_pre <= 50000)) (PreH14 : ((Zlength (pts_l_low_level_spec)) = n_pre)) (PreH15 : ((Zlength (pts_sorted)) = n_pre)) (PreH16 : (points_in_bound pts_sorted )) (PreH17 : (point_permutation pts_l_low_level_spec pts_sorted )) (PreH18 : (point_xy_sorted pts_sorted )) (PreH19 : (point_in_bound (Znth i pts_sorted __default_Point) )) (PreH20 : (andrew_lower_scan_inv pts_sorted lower i k )) (PreH21 : (safeExec (equiv (lower)) (build_chain ((sublist (i) (n_pre) (pts_sorted)))) X_low_level_spec )) ,
+Definition andrew_build_from_sorted_partial_solve_wit_7_pure_split_goal_8 := 
+forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list Point) -> Prop))) (pts_l_low_level_spec: (@list Point)) (lower: (@list Point)) (pts_sorted: (@list Point)) (k: Z) (i: Z)  __default_Point (PreH1 : (k <= INT_MAX)) (PreH2 : (n_pre <= INT_MAX)) (PreH3 : (i <= INT_MAX)) (PreH4 : (k >= INT_MIN)) (PreH5 : (n_pre >= INT_MIN)) (PreH6 : (i >= INT_MIN)) (PreH7 : (k >= 2)) (PreH8 : (0 <= i)) (PreH9 : (i < n_pre)) (PreH10 : (0 <= k)) (PreH11 : (k <= i)) (PreH12 : ((0 < i) -> (1 <= k))) (PreH13 : (2 <= n_pre)) (PreH14 : (n_pre <= 50000)) (PreH15 : ((Zlength (pts_l_low_level_spec)) = n_pre)) (PreH16 : ((Zlength (pts_sorted)) = n_pre)) (PreH17 : (points_in_bound pts_sorted )) (PreH18 : (point_permutation pts_l_low_level_spec pts_sorted )) (PreH19 : (point_xy_sorted pts_sorted )) (PreH20 : (point_in_bound (Znth i pts_sorted __default_Point) )) (PreH21 : (andrew_lower_scan_inv pts_sorted lower i k )) (PreH22 : (andrew_lower_remaining_cont pts_sorted lower i X_low_level_spec )) ,
   (PointArray.full pts_pre n_pre pts_sorted )
   **  (PointArray.seg hull_pre 0 k lower )
   **  ((( &( "i" ) )) # Int  |-> i)
@@ -3564,8 +3787,8 @@ forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list
   “ ((point_y ((Znth ((k - 1 ) - 0 ) lower __default_Point))) <= point_bound) ”
 .
 
-Definition andrew_monotone_chain_partial_solve_wit_8_pure_split_goal_9 := 
-forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list Point) -> Prop))) (pts_l_low_level_spec: (@list Point)) (lower: (@list Point)) (pts_sorted: (@list Point)) (k: Z) (i: Z)  __default_Point (PreH1 : (k <= INT_MAX)) (PreH2 : (n_pre <= INT_MAX)) (PreH3 : (i <= INT_MAX)) (PreH4 : (k >= INT_MIN)) (PreH5 : (n_pre >= INT_MIN)) (PreH6 : (i >= INT_MIN)) (PreH7 : (k >= 2)) (PreH8 : (0 <= i)) (PreH9 : (i < n_pre)) (PreH10 : (0 <= k)) (PreH11 : (k <= i)) (PreH12 : (2 <= n_pre)) (PreH13 : (n_pre <= 50000)) (PreH14 : ((Zlength (pts_l_low_level_spec)) = n_pre)) (PreH15 : ((Zlength (pts_sorted)) = n_pre)) (PreH16 : (points_in_bound pts_sorted )) (PreH17 : (point_permutation pts_l_low_level_spec pts_sorted )) (PreH18 : (point_xy_sorted pts_sorted )) (PreH19 : (point_in_bound (Znth i pts_sorted __default_Point) )) (PreH20 : (andrew_lower_scan_inv pts_sorted lower i k )) (PreH21 : (safeExec (equiv (lower)) (build_chain ((sublist (i) (n_pre) (pts_sorted)))) X_low_level_spec )) ,
+Definition andrew_build_from_sorted_partial_solve_wit_7_pure_split_goal_9 := 
+forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list Point) -> Prop))) (pts_l_low_level_spec: (@list Point)) (lower: (@list Point)) (pts_sorted: (@list Point)) (k: Z) (i: Z)  __default_Point (PreH1 : (k <= INT_MAX)) (PreH2 : (n_pre <= INT_MAX)) (PreH3 : (i <= INT_MAX)) (PreH4 : (k >= INT_MIN)) (PreH5 : (n_pre >= INT_MIN)) (PreH6 : (i >= INT_MIN)) (PreH7 : (k >= 2)) (PreH8 : (0 <= i)) (PreH9 : (i < n_pre)) (PreH10 : (0 <= k)) (PreH11 : (k <= i)) (PreH12 : ((0 < i) -> (1 <= k))) (PreH13 : (2 <= n_pre)) (PreH14 : (n_pre <= 50000)) (PreH15 : ((Zlength (pts_l_low_level_spec)) = n_pre)) (PreH16 : ((Zlength (pts_sorted)) = n_pre)) (PreH17 : (points_in_bound pts_sorted )) (PreH18 : (point_permutation pts_l_low_level_spec pts_sorted )) (PreH19 : (point_xy_sorted pts_sorted )) (PreH20 : (point_in_bound (Znth i pts_sorted __default_Point) )) (PreH21 : (andrew_lower_scan_inv pts_sorted lower i k )) (PreH22 : (andrew_lower_remaining_cont pts_sorted lower i X_low_level_spec )) ,
   (PointArray.full pts_pre n_pre pts_sorted )
   **  (PointArray.seg hull_pre 0 k lower )
   **  ((( &( "i" ) )) # Int  |-> i)
@@ -3578,8 +3801,8 @@ forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list
   “ ((-point_bound) <= (point_x ((Znth i pts_sorted __default_Point)))) ”
 .
 
-Definition andrew_monotone_chain_partial_solve_wit_8_pure_split_goal_10 := 
-forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list Point) -> Prop))) (pts_l_low_level_spec: (@list Point)) (lower: (@list Point)) (pts_sorted: (@list Point)) (k: Z) (i: Z)  __default_Point (PreH1 : (k <= INT_MAX)) (PreH2 : (n_pre <= INT_MAX)) (PreH3 : (i <= INT_MAX)) (PreH4 : (k >= INT_MIN)) (PreH5 : (n_pre >= INT_MIN)) (PreH6 : (i >= INT_MIN)) (PreH7 : (k >= 2)) (PreH8 : (0 <= i)) (PreH9 : (i < n_pre)) (PreH10 : (0 <= k)) (PreH11 : (k <= i)) (PreH12 : (2 <= n_pre)) (PreH13 : (n_pre <= 50000)) (PreH14 : ((Zlength (pts_l_low_level_spec)) = n_pre)) (PreH15 : ((Zlength (pts_sorted)) = n_pre)) (PreH16 : (points_in_bound pts_sorted )) (PreH17 : (point_permutation pts_l_low_level_spec pts_sorted )) (PreH18 : (point_xy_sorted pts_sorted )) (PreH19 : (point_in_bound (Znth i pts_sorted __default_Point) )) (PreH20 : (andrew_lower_scan_inv pts_sorted lower i k )) (PreH21 : (safeExec (equiv (lower)) (build_chain ((sublist (i) (n_pre) (pts_sorted)))) X_low_level_spec )) ,
+Definition andrew_build_from_sorted_partial_solve_wit_7_pure_split_goal_10 := 
+forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list Point) -> Prop))) (pts_l_low_level_spec: (@list Point)) (lower: (@list Point)) (pts_sorted: (@list Point)) (k: Z) (i: Z)  __default_Point (PreH1 : (k <= INT_MAX)) (PreH2 : (n_pre <= INT_MAX)) (PreH3 : (i <= INT_MAX)) (PreH4 : (k >= INT_MIN)) (PreH5 : (n_pre >= INT_MIN)) (PreH6 : (i >= INT_MIN)) (PreH7 : (k >= 2)) (PreH8 : (0 <= i)) (PreH9 : (i < n_pre)) (PreH10 : (0 <= k)) (PreH11 : (k <= i)) (PreH12 : ((0 < i) -> (1 <= k))) (PreH13 : (2 <= n_pre)) (PreH14 : (n_pre <= 50000)) (PreH15 : ((Zlength (pts_l_low_level_spec)) = n_pre)) (PreH16 : ((Zlength (pts_sorted)) = n_pre)) (PreH17 : (points_in_bound pts_sorted )) (PreH18 : (point_permutation pts_l_low_level_spec pts_sorted )) (PreH19 : (point_xy_sorted pts_sorted )) (PreH20 : (point_in_bound (Znth i pts_sorted __default_Point) )) (PreH21 : (andrew_lower_scan_inv pts_sorted lower i k )) (PreH22 : (andrew_lower_remaining_cont pts_sorted lower i X_low_level_spec )) ,
   (PointArray.full pts_pre n_pre pts_sorted )
   **  (PointArray.seg hull_pre 0 k lower )
   **  ((( &( "i" ) )) # Int  |-> i)
@@ -3592,8 +3815,8 @@ forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list
   “ ((point_x ((Znth i pts_sorted __default_Point))) <= point_bound) ”
 .
 
-Definition andrew_monotone_chain_partial_solve_wit_8_pure_split_goal_11 := 
-forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list Point) -> Prop))) (pts_l_low_level_spec: (@list Point)) (lower: (@list Point)) (pts_sorted: (@list Point)) (k: Z) (i: Z)  __default_Point (PreH1 : (k <= INT_MAX)) (PreH2 : (n_pre <= INT_MAX)) (PreH3 : (i <= INT_MAX)) (PreH4 : (k >= INT_MIN)) (PreH5 : (n_pre >= INT_MIN)) (PreH6 : (i >= INT_MIN)) (PreH7 : (k >= 2)) (PreH8 : (0 <= i)) (PreH9 : (i < n_pre)) (PreH10 : (0 <= k)) (PreH11 : (k <= i)) (PreH12 : (2 <= n_pre)) (PreH13 : (n_pre <= 50000)) (PreH14 : ((Zlength (pts_l_low_level_spec)) = n_pre)) (PreH15 : ((Zlength (pts_sorted)) = n_pre)) (PreH16 : (points_in_bound pts_sorted )) (PreH17 : (point_permutation pts_l_low_level_spec pts_sorted )) (PreH18 : (point_xy_sorted pts_sorted )) (PreH19 : (point_in_bound (Znth i pts_sorted __default_Point) )) (PreH20 : (andrew_lower_scan_inv pts_sorted lower i k )) (PreH21 : (safeExec (equiv (lower)) (build_chain ((sublist (i) (n_pre) (pts_sorted)))) X_low_level_spec )) ,
+Definition andrew_build_from_sorted_partial_solve_wit_7_pure_split_goal_11 := 
+forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list Point) -> Prop))) (pts_l_low_level_spec: (@list Point)) (lower: (@list Point)) (pts_sorted: (@list Point)) (k: Z) (i: Z)  __default_Point (PreH1 : (k <= INT_MAX)) (PreH2 : (n_pre <= INT_MAX)) (PreH3 : (i <= INT_MAX)) (PreH4 : (k >= INT_MIN)) (PreH5 : (n_pre >= INT_MIN)) (PreH6 : (i >= INT_MIN)) (PreH7 : (k >= 2)) (PreH8 : (0 <= i)) (PreH9 : (i < n_pre)) (PreH10 : (0 <= k)) (PreH11 : (k <= i)) (PreH12 : ((0 < i) -> (1 <= k))) (PreH13 : (2 <= n_pre)) (PreH14 : (n_pre <= 50000)) (PreH15 : ((Zlength (pts_l_low_level_spec)) = n_pre)) (PreH16 : ((Zlength (pts_sorted)) = n_pre)) (PreH17 : (points_in_bound pts_sorted )) (PreH18 : (point_permutation pts_l_low_level_spec pts_sorted )) (PreH19 : (point_xy_sorted pts_sorted )) (PreH20 : (point_in_bound (Znth i pts_sorted __default_Point) )) (PreH21 : (andrew_lower_scan_inv pts_sorted lower i k )) (PreH22 : (andrew_lower_remaining_cont pts_sorted lower i X_low_level_spec )) ,
   (PointArray.full pts_pre n_pre pts_sorted )
   **  (PointArray.seg hull_pre 0 k lower )
   **  ((( &( "i" ) )) # Int  |-> i)
@@ -3606,8 +3829,8 @@ forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list
   “ ((-point_bound) <= (point_y ((Znth i pts_sorted __default_Point)))) ”
 .
 
-Definition andrew_monotone_chain_partial_solve_wit_8_pure_split_goal_12 := 
-forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list Point) -> Prop))) (pts_l_low_level_spec: (@list Point)) (lower: (@list Point)) (pts_sorted: (@list Point)) (k: Z) (i: Z)  __default_Point (PreH1 : (k <= INT_MAX)) (PreH2 : (n_pre <= INT_MAX)) (PreH3 : (i <= INT_MAX)) (PreH4 : (k >= INT_MIN)) (PreH5 : (n_pre >= INT_MIN)) (PreH6 : (i >= INT_MIN)) (PreH7 : (k >= 2)) (PreH8 : (0 <= i)) (PreH9 : (i < n_pre)) (PreH10 : (0 <= k)) (PreH11 : (k <= i)) (PreH12 : (2 <= n_pre)) (PreH13 : (n_pre <= 50000)) (PreH14 : ((Zlength (pts_l_low_level_spec)) = n_pre)) (PreH15 : ((Zlength (pts_sorted)) = n_pre)) (PreH16 : (points_in_bound pts_sorted )) (PreH17 : (point_permutation pts_l_low_level_spec pts_sorted )) (PreH18 : (point_xy_sorted pts_sorted )) (PreH19 : (point_in_bound (Znth i pts_sorted __default_Point) )) (PreH20 : (andrew_lower_scan_inv pts_sorted lower i k )) (PreH21 : (safeExec (equiv (lower)) (build_chain ((sublist (i) (n_pre) (pts_sorted)))) X_low_level_spec )) ,
+Definition andrew_build_from_sorted_partial_solve_wit_7_pure_split_goal_12 := 
+forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list Point) -> Prop))) (pts_l_low_level_spec: (@list Point)) (lower: (@list Point)) (pts_sorted: (@list Point)) (k: Z) (i: Z)  __default_Point (PreH1 : (k <= INT_MAX)) (PreH2 : (n_pre <= INT_MAX)) (PreH3 : (i <= INT_MAX)) (PreH4 : (k >= INT_MIN)) (PreH5 : (n_pre >= INT_MIN)) (PreH6 : (i >= INT_MIN)) (PreH7 : (k >= 2)) (PreH8 : (0 <= i)) (PreH9 : (i < n_pre)) (PreH10 : (0 <= k)) (PreH11 : (k <= i)) (PreH12 : ((0 < i) -> (1 <= k))) (PreH13 : (2 <= n_pre)) (PreH14 : (n_pre <= 50000)) (PreH15 : ((Zlength (pts_l_low_level_spec)) = n_pre)) (PreH16 : ((Zlength (pts_sorted)) = n_pre)) (PreH17 : (points_in_bound pts_sorted )) (PreH18 : (point_permutation pts_l_low_level_spec pts_sorted )) (PreH19 : (point_xy_sorted pts_sorted )) (PreH20 : (point_in_bound (Znth i pts_sorted __default_Point) )) (PreH21 : (andrew_lower_scan_inv pts_sorted lower i k )) (PreH22 : (andrew_lower_remaining_cont pts_sorted lower i X_low_level_spec )) ,
   (PointArray.full pts_pre n_pre pts_sorted )
   **  (PointArray.seg hull_pre 0 k lower )
   **  ((( &( "i" ) )) # Int  |-> i)
@@ -3620,8 +3843,8 @@ forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list
   “ ((point_y ((Znth i pts_sorted __default_Point))) <= point_bound) ”
 .
 
-Definition andrew_monotone_chain_partial_solve_wit_8_aux := 
-forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list Point) -> Prop))) (pts_l_low_level_spec: (@list Point)) (lower: (@list Point)) (pts_sorted: (@list Point)) (k: Z) (i: Z)  __default_Point (PreH1 : (k >= 2)) (PreH2 : (0 <= i)) (PreH3 : (i < n_pre)) (PreH4 : (0 <= k)) (PreH5 : (k <= i)) (PreH6 : (2 <= n_pre)) (PreH7 : (n_pre <= 50000)) (PreH8 : ((Zlength (pts_l_low_level_spec)) = n_pre)) (PreH9 : ((Zlength (pts_sorted)) = n_pre)) (PreH10 : (points_in_bound pts_sorted )) (PreH11 : (point_permutation pts_l_low_level_spec pts_sorted )) (PreH12 : (point_xy_sorted pts_sorted )) (PreH13 : (point_in_bound (Znth i pts_sorted __default_Point) )) (PreH14 : (andrew_lower_scan_inv pts_sorted lower i k )) (PreH15 : (safeExec (equiv (lower)) (build_chain ((sublist (i) (n_pre) (pts_sorted)))) X_low_level_spec )) ,
+Definition andrew_build_from_sorted_partial_solve_wit_7_aux := 
+forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list Point) -> Prop))) (pts_l_low_level_spec: (@list Point)) (lower: (@list Point)) (pts_sorted: (@list Point)) (k: Z) (i: Z)  __default_Point (PreH1 : (k >= 2)) (PreH2 : (0 <= i)) (PreH3 : (i < n_pre)) (PreH4 : (0 <= k)) (PreH5 : (k <= i)) (PreH6 : ((0 < i) -> (1 <= k))) (PreH7 : (2 <= n_pre)) (PreH8 : (n_pre <= 50000)) (PreH9 : ((Zlength (pts_l_low_level_spec)) = n_pre)) (PreH10 : ((Zlength (pts_sorted)) = n_pre)) (PreH11 : (points_in_bound pts_sorted )) (PreH12 : (point_permutation pts_l_low_level_spec pts_sorted )) (PreH13 : (point_xy_sorted pts_sorted )) (PreH14 : (point_in_bound (Znth i pts_sorted __default_Point) )) (PreH15 : (andrew_lower_scan_inv pts_sorted lower i k )) (PreH16 : (andrew_lower_remaining_cont pts_sorted lower i X_low_level_spec )) ,
   (PointArray.full pts_pre n_pre pts_sorted )
   **  (PointArray.seg hull_pre 0 k lower )
   **  (PointArray.undef_seg hull_pre k (2 * n_pre ) )
@@ -3643,6 +3866,7 @@ forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list
   &&  “ (i < n_pre) ” 
   &&  “ (0 <= k) ” 
   &&  “ (k <= i) ” 
+  &&  “ ((0 < i) -> (1 <= k)) ” 
   &&  “ (2 <= n_pre) ” 
   &&  “ (n_pre <= 50000) ” 
   &&  “ ((Zlength (pts_l_low_level_spec)) = n_pre) ” 
@@ -3652,16 +3876,16 @@ forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list
   &&  “ (point_xy_sorted pts_sorted ) ” 
   &&  “ (point_in_bound (Znth i pts_sorted __default_Point) ) ” 
   &&  “ (andrew_lower_scan_inv pts_sorted lower i k ) ” 
-  &&  “ (safeExec (equiv (lower)) (build_chain ((sublist (i) (n_pre) (pts_sorted)))) X_low_level_spec ) ”
+  &&  “ (andrew_lower_remaining_cont pts_sorted lower i X_low_level_spec ) ”
   &&  (PointArray.full pts_pre n_pre pts_sorted )
   **  (PointArray.seg hull_pre 0 k lower )
   **  (PointArray.undef_seg hull_pre k (2 * n_pre ) )
 .
 
-Definition andrew_monotone_chain_partial_solve_wit_8 := andrew_monotone_chain_partial_solve_wit_8_pure -> andrew_monotone_chain_partial_solve_wit_8_aux.
+Definition andrew_build_from_sorted_partial_solve_wit_7 := andrew_build_from_sorted_partial_solve_wit_7_pure -> andrew_build_from_sorted_partial_solve_wit_7_aux.
 
-Definition andrew_monotone_chain_partial_solve_wit_9 := 
-forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list Point) -> Prop))) (pts_l_low_level_spec: (@list Point)) (lower: (@list Point)) (pts_sorted: (@list Point)) (k: Z) (i: Z)  __default_Point (PreH1 : (k < 2)) (PreH2 : (0 <= i)) (PreH3 : (i < n_pre)) (PreH4 : (0 <= k)) (PreH5 : (k <= i)) (PreH6 : (2 <= n_pre)) (PreH7 : (n_pre <= 50000)) (PreH8 : ((Zlength (pts_l_low_level_spec)) = n_pre)) (PreH9 : ((Zlength (pts_sorted)) = n_pre)) (PreH10 : (points_in_bound pts_sorted )) (PreH11 : (point_permutation pts_l_low_level_spec pts_sorted )) (PreH12 : (point_xy_sorted pts_sorted )) (PreH13 : (point_in_bound (Znth i pts_sorted __default_Point) )) (PreH14 : (andrew_lower_scan_inv pts_sorted lower i k )) (PreH15 : (safeExec (equiv (lower)) (build_chain ((sublist (i) (n_pre) (pts_sorted)))) X_low_level_spec )) ,
+Definition andrew_build_from_sorted_partial_solve_wit_8 := 
+forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list Point) -> Prop))) (pts_l_low_level_spec: (@list Point)) (lower: (@list Point)) (pts_sorted: (@list Point)) (k: Z) (i: Z)  __default_Point (PreH1 : (k < 2)) (PreH2 : (0 <= i)) (PreH3 : (i < n_pre)) (PreH4 : (0 <= k)) (PreH5 : (k <= i)) (PreH6 : ((0 < i) -> (1 <= k))) (PreH7 : (2 <= n_pre)) (PreH8 : (n_pre <= 50000)) (PreH9 : ((Zlength (pts_l_low_level_spec)) = n_pre)) (PreH10 : ((Zlength (pts_sorted)) = n_pre)) (PreH11 : (points_in_bound pts_sorted )) (PreH12 : (point_permutation pts_l_low_level_spec pts_sorted )) (PreH13 : (point_xy_sorted pts_sorted )) (PreH14 : (point_in_bound (Znth i pts_sorted __default_Point) )) (PreH15 : (andrew_lower_scan_inv pts_sorted lower i k )) (PreH16 : (andrew_lower_remaining_cont pts_sorted lower i X_low_level_spec )) ,
   (PointArray.full pts_pre n_pre pts_sorted )
   **  (PointArray.seg hull_pre 0 k lower )
   **  (PointArray.undef_seg hull_pre k (2 * n_pre ) )
@@ -3671,6 +3895,7 @@ forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list
   &&  “ (i < n_pre) ” 
   &&  “ (0 <= k) ” 
   &&  “ (k <= i) ” 
+  &&  “ ((0 < i) -> (1 <= k)) ” 
   &&  “ (2 <= n_pre) ” 
   &&  “ (n_pre <= 50000) ” 
   &&  “ ((Zlength (pts_l_low_level_spec)) = n_pre) ” 
@@ -3680,7 +3905,7 @@ forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list
   &&  “ (point_xy_sorted pts_sorted ) ” 
   &&  “ (point_in_bound (Znth i pts_sorted __default_Point) ) ” 
   &&  “ (andrew_lower_scan_inv pts_sorted lower i k ) ” 
-  &&  “ (safeExec (equiv (lower)) (build_chain ((sublist (i) (n_pre) (pts_sorted)))) X_low_level_spec ) ”
+  &&  “ (andrew_lower_remaining_cont pts_sorted lower i X_low_level_spec ) ”
   &&  ((&(((pts_pre + (i * sizeof( "Point" ) ) ))  # "Point" ->ₛ "x")) # Int  |-> (point_x ((Znth i pts_sorted __default_Point))))
   **  (PointArray.missing_i pts_pre i 0 n_pre pts_sorted )
   **  ((&(((pts_pre + (i * sizeof( "Point" ) ) ))  # "Point" ->ₛ "y")) # Int  |-> (point_y ((Znth i pts_sorted __default_Point))))
@@ -3688,8 +3913,8 @@ forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list
   **  (PointArray.undef_seg hull_pre k (2 * n_pre ) )
 .
 
-Definition andrew_monotone_chain_partial_solve_wit_10 := 
-forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list Point) -> Prop))) (pts_l_low_level_spec: (@list Point)) (lower: (@list Point)) (pts_sorted: (@list Point)) (k: Z) (i: Z)  __default_Point (PreH1 : (k < 2)) (PreH2 : (0 <= i)) (PreH3 : (i < n_pre)) (PreH4 : (0 <= k)) (PreH5 : (k <= i)) (PreH6 : (2 <= n_pre)) (PreH7 : (n_pre <= 50000)) (PreH8 : ((Zlength (pts_l_low_level_spec)) = n_pre)) (PreH9 : ((Zlength (pts_sorted)) = n_pre)) (PreH10 : (points_in_bound pts_sorted )) (PreH11 : (point_permutation pts_l_low_level_spec pts_sorted )) (PreH12 : (point_xy_sorted pts_sorted )) (PreH13 : (point_in_bound (Znth i pts_sorted __default_Point) )) (PreH14 : (andrew_lower_scan_inv pts_sorted lower i k )) (PreH15 : (safeExec (equiv (lower)) (build_chain ((sublist (i) (n_pre) (pts_sorted)))) X_low_level_spec )) ,
+Definition andrew_build_from_sorted_partial_solve_wit_9 := 
+forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list Point) -> Prop))) (pts_l_low_level_spec: (@list Point)) (lower: (@list Point)) (pts_sorted: (@list Point)) (k: Z) (i: Z)  __default_Point (PreH1 : (k < 2)) (PreH2 : (0 <= i)) (PreH3 : (i < n_pre)) (PreH4 : (0 <= k)) (PreH5 : (k <= i)) (PreH6 : ((0 < i) -> (1 <= k))) (PreH7 : (2 <= n_pre)) (PreH8 : (n_pre <= 50000)) (PreH9 : ((Zlength (pts_l_low_level_spec)) = n_pre)) (PreH10 : ((Zlength (pts_sorted)) = n_pre)) (PreH11 : (points_in_bound pts_sorted )) (PreH12 : (point_permutation pts_l_low_level_spec pts_sorted )) (PreH13 : (point_xy_sorted pts_sorted )) (PreH14 : (point_in_bound (Znth i pts_sorted __default_Point) )) (PreH15 : (andrew_lower_scan_inv pts_sorted lower i k )) (PreH16 : (andrew_lower_remaining_cont pts_sorted lower i X_low_level_spec )) ,
   (PointArray.full pts_pre n_pre pts_sorted )
   **  (PointArray.seg hull_pre 0 k lower )
   **  (PointArray.undef_seg hull_pre k (2 * n_pre ) )
@@ -3699,6 +3924,7 @@ forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list
   &&  “ (i < n_pre) ” 
   &&  “ (0 <= k) ” 
   &&  “ (k <= i) ” 
+  &&  “ ((0 < i) -> (1 <= k)) ” 
   &&  “ (2 <= n_pre) ” 
   &&  “ (n_pre <= 50000) ” 
   &&  “ ((Zlength (pts_l_low_level_spec)) = n_pre) ” 
@@ -3708,7 +3934,7 @@ forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list
   &&  “ (point_xy_sorted pts_sorted ) ” 
   &&  “ (point_in_bound (Znth i pts_sorted __default_Point) ) ” 
   &&  “ (andrew_lower_scan_inv pts_sorted lower i k ) ” 
-  &&  “ (safeExec (equiv (lower)) (build_chain ((sublist (i) (n_pre) (pts_sorted)))) X_low_level_spec ) ”
+  &&  “ (andrew_lower_remaining_cont pts_sorted lower i X_low_level_spec ) ”
   &&  ((&(((hull_pre + (k * sizeof( "Point" ) ) ))  # "Point" ->ₛ "x")) # Int  |->_)
   **  (PointArray.undef_seg hull_pre (k + 1 ) (2 * n_pre ) )
   **  ((&(((hull_pre + (k * sizeof( "Point" ) ) ))  # "Point" ->ₛ "y")) # Int  |->_)
@@ -3716,8 +3942,8 @@ forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list
   **  (PointArray.seg hull_pre 0 k lower )
 .
 
-Definition andrew_monotone_chain_partial_solve_wit_11 := 
-forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list Point) -> Prop))) (pts_l_low_level_spec: (@list Point)) (lower: (@list Point)) (pts_sorted: (@list Point)) (k: Z) (i: Z) (retval: Z)  __default_Point (PreH1 : (retval > 0)) (PreH2 : (retval = (point_cross_by_value ((point_x ((Znth ((k - 2 ) - 0 ) lower __default_Point)))) ((point_y ((Znth ((k - 2 ) - 0 ) lower __default_Point)))) ((point_x ((Znth ((k - 1 ) - 0 ) lower __default_Point)))) ((point_y ((Znth ((k - 1 ) - 0 ) lower __default_Point)))) ((point_x ((Znth i pts_sorted __default_Point)))) ((point_y ((Znth i pts_sorted __default_Point))))))) (PreH3 : (k >= 2)) (PreH4 : (0 <= i)) (PreH5 : (i < n_pre)) (PreH6 : (0 <= k)) (PreH7 : (k <= i)) (PreH8 : (2 <= n_pre)) (PreH9 : (n_pre <= 50000)) (PreH10 : ((Zlength (pts_l_low_level_spec)) = n_pre)) (PreH11 : ((Zlength (pts_sorted)) = n_pre)) (PreH12 : (points_in_bound pts_sorted )) (PreH13 : (point_permutation pts_l_low_level_spec pts_sorted )) (PreH14 : (point_xy_sorted pts_sorted )) (PreH15 : (point_in_bound (Znth i pts_sorted __default_Point) )) (PreH16 : (andrew_lower_scan_inv pts_sorted lower i k )) (PreH17 : (safeExec (equiv (lower)) (build_chain ((sublist (i) (n_pre) (pts_sorted)))) X_low_level_spec )) ,
+Definition andrew_build_from_sorted_partial_solve_wit_10 := 
+forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list Point) -> Prop))) (pts_l_low_level_spec: (@list Point)) (lower: (@list Point)) (pts_sorted: (@list Point)) (k: Z) (i: Z) (retval: Z)  __default_Point (PreH1 : (retval > 0)) (PreH2 : (retval = (point_cross_by_value ((point_x ((Znth ((k - 2 ) - 0 ) lower __default_Point)))) ((point_y ((Znth ((k - 2 ) - 0 ) lower __default_Point)))) ((point_x ((Znth ((k - 1 ) - 0 ) lower __default_Point)))) ((point_y ((Znth ((k - 1 ) - 0 ) lower __default_Point)))) ((point_x ((Znth i pts_sorted __default_Point)))) ((point_y ((Znth i pts_sorted __default_Point))))))) (PreH3 : (k >= 2)) (PreH4 : (0 <= i)) (PreH5 : (i < n_pre)) (PreH6 : (0 <= k)) (PreH7 : (k <= i)) (PreH8 : ((0 < i) -> (1 <= k))) (PreH9 : (2 <= n_pre)) (PreH10 : (n_pre <= 50000)) (PreH11 : ((Zlength (pts_l_low_level_spec)) = n_pre)) (PreH12 : ((Zlength (pts_sorted)) = n_pre)) (PreH13 : (points_in_bound pts_sorted )) (PreH14 : (point_permutation pts_l_low_level_spec pts_sorted )) (PreH15 : (point_xy_sorted pts_sorted )) (PreH16 : (point_in_bound (Znth i pts_sorted __default_Point) )) (PreH17 : (andrew_lower_scan_inv pts_sorted lower i k )) (PreH18 : (andrew_lower_remaining_cont pts_sorted lower i X_low_level_spec )) ,
   (PointArray.full pts_pre n_pre pts_sorted )
   **  (PointArray.seg hull_pre 0 k lower )
   **  (PointArray.undef_seg hull_pre k (2 * n_pre ) )
@@ -3729,6 +3955,7 @@ forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list
   &&  “ (i < n_pre) ” 
   &&  “ (0 <= k) ” 
   &&  “ (k <= i) ” 
+  &&  “ ((0 < i) -> (1 <= k)) ” 
   &&  “ (2 <= n_pre) ” 
   &&  “ (n_pre <= 50000) ” 
   &&  “ ((Zlength (pts_l_low_level_spec)) = n_pre) ” 
@@ -3738,7 +3965,7 @@ forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list
   &&  “ (point_xy_sorted pts_sorted ) ” 
   &&  “ (point_in_bound (Znth i pts_sorted __default_Point) ) ” 
   &&  “ (andrew_lower_scan_inv pts_sorted lower i k ) ” 
-  &&  “ (safeExec (equiv (lower)) (build_chain ((sublist (i) (n_pre) (pts_sorted)))) X_low_level_spec ) ”
+  &&  “ (andrew_lower_remaining_cont pts_sorted lower i X_low_level_spec ) ”
   &&  ((&(((pts_pre + (i * sizeof( "Point" ) ) ))  # "Point" ->ₛ "x")) # Int  |-> (point_x ((Znth i pts_sorted __default_Point))))
   **  (PointArray.missing_i pts_pre i 0 n_pre pts_sorted )
   **  ((&(((pts_pre + (i * sizeof( "Point" ) ) ))  # "Point" ->ₛ "y")) # Int  |-> (point_y ((Znth i pts_sorted __default_Point))))
@@ -3746,8 +3973,8 @@ forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list
   **  (PointArray.undef_seg hull_pre k (2 * n_pre ) )
 .
 
-Definition andrew_monotone_chain_partial_solve_wit_12 := 
-forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list Point) -> Prop))) (pts_l_low_level_spec: (@list Point)) (lower: (@list Point)) (pts_sorted: (@list Point)) (k: Z) (i: Z) (retval: Z)  __default_Point (PreH1 : (retval > 0)) (PreH2 : (retval = (point_cross_by_value ((point_x ((Znth ((k - 2 ) - 0 ) lower __default_Point)))) ((point_y ((Znth ((k - 2 ) - 0 ) lower __default_Point)))) ((point_x ((Znth ((k - 1 ) - 0 ) lower __default_Point)))) ((point_y ((Znth ((k - 1 ) - 0 ) lower __default_Point)))) ((point_x ((Znth i pts_sorted __default_Point)))) ((point_y ((Znth i pts_sorted __default_Point))))))) (PreH3 : (k >= 2)) (PreH4 : (0 <= i)) (PreH5 : (i < n_pre)) (PreH6 : (0 <= k)) (PreH7 : (k <= i)) (PreH8 : (2 <= n_pre)) (PreH9 : (n_pre <= 50000)) (PreH10 : ((Zlength (pts_l_low_level_spec)) = n_pre)) (PreH11 : ((Zlength (pts_sorted)) = n_pre)) (PreH12 : (points_in_bound pts_sorted )) (PreH13 : (point_permutation pts_l_low_level_spec pts_sorted )) (PreH14 : (point_xy_sorted pts_sorted )) (PreH15 : (point_in_bound (Znth i pts_sorted __default_Point) )) (PreH16 : (andrew_lower_scan_inv pts_sorted lower i k )) (PreH17 : (safeExec (equiv (lower)) (build_chain ((sublist (i) (n_pre) (pts_sorted)))) X_low_level_spec )) ,
+Definition andrew_build_from_sorted_partial_solve_wit_11 := 
+forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list Point) -> Prop))) (pts_l_low_level_spec: (@list Point)) (lower: (@list Point)) (pts_sorted: (@list Point)) (k: Z) (i: Z) (retval: Z)  __default_Point (PreH1 : (retval > 0)) (PreH2 : (retval = (point_cross_by_value ((point_x ((Znth ((k - 2 ) - 0 ) lower __default_Point)))) ((point_y ((Znth ((k - 2 ) - 0 ) lower __default_Point)))) ((point_x ((Znth ((k - 1 ) - 0 ) lower __default_Point)))) ((point_y ((Znth ((k - 1 ) - 0 ) lower __default_Point)))) ((point_x ((Znth i pts_sorted __default_Point)))) ((point_y ((Znth i pts_sorted __default_Point))))))) (PreH3 : (k >= 2)) (PreH4 : (0 <= i)) (PreH5 : (i < n_pre)) (PreH6 : (0 <= k)) (PreH7 : (k <= i)) (PreH8 : ((0 < i) -> (1 <= k))) (PreH9 : (2 <= n_pre)) (PreH10 : (n_pre <= 50000)) (PreH11 : ((Zlength (pts_l_low_level_spec)) = n_pre)) (PreH12 : ((Zlength (pts_sorted)) = n_pre)) (PreH13 : (points_in_bound pts_sorted )) (PreH14 : (point_permutation pts_l_low_level_spec pts_sorted )) (PreH15 : (point_xy_sorted pts_sorted )) (PreH16 : (point_in_bound (Znth i pts_sorted __default_Point) )) (PreH17 : (andrew_lower_scan_inv pts_sorted lower i k )) (PreH18 : (andrew_lower_remaining_cont pts_sorted lower i X_low_level_spec )) ,
   (PointArray.full pts_pre n_pre pts_sorted )
   **  (PointArray.seg hull_pre 0 k lower )
   **  (PointArray.undef_seg hull_pre k (2 * n_pre ) )
@@ -3759,6 +3986,7 @@ forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list
   &&  “ (i < n_pre) ” 
   &&  “ (0 <= k) ” 
   &&  “ (k <= i) ” 
+  &&  “ ((0 < i) -> (1 <= k)) ” 
   &&  “ (2 <= n_pre) ” 
   &&  “ (n_pre <= 50000) ” 
   &&  “ ((Zlength (pts_l_low_level_spec)) = n_pre) ” 
@@ -3768,7 +3996,7 @@ forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list
   &&  “ (point_xy_sorted pts_sorted ) ” 
   &&  “ (point_in_bound (Znth i pts_sorted __default_Point) ) ” 
   &&  “ (andrew_lower_scan_inv pts_sorted lower i k ) ” 
-  &&  “ (safeExec (equiv (lower)) (build_chain ((sublist (i) (n_pre) (pts_sorted)))) X_low_level_spec ) ”
+  &&  “ (andrew_lower_remaining_cont pts_sorted lower i X_low_level_spec ) ”
   &&  ((&(((hull_pre + (k * sizeof( "Point" ) ) ))  # "Point" ->ₛ "x")) # Int  |->_)
   **  (PointArray.undef_seg hull_pre (k + 1 ) (2 * n_pre ) )
   **  ((&(((hull_pre + (k * sizeof( "Point" ) ) ))  # "Point" ->ₛ "y")) # Int  |->_)
@@ -3776,8 +4004,8 @@ forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list
   **  (PointArray.seg hull_pre 0 k lower )
 .
 
-Definition andrew_monotone_chain_partial_solve_wit_13 := 
-forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list Point) -> Prop))) (pts_l_low_level_spec: (@list Point)) (lower: (@list Point)) (pts_sorted: (@list Point)) (k: Z) (i: Z)  __default_Point (PreH1 : (k < 2)) (PreH2 : (0 <= i)) (PreH3 : (i < n_pre)) (PreH4 : (0 <= k)) (PreH5 : (k <= i)) (PreH6 : (2 <= n_pre)) (PreH7 : (n_pre <= 50000)) (PreH8 : ((Zlength (pts_l_low_level_spec)) = n_pre)) (PreH9 : ((Zlength (pts_sorted)) = n_pre)) (PreH10 : (points_in_bound pts_sorted )) (PreH11 : (point_permutation pts_l_low_level_spec pts_sorted )) (PreH12 : (point_xy_sorted pts_sorted )) (PreH13 : (point_in_bound (Znth i pts_sorted __default_Point) )) (PreH14 : (andrew_lower_scan_inv pts_sorted lower i k )) (PreH15 : (safeExec (equiv (lower)) (build_chain ((sublist (i) (n_pre) (pts_sorted)))) X_low_level_spec )) ,
+Definition andrew_build_from_sorted_partial_solve_wit_12 := 
+forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list Point) -> Prop))) (pts_l_low_level_spec: (@list Point)) (lower: (@list Point)) (pts_sorted: (@list Point)) (k: Z) (i: Z)  __default_Point (PreH1 : (k < 2)) (PreH2 : (0 <= i)) (PreH3 : (i < n_pre)) (PreH4 : (0 <= k)) (PreH5 : (k <= i)) (PreH6 : ((0 < i) -> (1 <= k))) (PreH7 : (2 <= n_pre)) (PreH8 : (n_pre <= 50000)) (PreH9 : ((Zlength (pts_l_low_level_spec)) = n_pre)) (PreH10 : ((Zlength (pts_sorted)) = n_pre)) (PreH11 : (points_in_bound pts_sorted )) (PreH12 : (point_permutation pts_l_low_level_spec pts_sorted )) (PreH13 : (point_xy_sorted pts_sorted )) (PreH14 : (point_in_bound (Znth i pts_sorted __default_Point) )) (PreH15 : (andrew_lower_scan_inv pts_sorted lower i k )) (PreH16 : (andrew_lower_remaining_cont pts_sorted lower i X_low_level_spec )) ,
   ((&(((hull_pre + (k * sizeof( "Point" ) ) ))  # "Point" ->ₛ "x")) # Int  |-> (point_x ((Znth i pts_sorted __default_Point))))
   **  (PointArray.undef_seg hull_pre (k + 1 ) (2 * n_pre ) )
   **  ((&(((hull_pre + (k * sizeof( "Point" ) ) ))  # "Point" ->ₛ "y")) # Int  |->_)
@@ -3789,6 +4017,7 @@ forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list
   &&  “ (i < n_pre) ” 
   &&  “ (0 <= k) ” 
   &&  “ (k <= i) ” 
+  &&  “ ((0 < i) -> (1 <= k)) ” 
   &&  “ (2 <= n_pre) ” 
   &&  “ (n_pre <= 50000) ” 
   &&  “ ((Zlength (pts_l_low_level_spec)) = n_pre) ” 
@@ -3798,7 +4027,7 @@ forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list
   &&  “ (point_xy_sorted pts_sorted ) ” 
   &&  “ (point_in_bound (Znth i pts_sorted __default_Point) ) ” 
   &&  “ (andrew_lower_scan_inv pts_sorted lower i k ) ” 
-  &&  “ (safeExec (equiv (lower)) (build_chain ((sublist (i) (n_pre) (pts_sorted)))) X_low_level_spec ) ”
+  &&  “ (andrew_lower_remaining_cont pts_sorted lower i X_low_level_spec ) ”
   &&  ((&(((pts_pre + (i * sizeof( "Point" ) ) ))  # "Point" ->ₛ "y")) # Int  |-> (point_y ((Znth i pts_sorted __default_Point))))
   **  (PointArray.missing_i pts_pre i 0 n_pre pts_sorted )
   **  ((&(((pts_pre + (i * sizeof( "Point" ) ) ))  # "Point" ->ₛ "x")) # Int  |-> (point_x ((Znth i pts_sorted __default_Point))))
@@ -3808,8 +4037,8 @@ forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list
   **  (PointArray.seg hull_pre 0 k lower )
 .
 
-Definition andrew_monotone_chain_partial_solve_wit_14 := 
-forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list Point) -> Prop))) (pts_l_low_level_spec: (@list Point)) (lower: (@list Point)) (pts_sorted: (@list Point)) (k: Z) (i: Z) (retval: Z)  __default_Point (PreH1 : (retval > 0)) (PreH2 : (retval = (point_cross_by_value ((point_x ((Znth ((k - 2 ) - 0 ) lower __default_Point)))) ((point_y ((Znth ((k - 2 ) - 0 ) lower __default_Point)))) ((point_x ((Znth ((k - 1 ) - 0 ) lower __default_Point)))) ((point_y ((Znth ((k - 1 ) - 0 ) lower __default_Point)))) ((point_x ((Znth i pts_sorted __default_Point)))) ((point_y ((Znth i pts_sorted __default_Point))))))) (PreH3 : (k >= 2)) (PreH4 : (0 <= i)) (PreH5 : (i < n_pre)) (PreH6 : (0 <= k)) (PreH7 : (k <= i)) (PreH8 : (2 <= n_pre)) (PreH9 : (n_pre <= 50000)) (PreH10 : ((Zlength (pts_l_low_level_spec)) = n_pre)) (PreH11 : ((Zlength (pts_sorted)) = n_pre)) (PreH12 : (points_in_bound pts_sorted )) (PreH13 : (point_permutation pts_l_low_level_spec pts_sorted )) (PreH14 : (point_xy_sorted pts_sorted )) (PreH15 : (point_in_bound (Znth i pts_sorted __default_Point) )) (PreH16 : (andrew_lower_scan_inv pts_sorted lower i k )) (PreH17 : (safeExec (equiv (lower)) (build_chain ((sublist (i) (n_pre) (pts_sorted)))) X_low_level_spec )) ,
+Definition andrew_build_from_sorted_partial_solve_wit_13 := 
+forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list Point) -> Prop))) (pts_l_low_level_spec: (@list Point)) (lower: (@list Point)) (pts_sorted: (@list Point)) (k: Z) (i: Z) (retval: Z)  __default_Point (PreH1 : (retval > 0)) (PreH2 : (retval = (point_cross_by_value ((point_x ((Znth ((k - 2 ) - 0 ) lower __default_Point)))) ((point_y ((Znth ((k - 2 ) - 0 ) lower __default_Point)))) ((point_x ((Znth ((k - 1 ) - 0 ) lower __default_Point)))) ((point_y ((Znth ((k - 1 ) - 0 ) lower __default_Point)))) ((point_x ((Znth i pts_sorted __default_Point)))) ((point_y ((Znth i pts_sorted __default_Point))))))) (PreH3 : (k >= 2)) (PreH4 : (0 <= i)) (PreH5 : (i < n_pre)) (PreH6 : (0 <= k)) (PreH7 : (k <= i)) (PreH8 : ((0 < i) -> (1 <= k))) (PreH9 : (2 <= n_pre)) (PreH10 : (n_pre <= 50000)) (PreH11 : ((Zlength (pts_l_low_level_spec)) = n_pre)) (PreH12 : ((Zlength (pts_sorted)) = n_pre)) (PreH13 : (points_in_bound pts_sorted )) (PreH14 : (point_permutation pts_l_low_level_spec pts_sorted )) (PreH15 : (point_xy_sorted pts_sorted )) (PreH16 : (point_in_bound (Znth i pts_sorted __default_Point) )) (PreH17 : (andrew_lower_scan_inv pts_sorted lower i k )) (PreH18 : (andrew_lower_remaining_cont pts_sorted lower i X_low_level_spec )) ,
   ((&(((hull_pre + (k * sizeof( "Point" ) ) ))  # "Point" ->ₛ "x")) # Int  |-> (point_x ((Znth i pts_sorted __default_Point))))
   **  (PointArray.undef_seg hull_pre (k + 1 ) (2 * n_pre ) )
   **  ((&(((hull_pre + (k * sizeof( "Point" ) ) ))  # "Point" ->ₛ "y")) # Int  |->_)
@@ -3823,6 +4052,7 @@ forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list
   &&  “ (i < n_pre) ” 
   &&  “ (0 <= k) ” 
   &&  “ (k <= i) ” 
+  &&  “ ((0 < i) -> (1 <= k)) ” 
   &&  “ (2 <= n_pre) ” 
   &&  “ (n_pre <= 50000) ” 
   &&  “ ((Zlength (pts_l_low_level_spec)) = n_pre) ” 
@@ -3832,7 +4062,7 @@ forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list
   &&  “ (point_xy_sorted pts_sorted ) ” 
   &&  “ (point_in_bound (Znth i pts_sorted __default_Point) ) ” 
   &&  “ (andrew_lower_scan_inv pts_sorted lower i k ) ” 
-  &&  “ (safeExec (equiv (lower)) (build_chain ((sublist (i) (n_pre) (pts_sorted)))) X_low_level_spec ) ”
+  &&  “ (andrew_lower_remaining_cont pts_sorted lower i X_low_level_spec ) ”
   &&  ((&(((pts_pre + (i * sizeof( "Point" ) ) ))  # "Point" ->ₛ "y")) # Int  |-> (point_y ((Znth i pts_sorted __default_Point))))
   **  (PointArray.missing_i pts_pre i 0 n_pre pts_sorted )
   **  ((&(((pts_pre + (i * sizeof( "Point" ) ) ))  # "Point" ->ₛ "x")) # Int  |-> (point_x ((Znth i pts_sorted __default_Point))))
@@ -3842,14 +4072,14 @@ forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list
   **  (PointArray.seg hull_pre 0 k lower )
 .
 
-Definition andrew_monotone_chain_partial_solve_wit_15 := 
-forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list Point) -> Prop))) (pts_l_low_level_spec: (@list Point)) (hull_cur: (@list Point)) (pts_sorted: (@list Point)) (k: Z) (lower_n: Z) (i: Z)  __default_Point (PreH1 : (k > lower_n)) (PreH2 : (1 <= i)) (PreH3 : (i <= (n_pre - 2 ))) (PreH4 : (2 <= lower_n)) (PreH5 : (lower_n <= k)) (PreH6 : (k < (2 * n_pre ))) (PreH7 : (2 <= n_pre)) (PreH8 : (n_pre <= 50000)) (PreH9 : ((Zlength (pts_l_low_level_spec)) = n_pre)) (PreH10 : ((Zlength (pts_sorted)) = n_pre)) (PreH11 : (points_in_bound pts_sorted )) (PreH12 : (point_permutation pts_l_low_level_spec pts_sorted )) (PreH13 : (point_xy_sorted pts_sorted )) (PreH14 : (point_in_bound (Znth i pts_sorted __default_Point) )) (PreH15 : (andrew_upper_scan_inv pts_sorted hull_cur (i + 1 ) k lower_n )) (PreH16 : (safeExec (equiv (hull_cur)) (build_upper_chain_cont (pts_sorted) ((sublist (0) (lower_n) (hull_cur)))) X_low_level_spec )) ,
+Definition andrew_build_from_sorted_partial_solve_wit_14 := 
+forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list Point) -> Prop))) (pts_l_low_level_spec: (@list Point)) (hull_cur: (@list Point)) (pts_sorted: (@list Point)) (k: Z) (lower_n: Z) (i: Z)  __default_Point (PreH1 : (k > lower_n)) (PreH2 : (0 <= i)) (PreH3 : (i <= (n_pre - 2 ))) (PreH4 : (2 <= lower_n)) (PreH5 : (lower_n <= k)) (PreH6 : (k < (2 * n_pre ))) (PreH7 : (2 <= n_pre)) (PreH8 : (n_pre <= 50000)) (PreH9 : ((Zlength (pts_l_low_level_spec)) = n_pre)) (PreH10 : ((Zlength (pts_sorted)) = n_pre)) (PreH11 : (points_in_bound pts_sorted )) (PreH12 : (point_permutation pts_l_low_level_spec pts_sorted )) (PreH13 : (point_xy_sorted pts_sorted )) (PreH14 : (point_in_bound (Znth i pts_sorted __default_Point) )) (PreH15 : (andrew_upper_scan_inv pts_sorted hull_cur (i + 1 ) k lower_n )) (PreH16 : (andrew_upper_remaining_cont pts_sorted hull_cur (i + 1 ) lower_n X_low_level_spec )) ,
   (PointArray.full pts_pre n_pre pts_sorted )
   **  (PointArray.seg hull_pre 0 k hull_cur )
   **  (PointArray.undef_seg hull_pre k (2 * n_pre ) )
 |--
   “ (k > lower_n) ” 
-  &&  “ (1 <= i) ” 
+  &&  “ (0 <= i) ” 
   &&  “ (i <= (n_pre - 2 )) ” 
   &&  “ (2 <= lower_n) ” 
   &&  “ (lower_n <= k) ” 
@@ -3863,7 +4093,7 @@ forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list
   &&  “ (point_xy_sorted pts_sorted ) ” 
   &&  “ (point_in_bound (Znth i pts_sorted __default_Point) ) ” 
   &&  “ (andrew_upper_scan_inv pts_sorted hull_cur (i + 1 ) k lower_n ) ” 
-  &&  “ (safeExec (equiv (hull_cur)) (build_upper_chain_cont (pts_sorted) ((sublist (0) (lower_n) (hull_cur)))) X_low_level_spec ) ”
+  &&  “ (andrew_upper_remaining_cont pts_sorted hull_cur (i + 1 ) lower_n X_low_level_spec ) ”
   &&  ((&(((hull_pre + ((k - 2 ) * sizeof( "Point" ) ) ))  # "Point" ->ₛ "x")) # Int  |-> (point_x ((Znth ((k - 2 ) - 0 ) hull_cur __default_Point))))
   **  (PointArray.missing_i hull_pre (k - 2 ) 0 k hull_cur )
   **  ((&(((hull_pre + ((k - 2 ) * sizeof( "Point" ) ) ))  # "Point" ->ₛ "y")) # Int  |-> (point_y ((Znth ((k - 2 ) - 0 ) hull_cur __default_Point))))
@@ -3871,14 +4101,14 @@ forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list
   **  (PointArray.undef_seg hull_pre k (2 * n_pre ) )
 .
 
-Definition andrew_monotone_chain_partial_solve_wit_16 := 
-forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list Point) -> Prop))) (pts_l_low_level_spec: (@list Point)) (hull_cur: (@list Point)) (pts_sorted: (@list Point)) (k: Z) (lower_n: Z) (i: Z)  __default_Point (PreH1 : (k > lower_n)) (PreH2 : (1 <= i)) (PreH3 : (i <= (n_pre - 2 ))) (PreH4 : (2 <= lower_n)) (PreH5 : (lower_n <= k)) (PreH6 : (k < (2 * n_pre ))) (PreH7 : (2 <= n_pre)) (PreH8 : (n_pre <= 50000)) (PreH9 : ((Zlength (pts_l_low_level_spec)) = n_pre)) (PreH10 : ((Zlength (pts_sorted)) = n_pre)) (PreH11 : (points_in_bound pts_sorted )) (PreH12 : (point_permutation pts_l_low_level_spec pts_sorted )) (PreH13 : (point_xy_sorted pts_sorted )) (PreH14 : (point_in_bound (Znth i pts_sorted __default_Point) )) (PreH15 : (andrew_upper_scan_inv pts_sorted hull_cur (i + 1 ) k lower_n )) (PreH16 : (safeExec (equiv (hull_cur)) (build_upper_chain_cont (pts_sorted) ((sublist (0) (lower_n) (hull_cur)))) X_low_level_spec )) ,
+Definition andrew_build_from_sorted_partial_solve_wit_15 := 
+forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list Point) -> Prop))) (pts_l_low_level_spec: (@list Point)) (hull_cur: (@list Point)) (pts_sorted: (@list Point)) (k: Z) (lower_n: Z) (i: Z)  __default_Point (PreH1 : (k > lower_n)) (PreH2 : (0 <= i)) (PreH3 : (i <= (n_pre - 2 ))) (PreH4 : (2 <= lower_n)) (PreH5 : (lower_n <= k)) (PreH6 : (k < (2 * n_pre ))) (PreH7 : (2 <= n_pre)) (PreH8 : (n_pre <= 50000)) (PreH9 : ((Zlength (pts_l_low_level_spec)) = n_pre)) (PreH10 : ((Zlength (pts_sorted)) = n_pre)) (PreH11 : (points_in_bound pts_sorted )) (PreH12 : (point_permutation pts_l_low_level_spec pts_sorted )) (PreH13 : (point_xy_sorted pts_sorted )) (PreH14 : (point_in_bound (Znth i pts_sorted __default_Point) )) (PreH15 : (andrew_upper_scan_inv pts_sorted hull_cur (i + 1 ) k lower_n )) (PreH16 : (andrew_upper_remaining_cont pts_sorted hull_cur (i + 1 ) lower_n X_low_level_spec )) ,
   (PointArray.seg hull_pre 0 k hull_cur )
   **  (PointArray.full pts_pre n_pre pts_sorted )
   **  (PointArray.undef_seg hull_pre k (2 * n_pre ) )
 |--
   “ (k > lower_n) ” 
-  &&  “ (1 <= i) ” 
+  &&  “ (0 <= i) ” 
   &&  “ (i <= (n_pre - 2 )) ” 
   &&  “ (2 <= lower_n) ” 
   &&  “ (lower_n <= k) ” 
@@ -3892,7 +4122,7 @@ forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list
   &&  “ (point_xy_sorted pts_sorted ) ” 
   &&  “ (point_in_bound (Znth i pts_sorted __default_Point) ) ” 
   &&  “ (andrew_upper_scan_inv pts_sorted hull_cur (i + 1 ) k lower_n ) ” 
-  &&  “ (safeExec (equiv (hull_cur)) (build_upper_chain_cont (pts_sorted) ((sublist (0) (lower_n) (hull_cur)))) X_low_level_spec ) ”
+  &&  “ (andrew_upper_remaining_cont pts_sorted hull_cur (i + 1 ) lower_n X_low_level_spec ) ”
   &&  ((&(((hull_pre + ((k - 2 ) * sizeof( "Point" ) ) ))  # "Point" ->ₛ "y")) # Int  |-> (point_y ((Znth ((k - 2 ) - 0 ) hull_cur __default_Point))))
   **  (PointArray.missing_i hull_pre (k - 2 ) 0 k hull_cur )
   **  ((&(((hull_pre + ((k - 2 ) * sizeof( "Point" ) ) ))  # "Point" ->ₛ "x")) # Int  |-> (point_x ((Znth ((k - 2 ) - 0 ) hull_cur __default_Point))))
@@ -3900,14 +4130,14 @@ forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list
   **  (PointArray.undef_seg hull_pre k (2 * n_pre ) )
 .
 
-Definition andrew_monotone_chain_partial_solve_wit_17 := 
-forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list Point) -> Prop))) (pts_l_low_level_spec: (@list Point)) (hull_cur: (@list Point)) (pts_sorted: (@list Point)) (k: Z) (lower_n: Z) (i: Z)  __default_Point (PreH1 : (k > lower_n)) (PreH2 : (1 <= i)) (PreH3 : (i <= (n_pre - 2 ))) (PreH4 : (2 <= lower_n)) (PreH5 : (lower_n <= k)) (PreH6 : (k < (2 * n_pre ))) (PreH7 : (2 <= n_pre)) (PreH8 : (n_pre <= 50000)) (PreH9 : ((Zlength (pts_l_low_level_spec)) = n_pre)) (PreH10 : ((Zlength (pts_sorted)) = n_pre)) (PreH11 : (points_in_bound pts_sorted )) (PreH12 : (point_permutation pts_l_low_level_spec pts_sorted )) (PreH13 : (point_xy_sorted pts_sorted )) (PreH14 : (point_in_bound (Znth i pts_sorted __default_Point) )) (PreH15 : (andrew_upper_scan_inv pts_sorted hull_cur (i + 1 ) k lower_n )) (PreH16 : (safeExec (equiv (hull_cur)) (build_upper_chain_cont (pts_sorted) ((sublist (0) (lower_n) (hull_cur)))) X_low_level_spec )) ,
+Definition andrew_build_from_sorted_partial_solve_wit_16 := 
+forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list Point) -> Prop))) (pts_l_low_level_spec: (@list Point)) (hull_cur: (@list Point)) (pts_sorted: (@list Point)) (k: Z) (lower_n: Z) (i: Z)  __default_Point (PreH1 : (k > lower_n)) (PreH2 : (0 <= i)) (PreH3 : (i <= (n_pre - 2 ))) (PreH4 : (2 <= lower_n)) (PreH5 : (lower_n <= k)) (PreH6 : (k < (2 * n_pre ))) (PreH7 : (2 <= n_pre)) (PreH8 : (n_pre <= 50000)) (PreH9 : ((Zlength (pts_l_low_level_spec)) = n_pre)) (PreH10 : ((Zlength (pts_sorted)) = n_pre)) (PreH11 : (points_in_bound pts_sorted )) (PreH12 : (point_permutation pts_l_low_level_spec pts_sorted )) (PreH13 : (point_xy_sorted pts_sorted )) (PreH14 : (point_in_bound (Znth i pts_sorted __default_Point) )) (PreH15 : (andrew_upper_scan_inv pts_sorted hull_cur (i + 1 ) k lower_n )) (PreH16 : (andrew_upper_remaining_cont pts_sorted hull_cur (i + 1 ) lower_n X_low_level_spec )) ,
   (PointArray.seg hull_pre 0 k hull_cur )
   **  (PointArray.full pts_pre n_pre pts_sorted )
   **  (PointArray.undef_seg hull_pre k (2 * n_pre ) )
 |--
   “ (k > lower_n) ” 
-  &&  “ (1 <= i) ” 
+  &&  “ (0 <= i) ” 
   &&  “ (i <= (n_pre - 2 )) ” 
   &&  “ (2 <= lower_n) ” 
   &&  “ (lower_n <= k) ” 
@@ -3921,7 +4151,7 @@ forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list
   &&  “ (point_xy_sorted pts_sorted ) ” 
   &&  “ (point_in_bound (Znth i pts_sorted __default_Point) ) ” 
   &&  “ (andrew_upper_scan_inv pts_sorted hull_cur (i + 1 ) k lower_n ) ” 
-  &&  “ (safeExec (equiv (hull_cur)) (build_upper_chain_cont (pts_sorted) ((sublist (0) (lower_n) (hull_cur)))) X_low_level_spec ) ”
+  &&  “ (andrew_upper_remaining_cont pts_sorted hull_cur (i + 1 ) lower_n X_low_level_spec ) ”
   &&  ((&(((hull_pre + ((k - 1 ) * sizeof( "Point" ) ) ))  # "Point" ->ₛ "x")) # Int  |-> (point_x ((Znth ((k - 1 ) - 0 ) hull_cur __default_Point))))
   **  (PointArray.missing_i hull_pre (k - 1 ) 0 k hull_cur )
   **  ((&(((hull_pre + ((k - 1 ) * sizeof( "Point" ) ) ))  # "Point" ->ₛ "y")) # Int  |-> (point_y ((Znth ((k - 1 ) - 0 ) hull_cur __default_Point))))
@@ -3929,14 +4159,14 @@ forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list
   **  (PointArray.undef_seg hull_pre k (2 * n_pre ) )
 .
 
-Definition andrew_monotone_chain_partial_solve_wit_18 := 
-forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list Point) -> Prop))) (pts_l_low_level_spec: (@list Point)) (hull_cur: (@list Point)) (pts_sorted: (@list Point)) (k: Z) (lower_n: Z) (i: Z)  __default_Point (PreH1 : (k > lower_n)) (PreH2 : (1 <= i)) (PreH3 : (i <= (n_pre - 2 ))) (PreH4 : (2 <= lower_n)) (PreH5 : (lower_n <= k)) (PreH6 : (k < (2 * n_pre ))) (PreH7 : (2 <= n_pre)) (PreH8 : (n_pre <= 50000)) (PreH9 : ((Zlength (pts_l_low_level_spec)) = n_pre)) (PreH10 : ((Zlength (pts_sorted)) = n_pre)) (PreH11 : (points_in_bound pts_sorted )) (PreH12 : (point_permutation pts_l_low_level_spec pts_sorted )) (PreH13 : (point_xy_sorted pts_sorted )) (PreH14 : (point_in_bound (Znth i pts_sorted __default_Point) )) (PreH15 : (andrew_upper_scan_inv pts_sorted hull_cur (i + 1 ) k lower_n )) (PreH16 : (safeExec (equiv (hull_cur)) (build_upper_chain_cont (pts_sorted) ((sublist (0) (lower_n) (hull_cur)))) X_low_level_spec )) ,
+Definition andrew_build_from_sorted_partial_solve_wit_17 := 
+forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list Point) -> Prop))) (pts_l_low_level_spec: (@list Point)) (hull_cur: (@list Point)) (pts_sorted: (@list Point)) (k: Z) (lower_n: Z) (i: Z)  __default_Point (PreH1 : (k > lower_n)) (PreH2 : (0 <= i)) (PreH3 : (i <= (n_pre - 2 ))) (PreH4 : (2 <= lower_n)) (PreH5 : (lower_n <= k)) (PreH6 : (k < (2 * n_pre ))) (PreH7 : (2 <= n_pre)) (PreH8 : (n_pre <= 50000)) (PreH9 : ((Zlength (pts_l_low_level_spec)) = n_pre)) (PreH10 : ((Zlength (pts_sorted)) = n_pre)) (PreH11 : (points_in_bound pts_sorted )) (PreH12 : (point_permutation pts_l_low_level_spec pts_sorted )) (PreH13 : (point_xy_sorted pts_sorted )) (PreH14 : (point_in_bound (Znth i pts_sorted __default_Point) )) (PreH15 : (andrew_upper_scan_inv pts_sorted hull_cur (i + 1 ) k lower_n )) (PreH16 : (andrew_upper_remaining_cont pts_sorted hull_cur (i + 1 ) lower_n X_low_level_spec )) ,
   (PointArray.seg hull_pre 0 k hull_cur )
   **  (PointArray.full pts_pre n_pre pts_sorted )
   **  (PointArray.undef_seg hull_pre k (2 * n_pre ) )
 |--
   “ (k > lower_n) ” 
-  &&  “ (1 <= i) ” 
+  &&  “ (0 <= i) ” 
   &&  “ (i <= (n_pre - 2 )) ” 
   &&  “ (2 <= lower_n) ” 
   &&  “ (lower_n <= k) ” 
@@ -3950,7 +4180,7 @@ forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list
   &&  “ (point_xy_sorted pts_sorted ) ” 
   &&  “ (point_in_bound (Znth i pts_sorted __default_Point) ) ” 
   &&  “ (andrew_upper_scan_inv pts_sorted hull_cur (i + 1 ) k lower_n ) ” 
-  &&  “ (safeExec (equiv (hull_cur)) (build_upper_chain_cont (pts_sorted) ((sublist (0) (lower_n) (hull_cur)))) X_low_level_spec ) ”
+  &&  “ (andrew_upper_remaining_cont pts_sorted hull_cur (i + 1 ) lower_n X_low_level_spec ) ”
   &&  ((&(((hull_pre + ((k - 1 ) * sizeof( "Point" ) ) ))  # "Point" ->ₛ "y")) # Int  |-> (point_y ((Znth ((k - 1 ) - 0 ) hull_cur __default_Point))))
   **  (PointArray.missing_i hull_pre (k - 1 ) 0 k hull_cur )
   **  ((&(((hull_pre + ((k - 1 ) * sizeof( "Point" ) ) ))  # "Point" ->ₛ "x")) # Int  |-> (point_x ((Znth ((k - 1 ) - 0 ) hull_cur __default_Point))))
@@ -3958,14 +4188,14 @@ forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list
   **  (PointArray.undef_seg hull_pre k (2 * n_pre ) )
 .
 
-Definition andrew_monotone_chain_partial_solve_wit_19 := 
-forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list Point) -> Prop))) (pts_l_low_level_spec: (@list Point)) (hull_cur: (@list Point)) (pts_sorted: (@list Point)) (k: Z) (lower_n: Z) (i: Z)  __default_Point (PreH1 : (k > lower_n)) (PreH2 : (1 <= i)) (PreH3 : (i <= (n_pre - 2 ))) (PreH4 : (2 <= lower_n)) (PreH5 : (lower_n <= k)) (PreH6 : (k < (2 * n_pre ))) (PreH7 : (2 <= n_pre)) (PreH8 : (n_pre <= 50000)) (PreH9 : ((Zlength (pts_l_low_level_spec)) = n_pre)) (PreH10 : ((Zlength (pts_sorted)) = n_pre)) (PreH11 : (points_in_bound pts_sorted )) (PreH12 : (point_permutation pts_l_low_level_spec pts_sorted )) (PreH13 : (point_xy_sorted pts_sorted )) (PreH14 : (point_in_bound (Znth i pts_sorted __default_Point) )) (PreH15 : (andrew_upper_scan_inv pts_sorted hull_cur (i + 1 ) k lower_n )) (PreH16 : (safeExec (equiv (hull_cur)) (build_upper_chain_cont (pts_sorted) ((sublist (0) (lower_n) (hull_cur)))) X_low_level_spec )) ,
+Definition andrew_build_from_sorted_partial_solve_wit_18 := 
+forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list Point) -> Prop))) (pts_l_low_level_spec: (@list Point)) (hull_cur: (@list Point)) (pts_sorted: (@list Point)) (k: Z) (lower_n: Z) (i: Z)  __default_Point (PreH1 : (k > lower_n)) (PreH2 : (0 <= i)) (PreH3 : (i <= (n_pre - 2 ))) (PreH4 : (2 <= lower_n)) (PreH5 : (lower_n <= k)) (PreH6 : (k < (2 * n_pre ))) (PreH7 : (2 <= n_pre)) (PreH8 : (n_pre <= 50000)) (PreH9 : ((Zlength (pts_l_low_level_spec)) = n_pre)) (PreH10 : ((Zlength (pts_sorted)) = n_pre)) (PreH11 : (points_in_bound pts_sorted )) (PreH12 : (point_permutation pts_l_low_level_spec pts_sorted )) (PreH13 : (point_xy_sorted pts_sorted )) (PreH14 : (point_in_bound (Znth i pts_sorted __default_Point) )) (PreH15 : (andrew_upper_scan_inv pts_sorted hull_cur (i + 1 ) k lower_n )) (PreH16 : (andrew_upper_remaining_cont pts_sorted hull_cur (i + 1 ) lower_n X_low_level_spec )) ,
   (PointArray.seg hull_pre 0 k hull_cur )
   **  (PointArray.full pts_pre n_pre pts_sorted )
   **  (PointArray.undef_seg hull_pre k (2 * n_pre ) )
 |--
   “ (k > lower_n) ” 
-  &&  “ (1 <= i) ” 
+  &&  “ (0 <= i) ” 
   &&  “ (i <= (n_pre - 2 )) ” 
   &&  “ (2 <= lower_n) ” 
   &&  “ (lower_n <= k) ” 
@@ -3979,7 +4209,7 @@ forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list
   &&  “ (point_xy_sorted pts_sorted ) ” 
   &&  “ (point_in_bound (Znth i pts_sorted __default_Point) ) ” 
   &&  “ (andrew_upper_scan_inv pts_sorted hull_cur (i + 1 ) k lower_n ) ” 
-  &&  “ (safeExec (equiv (hull_cur)) (build_upper_chain_cont (pts_sorted) ((sublist (0) (lower_n) (hull_cur)))) X_low_level_spec ) ”
+  &&  “ (andrew_upper_remaining_cont pts_sorted hull_cur (i + 1 ) lower_n X_low_level_spec ) ”
   &&  ((&(((pts_pre + (i * sizeof( "Point" ) ) ))  # "Point" ->ₛ "x")) # Int  |-> (point_x ((Znth i pts_sorted __default_Point))))
   **  (PointArray.missing_i pts_pre i 0 n_pre pts_sorted )
   **  ((&(((pts_pre + (i * sizeof( "Point" ) ) ))  # "Point" ->ₛ "y")) # Int  |-> (point_y ((Znth i pts_sorted __default_Point))))
@@ -3987,14 +4217,14 @@ forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list
   **  (PointArray.undef_seg hull_pre k (2 * n_pre ) )
 .
 
-Definition andrew_monotone_chain_partial_solve_wit_20 := 
-forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list Point) -> Prop))) (pts_l_low_level_spec: (@list Point)) (hull_cur: (@list Point)) (pts_sorted: (@list Point)) (k: Z) (lower_n: Z) (i: Z)  __default_Point (PreH1 : (k > lower_n)) (PreH2 : (1 <= i)) (PreH3 : (i <= (n_pre - 2 ))) (PreH4 : (2 <= lower_n)) (PreH5 : (lower_n <= k)) (PreH6 : (k < (2 * n_pre ))) (PreH7 : (2 <= n_pre)) (PreH8 : (n_pre <= 50000)) (PreH9 : ((Zlength (pts_l_low_level_spec)) = n_pre)) (PreH10 : ((Zlength (pts_sorted)) = n_pre)) (PreH11 : (points_in_bound pts_sorted )) (PreH12 : (point_permutation pts_l_low_level_spec pts_sorted )) (PreH13 : (point_xy_sorted pts_sorted )) (PreH14 : (point_in_bound (Znth i pts_sorted __default_Point) )) (PreH15 : (andrew_upper_scan_inv pts_sorted hull_cur (i + 1 ) k lower_n )) (PreH16 : (safeExec (equiv (hull_cur)) (build_upper_chain_cont (pts_sorted) ((sublist (0) (lower_n) (hull_cur)))) X_low_level_spec )) ,
+Definition andrew_build_from_sorted_partial_solve_wit_19 := 
+forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list Point) -> Prop))) (pts_l_low_level_spec: (@list Point)) (hull_cur: (@list Point)) (pts_sorted: (@list Point)) (k: Z) (lower_n: Z) (i: Z)  __default_Point (PreH1 : (k > lower_n)) (PreH2 : (0 <= i)) (PreH3 : (i <= (n_pre - 2 ))) (PreH4 : (2 <= lower_n)) (PreH5 : (lower_n <= k)) (PreH6 : (k < (2 * n_pre ))) (PreH7 : (2 <= n_pre)) (PreH8 : (n_pre <= 50000)) (PreH9 : ((Zlength (pts_l_low_level_spec)) = n_pre)) (PreH10 : ((Zlength (pts_sorted)) = n_pre)) (PreH11 : (points_in_bound pts_sorted )) (PreH12 : (point_permutation pts_l_low_level_spec pts_sorted )) (PreH13 : (point_xy_sorted pts_sorted )) (PreH14 : (point_in_bound (Znth i pts_sorted __default_Point) )) (PreH15 : (andrew_upper_scan_inv pts_sorted hull_cur (i + 1 ) k lower_n )) (PreH16 : (andrew_upper_remaining_cont pts_sorted hull_cur (i + 1 ) lower_n X_low_level_spec )) ,
   (PointArray.full pts_pre n_pre pts_sorted )
   **  (PointArray.seg hull_pre 0 k hull_cur )
   **  (PointArray.undef_seg hull_pre k (2 * n_pre ) )
 |--
   “ (k > lower_n) ” 
-  &&  “ (1 <= i) ” 
+  &&  “ (0 <= i) ” 
   &&  “ (i <= (n_pre - 2 )) ” 
   &&  “ (2 <= lower_n) ” 
   &&  “ (lower_n <= k) ” 
@@ -4008,7 +4238,7 @@ forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list
   &&  “ (point_xy_sorted pts_sorted ) ” 
   &&  “ (point_in_bound (Znth i pts_sorted __default_Point) ) ” 
   &&  “ (andrew_upper_scan_inv pts_sorted hull_cur (i + 1 ) k lower_n ) ” 
-  &&  “ (safeExec (equiv (hull_cur)) (build_upper_chain_cont (pts_sorted) ((sublist (0) (lower_n) (hull_cur)))) X_low_level_spec ) ”
+  &&  “ (andrew_upper_remaining_cont pts_sorted hull_cur (i + 1 ) lower_n X_low_level_spec ) ”
   &&  ((&(((pts_pre + (i * sizeof( "Point" ) ) ))  # "Point" ->ₛ "y")) # Int  |-> (point_y ((Znth i pts_sorted __default_Point))))
   **  (PointArray.missing_i pts_pre i 0 n_pre pts_sorted )
   **  ((&(((pts_pre + (i * sizeof( "Point" ) ) ))  # "Point" ->ₛ "x")) # Int  |-> (point_x ((Znth i pts_sorted __default_Point))))
@@ -4016,9 +4246,9 @@ forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list
   **  (PointArray.undef_seg hull_pre k (2 * n_pre ) )
 .
 
-Definition andrew_monotone_chain_partial_solve_wit_21_pure := 
+Definition andrew_build_from_sorted_partial_solve_wit_20_pure := 
 (
-forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list Point) -> Prop))) (pts_l_low_level_spec: (@list Point)) (hull_cur: (@list Point)) (pts_sorted: (@list Point)) (k: Z) (lower_n: Z) (i: Z)  __default_Point (PreH1 : (k > lower_n)) (PreH2 : (1 <= i)) (PreH3 : (i <= (n_pre - 2 ))) (PreH4 : (2 <= lower_n)) (PreH5 : (lower_n <= k)) (PreH6 : (k < (2 * n_pre ))) (PreH7 : (2 <= n_pre)) (PreH8 : (n_pre <= 50000)) (PreH9 : ((Zlength (pts_l_low_level_spec)) = n_pre)) (PreH10 : ((Zlength (pts_sorted)) = n_pre)) (PreH11 : (points_in_bound pts_sorted )) (PreH12 : (point_permutation pts_l_low_level_spec pts_sorted )) (PreH13 : (point_xy_sorted pts_sorted )) (PreH14 : (point_in_bound (Znth i pts_sorted __default_Point) )) (PreH15 : (andrew_upper_scan_inv pts_sorted hull_cur (i + 1 ) k lower_n )) (PreH16 : (safeExec (equiv (hull_cur)) (build_upper_chain_cont (pts_sorted) ((sublist (0) (lower_n) (hull_cur)))) X_low_level_spec )) ,
+forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list Point) -> Prop))) (pts_l_low_level_spec: (@list Point)) (hull_cur: (@list Point)) (pts_sorted: (@list Point)) (k: Z) (lower_n: Z) (i: Z)  __default_Point (PreH1 : (k > lower_n)) (PreH2 : (0 <= i)) (PreH3 : (i <= (n_pre - 2 ))) (PreH4 : (2 <= lower_n)) (PreH5 : (lower_n <= k)) (PreH6 : (k < (2 * n_pre ))) (PreH7 : (2 <= n_pre)) (PreH8 : (n_pre <= 50000)) (PreH9 : ((Zlength (pts_l_low_level_spec)) = n_pre)) (PreH10 : ((Zlength (pts_sorted)) = n_pre)) (PreH11 : (points_in_bound pts_sorted )) (PreH12 : (point_permutation pts_l_low_level_spec pts_sorted )) (PreH13 : (point_xy_sorted pts_sorted )) (PreH14 : (point_in_bound (Znth i pts_sorted __default_Point) )) (PreH15 : (andrew_upper_scan_inv pts_sorted hull_cur (i + 1 ) k lower_n )) (PreH16 : (andrew_upper_remaining_cont pts_sorted hull_cur (i + 1 ) lower_n X_low_level_spec )) ,
   (PointArray.full pts_pre n_pre pts_sorted )
   **  (PointArray.seg hull_pre 0 k hull_cur )
   **  ((( &( "i" ) )) # Int  |-> i)
@@ -4043,7 +4273,7 @@ forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list
   &&  “ ((-point_bound) <= (point_x ((Znth ((k - 2 ) - 0 ) hull_cur __default_Point)))) ”
 ) \/
 (
-forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list Point) -> Prop))) (pts_l_low_level_spec: (@list Point)) (hull_cur: (@list Point)) (pts_sorted: (@list Point)) (k: Z) (lower_n: Z) (i: Z)  __default_Point (PreH1 : (k <= INT_MAX)) (PreH2 : (lower_n <= INT_MAX)) (PreH3 : (n_pre <= INT_MAX)) (PreH4 : (i <= INT_MAX)) (PreH5 : (k >= INT_MIN)) (PreH6 : (lower_n >= INT_MIN)) (PreH7 : (n_pre >= INT_MIN)) (PreH8 : (i >= INT_MIN)) (PreH9 : (k > lower_n)) (PreH10 : (1 <= i)) (PreH11 : (i <= (n_pre - 2 ))) (PreH12 : (2 <= lower_n)) (PreH13 : (lower_n <= k)) (PreH14 : (k < (2 * n_pre ))) (PreH15 : (2 <= n_pre)) (PreH16 : (n_pre <= 50000)) (PreH17 : ((Zlength (pts_l_low_level_spec)) = n_pre)) (PreH18 : ((Zlength (pts_sorted)) = n_pre)) (PreH19 : (points_in_bound pts_sorted )) (PreH20 : (point_permutation pts_l_low_level_spec pts_sorted )) (PreH21 : (point_xy_sorted pts_sorted )) (PreH22 : (point_in_bound (Znth i pts_sorted __default_Point) )) (PreH23 : (andrew_upper_scan_inv pts_sorted hull_cur (i + 1 ) k lower_n )) (PreH24 : (safeExec (equiv (hull_cur)) (build_upper_chain_cont (pts_sorted) ((sublist (0) (lower_n) (hull_cur)))) X_low_level_spec )) ,
+forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list Point) -> Prop))) (pts_l_low_level_spec: (@list Point)) (hull_cur: (@list Point)) (pts_sorted: (@list Point)) (k: Z) (lower_n: Z) (i: Z)  __default_Point (PreH1 : (k <= INT_MAX)) (PreH2 : (lower_n <= INT_MAX)) (PreH3 : (n_pre <= INT_MAX)) (PreH4 : (i <= INT_MAX)) (PreH5 : (k >= INT_MIN)) (PreH6 : (lower_n >= INT_MIN)) (PreH7 : (n_pre >= INT_MIN)) (PreH8 : (i >= INT_MIN)) (PreH9 : (k > lower_n)) (PreH10 : (0 <= i)) (PreH11 : (i <= (n_pre - 2 ))) (PreH12 : (2 <= lower_n)) (PreH13 : (lower_n <= k)) (PreH14 : (k < (2 * n_pre ))) (PreH15 : (2 <= n_pre)) (PreH16 : (n_pre <= 50000)) (PreH17 : ((Zlength (pts_l_low_level_spec)) = n_pre)) (PreH18 : ((Zlength (pts_sorted)) = n_pre)) (PreH19 : (points_in_bound pts_sorted )) (PreH20 : (point_permutation pts_l_low_level_spec pts_sorted )) (PreH21 : (point_xy_sorted pts_sorted )) (PreH22 : (point_in_bound (Znth i pts_sorted __default_Point) )) (PreH23 : (andrew_upper_scan_inv pts_sorted hull_cur (i + 1 ) k lower_n )) (PreH24 : (andrew_upper_remaining_cont pts_sorted hull_cur (i + 1 ) lower_n X_low_level_spec )) ,
   (PointArray.full pts_pre n_pre pts_sorted )
   **  (PointArray.seg hull_pre 0 k hull_cur )
   **  ((( &( "i" ) )) # Int  |-> i)
@@ -4068,8 +4298,8 @@ forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list
   &&  “ ((point_y ((Znth i pts_sorted __default_Point))) <= point_bound) ”
 ).
 
-Definition andrew_monotone_chain_partial_solve_wit_21_pure_split_goal_1 := 
-forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list Point) -> Prop))) (pts_l_low_level_spec: (@list Point)) (hull_cur: (@list Point)) (pts_sorted: (@list Point)) (k: Z) (lower_n: Z) (i: Z)  __default_Point (PreH1 : (k <= INT_MAX)) (PreH2 : (lower_n <= INT_MAX)) (PreH3 : (n_pre <= INT_MAX)) (PreH4 : (i <= INT_MAX)) (PreH5 : (k >= INT_MIN)) (PreH6 : (lower_n >= INT_MIN)) (PreH7 : (n_pre >= INT_MIN)) (PreH8 : (i >= INT_MIN)) (PreH9 : (k > lower_n)) (PreH10 : (1 <= i)) (PreH11 : (i <= (n_pre - 2 ))) (PreH12 : (2 <= lower_n)) (PreH13 : (lower_n <= k)) (PreH14 : (k < (2 * n_pre ))) (PreH15 : (2 <= n_pre)) (PreH16 : (n_pre <= 50000)) (PreH17 : ((Zlength (pts_l_low_level_spec)) = n_pre)) (PreH18 : ((Zlength (pts_sorted)) = n_pre)) (PreH19 : (points_in_bound pts_sorted )) (PreH20 : (point_permutation pts_l_low_level_spec pts_sorted )) (PreH21 : (point_xy_sorted pts_sorted )) (PreH22 : (point_in_bound (Znth i pts_sorted __default_Point) )) (PreH23 : (andrew_upper_scan_inv pts_sorted hull_cur (i + 1 ) k lower_n )) (PreH24 : (safeExec (equiv (hull_cur)) (build_upper_chain_cont (pts_sorted) ((sublist (0) (lower_n) (hull_cur)))) X_low_level_spec )) ,
+Definition andrew_build_from_sorted_partial_solve_wit_20_pure_split_goal_1 := 
+forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list Point) -> Prop))) (pts_l_low_level_spec: (@list Point)) (hull_cur: (@list Point)) (pts_sorted: (@list Point)) (k: Z) (lower_n: Z) (i: Z)  __default_Point (PreH1 : (k <= INT_MAX)) (PreH2 : (lower_n <= INT_MAX)) (PreH3 : (n_pre <= INT_MAX)) (PreH4 : (i <= INT_MAX)) (PreH5 : (k >= INT_MIN)) (PreH6 : (lower_n >= INT_MIN)) (PreH7 : (n_pre >= INT_MIN)) (PreH8 : (i >= INT_MIN)) (PreH9 : (k > lower_n)) (PreH10 : (0 <= i)) (PreH11 : (i <= (n_pre - 2 ))) (PreH12 : (2 <= lower_n)) (PreH13 : (lower_n <= k)) (PreH14 : (k < (2 * n_pre ))) (PreH15 : (2 <= n_pre)) (PreH16 : (n_pre <= 50000)) (PreH17 : ((Zlength (pts_l_low_level_spec)) = n_pre)) (PreH18 : ((Zlength (pts_sorted)) = n_pre)) (PreH19 : (points_in_bound pts_sorted )) (PreH20 : (point_permutation pts_l_low_level_spec pts_sorted )) (PreH21 : (point_xy_sorted pts_sorted )) (PreH22 : (point_in_bound (Znth i pts_sorted __default_Point) )) (PreH23 : (andrew_upper_scan_inv pts_sorted hull_cur (i + 1 ) k lower_n )) (PreH24 : (andrew_upper_remaining_cont pts_sorted hull_cur (i + 1 ) lower_n X_low_level_spec )) ,
   (PointArray.full pts_pre n_pre pts_sorted )
   **  (PointArray.seg hull_pre 0 k hull_cur )
   **  ((( &( "i" ) )) # Int  |-> i)
@@ -4083,8 +4313,8 @@ forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list
   “ ((-point_bound) <= (point_x ((Znth ((k - 2 ) - 0 ) hull_cur __default_Point)))) ”
 .
 
-Definition andrew_monotone_chain_partial_solve_wit_21_pure_split_goal_2 := 
-forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list Point) -> Prop))) (pts_l_low_level_spec: (@list Point)) (hull_cur: (@list Point)) (pts_sorted: (@list Point)) (k: Z) (lower_n: Z) (i: Z)  __default_Point (PreH1 : (k <= INT_MAX)) (PreH2 : (lower_n <= INT_MAX)) (PreH3 : (n_pre <= INT_MAX)) (PreH4 : (i <= INT_MAX)) (PreH5 : (k >= INT_MIN)) (PreH6 : (lower_n >= INT_MIN)) (PreH7 : (n_pre >= INT_MIN)) (PreH8 : (i >= INT_MIN)) (PreH9 : (k > lower_n)) (PreH10 : (1 <= i)) (PreH11 : (i <= (n_pre - 2 ))) (PreH12 : (2 <= lower_n)) (PreH13 : (lower_n <= k)) (PreH14 : (k < (2 * n_pre ))) (PreH15 : (2 <= n_pre)) (PreH16 : (n_pre <= 50000)) (PreH17 : ((Zlength (pts_l_low_level_spec)) = n_pre)) (PreH18 : ((Zlength (pts_sorted)) = n_pre)) (PreH19 : (points_in_bound pts_sorted )) (PreH20 : (point_permutation pts_l_low_level_spec pts_sorted )) (PreH21 : (point_xy_sorted pts_sorted )) (PreH22 : (point_in_bound (Znth i pts_sorted __default_Point) )) (PreH23 : (andrew_upper_scan_inv pts_sorted hull_cur (i + 1 ) k lower_n )) (PreH24 : (safeExec (equiv (hull_cur)) (build_upper_chain_cont (pts_sorted) ((sublist (0) (lower_n) (hull_cur)))) X_low_level_spec )) ,
+Definition andrew_build_from_sorted_partial_solve_wit_20_pure_split_goal_2 := 
+forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list Point) -> Prop))) (pts_l_low_level_spec: (@list Point)) (hull_cur: (@list Point)) (pts_sorted: (@list Point)) (k: Z) (lower_n: Z) (i: Z)  __default_Point (PreH1 : (k <= INT_MAX)) (PreH2 : (lower_n <= INT_MAX)) (PreH3 : (n_pre <= INT_MAX)) (PreH4 : (i <= INT_MAX)) (PreH5 : (k >= INT_MIN)) (PreH6 : (lower_n >= INT_MIN)) (PreH7 : (n_pre >= INT_MIN)) (PreH8 : (i >= INT_MIN)) (PreH9 : (k > lower_n)) (PreH10 : (0 <= i)) (PreH11 : (i <= (n_pre - 2 ))) (PreH12 : (2 <= lower_n)) (PreH13 : (lower_n <= k)) (PreH14 : (k < (2 * n_pre ))) (PreH15 : (2 <= n_pre)) (PreH16 : (n_pre <= 50000)) (PreH17 : ((Zlength (pts_l_low_level_spec)) = n_pre)) (PreH18 : ((Zlength (pts_sorted)) = n_pre)) (PreH19 : (points_in_bound pts_sorted )) (PreH20 : (point_permutation pts_l_low_level_spec pts_sorted )) (PreH21 : (point_xy_sorted pts_sorted )) (PreH22 : (point_in_bound (Znth i pts_sorted __default_Point) )) (PreH23 : (andrew_upper_scan_inv pts_sorted hull_cur (i + 1 ) k lower_n )) (PreH24 : (andrew_upper_remaining_cont pts_sorted hull_cur (i + 1 ) lower_n X_low_level_spec )) ,
   (PointArray.full pts_pre n_pre pts_sorted )
   **  (PointArray.seg hull_pre 0 k hull_cur )
   **  ((( &( "i" ) )) # Int  |-> i)
@@ -4098,8 +4328,8 @@ forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list
   “ ((point_x ((Znth ((k - 2 ) - 0 ) hull_cur __default_Point))) <= point_bound) ”
 .
 
-Definition andrew_monotone_chain_partial_solve_wit_21_pure_split_goal_3 := 
-forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list Point) -> Prop))) (pts_l_low_level_spec: (@list Point)) (hull_cur: (@list Point)) (pts_sorted: (@list Point)) (k: Z) (lower_n: Z) (i: Z)  __default_Point (PreH1 : (k <= INT_MAX)) (PreH2 : (lower_n <= INT_MAX)) (PreH3 : (n_pre <= INT_MAX)) (PreH4 : (i <= INT_MAX)) (PreH5 : (k >= INT_MIN)) (PreH6 : (lower_n >= INT_MIN)) (PreH7 : (n_pre >= INT_MIN)) (PreH8 : (i >= INT_MIN)) (PreH9 : (k > lower_n)) (PreH10 : (1 <= i)) (PreH11 : (i <= (n_pre - 2 ))) (PreH12 : (2 <= lower_n)) (PreH13 : (lower_n <= k)) (PreH14 : (k < (2 * n_pre ))) (PreH15 : (2 <= n_pre)) (PreH16 : (n_pre <= 50000)) (PreH17 : ((Zlength (pts_l_low_level_spec)) = n_pre)) (PreH18 : ((Zlength (pts_sorted)) = n_pre)) (PreH19 : (points_in_bound pts_sorted )) (PreH20 : (point_permutation pts_l_low_level_spec pts_sorted )) (PreH21 : (point_xy_sorted pts_sorted )) (PreH22 : (point_in_bound (Znth i pts_sorted __default_Point) )) (PreH23 : (andrew_upper_scan_inv pts_sorted hull_cur (i + 1 ) k lower_n )) (PreH24 : (safeExec (equiv (hull_cur)) (build_upper_chain_cont (pts_sorted) ((sublist (0) (lower_n) (hull_cur)))) X_low_level_spec )) ,
+Definition andrew_build_from_sorted_partial_solve_wit_20_pure_split_goal_3 := 
+forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list Point) -> Prop))) (pts_l_low_level_spec: (@list Point)) (hull_cur: (@list Point)) (pts_sorted: (@list Point)) (k: Z) (lower_n: Z) (i: Z)  __default_Point (PreH1 : (k <= INT_MAX)) (PreH2 : (lower_n <= INT_MAX)) (PreH3 : (n_pre <= INT_MAX)) (PreH4 : (i <= INT_MAX)) (PreH5 : (k >= INT_MIN)) (PreH6 : (lower_n >= INT_MIN)) (PreH7 : (n_pre >= INT_MIN)) (PreH8 : (i >= INT_MIN)) (PreH9 : (k > lower_n)) (PreH10 : (0 <= i)) (PreH11 : (i <= (n_pre - 2 ))) (PreH12 : (2 <= lower_n)) (PreH13 : (lower_n <= k)) (PreH14 : (k < (2 * n_pre ))) (PreH15 : (2 <= n_pre)) (PreH16 : (n_pre <= 50000)) (PreH17 : ((Zlength (pts_l_low_level_spec)) = n_pre)) (PreH18 : ((Zlength (pts_sorted)) = n_pre)) (PreH19 : (points_in_bound pts_sorted )) (PreH20 : (point_permutation pts_l_low_level_spec pts_sorted )) (PreH21 : (point_xy_sorted pts_sorted )) (PreH22 : (point_in_bound (Znth i pts_sorted __default_Point) )) (PreH23 : (andrew_upper_scan_inv pts_sorted hull_cur (i + 1 ) k lower_n )) (PreH24 : (andrew_upper_remaining_cont pts_sorted hull_cur (i + 1 ) lower_n X_low_level_spec )) ,
   (PointArray.full pts_pre n_pre pts_sorted )
   **  (PointArray.seg hull_pre 0 k hull_cur )
   **  ((( &( "i" ) )) # Int  |-> i)
@@ -4113,8 +4343,8 @@ forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list
   “ ((-point_bound) <= (point_y ((Znth ((k - 2 ) - 0 ) hull_cur __default_Point)))) ”
 .
 
-Definition andrew_monotone_chain_partial_solve_wit_21_pure_split_goal_4 := 
-forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list Point) -> Prop))) (pts_l_low_level_spec: (@list Point)) (hull_cur: (@list Point)) (pts_sorted: (@list Point)) (k: Z) (lower_n: Z) (i: Z)  __default_Point (PreH1 : (k <= INT_MAX)) (PreH2 : (lower_n <= INT_MAX)) (PreH3 : (n_pre <= INT_MAX)) (PreH4 : (i <= INT_MAX)) (PreH5 : (k >= INT_MIN)) (PreH6 : (lower_n >= INT_MIN)) (PreH7 : (n_pre >= INT_MIN)) (PreH8 : (i >= INT_MIN)) (PreH9 : (k > lower_n)) (PreH10 : (1 <= i)) (PreH11 : (i <= (n_pre - 2 ))) (PreH12 : (2 <= lower_n)) (PreH13 : (lower_n <= k)) (PreH14 : (k < (2 * n_pre ))) (PreH15 : (2 <= n_pre)) (PreH16 : (n_pre <= 50000)) (PreH17 : ((Zlength (pts_l_low_level_spec)) = n_pre)) (PreH18 : ((Zlength (pts_sorted)) = n_pre)) (PreH19 : (points_in_bound pts_sorted )) (PreH20 : (point_permutation pts_l_low_level_spec pts_sorted )) (PreH21 : (point_xy_sorted pts_sorted )) (PreH22 : (point_in_bound (Znth i pts_sorted __default_Point) )) (PreH23 : (andrew_upper_scan_inv pts_sorted hull_cur (i + 1 ) k lower_n )) (PreH24 : (safeExec (equiv (hull_cur)) (build_upper_chain_cont (pts_sorted) ((sublist (0) (lower_n) (hull_cur)))) X_low_level_spec )) ,
+Definition andrew_build_from_sorted_partial_solve_wit_20_pure_split_goal_4 := 
+forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list Point) -> Prop))) (pts_l_low_level_spec: (@list Point)) (hull_cur: (@list Point)) (pts_sorted: (@list Point)) (k: Z) (lower_n: Z) (i: Z)  __default_Point (PreH1 : (k <= INT_MAX)) (PreH2 : (lower_n <= INT_MAX)) (PreH3 : (n_pre <= INT_MAX)) (PreH4 : (i <= INT_MAX)) (PreH5 : (k >= INT_MIN)) (PreH6 : (lower_n >= INT_MIN)) (PreH7 : (n_pre >= INT_MIN)) (PreH8 : (i >= INT_MIN)) (PreH9 : (k > lower_n)) (PreH10 : (0 <= i)) (PreH11 : (i <= (n_pre - 2 ))) (PreH12 : (2 <= lower_n)) (PreH13 : (lower_n <= k)) (PreH14 : (k < (2 * n_pre ))) (PreH15 : (2 <= n_pre)) (PreH16 : (n_pre <= 50000)) (PreH17 : ((Zlength (pts_l_low_level_spec)) = n_pre)) (PreH18 : ((Zlength (pts_sorted)) = n_pre)) (PreH19 : (points_in_bound pts_sorted )) (PreH20 : (point_permutation pts_l_low_level_spec pts_sorted )) (PreH21 : (point_xy_sorted pts_sorted )) (PreH22 : (point_in_bound (Znth i pts_sorted __default_Point) )) (PreH23 : (andrew_upper_scan_inv pts_sorted hull_cur (i + 1 ) k lower_n )) (PreH24 : (andrew_upper_remaining_cont pts_sorted hull_cur (i + 1 ) lower_n X_low_level_spec )) ,
   (PointArray.full pts_pre n_pre pts_sorted )
   **  (PointArray.seg hull_pre 0 k hull_cur )
   **  ((( &( "i" ) )) # Int  |-> i)
@@ -4128,8 +4358,8 @@ forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list
   “ ((point_y ((Znth ((k - 2 ) - 0 ) hull_cur __default_Point))) <= point_bound) ”
 .
 
-Definition andrew_monotone_chain_partial_solve_wit_21_pure_split_goal_5 := 
-forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list Point) -> Prop))) (pts_l_low_level_spec: (@list Point)) (hull_cur: (@list Point)) (pts_sorted: (@list Point)) (k: Z) (lower_n: Z) (i: Z)  __default_Point (PreH1 : (k <= INT_MAX)) (PreH2 : (lower_n <= INT_MAX)) (PreH3 : (n_pre <= INT_MAX)) (PreH4 : (i <= INT_MAX)) (PreH5 : (k >= INT_MIN)) (PreH6 : (lower_n >= INT_MIN)) (PreH7 : (n_pre >= INT_MIN)) (PreH8 : (i >= INT_MIN)) (PreH9 : (k > lower_n)) (PreH10 : (1 <= i)) (PreH11 : (i <= (n_pre - 2 ))) (PreH12 : (2 <= lower_n)) (PreH13 : (lower_n <= k)) (PreH14 : (k < (2 * n_pre ))) (PreH15 : (2 <= n_pre)) (PreH16 : (n_pre <= 50000)) (PreH17 : ((Zlength (pts_l_low_level_spec)) = n_pre)) (PreH18 : ((Zlength (pts_sorted)) = n_pre)) (PreH19 : (points_in_bound pts_sorted )) (PreH20 : (point_permutation pts_l_low_level_spec pts_sorted )) (PreH21 : (point_xy_sorted pts_sorted )) (PreH22 : (point_in_bound (Znth i pts_sorted __default_Point) )) (PreH23 : (andrew_upper_scan_inv pts_sorted hull_cur (i + 1 ) k lower_n )) (PreH24 : (safeExec (equiv (hull_cur)) (build_upper_chain_cont (pts_sorted) ((sublist (0) (lower_n) (hull_cur)))) X_low_level_spec )) ,
+Definition andrew_build_from_sorted_partial_solve_wit_20_pure_split_goal_5 := 
+forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list Point) -> Prop))) (pts_l_low_level_spec: (@list Point)) (hull_cur: (@list Point)) (pts_sorted: (@list Point)) (k: Z) (lower_n: Z) (i: Z)  __default_Point (PreH1 : (k <= INT_MAX)) (PreH2 : (lower_n <= INT_MAX)) (PreH3 : (n_pre <= INT_MAX)) (PreH4 : (i <= INT_MAX)) (PreH5 : (k >= INT_MIN)) (PreH6 : (lower_n >= INT_MIN)) (PreH7 : (n_pre >= INT_MIN)) (PreH8 : (i >= INT_MIN)) (PreH9 : (k > lower_n)) (PreH10 : (0 <= i)) (PreH11 : (i <= (n_pre - 2 ))) (PreH12 : (2 <= lower_n)) (PreH13 : (lower_n <= k)) (PreH14 : (k < (2 * n_pre ))) (PreH15 : (2 <= n_pre)) (PreH16 : (n_pre <= 50000)) (PreH17 : ((Zlength (pts_l_low_level_spec)) = n_pre)) (PreH18 : ((Zlength (pts_sorted)) = n_pre)) (PreH19 : (points_in_bound pts_sorted )) (PreH20 : (point_permutation pts_l_low_level_spec pts_sorted )) (PreH21 : (point_xy_sorted pts_sorted )) (PreH22 : (point_in_bound (Znth i pts_sorted __default_Point) )) (PreH23 : (andrew_upper_scan_inv pts_sorted hull_cur (i + 1 ) k lower_n )) (PreH24 : (andrew_upper_remaining_cont pts_sorted hull_cur (i + 1 ) lower_n X_low_level_spec )) ,
   (PointArray.full pts_pre n_pre pts_sorted )
   **  (PointArray.seg hull_pre 0 k hull_cur )
   **  ((( &( "i" ) )) # Int  |-> i)
@@ -4143,8 +4373,8 @@ forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list
   “ ((-point_bound) <= (point_x ((Znth ((k - 1 ) - 0 ) hull_cur __default_Point)))) ”
 .
 
-Definition andrew_monotone_chain_partial_solve_wit_21_pure_split_goal_6 := 
-forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list Point) -> Prop))) (pts_l_low_level_spec: (@list Point)) (hull_cur: (@list Point)) (pts_sorted: (@list Point)) (k: Z) (lower_n: Z) (i: Z)  __default_Point (PreH1 : (k <= INT_MAX)) (PreH2 : (lower_n <= INT_MAX)) (PreH3 : (n_pre <= INT_MAX)) (PreH4 : (i <= INT_MAX)) (PreH5 : (k >= INT_MIN)) (PreH6 : (lower_n >= INT_MIN)) (PreH7 : (n_pre >= INT_MIN)) (PreH8 : (i >= INT_MIN)) (PreH9 : (k > lower_n)) (PreH10 : (1 <= i)) (PreH11 : (i <= (n_pre - 2 ))) (PreH12 : (2 <= lower_n)) (PreH13 : (lower_n <= k)) (PreH14 : (k < (2 * n_pre ))) (PreH15 : (2 <= n_pre)) (PreH16 : (n_pre <= 50000)) (PreH17 : ((Zlength (pts_l_low_level_spec)) = n_pre)) (PreH18 : ((Zlength (pts_sorted)) = n_pre)) (PreH19 : (points_in_bound pts_sorted )) (PreH20 : (point_permutation pts_l_low_level_spec pts_sorted )) (PreH21 : (point_xy_sorted pts_sorted )) (PreH22 : (point_in_bound (Znth i pts_sorted __default_Point) )) (PreH23 : (andrew_upper_scan_inv pts_sorted hull_cur (i + 1 ) k lower_n )) (PreH24 : (safeExec (equiv (hull_cur)) (build_upper_chain_cont (pts_sorted) ((sublist (0) (lower_n) (hull_cur)))) X_low_level_spec )) ,
+Definition andrew_build_from_sorted_partial_solve_wit_20_pure_split_goal_6 := 
+forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list Point) -> Prop))) (pts_l_low_level_spec: (@list Point)) (hull_cur: (@list Point)) (pts_sorted: (@list Point)) (k: Z) (lower_n: Z) (i: Z)  __default_Point (PreH1 : (k <= INT_MAX)) (PreH2 : (lower_n <= INT_MAX)) (PreH3 : (n_pre <= INT_MAX)) (PreH4 : (i <= INT_MAX)) (PreH5 : (k >= INT_MIN)) (PreH6 : (lower_n >= INT_MIN)) (PreH7 : (n_pre >= INT_MIN)) (PreH8 : (i >= INT_MIN)) (PreH9 : (k > lower_n)) (PreH10 : (0 <= i)) (PreH11 : (i <= (n_pre - 2 ))) (PreH12 : (2 <= lower_n)) (PreH13 : (lower_n <= k)) (PreH14 : (k < (2 * n_pre ))) (PreH15 : (2 <= n_pre)) (PreH16 : (n_pre <= 50000)) (PreH17 : ((Zlength (pts_l_low_level_spec)) = n_pre)) (PreH18 : ((Zlength (pts_sorted)) = n_pre)) (PreH19 : (points_in_bound pts_sorted )) (PreH20 : (point_permutation pts_l_low_level_spec pts_sorted )) (PreH21 : (point_xy_sorted pts_sorted )) (PreH22 : (point_in_bound (Znth i pts_sorted __default_Point) )) (PreH23 : (andrew_upper_scan_inv pts_sorted hull_cur (i + 1 ) k lower_n )) (PreH24 : (andrew_upper_remaining_cont pts_sorted hull_cur (i + 1 ) lower_n X_low_level_spec )) ,
   (PointArray.full pts_pre n_pre pts_sorted )
   **  (PointArray.seg hull_pre 0 k hull_cur )
   **  ((( &( "i" ) )) # Int  |-> i)
@@ -4158,8 +4388,8 @@ forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list
   “ ((point_x ((Znth ((k - 1 ) - 0 ) hull_cur __default_Point))) <= point_bound) ”
 .
 
-Definition andrew_monotone_chain_partial_solve_wit_21_pure_split_goal_7 := 
-forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list Point) -> Prop))) (pts_l_low_level_spec: (@list Point)) (hull_cur: (@list Point)) (pts_sorted: (@list Point)) (k: Z) (lower_n: Z) (i: Z)  __default_Point (PreH1 : (k <= INT_MAX)) (PreH2 : (lower_n <= INT_MAX)) (PreH3 : (n_pre <= INT_MAX)) (PreH4 : (i <= INT_MAX)) (PreH5 : (k >= INT_MIN)) (PreH6 : (lower_n >= INT_MIN)) (PreH7 : (n_pre >= INT_MIN)) (PreH8 : (i >= INT_MIN)) (PreH9 : (k > lower_n)) (PreH10 : (1 <= i)) (PreH11 : (i <= (n_pre - 2 ))) (PreH12 : (2 <= lower_n)) (PreH13 : (lower_n <= k)) (PreH14 : (k < (2 * n_pre ))) (PreH15 : (2 <= n_pre)) (PreH16 : (n_pre <= 50000)) (PreH17 : ((Zlength (pts_l_low_level_spec)) = n_pre)) (PreH18 : ((Zlength (pts_sorted)) = n_pre)) (PreH19 : (points_in_bound pts_sorted )) (PreH20 : (point_permutation pts_l_low_level_spec pts_sorted )) (PreH21 : (point_xy_sorted pts_sorted )) (PreH22 : (point_in_bound (Znth i pts_sorted __default_Point) )) (PreH23 : (andrew_upper_scan_inv pts_sorted hull_cur (i + 1 ) k lower_n )) (PreH24 : (safeExec (equiv (hull_cur)) (build_upper_chain_cont (pts_sorted) ((sublist (0) (lower_n) (hull_cur)))) X_low_level_spec )) ,
+Definition andrew_build_from_sorted_partial_solve_wit_20_pure_split_goal_7 := 
+forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list Point) -> Prop))) (pts_l_low_level_spec: (@list Point)) (hull_cur: (@list Point)) (pts_sorted: (@list Point)) (k: Z) (lower_n: Z) (i: Z)  __default_Point (PreH1 : (k <= INT_MAX)) (PreH2 : (lower_n <= INT_MAX)) (PreH3 : (n_pre <= INT_MAX)) (PreH4 : (i <= INT_MAX)) (PreH5 : (k >= INT_MIN)) (PreH6 : (lower_n >= INT_MIN)) (PreH7 : (n_pre >= INT_MIN)) (PreH8 : (i >= INT_MIN)) (PreH9 : (k > lower_n)) (PreH10 : (0 <= i)) (PreH11 : (i <= (n_pre - 2 ))) (PreH12 : (2 <= lower_n)) (PreH13 : (lower_n <= k)) (PreH14 : (k < (2 * n_pre ))) (PreH15 : (2 <= n_pre)) (PreH16 : (n_pre <= 50000)) (PreH17 : ((Zlength (pts_l_low_level_spec)) = n_pre)) (PreH18 : ((Zlength (pts_sorted)) = n_pre)) (PreH19 : (points_in_bound pts_sorted )) (PreH20 : (point_permutation pts_l_low_level_spec pts_sorted )) (PreH21 : (point_xy_sorted pts_sorted )) (PreH22 : (point_in_bound (Znth i pts_sorted __default_Point) )) (PreH23 : (andrew_upper_scan_inv pts_sorted hull_cur (i + 1 ) k lower_n )) (PreH24 : (andrew_upper_remaining_cont pts_sorted hull_cur (i + 1 ) lower_n X_low_level_spec )) ,
   (PointArray.full pts_pre n_pre pts_sorted )
   **  (PointArray.seg hull_pre 0 k hull_cur )
   **  ((( &( "i" ) )) # Int  |-> i)
@@ -4173,8 +4403,8 @@ forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list
   “ ((-point_bound) <= (point_y ((Znth ((k - 1 ) - 0 ) hull_cur __default_Point)))) ”
 .
 
-Definition andrew_monotone_chain_partial_solve_wit_21_pure_split_goal_8 := 
-forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list Point) -> Prop))) (pts_l_low_level_spec: (@list Point)) (hull_cur: (@list Point)) (pts_sorted: (@list Point)) (k: Z) (lower_n: Z) (i: Z)  __default_Point (PreH1 : (k <= INT_MAX)) (PreH2 : (lower_n <= INT_MAX)) (PreH3 : (n_pre <= INT_MAX)) (PreH4 : (i <= INT_MAX)) (PreH5 : (k >= INT_MIN)) (PreH6 : (lower_n >= INT_MIN)) (PreH7 : (n_pre >= INT_MIN)) (PreH8 : (i >= INT_MIN)) (PreH9 : (k > lower_n)) (PreH10 : (1 <= i)) (PreH11 : (i <= (n_pre - 2 ))) (PreH12 : (2 <= lower_n)) (PreH13 : (lower_n <= k)) (PreH14 : (k < (2 * n_pre ))) (PreH15 : (2 <= n_pre)) (PreH16 : (n_pre <= 50000)) (PreH17 : ((Zlength (pts_l_low_level_spec)) = n_pre)) (PreH18 : ((Zlength (pts_sorted)) = n_pre)) (PreH19 : (points_in_bound pts_sorted )) (PreH20 : (point_permutation pts_l_low_level_spec pts_sorted )) (PreH21 : (point_xy_sorted pts_sorted )) (PreH22 : (point_in_bound (Znth i pts_sorted __default_Point) )) (PreH23 : (andrew_upper_scan_inv pts_sorted hull_cur (i + 1 ) k lower_n )) (PreH24 : (safeExec (equiv (hull_cur)) (build_upper_chain_cont (pts_sorted) ((sublist (0) (lower_n) (hull_cur)))) X_low_level_spec )) ,
+Definition andrew_build_from_sorted_partial_solve_wit_20_pure_split_goal_8 := 
+forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list Point) -> Prop))) (pts_l_low_level_spec: (@list Point)) (hull_cur: (@list Point)) (pts_sorted: (@list Point)) (k: Z) (lower_n: Z) (i: Z)  __default_Point (PreH1 : (k <= INT_MAX)) (PreH2 : (lower_n <= INT_MAX)) (PreH3 : (n_pre <= INT_MAX)) (PreH4 : (i <= INT_MAX)) (PreH5 : (k >= INT_MIN)) (PreH6 : (lower_n >= INT_MIN)) (PreH7 : (n_pre >= INT_MIN)) (PreH8 : (i >= INT_MIN)) (PreH9 : (k > lower_n)) (PreH10 : (0 <= i)) (PreH11 : (i <= (n_pre - 2 ))) (PreH12 : (2 <= lower_n)) (PreH13 : (lower_n <= k)) (PreH14 : (k < (2 * n_pre ))) (PreH15 : (2 <= n_pre)) (PreH16 : (n_pre <= 50000)) (PreH17 : ((Zlength (pts_l_low_level_spec)) = n_pre)) (PreH18 : ((Zlength (pts_sorted)) = n_pre)) (PreH19 : (points_in_bound pts_sorted )) (PreH20 : (point_permutation pts_l_low_level_spec pts_sorted )) (PreH21 : (point_xy_sorted pts_sorted )) (PreH22 : (point_in_bound (Znth i pts_sorted __default_Point) )) (PreH23 : (andrew_upper_scan_inv pts_sorted hull_cur (i + 1 ) k lower_n )) (PreH24 : (andrew_upper_remaining_cont pts_sorted hull_cur (i + 1 ) lower_n X_low_level_spec )) ,
   (PointArray.full pts_pre n_pre pts_sorted )
   **  (PointArray.seg hull_pre 0 k hull_cur )
   **  ((( &( "i" ) )) # Int  |-> i)
@@ -4188,8 +4418,8 @@ forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list
   “ ((point_y ((Znth ((k - 1 ) - 0 ) hull_cur __default_Point))) <= point_bound) ”
 .
 
-Definition andrew_monotone_chain_partial_solve_wit_21_pure_split_goal_9 := 
-forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list Point) -> Prop))) (pts_l_low_level_spec: (@list Point)) (hull_cur: (@list Point)) (pts_sorted: (@list Point)) (k: Z) (lower_n: Z) (i: Z)  __default_Point (PreH1 : (k <= INT_MAX)) (PreH2 : (lower_n <= INT_MAX)) (PreH3 : (n_pre <= INT_MAX)) (PreH4 : (i <= INT_MAX)) (PreH5 : (k >= INT_MIN)) (PreH6 : (lower_n >= INT_MIN)) (PreH7 : (n_pre >= INT_MIN)) (PreH8 : (i >= INT_MIN)) (PreH9 : (k > lower_n)) (PreH10 : (1 <= i)) (PreH11 : (i <= (n_pre - 2 ))) (PreH12 : (2 <= lower_n)) (PreH13 : (lower_n <= k)) (PreH14 : (k < (2 * n_pre ))) (PreH15 : (2 <= n_pre)) (PreH16 : (n_pre <= 50000)) (PreH17 : ((Zlength (pts_l_low_level_spec)) = n_pre)) (PreH18 : ((Zlength (pts_sorted)) = n_pre)) (PreH19 : (points_in_bound pts_sorted )) (PreH20 : (point_permutation pts_l_low_level_spec pts_sorted )) (PreH21 : (point_xy_sorted pts_sorted )) (PreH22 : (point_in_bound (Znth i pts_sorted __default_Point) )) (PreH23 : (andrew_upper_scan_inv pts_sorted hull_cur (i + 1 ) k lower_n )) (PreH24 : (safeExec (equiv (hull_cur)) (build_upper_chain_cont (pts_sorted) ((sublist (0) (lower_n) (hull_cur)))) X_low_level_spec )) ,
+Definition andrew_build_from_sorted_partial_solve_wit_20_pure_split_goal_9 := 
+forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list Point) -> Prop))) (pts_l_low_level_spec: (@list Point)) (hull_cur: (@list Point)) (pts_sorted: (@list Point)) (k: Z) (lower_n: Z) (i: Z)  __default_Point (PreH1 : (k <= INT_MAX)) (PreH2 : (lower_n <= INT_MAX)) (PreH3 : (n_pre <= INT_MAX)) (PreH4 : (i <= INT_MAX)) (PreH5 : (k >= INT_MIN)) (PreH6 : (lower_n >= INT_MIN)) (PreH7 : (n_pre >= INT_MIN)) (PreH8 : (i >= INT_MIN)) (PreH9 : (k > lower_n)) (PreH10 : (0 <= i)) (PreH11 : (i <= (n_pre - 2 ))) (PreH12 : (2 <= lower_n)) (PreH13 : (lower_n <= k)) (PreH14 : (k < (2 * n_pre ))) (PreH15 : (2 <= n_pre)) (PreH16 : (n_pre <= 50000)) (PreH17 : ((Zlength (pts_l_low_level_spec)) = n_pre)) (PreH18 : ((Zlength (pts_sorted)) = n_pre)) (PreH19 : (points_in_bound pts_sorted )) (PreH20 : (point_permutation pts_l_low_level_spec pts_sorted )) (PreH21 : (point_xy_sorted pts_sorted )) (PreH22 : (point_in_bound (Znth i pts_sorted __default_Point) )) (PreH23 : (andrew_upper_scan_inv pts_sorted hull_cur (i + 1 ) k lower_n )) (PreH24 : (andrew_upper_remaining_cont pts_sorted hull_cur (i + 1 ) lower_n X_low_level_spec )) ,
   (PointArray.full pts_pre n_pre pts_sorted )
   **  (PointArray.seg hull_pre 0 k hull_cur )
   **  ((( &( "i" ) )) # Int  |-> i)
@@ -4203,8 +4433,8 @@ forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list
   “ ((-point_bound) <= (point_x ((Znth i pts_sorted __default_Point)))) ”
 .
 
-Definition andrew_monotone_chain_partial_solve_wit_21_pure_split_goal_10 := 
-forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list Point) -> Prop))) (pts_l_low_level_spec: (@list Point)) (hull_cur: (@list Point)) (pts_sorted: (@list Point)) (k: Z) (lower_n: Z) (i: Z)  __default_Point (PreH1 : (k <= INT_MAX)) (PreH2 : (lower_n <= INT_MAX)) (PreH3 : (n_pre <= INT_MAX)) (PreH4 : (i <= INT_MAX)) (PreH5 : (k >= INT_MIN)) (PreH6 : (lower_n >= INT_MIN)) (PreH7 : (n_pre >= INT_MIN)) (PreH8 : (i >= INT_MIN)) (PreH9 : (k > lower_n)) (PreH10 : (1 <= i)) (PreH11 : (i <= (n_pre - 2 ))) (PreH12 : (2 <= lower_n)) (PreH13 : (lower_n <= k)) (PreH14 : (k < (2 * n_pre ))) (PreH15 : (2 <= n_pre)) (PreH16 : (n_pre <= 50000)) (PreH17 : ((Zlength (pts_l_low_level_spec)) = n_pre)) (PreH18 : ((Zlength (pts_sorted)) = n_pre)) (PreH19 : (points_in_bound pts_sorted )) (PreH20 : (point_permutation pts_l_low_level_spec pts_sorted )) (PreH21 : (point_xy_sorted pts_sorted )) (PreH22 : (point_in_bound (Znth i pts_sorted __default_Point) )) (PreH23 : (andrew_upper_scan_inv pts_sorted hull_cur (i + 1 ) k lower_n )) (PreH24 : (safeExec (equiv (hull_cur)) (build_upper_chain_cont (pts_sorted) ((sublist (0) (lower_n) (hull_cur)))) X_low_level_spec )) ,
+Definition andrew_build_from_sorted_partial_solve_wit_20_pure_split_goal_10 := 
+forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list Point) -> Prop))) (pts_l_low_level_spec: (@list Point)) (hull_cur: (@list Point)) (pts_sorted: (@list Point)) (k: Z) (lower_n: Z) (i: Z)  __default_Point (PreH1 : (k <= INT_MAX)) (PreH2 : (lower_n <= INT_MAX)) (PreH3 : (n_pre <= INT_MAX)) (PreH4 : (i <= INT_MAX)) (PreH5 : (k >= INT_MIN)) (PreH6 : (lower_n >= INT_MIN)) (PreH7 : (n_pre >= INT_MIN)) (PreH8 : (i >= INT_MIN)) (PreH9 : (k > lower_n)) (PreH10 : (0 <= i)) (PreH11 : (i <= (n_pre - 2 ))) (PreH12 : (2 <= lower_n)) (PreH13 : (lower_n <= k)) (PreH14 : (k < (2 * n_pre ))) (PreH15 : (2 <= n_pre)) (PreH16 : (n_pre <= 50000)) (PreH17 : ((Zlength (pts_l_low_level_spec)) = n_pre)) (PreH18 : ((Zlength (pts_sorted)) = n_pre)) (PreH19 : (points_in_bound pts_sorted )) (PreH20 : (point_permutation pts_l_low_level_spec pts_sorted )) (PreH21 : (point_xy_sorted pts_sorted )) (PreH22 : (point_in_bound (Znth i pts_sorted __default_Point) )) (PreH23 : (andrew_upper_scan_inv pts_sorted hull_cur (i + 1 ) k lower_n )) (PreH24 : (andrew_upper_remaining_cont pts_sorted hull_cur (i + 1 ) lower_n X_low_level_spec )) ,
   (PointArray.full pts_pre n_pre pts_sorted )
   **  (PointArray.seg hull_pre 0 k hull_cur )
   **  ((( &( "i" ) )) # Int  |-> i)
@@ -4218,8 +4448,8 @@ forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list
   “ ((point_x ((Znth i pts_sorted __default_Point))) <= point_bound) ”
 .
 
-Definition andrew_monotone_chain_partial_solve_wit_21_pure_split_goal_11 := 
-forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list Point) -> Prop))) (pts_l_low_level_spec: (@list Point)) (hull_cur: (@list Point)) (pts_sorted: (@list Point)) (k: Z) (lower_n: Z) (i: Z)  __default_Point (PreH1 : (k <= INT_MAX)) (PreH2 : (lower_n <= INT_MAX)) (PreH3 : (n_pre <= INT_MAX)) (PreH4 : (i <= INT_MAX)) (PreH5 : (k >= INT_MIN)) (PreH6 : (lower_n >= INT_MIN)) (PreH7 : (n_pre >= INT_MIN)) (PreH8 : (i >= INT_MIN)) (PreH9 : (k > lower_n)) (PreH10 : (1 <= i)) (PreH11 : (i <= (n_pre - 2 ))) (PreH12 : (2 <= lower_n)) (PreH13 : (lower_n <= k)) (PreH14 : (k < (2 * n_pre ))) (PreH15 : (2 <= n_pre)) (PreH16 : (n_pre <= 50000)) (PreH17 : ((Zlength (pts_l_low_level_spec)) = n_pre)) (PreH18 : ((Zlength (pts_sorted)) = n_pre)) (PreH19 : (points_in_bound pts_sorted )) (PreH20 : (point_permutation pts_l_low_level_spec pts_sorted )) (PreH21 : (point_xy_sorted pts_sorted )) (PreH22 : (point_in_bound (Znth i pts_sorted __default_Point) )) (PreH23 : (andrew_upper_scan_inv pts_sorted hull_cur (i + 1 ) k lower_n )) (PreH24 : (safeExec (equiv (hull_cur)) (build_upper_chain_cont (pts_sorted) ((sublist (0) (lower_n) (hull_cur)))) X_low_level_spec )) ,
+Definition andrew_build_from_sorted_partial_solve_wit_20_pure_split_goal_11 := 
+forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list Point) -> Prop))) (pts_l_low_level_spec: (@list Point)) (hull_cur: (@list Point)) (pts_sorted: (@list Point)) (k: Z) (lower_n: Z) (i: Z)  __default_Point (PreH1 : (k <= INT_MAX)) (PreH2 : (lower_n <= INT_MAX)) (PreH3 : (n_pre <= INT_MAX)) (PreH4 : (i <= INT_MAX)) (PreH5 : (k >= INT_MIN)) (PreH6 : (lower_n >= INT_MIN)) (PreH7 : (n_pre >= INT_MIN)) (PreH8 : (i >= INT_MIN)) (PreH9 : (k > lower_n)) (PreH10 : (0 <= i)) (PreH11 : (i <= (n_pre - 2 ))) (PreH12 : (2 <= lower_n)) (PreH13 : (lower_n <= k)) (PreH14 : (k < (2 * n_pre ))) (PreH15 : (2 <= n_pre)) (PreH16 : (n_pre <= 50000)) (PreH17 : ((Zlength (pts_l_low_level_spec)) = n_pre)) (PreH18 : ((Zlength (pts_sorted)) = n_pre)) (PreH19 : (points_in_bound pts_sorted )) (PreH20 : (point_permutation pts_l_low_level_spec pts_sorted )) (PreH21 : (point_xy_sorted pts_sorted )) (PreH22 : (point_in_bound (Znth i pts_sorted __default_Point) )) (PreH23 : (andrew_upper_scan_inv pts_sorted hull_cur (i + 1 ) k lower_n )) (PreH24 : (andrew_upper_remaining_cont pts_sorted hull_cur (i + 1 ) lower_n X_low_level_spec )) ,
   (PointArray.full pts_pre n_pre pts_sorted )
   **  (PointArray.seg hull_pre 0 k hull_cur )
   **  ((( &( "i" ) )) # Int  |-> i)
@@ -4233,8 +4463,8 @@ forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list
   “ ((-point_bound) <= (point_y ((Znth i pts_sorted __default_Point)))) ”
 .
 
-Definition andrew_monotone_chain_partial_solve_wit_21_pure_split_goal_12 := 
-forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list Point) -> Prop))) (pts_l_low_level_spec: (@list Point)) (hull_cur: (@list Point)) (pts_sorted: (@list Point)) (k: Z) (lower_n: Z) (i: Z)  __default_Point (PreH1 : (k <= INT_MAX)) (PreH2 : (lower_n <= INT_MAX)) (PreH3 : (n_pre <= INT_MAX)) (PreH4 : (i <= INT_MAX)) (PreH5 : (k >= INT_MIN)) (PreH6 : (lower_n >= INT_MIN)) (PreH7 : (n_pre >= INT_MIN)) (PreH8 : (i >= INT_MIN)) (PreH9 : (k > lower_n)) (PreH10 : (1 <= i)) (PreH11 : (i <= (n_pre - 2 ))) (PreH12 : (2 <= lower_n)) (PreH13 : (lower_n <= k)) (PreH14 : (k < (2 * n_pre ))) (PreH15 : (2 <= n_pre)) (PreH16 : (n_pre <= 50000)) (PreH17 : ((Zlength (pts_l_low_level_spec)) = n_pre)) (PreH18 : ((Zlength (pts_sorted)) = n_pre)) (PreH19 : (points_in_bound pts_sorted )) (PreH20 : (point_permutation pts_l_low_level_spec pts_sorted )) (PreH21 : (point_xy_sorted pts_sorted )) (PreH22 : (point_in_bound (Znth i pts_sorted __default_Point) )) (PreH23 : (andrew_upper_scan_inv pts_sorted hull_cur (i + 1 ) k lower_n )) (PreH24 : (safeExec (equiv (hull_cur)) (build_upper_chain_cont (pts_sorted) ((sublist (0) (lower_n) (hull_cur)))) X_low_level_spec )) ,
+Definition andrew_build_from_sorted_partial_solve_wit_20_pure_split_goal_12 := 
+forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list Point) -> Prop))) (pts_l_low_level_spec: (@list Point)) (hull_cur: (@list Point)) (pts_sorted: (@list Point)) (k: Z) (lower_n: Z) (i: Z)  __default_Point (PreH1 : (k <= INT_MAX)) (PreH2 : (lower_n <= INT_MAX)) (PreH3 : (n_pre <= INT_MAX)) (PreH4 : (i <= INT_MAX)) (PreH5 : (k >= INT_MIN)) (PreH6 : (lower_n >= INT_MIN)) (PreH7 : (n_pre >= INT_MIN)) (PreH8 : (i >= INT_MIN)) (PreH9 : (k > lower_n)) (PreH10 : (0 <= i)) (PreH11 : (i <= (n_pre - 2 ))) (PreH12 : (2 <= lower_n)) (PreH13 : (lower_n <= k)) (PreH14 : (k < (2 * n_pre ))) (PreH15 : (2 <= n_pre)) (PreH16 : (n_pre <= 50000)) (PreH17 : ((Zlength (pts_l_low_level_spec)) = n_pre)) (PreH18 : ((Zlength (pts_sorted)) = n_pre)) (PreH19 : (points_in_bound pts_sorted )) (PreH20 : (point_permutation pts_l_low_level_spec pts_sorted )) (PreH21 : (point_xy_sorted pts_sorted )) (PreH22 : (point_in_bound (Znth i pts_sorted __default_Point) )) (PreH23 : (andrew_upper_scan_inv pts_sorted hull_cur (i + 1 ) k lower_n )) (PreH24 : (andrew_upper_remaining_cont pts_sorted hull_cur (i + 1 ) lower_n X_low_level_spec )) ,
   (PointArray.full pts_pre n_pre pts_sorted )
   **  (PointArray.seg hull_pre 0 k hull_cur )
   **  ((( &( "i" ) )) # Int  |-> i)
@@ -4248,8 +4478,8 @@ forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list
   “ ((point_y ((Znth i pts_sorted __default_Point))) <= point_bound) ”
 .
 
-Definition andrew_monotone_chain_partial_solve_wit_21_aux := 
-forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list Point) -> Prop))) (pts_l_low_level_spec: (@list Point)) (hull_cur: (@list Point)) (pts_sorted: (@list Point)) (k: Z) (lower_n: Z) (i: Z)  __default_Point (PreH1 : (k > lower_n)) (PreH2 : (1 <= i)) (PreH3 : (i <= (n_pre - 2 ))) (PreH4 : (2 <= lower_n)) (PreH5 : (lower_n <= k)) (PreH6 : (k < (2 * n_pre ))) (PreH7 : (2 <= n_pre)) (PreH8 : (n_pre <= 50000)) (PreH9 : ((Zlength (pts_l_low_level_spec)) = n_pre)) (PreH10 : ((Zlength (pts_sorted)) = n_pre)) (PreH11 : (points_in_bound pts_sorted )) (PreH12 : (point_permutation pts_l_low_level_spec pts_sorted )) (PreH13 : (point_xy_sorted pts_sorted )) (PreH14 : (point_in_bound (Znth i pts_sorted __default_Point) )) (PreH15 : (andrew_upper_scan_inv pts_sorted hull_cur (i + 1 ) k lower_n )) (PreH16 : (safeExec (equiv (hull_cur)) (build_upper_chain_cont (pts_sorted) ((sublist (0) (lower_n) (hull_cur)))) X_low_level_spec )) ,
+Definition andrew_build_from_sorted_partial_solve_wit_20_aux := 
+forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list Point) -> Prop))) (pts_l_low_level_spec: (@list Point)) (hull_cur: (@list Point)) (pts_sorted: (@list Point)) (k: Z) (lower_n: Z) (i: Z)  __default_Point (PreH1 : (k > lower_n)) (PreH2 : (0 <= i)) (PreH3 : (i <= (n_pre - 2 ))) (PreH4 : (2 <= lower_n)) (PreH5 : (lower_n <= k)) (PreH6 : (k < (2 * n_pre ))) (PreH7 : (2 <= n_pre)) (PreH8 : (n_pre <= 50000)) (PreH9 : ((Zlength (pts_l_low_level_spec)) = n_pre)) (PreH10 : ((Zlength (pts_sorted)) = n_pre)) (PreH11 : (points_in_bound pts_sorted )) (PreH12 : (point_permutation pts_l_low_level_spec pts_sorted )) (PreH13 : (point_xy_sorted pts_sorted )) (PreH14 : (point_in_bound (Znth i pts_sorted __default_Point) )) (PreH15 : (andrew_upper_scan_inv pts_sorted hull_cur (i + 1 ) k lower_n )) (PreH16 : (andrew_upper_remaining_cont pts_sorted hull_cur (i + 1 ) lower_n X_low_level_spec )) ,
   (PointArray.full pts_pre n_pre pts_sorted )
   **  (PointArray.seg hull_pre 0 k hull_cur )
   **  (PointArray.undef_seg hull_pre k (2 * n_pre ) )
@@ -4267,7 +4497,7 @@ forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list
   &&  “ ((point_x ((Znth ((k - 2 ) - 0 ) hull_cur __default_Point))) <= point_bound) ” 
   &&  “ ((-point_bound) <= (point_x ((Znth ((k - 2 ) - 0 ) hull_cur __default_Point)))) ” 
   &&  “ (k > lower_n) ” 
-  &&  “ (1 <= i) ” 
+  &&  “ (0 <= i) ” 
   &&  “ (i <= (n_pre - 2 )) ” 
   &&  “ (2 <= lower_n) ” 
   &&  “ (lower_n <= k) ” 
@@ -4281,22 +4511,22 @@ forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list
   &&  “ (point_xy_sorted pts_sorted ) ” 
   &&  “ (point_in_bound (Znth i pts_sorted __default_Point) ) ” 
   &&  “ (andrew_upper_scan_inv pts_sorted hull_cur (i + 1 ) k lower_n ) ” 
-  &&  “ (safeExec (equiv (hull_cur)) (build_upper_chain_cont (pts_sorted) ((sublist (0) (lower_n) (hull_cur)))) X_low_level_spec ) ”
+  &&  “ (andrew_upper_remaining_cont pts_sorted hull_cur (i + 1 ) lower_n X_low_level_spec ) ”
   &&  (PointArray.full pts_pre n_pre pts_sorted )
   **  (PointArray.seg hull_pre 0 k hull_cur )
   **  (PointArray.undef_seg hull_pre k (2 * n_pre ) )
 .
 
-Definition andrew_monotone_chain_partial_solve_wit_21 := andrew_monotone_chain_partial_solve_wit_21_pure -> andrew_monotone_chain_partial_solve_wit_21_aux.
+Definition andrew_build_from_sorted_partial_solve_wit_20 := andrew_build_from_sorted_partial_solve_wit_20_pure -> andrew_build_from_sorted_partial_solve_wit_20_aux.
 
-Definition andrew_monotone_chain_partial_solve_wit_22 := 
-forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list Point) -> Prop))) (pts_l_low_level_spec: (@list Point)) (hull_cur: (@list Point)) (pts_sorted: (@list Point)) (k: Z) (lower_n: Z) (i: Z)  __default_Point (PreH1 : (k <= lower_n)) (PreH2 : (1 <= i)) (PreH3 : (i <= (n_pre - 2 ))) (PreH4 : (2 <= lower_n)) (PreH5 : (lower_n <= k)) (PreH6 : (k < (2 * n_pre ))) (PreH7 : (2 <= n_pre)) (PreH8 : (n_pre <= 50000)) (PreH9 : ((Zlength (pts_l_low_level_spec)) = n_pre)) (PreH10 : ((Zlength (pts_sorted)) = n_pre)) (PreH11 : (points_in_bound pts_sorted )) (PreH12 : (point_permutation pts_l_low_level_spec pts_sorted )) (PreH13 : (point_xy_sorted pts_sorted )) (PreH14 : (point_in_bound (Znth i pts_sorted __default_Point) )) (PreH15 : (andrew_upper_scan_inv pts_sorted hull_cur (i + 1 ) k lower_n )) (PreH16 : (safeExec (equiv (hull_cur)) (build_upper_chain_cont (pts_sorted) ((sublist (0) (lower_n) (hull_cur)))) X_low_level_spec )) ,
+Definition andrew_build_from_sorted_partial_solve_wit_21 := 
+forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list Point) -> Prop))) (pts_l_low_level_spec: (@list Point)) (hull_cur: (@list Point)) (pts_sorted: (@list Point)) (k: Z) (lower_n: Z) (i: Z)  __default_Point (PreH1 : (k <= lower_n)) (PreH2 : (0 <= i)) (PreH3 : (i <= (n_pre - 2 ))) (PreH4 : (2 <= lower_n)) (PreH5 : (lower_n <= k)) (PreH6 : (k < (2 * n_pre ))) (PreH7 : (2 <= n_pre)) (PreH8 : (n_pre <= 50000)) (PreH9 : ((Zlength (pts_l_low_level_spec)) = n_pre)) (PreH10 : ((Zlength (pts_sorted)) = n_pre)) (PreH11 : (points_in_bound pts_sorted )) (PreH12 : (point_permutation pts_l_low_level_spec pts_sorted )) (PreH13 : (point_xy_sorted pts_sorted )) (PreH14 : (point_in_bound (Znth i pts_sorted __default_Point) )) (PreH15 : (andrew_upper_scan_inv pts_sorted hull_cur (i + 1 ) k lower_n )) (PreH16 : (andrew_upper_remaining_cont pts_sorted hull_cur (i + 1 ) lower_n X_low_level_spec )) ,
   (PointArray.full pts_pre n_pre pts_sorted )
   **  (PointArray.seg hull_pre 0 k hull_cur )
   **  (PointArray.undef_seg hull_pre k (2 * n_pre ) )
 |--
   “ (k <= lower_n) ” 
-  &&  “ (1 <= i) ” 
+  &&  “ (0 <= i) ” 
   &&  “ (i <= (n_pre - 2 )) ” 
   &&  “ (2 <= lower_n) ” 
   &&  “ (lower_n <= k) ” 
@@ -4310,7 +4540,7 @@ forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list
   &&  “ (point_xy_sorted pts_sorted ) ” 
   &&  “ (point_in_bound (Znth i pts_sorted __default_Point) ) ” 
   &&  “ (andrew_upper_scan_inv pts_sorted hull_cur (i + 1 ) k lower_n ) ” 
-  &&  “ (safeExec (equiv (hull_cur)) (build_upper_chain_cont (pts_sorted) ((sublist (0) (lower_n) (hull_cur)))) X_low_level_spec ) ”
+  &&  “ (andrew_upper_remaining_cont pts_sorted hull_cur (i + 1 ) lower_n X_low_level_spec ) ”
   &&  ((&(((pts_pre + (i * sizeof( "Point" ) ) ))  # "Point" ->ₛ "x")) # Int  |-> (point_x ((Znth i pts_sorted __default_Point))))
   **  (PointArray.missing_i pts_pre i 0 n_pre pts_sorted )
   **  ((&(((pts_pre + (i * sizeof( "Point" ) ) ))  # "Point" ->ₛ "y")) # Int  |-> (point_y ((Znth i pts_sorted __default_Point))))
@@ -4318,14 +4548,14 @@ forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list
   **  (PointArray.undef_seg hull_pre k (2 * n_pre ) )
 .
 
-Definition andrew_monotone_chain_partial_solve_wit_23 := 
-forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list Point) -> Prop))) (pts_l_low_level_spec: (@list Point)) (hull_cur: (@list Point)) (pts_sorted: (@list Point)) (k: Z) (lower_n: Z) (i: Z)  __default_Point (PreH1 : (k <= lower_n)) (PreH2 : (1 <= i)) (PreH3 : (i <= (n_pre - 2 ))) (PreH4 : (2 <= lower_n)) (PreH5 : (lower_n <= k)) (PreH6 : (k < (2 * n_pre ))) (PreH7 : (2 <= n_pre)) (PreH8 : (n_pre <= 50000)) (PreH9 : ((Zlength (pts_l_low_level_spec)) = n_pre)) (PreH10 : ((Zlength (pts_sorted)) = n_pre)) (PreH11 : (points_in_bound pts_sorted )) (PreH12 : (point_permutation pts_l_low_level_spec pts_sorted )) (PreH13 : (point_xy_sorted pts_sorted )) (PreH14 : (point_in_bound (Znth i pts_sorted __default_Point) )) (PreH15 : (andrew_upper_scan_inv pts_sorted hull_cur (i + 1 ) k lower_n )) (PreH16 : (safeExec (equiv (hull_cur)) (build_upper_chain_cont (pts_sorted) ((sublist (0) (lower_n) (hull_cur)))) X_low_level_spec )) ,
+Definition andrew_build_from_sorted_partial_solve_wit_22 := 
+forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list Point) -> Prop))) (pts_l_low_level_spec: (@list Point)) (hull_cur: (@list Point)) (pts_sorted: (@list Point)) (k: Z) (lower_n: Z) (i: Z)  __default_Point (PreH1 : (k <= lower_n)) (PreH2 : (0 <= i)) (PreH3 : (i <= (n_pre - 2 ))) (PreH4 : (2 <= lower_n)) (PreH5 : (lower_n <= k)) (PreH6 : (k < (2 * n_pre ))) (PreH7 : (2 <= n_pre)) (PreH8 : (n_pre <= 50000)) (PreH9 : ((Zlength (pts_l_low_level_spec)) = n_pre)) (PreH10 : ((Zlength (pts_sorted)) = n_pre)) (PreH11 : (points_in_bound pts_sorted )) (PreH12 : (point_permutation pts_l_low_level_spec pts_sorted )) (PreH13 : (point_xy_sorted pts_sorted )) (PreH14 : (point_in_bound (Znth i pts_sorted __default_Point) )) (PreH15 : (andrew_upper_scan_inv pts_sorted hull_cur (i + 1 ) k lower_n )) (PreH16 : (andrew_upper_remaining_cont pts_sorted hull_cur (i + 1 ) lower_n X_low_level_spec )) ,
   (PointArray.full pts_pre n_pre pts_sorted )
   **  (PointArray.seg hull_pre 0 k hull_cur )
   **  (PointArray.undef_seg hull_pre k (2 * n_pre ) )
 |--
   “ (k <= lower_n) ” 
-  &&  “ (1 <= i) ” 
+  &&  “ (0 <= i) ” 
   &&  “ (i <= (n_pre - 2 )) ” 
   &&  “ (2 <= lower_n) ” 
   &&  “ (lower_n <= k) ” 
@@ -4339,7 +4569,7 @@ forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list
   &&  “ (point_xy_sorted pts_sorted ) ” 
   &&  “ (point_in_bound (Znth i pts_sorted __default_Point) ) ” 
   &&  “ (andrew_upper_scan_inv pts_sorted hull_cur (i + 1 ) k lower_n ) ” 
-  &&  “ (safeExec (equiv (hull_cur)) (build_upper_chain_cont (pts_sorted) ((sublist (0) (lower_n) (hull_cur)))) X_low_level_spec ) ”
+  &&  “ (andrew_upper_remaining_cont pts_sorted hull_cur (i + 1 ) lower_n X_low_level_spec ) ”
   &&  ((&(((hull_pre + (k * sizeof( "Point" ) ) ))  # "Point" ->ₛ "x")) # Int  |->_)
   **  (PointArray.undef_seg hull_pre (k + 1 ) (2 * n_pre ) )
   **  ((&(((hull_pre + (k * sizeof( "Point" ) ) ))  # "Point" ->ₛ "y")) # Int  |->_)
@@ -4347,8 +4577,8 @@ forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list
   **  (PointArray.seg hull_pre 0 k hull_cur )
 .
 
-Definition andrew_monotone_chain_partial_solve_wit_24 := 
-forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list Point) -> Prop))) (pts_l_low_level_spec: (@list Point)) (hull_cur: (@list Point)) (pts_sorted: (@list Point)) (k: Z) (lower_n: Z) (i: Z) (retval: Z)  __default_Point (PreH1 : (retval > 0)) (PreH2 : (retval = (point_cross_by_value ((point_x ((Znth ((k - 2 ) - 0 ) hull_cur __default_Point)))) ((point_y ((Znth ((k - 2 ) - 0 ) hull_cur __default_Point)))) ((point_x ((Znth ((k - 1 ) - 0 ) hull_cur __default_Point)))) ((point_y ((Znth ((k - 1 ) - 0 ) hull_cur __default_Point)))) ((point_x ((Znth i pts_sorted __default_Point)))) ((point_y ((Znth i pts_sorted __default_Point))))))) (PreH3 : (k > lower_n)) (PreH4 : (1 <= i)) (PreH5 : (i <= (n_pre - 2 ))) (PreH6 : (2 <= lower_n)) (PreH7 : (lower_n <= k)) (PreH8 : (k < (2 * n_pre ))) (PreH9 : (2 <= n_pre)) (PreH10 : (n_pre <= 50000)) (PreH11 : ((Zlength (pts_l_low_level_spec)) = n_pre)) (PreH12 : ((Zlength (pts_sorted)) = n_pre)) (PreH13 : (points_in_bound pts_sorted )) (PreH14 : (point_permutation pts_l_low_level_spec pts_sorted )) (PreH15 : (point_xy_sorted pts_sorted )) (PreH16 : (point_in_bound (Znth i pts_sorted __default_Point) )) (PreH17 : (andrew_upper_scan_inv pts_sorted hull_cur (i + 1 ) k lower_n )) (PreH18 : (safeExec (equiv (hull_cur)) (build_upper_chain_cont (pts_sorted) ((sublist (0) (lower_n) (hull_cur)))) X_low_level_spec )) ,
+Definition andrew_build_from_sorted_partial_solve_wit_23 := 
+forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list Point) -> Prop))) (pts_l_low_level_spec: (@list Point)) (hull_cur: (@list Point)) (pts_sorted: (@list Point)) (k: Z) (lower_n: Z) (i: Z) (retval: Z)  __default_Point (PreH1 : (retval > 0)) (PreH2 : (retval = (point_cross_by_value ((point_x ((Znth ((k - 2 ) - 0 ) hull_cur __default_Point)))) ((point_y ((Znth ((k - 2 ) - 0 ) hull_cur __default_Point)))) ((point_x ((Znth ((k - 1 ) - 0 ) hull_cur __default_Point)))) ((point_y ((Znth ((k - 1 ) - 0 ) hull_cur __default_Point)))) ((point_x ((Znth i pts_sorted __default_Point)))) ((point_y ((Znth i pts_sorted __default_Point))))))) (PreH3 : (k > lower_n)) (PreH4 : (0 <= i)) (PreH5 : (i <= (n_pre - 2 ))) (PreH6 : (2 <= lower_n)) (PreH7 : (lower_n <= k)) (PreH8 : (k < (2 * n_pre ))) (PreH9 : (2 <= n_pre)) (PreH10 : (n_pre <= 50000)) (PreH11 : ((Zlength (pts_l_low_level_spec)) = n_pre)) (PreH12 : ((Zlength (pts_sorted)) = n_pre)) (PreH13 : (points_in_bound pts_sorted )) (PreH14 : (point_permutation pts_l_low_level_spec pts_sorted )) (PreH15 : (point_xy_sorted pts_sorted )) (PreH16 : (point_in_bound (Znth i pts_sorted __default_Point) )) (PreH17 : (andrew_upper_scan_inv pts_sorted hull_cur (i + 1 ) k lower_n )) (PreH18 : (andrew_upper_remaining_cont pts_sorted hull_cur (i + 1 ) lower_n X_low_level_spec )) ,
   (PointArray.full pts_pre n_pre pts_sorted )
   **  (PointArray.seg hull_pre 0 k hull_cur )
   **  (PointArray.undef_seg hull_pre k (2 * n_pre ) )
@@ -4356,7 +4586,7 @@ forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list
   “ (retval > 0) ” 
   &&  “ (retval = (point_cross_by_value ((point_x ((Znth ((k - 2 ) - 0 ) hull_cur __default_Point)))) ((point_y ((Znth ((k - 2 ) - 0 ) hull_cur __default_Point)))) ((point_x ((Znth ((k - 1 ) - 0 ) hull_cur __default_Point)))) ((point_y ((Znth ((k - 1 ) - 0 ) hull_cur __default_Point)))) ((point_x ((Znth i pts_sorted __default_Point)))) ((point_y ((Znth i pts_sorted __default_Point)))))) ” 
   &&  “ (k > lower_n) ” 
-  &&  “ (1 <= i) ” 
+  &&  “ (0 <= i) ” 
   &&  “ (i <= (n_pre - 2 )) ” 
   &&  “ (2 <= lower_n) ” 
   &&  “ (lower_n <= k) ” 
@@ -4370,7 +4600,7 @@ forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list
   &&  “ (point_xy_sorted pts_sorted ) ” 
   &&  “ (point_in_bound (Znth i pts_sorted __default_Point) ) ” 
   &&  “ (andrew_upper_scan_inv pts_sorted hull_cur (i + 1 ) k lower_n ) ” 
-  &&  “ (safeExec (equiv (hull_cur)) (build_upper_chain_cont (pts_sorted) ((sublist (0) (lower_n) (hull_cur)))) X_low_level_spec ) ”
+  &&  “ (andrew_upper_remaining_cont pts_sorted hull_cur (i + 1 ) lower_n X_low_level_spec ) ”
   &&  ((&(((pts_pre + (i * sizeof( "Point" ) ) ))  # "Point" ->ₛ "x")) # Int  |-> (point_x ((Znth i pts_sorted __default_Point))))
   **  (PointArray.missing_i pts_pre i 0 n_pre pts_sorted )
   **  ((&(((pts_pre + (i * sizeof( "Point" ) ) ))  # "Point" ->ₛ "y")) # Int  |-> (point_y ((Znth i pts_sorted __default_Point))))
@@ -4378,8 +4608,8 @@ forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list
   **  (PointArray.undef_seg hull_pre k (2 * n_pre ) )
 .
 
-Definition andrew_monotone_chain_partial_solve_wit_25 := 
-forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list Point) -> Prop))) (pts_l_low_level_spec: (@list Point)) (hull_cur: (@list Point)) (pts_sorted: (@list Point)) (k: Z) (lower_n: Z) (i: Z) (retval: Z)  __default_Point (PreH1 : (retval > 0)) (PreH2 : (retval = (point_cross_by_value ((point_x ((Znth ((k - 2 ) - 0 ) hull_cur __default_Point)))) ((point_y ((Znth ((k - 2 ) - 0 ) hull_cur __default_Point)))) ((point_x ((Znth ((k - 1 ) - 0 ) hull_cur __default_Point)))) ((point_y ((Znth ((k - 1 ) - 0 ) hull_cur __default_Point)))) ((point_x ((Znth i pts_sorted __default_Point)))) ((point_y ((Znth i pts_sorted __default_Point))))))) (PreH3 : (k > lower_n)) (PreH4 : (1 <= i)) (PreH5 : (i <= (n_pre - 2 ))) (PreH6 : (2 <= lower_n)) (PreH7 : (lower_n <= k)) (PreH8 : (k < (2 * n_pre ))) (PreH9 : (2 <= n_pre)) (PreH10 : (n_pre <= 50000)) (PreH11 : ((Zlength (pts_l_low_level_spec)) = n_pre)) (PreH12 : ((Zlength (pts_sorted)) = n_pre)) (PreH13 : (points_in_bound pts_sorted )) (PreH14 : (point_permutation pts_l_low_level_spec pts_sorted )) (PreH15 : (point_xy_sorted pts_sorted )) (PreH16 : (point_in_bound (Znth i pts_sorted __default_Point) )) (PreH17 : (andrew_upper_scan_inv pts_sorted hull_cur (i + 1 ) k lower_n )) (PreH18 : (safeExec (equiv (hull_cur)) (build_upper_chain_cont (pts_sorted) ((sublist (0) (lower_n) (hull_cur)))) X_low_level_spec )) ,
+Definition andrew_build_from_sorted_partial_solve_wit_24 := 
+forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list Point) -> Prop))) (pts_l_low_level_spec: (@list Point)) (hull_cur: (@list Point)) (pts_sorted: (@list Point)) (k: Z) (lower_n: Z) (i: Z) (retval: Z)  __default_Point (PreH1 : (retval > 0)) (PreH2 : (retval = (point_cross_by_value ((point_x ((Znth ((k - 2 ) - 0 ) hull_cur __default_Point)))) ((point_y ((Znth ((k - 2 ) - 0 ) hull_cur __default_Point)))) ((point_x ((Znth ((k - 1 ) - 0 ) hull_cur __default_Point)))) ((point_y ((Znth ((k - 1 ) - 0 ) hull_cur __default_Point)))) ((point_x ((Znth i pts_sorted __default_Point)))) ((point_y ((Znth i pts_sorted __default_Point))))))) (PreH3 : (k > lower_n)) (PreH4 : (0 <= i)) (PreH5 : (i <= (n_pre - 2 ))) (PreH6 : (2 <= lower_n)) (PreH7 : (lower_n <= k)) (PreH8 : (k < (2 * n_pre ))) (PreH9 : (2 <= n_pre)) (PreH10 : (n_pre <= 50000)) (PreH11 : ((Zlength (pts_l_low_level_spec)) = n_pre)) (PreH12 : ((Zlength (pts_sorted)) = n_pre)) (PreH13 : (points_in_bound pts_sorted )) (PreH14 : (point_permutation pts_l_low_level_spec pts_sorted )) (PreH15 : (point_xy_sorted pts_sorted )) (PreH16 : (point_in_bound (Znth i pts_sorted __default_Point) )) (PreH17 : (andrew_upper_scan_inv pts_sorted hull_cur (i + 1 ) k lower_n )) (PreH18 : (andrew_upper_remaining_cont pts_sorted hull_cur (i + 1 ) lower_n X_low_level_spec )) ,
   (PointArray.full pts_pre n_pre pts_sorted )
   **  (PointArray.seg hull_pre 0 k hull_cur )
   **  (PointArray.undef_seg hull_pre k (2 * n_pre ) )
@@ -4387,7 +4617,7 @@ forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list
   “ (retval > 0) ” 
   &&  “ (retval = (point_cross_by_value ((point_x ((Znth ((k - 2 ) - 0 ) hull_cur __default_Point)))) ((point_y ((Znth ((k - 2 ) - 0 ) hull_cur __default_Point)))) ((point_x ((Znth ((k - 1 ) - 0 ) hull_cur __default_Point)))) ((point_y ((Znth ((k - 1 ) - 0 ) hull_cur __default_Point)))) ((point_x ((Znth i pts_sorted __default_Point)))) ((point_y ((Znth i pts_sorted __default_Point)))))) ” 
   &&  “ (k > lower_n) ” 
-  &&  “ (1 <= i) ” 
+  &&  “ (0 <= i) ” 
   &&  “ (i <= (n_pre - 2 )) ” 
   &&  “ (2 <= lower_n) ” 
   &&  “ (lower_n <= k) ” 
@@ -4401,7 +4631,7 @@ forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list
   &&  “ (point_xy_sorted pts_sorted ) ” 
   &&  “ (point_in_bound (Znth i pts_sorted __default_Point) ) ” 
   &&  “ (andrew_upper_scan_inv pts_sorted hull_cur (i + 1 ) k lower_n ) ” 
-  &&  “ (safeExec (equiv (hull_cur)) (build_upper_chain_cont (pts_sorted) ((sublist (0) (lower_n) (hull_cur)))) X_low_level_spec ) ”
+  &&  “ (andrew_upper_remaining_cont pts_sorted hull_cur (i + 1 ) lower_n X_low_level_spec ) ”
   &&  ((&(((hull_pre + (k * sizeof( "Point" ) ) ))  # "Point" ->ₛ "x")) # Int  |->_)
   **  (PointArray.undef_seg hull_pre (k + 1 ) (2 * n_pre ) )
   **  ((&(((hull_pre + (k * sizeof( "Point" ) ) ))  # "Point" ->ₛ "y")) # Int  |->_)
@@ -4409,8 +4639,8 @@ forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list
   **  (PointArray.seg hull_pre 0 k hull_cur )
 .
 
-Definition andrew_monotone_chain_partial_solve_wit_26 := 
-forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list Point) -> Prop))) (pts_l_low_level_spec: (@list Point)) (hull_cur: (@list Point)) (pts_sorted: (@list Point)) (k: Z) (lower_n: Z) (i: Z)  __default_Point (PreH1 : (k <= lower_n)) (PreH2 : (1 <= i)) (PreH3 : (i <= (n_pre - 2 ))) (PreH4 : (2 <= lower_n)) (PreH5 : (lower_n <= k)) (PreH6 : (k < (2 * n_pre ))) (PreH7 : (2 <= n_pre)) (PreH8 : (n_pre <= 50000)) (PreH9 : ((Zlength (pts_l_low_level_spec)) = n_pre)) (PreH10 : ((Zlength (pts_sorted)) = n_pre)) (PreH11 : (points_in_bound pts_sorted )) (PreH12 : (point_permutation pts_l_low_level_spec pts_sorted )) (PreH13 : (point_xy_sorted pts_sorted )) (PreH14 : (point_in_bound (Znth i pts_sorted __default_Point) )) (PreH15 : (andrew_upper_scan_inv pts_sorted hull_cur (i + 1 ) k lower_n )) (PreH16 : (safeExec (equiv (hull_cur)) (build_upper_chain_cont (pts_sorted) ((sublist (0) (lower_n) (hull_cur)))) X_low_level_spec )) ,
+Definition andrew_build_from_sorted_partial_solve_wit_25 := 
+forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list Point) -> Prop))) (pts_l_low_level_spec: (@list Point)) (hull_cur: (@list Point)) (pts_sorted: (@list Point)) (k: Z) (lower_n: Z) (i: Z)  __default_Point (PreH1 : (k <= lower_n)) (PreH2 : (0 <= i)) (PreH3 : (i <= (n_pre - 2 ))) (PreH4 : (2 <= lower_n)) (PreH5 : (lower_n <= k)) (PreH6 : (k < (2 * n_pre ))) (PreH7 : (2 <= n_pre)) (PreH8 : (n_pre <= 50000)) (PreH9 : ((Zlength (pts_l_low_level_spec)) = n_pre)) (PreH10 : ((Zlength (pts_sorted)) = n_pre)) (PreH11 : (points_in_bound pts_sorted )) (PreH12 : (point_permutation pts_l_low_level_spec pts_sorted )) (PreH13 : (point_xy_sorted pts_sorted )) (PreH14 : (point_in_bound (Znth i pts_sorted __default_Point) )) (PreH15 : (andrew_upper_scan_inv pts_sorted hull_cur (i + 1 ) k lower_n )) (PreH16 : (andrew_upper_remaining_cont pts_sorted hull_cur (i + 1 ) lower_n X_low_level_spec )) ,
   ((&(((hull_pre + (k * sizeof( "Point" ) ) ))  # "Point" ->ₛ "x")) # Int  |-> (point_x ((Znth i pts_sorted __default_Point))))
   **  (PointArray.undef_seg hull_pre (k + 1 ) (2 * n_pre ) )
   **  ((&(((hull_pre + (k * sizeof( "Point" ) ) ))  # "Point" ->ₛ "y")) # Int  |->_)
@@ -4418,7 +4648,7 @@ forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list
   **  (PointArray.seg hull_pre 0 k hull_cur )
 |--
   “ (k <= lower_n) ” 
-  &&  “ (1 <= i) ” 
+  &&  “ (0 <= i) ” 
   &&  “ (i <= (n_pre - 2 )) ” 
   &&  “ (2 <= lower_n) ” 
   &&  “ (lower_n <= k) ” 
@@ -4432,7 +4662,7 @@ forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list
   &&  “ (point_xy_sorted pts_sorted ) ” 
   &&  “ (point_in_bound (Znth i pts_sorted __default_Point) ) ” 
   &&  “ (andrew_upper_scan_inv pts_sorted hull_cur (i + 1 ) k lower_n ) ” 
-  &&  “ (safeExec (equiv (hull_cur)) (build_upper_chain_cont (pts_sorted) ((sublist (0) (lower_n) (hull_cur)))) X_low_level_spec ) ”
+  &&  “ (andrew_upper_remaining_cont pts_sorted hull_cur (i + 1 ) lower_n X_low_level_spec ) ”
   &&  ((&(((pts_pre + (i * sizeof( "Point" ) ) ))  # "Point" ->ₛ "y")) # Int  |-> (point_y ((Znth i pts_sorted __default_Point))))
   **  (PointArray.missing_i pts_pre i 0 n_pre pts_sorted )
   **  ((&(((pts_pre + (i * sizeof( "Point" ) ) ))  # "Point" ->ₛ "x")) # Int  |-> (point_x ((Znth i pts_sorted __default_Point))))
@@ -4442,8 +4672,8 @@ forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list
   **  (PointArray.seg hull_pre 0 k hull_cur )
 .
 
-Definition andrew_monotone_chain_partial_solve_wit_27 := 
-forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list Point) -> Prop))) (pts_l_low_level_spec: (@list Point)) (hull_cur: (@list Point)) (pts_sorted: (@list Point)) (k: Z) (lower_n: Z) (i: Z) (retval: Z)  __default_Point (PreH1 : (retval > 0)) (PreH2 : (retval = (point_cross_by_value ((point_x ((Znth ((k - 2 ) - 0 ) hull_cur __default_Point)))) ((point_y ((Znth ((k - 2 ) - 0 ) hull_cur __default_Point)))) ((point_x ((Znth ((k - 1 ) - 0 ) hull_cur __default_Point)))) ((point_y ((Znth ((k - 1 ) - 0 ) hull_cur __default_Point)))) ((point_x ((Znth i pts_sorted __default_Point)))) ((point_y ((Znth i pts_sorted __default_Point))))))) (PreH3 : (k > lower_n)) (PreH4 : (1 <= i)) (PreH5 : (i <= (n_pre - 2 ))) (PreH6 : (2 <= lower_n)) (PreH7 : (lower_n <= k)) (PreH8 : (k < (2 * n_pre ))) (PreH9 : (2 <= n_pre)) (PreH10 : (n_pre <= 50000)) (PreH11 : ((Zlength (pts_l_low_level_spec)) = n_pre)) (PreH12 : ((Zlength (pts_sorted)) = n_pre)) (PreH13 : (points_in_bound pts_sorted )) (PreH14 : (point_permutation pts_l_low_level_spec pts_sorted )) (PreH15 : (point_xy_sorted pts_sorted )) (PreH16 : (point_in_bound (Znth i pts_sorted __default_Point) )) (PreH17 : (andrew_upper_scan_inv pts_sorted hull_cur (i + 1 ) k lower_n )) (PreH18 : (safeExec (equiv (hull_cur)) (build_upper_chain_cont (pts_sorted) ((sublist (0) (lower_n) (hull_cur)))) X_low_level_spec )) ,
+Definition andrew_build_from_sorted_partial_solve_wit_26 := 
+forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list Point) -> Prop))) (pts_l_low_level_spec: (@list Point)) (hull_cur: (@list Point)) (pts_sorted: (@list Point)) (k: Z) (lower_n: Z) (i: Z) (retval: Z)  __default_Point (PreH1 : (retval > 0)) (PreH2 : (retval = (point_cross_by_value ((point_x ((Znth ((k - 2 ) - 0 ) hull_cur __default_Point)))) ((point_y ((Znth ((k - 2 ) - 0 ) hull_cur __default_Point)))) ((point_x ((Znth ((k - 1 ) - 0 ) hull_cur __default_Point)))) ((point_y ((Znth ((k - 1 ) - 0 ) hull_cur __default_Point)))) ((point_x ((Znth i pts_sorted __default_Point)))) ((point_y ((Znth i pts_sorted __default_Point))))))) (PreH3 : (k > lower_n)) (PreH4 : (0 <= i)) (PreH5 : (i <= (n_pre - 2 ))) (PreH6 : (2 <= lower_n)) (PreH7 : (lower_n <= k)) (PreH8 : (k < (2 * n_pre ))) (PreH9 : (2 <= n_pre)) (PreH10 : (n_pre <= 50000)) (PreH11 : ((Zlength (pts_l_low_level_spec)) = n_pre)) (PreH12 : ((Zlength (pts_sorted)) = n_pre)) (PreH13 : (points_in_bound pts_sorted )) (PreH14 : (point_permutation pts_l_low_level_spec pts_sorted )) (PreH15 : (point_xy_sorted pts_sorted )) (PreH16 : (point_in_bound (Znth i pts_sorted __default_Point) )) (PreH17 : (andrew_upper_scan_inv pts_sorted hull_cur (i + 1 ) k lower_n )) (PreH18 : (andrew_upper_remaining_cont pts_sorted hull_cur (i + 1 ) lower_n X_low_level_spec )) ,
   ((&(((hull_pre + (k * sizeof( "Point" ) ) ))  # "Point" ->ₛ "x")) # Int  |-> (point_x ((Znth i pts_sorted __default_Point))))
   **  (PointArray.undef_seg hull_pre (k + 1 ) (2 * n_pre ) )
   **  ((&(((hull_pre + (k * sizeof( "Point" ) ) ))  # "Point" ->ₛ "y")) # Int  |->_)
@@ -4453,7 +4683,7 @@ forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list
   “ (retval > 0) ” 
   &&  “ (retval = (point_cross_by_value ((point_x ((Znth ((k - 2 ) - 0 ) hull_cur __default_Point)))) ((point_y ((Znth ((k - 2 ) - 0 ) hull_cur __default_Point)))) ((point_x ((Znth ((k - 1 ) - 0 ) hull_cur __default_Point)))) ((point_y ((Znth ((k - 1 ) - 0 ) hull_cur __default_Point)))) ((point_x ((Znth i pts_sorted __default_Point)))) ((point_y ((Znth i pts_sorted __default_Point)))))) ” 
   &&  “ (k > lower_n) ” 
-  &&  “ (1 <= i) ” 
+  &&  “ (0 <= i) ” 
   &&  “ (i <= (n_pre - 2 )) ” 
   &&  “ (2 <= lower_n) ” 
   &&  “ (lower_n <= k) ” 
@@ -4467,7 +4697,7 @@ forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list
   &&  “ (point_xy_sorted pts_sorted ) ” 
   &&  “ (point_in_bound (Znth i pts_sorted __default_Point) ) ” 
   &&  “ (andrew_upper_scan_inv pts_sorted hull_cur (i + 1 ) k lower_n ) ” 
-  &&  “ (safeExec (equiv (hull_cur)) (build_upper_chain_cont (pts_sorted) ((sublist (0) (lower_n) (hull_cur)))) X_low_level_spec ) ”
+  &&  “ (andrew_upper_remaining_cont pts_sorted hull_cur (i + 1 ) lower_n X_low_level_spec ) ”
   &&  ((&(((pts_pre + (i * sizeof( "Point" ) ) ))  # "Point" ->ₛ "y")) # Int  |-> (point_y ((Znth i pts_sorted __default_Point))))
   **  (PointArray.missing_i pts_pre i 0 n_pre pts_sorted )
   **  ((&(((pts_pre + (i * sizeof( "Point" ) ) ))  # "Point" ->ₛ "x")) # Int  |-> (point_x ((Znth i pts_sorted __default_Point))))
@@ -4477,13 +4707,480 @@ forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list
   **  (PointArray.seg hull_pre 0 k hull_cur )
 .
 
-Definition andrew_monotone_chain_derive_high_level_spec_by_low_level_spec := 
+Definition andrew_build_from_sorted_partial_solve_wit_27 := 
+forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list Point) -> Prop))) (pts_l_low_level_spec: (@list Point)) (hull_out: (@list Point)) (hull_cur: (@list Point)) (hull_original: (@list Point)) (pts_sorted: (@list Point)) (k: Z) (left: Z)  __default_Point (PreH1 : (left < ((k - 1 ) - left ))) (PreH2 : (0 <= left)) (PreH3 : (left <= (k ÷ 2 ))) (PreH4 : (2 <= k)) (PreH5 : (k <= (2 * n_pre ))) (PreH6 : (2 <= n_pre)) (PreH7 : (n_pre <= 50000)) (PreH8 : ((Zlength (pts_l_low_level_spec)) = n_pre)) (PreH9 : ((Zlength (pts_sorted)) = n_pre)) (PreH10 : ((Zlength (hull_original)) = k)) (PreH11 : ((Zlength (hull_cur)) = k)) (PreH12 : ((Zlength (hull_out)) = k)) (PreH13 : (points_in_bound pts_sorted )) (PreH14 : (point_permutation pts_l_low_level_spec pts_sorted )) (PreH15 : (point_xy_sorted pts_sorted )) (PreH16 : (hull_out = (rev (hull_original)))) (PreH17 : (point_prefix_reverse_state hull_original hull_cur k left )) (PreH18 : (safeExec (equiv (hull_out)) (return (tt)) X_low_level_spec )) ,
+  (PointArray.full pts_pre n_pre pts_sorted )
+  **  (PointArray.seg hull_pre 0 k hull_cur )
+  **  (PointArray.undef_seg hull_pre k (2 * n_pre ) )
+|--
+  “ (left < ((k - 1 ) - left )) ” 
+  &&  “ (0 <= left) ” 
+  &&  “ (left <= (k ÷ 2 )) ” 
+  &&  “ (2 <= k) ” 
+  &&  “ (k <= (2 * n_pre )) ” 
+  &&  “ (2 <= n_pre) ” 
+  &&  “ (n_pre <= 50000) ” 
+  &&  “ ((Zlength (pts_l_low_level_spec)) = n_pre) ” 
+  &&  “ ((Zlength (pts_sorted)) = n_pre) ” 
+  &&  “ ((Zlength (hull_original)) = k) ” 
+  &&  “ ((Zlength (hull_cur)) = k) ” 
+  &&  “ ((Zlength (hull_out)) = k) ” 
+  &&  “ (points_in_bound pts_sorted ) ” 
+  &&  “ (point_permutation pts_l_low_level_spec pts_sorted ) ” 
+  &&  “ (point_xy_sorted pts_sorted ) ” 
+  &&  “ (hull_out = (rev (hull_original))) ” 
+  &&  “ (point_prefix_reverse_state hull_original hull_cur k left ) ” 
+  &&  “ (safeExec (equiv (hull_out)) (return (tt)) X_low_level_spec ) ”
+  &&  ((&(((hull_pre + (left * sizeof( "Point" ) ) ))  # "Point" ->ₛ "x")) # Int  |-> (point_x ((Znth (left - 0 ) hull_cur __default_Point))))
+  **  (PointArray.missing_i hull_pre left 0 k hull_cur )
+  **  ((&(((hull_pre + (left * sizeof( "Point" ) ) ))  # "Point" ->ₛ "y")) # Int  |-> (point_y ((Znth (left - 0 ) hull_cur __default_Point))))
+  **  (PointArray.full pts_pre n_pre pts_sorted )
+  **  (PointArray.undef_seg hull_pre k (2 * n_pre ) )
+.
+
+Definition andrew_build_from_sorted_partial_solve_wit_28 := 
+forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list Point) -> Prop))) (pts_l_low_level_spec: (@list Point)) (hull_out: (@list Point)) (hull_cur: (@list Point)) (hull_original: (@list Point)) (pts_sorted: (@list Point)) (k: Z) (left: Z)  __default_Point (PreH1 : (left < ((k - 1 ) - left ))) (PreH2 : (0 <= left)) (PreH3 : (left <= (k ÷ 2 ))) (PreH4 : (2 <= k)) (PreH5 : (k <= (2 * n_pre ))) (PreH6 : (2 <= n_pre)) (PreH7 : (n_pre <= 50000)) (PreH8 : ((Zlength (pts_l_low_level_spec)) = n_pre)) (PreH9 : ((Zlength (pts_sorted)) = n_pre)) (PreH10 : ((Zlength (hull_original)) = k)) (PreH11 : ((Zlength (hull_cur)) = k)) (PreH12 : ((Zlength (hull_out)) = k)) (PreH13 : (points_in_bound pts_sorted )) (PreH14 : (point_permutation pts_l_low_level_spec pts_sorted )) (PreH15 : (point_xy_sorted pts_sorted )) (PreH16 : (hull_out = (rev (hull_original)))) (PreH17 : (point_prefix_reverse_state hull_original hull_cur k left )) (PreH18 : (safeExec (equiv (hull_out)) (return (tt)) X_low_level_spec )) ,
+  (PointArray.seg hull_pre 0 k hull_cur )
+  **  (PointArray.full pts_pre n_pre pts_sorted )
+  **  (PointArray.undef_seg hull_pre k (2 * n_pre ) )
+|--
+  “ (left < ((k - 1 ) - left )) ” 
+  &&  “ (0 <= left) ” 
+  &&  “ (left <= (k ÷ 2 )) ” 
+  &&  “ (2 <= k) ” 
+  &&  “ (k <= (2 * n_pre )) ” 
+  &&  “ (2 <= n_pre) ” 
+  &&  “ (n_pre <= 50000) ” 
+  &&  “ ((Zlength (pts_l_low_level_spec)) = n_pre) ” 
+  &&  “ ((Zlength (pts_sorted)) = n_pre) ” 
+  &&  “ ((Zlength (hull_original)) = k) ” 
+  &&  “ ((Zlength (hull_cur)) = k) ” 
+  &&  “ ((Zlength (hull_out)) = k) ” 
+  &&  “ (points_in_bound pts_sorted ) ” 
+  &&  “ (point_permutation pts_l_low_level_spec pts_sorted ) ” 
+  &&  “ (point_xy_sorted pts_sorted ) ” 
+  &&  “ (hull_out = (rev (hull_original))) ” 
+  &&  “ (point_prefix_reverse_state hull_original hull_cur k left ) ” 
+  &&  “ (safeExec (equiv (hull_out)) (return (tt)) X_low_level_spec ) ”
+  &&  ((&(((hull_pre + (left * sizeof( "Point" ) ) ))  # "Point" ->ₛ "y")) # Int  |-> (point_y ((Znth (left - 0 ) hull_cur __default_Point))))
+  **  (PointArray.missing_i hull_pre left 0 k hull_cur )
+  **  ((&(((hull_pre + (left * sizeof( "Point" ) ) ))  # "Point" ->ₛ "x")) # Int  |-> (point_x ((Znth (left - 0 ) hull_cur __default_Point))))
+  **  (PointArray.full pts_pre n_pre pts_sorted )
+  **  (PointArray.undef_seg hull_pre k (2 * n_pre ) )
+.
+
+Definition andrew_build_from_sorted_partial_solve_wit_29 := 
+forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list Point) -> Prop))) (pts_l_low_level_spec: (@list Point)) (hull_out: (@list Point)) (hull_cur: (@list Point)) (hull_original: (@list Point)) (pts_sorted: (@list Point)) (k: Z) (left: Z)  __default_Point (PreH1 : (left < ((k - 1 ) - left ))) (PreH2 : (0 <= left)) (PreH3 : (left <= (k ÷ 2 ))) (PreH4 : (2 <= k)) (PreH5 : (k <= (2 * n_pre ))) (PreH6 : (2 <= n_pre)) (PreH7 : (n_pre <= 50000)) (PreH8 : ((Zlength (pts_l_low_level_spec)) = n_pre)) (PreH9 : ((Zlength (pts_sorted)) = n_pre)) (PreH10 : ((Zlength (hull_original)) = k)) (PreH11 : ((Zlength (hull_cur)) = k)) (PreH12 : ((Zlength (hull_out)) = k)) (PreH13 : (points_in_bound pts_sorted )) (PreH14 : (point_permutation pts_l_low_level_spec pts_sorted )) (PreH15 : (point_xy_sorted pts_sorted )) (PreH16 : (hull_out = (rev (hull_original)))) (PreH17 : (point_prefix_reverse_state hull_original hull_cur k left )) (PreH18 : (safeExec (equiv (hull_out)) (return (tt)) X_low_level_spec )) ,
+  (PointArray.seg hull_pre 0 k hull_cur )
+  **  (PointArray.full pts_pre n_pre pts_sorted )
+  **  (PointArray.undef_seg hull_pre k (2 * n_pre ) )
+|--
+  “ (left < ((k - 1 ) - left )) ” 
+  &&  “ (0 <= left) ” 
+  &&  “ (left <= (k ÷ 2 )) ” 
+  &&  “ (2 <= k) ” 
+  &&  “ (k <= (2 * n_pre )) ” 
+  &&  “ (2 <= n_pre) ” 
+  &&  “ (n_pre <= 50000) ” 
+  &&  “ ((Zlength (pts_l_low_level_spec)) = n_pre) ” 
+  &&  “ ((Zlength (pts_sorted)) = n_pre) ” 
+  &&  “ ((Zlength (hull_original)) = k) ” 
+  &&  “ ((Zlength (hull_cur)) = k) ” 
+  &&  “ ((Zlength (hull_out)) = k) ” 
+  &&  “ (points_in_bound pts_sorted ) ” 
+  &&  “ (point_permutation pts_l_low_level_spec pts_sorted ) ” 
+  &&  “ (point_xy_sorted pts_sorted ) ” 
+  &&  “ (hull_out = (rev (hull_original))) ” 
+  &&  “ (point_prefix_reverse_state hull_original hull_cur k left ) ” 
+  &&  “ (safeExec (equiv (hull_out)) (return (tt)) X_low_level_spec ) ”
+  &&  ((&(((hull_pre + (((k - 1 ) - left ) * sizeof( "Point" ) ) ))  # "Point" ->ₛ "x")) # Int  |-> (point_x ((Znth (((k - 1 ) - left ) - 0 ) hull_cur __default_Point))))
+  **  (PointArray.missing_i hull_pre ((k - 1 ) - left ) 0 k hull_cur )
+  **  ((&(((hull_pre + (((k - 1 ) - left ) * sizeof( "Point" ) ) ))  # "Point" ->ₛ "y")) # Int  |-> (point_y ((Znth (((k - 1 ) - left ) - 0 ) hull_cur __default_Point))))
+  **  (PointArray.full pts_pre n_pre pts_sorted )
+  **  (PointArray.undef_seg hull_pre k (2 * n_pre ) )
+.
+
+Definition andrew_build_from_sorted_partial_solve_wit_30 := 
+forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list Point) -> Prop))) (pts_l_low_level_spec: (@list Point)) (hull_out: (@list Point)) (hull_cur: (@list Point)) (hull_original: (@list Point)) (pts_sorted: (@list Point)) (k: Z) (left: Z)  __default_Point (PreH1 : (left < ((k - 1 ) - left ))) (PreH2 : (0 <= left)) (PreH3 : (left <= (k ÷ 2 ))) (PreH4 : (2 <= k)) (PreH5 : (k <= (2 * n_pre ))) (PreH6 : (2 <= n_pre)) (PreH7 : (n_pre <= 50000)) (PreH8 : ((Zlength (pts_l_low_level_spec)) = n_pre)) (PreH9 : ((Zlength (pts_sorted)) = n_pre)) (PreH10 : ((Zlength (hull_original)) = k)) (PreH11 : ((Zlength (hull_cur)) = k)) (PreH12 : ((Zlength (hull_out)) = k)) (PreH13 : (points_in_bound pts_sorted )) (PreH14 : (point_permutation pts_l_low_level_spec pts_sorted )) (PreH15 : (point_xy_sorted pts_sorted )) (PreH16 : (hull_out = (rev (hull_original)))) (PreH17 : (point_prefix_reverse_state hull_original hull_cur k left )) (PreH18 : (safeExec (equiv (hull_out)) (return (tt)) X_low_level_spec )) ,
+  (PointArray.seg hull_pre 0 k hull_cur )
+  **  (PointArray.full pts_pre n_pre pts_sorted )
+  **  (PointArray.undef_seg hull_pre k (2 * n_pre ) )
+|--
+  “ (left < ((k - 1 ) - left )) ” 
+  &&  “ (0 <= left) ” 
+  &&  “ (left <= (k ÷ 2 )) ” 
+  &&  “ (2 <= k) ” 
+  &&  “ (k <= (2 * n_pre )) ” 
+  &&  “ (2 <= n_pre) ” 
+  &&  “ (n_pre <= 50000) ” 
+  &&  “ ((Zlength (pts_l_low_level_spec)) = n_pre) ” 
+  &&  “ ((Zlength (pts_sorted)) = n_pre) ” 
+  &&  “ ((Zlength (hull_original)) = k) ” 
+  &&  “ ((Zlength (hull_cur)) = k) ” 
+  &&  “ ((Zlength (hull_out)) = k) ” 
+  &&  “ (points_in_bound pts_sorted ) ” 
+  &&  “ (point_permutation pts_l_low_level_spec pts_sorted ) ” 
+  &&  “ (point_xy_sorted pts_sorted ) ” 
+  &&  “ (hull_out = (rev (hull_original))) ” 
+  &&  “ (point_prefix_reverse_state hull_original hull_cur k left ) ” 
+  &&  “ (safeExec (equiv (hull_out)) (return (tt)) X_low_level_spec ) ”
+  &&  ((&(((hull_pre + (left * sizeof( "Point" ) ) ))  # "Point" ->ₛ "x")) # Int  |->_)
+  **  (PointArray.missing_i hull_pre left 0 k hull_cur )
+  **  ((&(((hull_pre + (left * sizeof( "Point" ) ) ))  # "Point" ->ₛ "y")) # Int  |-> (point_y ((Znth (left - 0 ) hull_cur __default_Point))))
+  **  (PointArray.full pts_pre n_pre pts_sorted )
+  **  (PointArray.undef_seg hull_pre k (2 * n_pre ) )
+.
+
+Definition andrew_build_from_sorted_partial_solve_wit_31 := 
+forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list Point) -> Prop))) (pts_l_low_level_spec: (@list Point)) (hull_out: (@list Point)) (hull_cur: (@list Point)) (hull_original: (@list Point)) (pts_sorted: (@list Point)) (k: Z) (left: Z)  __default_Point (PreH1 : (left < ((k - 1 ) - left ))) (PreH2 : (0 <= left)) (PreH3 : (left <= (k ÷ 2 ))) (PreH4 : (2 <= k)) (PreH5 : (k <= (2 * n_pre ))) (PreH6 : (2 <= n_pre)) (PreH7 : (n_pre <= 50000)) (PreH8 : ((Zlength (pts_l_low_level_spec)) = n_pre)) (PreH9 : ((Zlength (pts_sorted)) = n_pre)) (PreH10 : ((Zlength (hull_original)) = k)) (PreH11 : ((Zlength (hull_cur)) = k)) (PreH12 : ((Zlength (hull_out)) = k)) (PreH13 : (points_in_bound pts_sorted )) (PreH14 : (point_permutation pts_l_low_level_spec pts_sorted )) (PreH15 : (point_xy_sorted pts_sorted )) (PreH16 : (hull_out = (rev (hull_original)))) (PreH17 : (point_prefix_reverse_state hull_original hull_cur k left )) (PreH18 : (safeExec (equiv (hull_out)) (return (tt)) X_low_level_spec )) ,
+  (PointArray.full hull_pre k (replace_Znth (left) ((point_mk ((point_x ((Znth (((k - 1 ) - left ) - 0 ) hull_cur __default_Point)))) ((point_y ((Znth (left - 0 ) hull_cur __default_Point)))))) (hull_cur)) )
+  **  (PointArray.full pts_pre n_pre pts_sorted )
+  **  (PointArray.undef_seg hull_pre k (2 * n_pre ) )
+|--
+  “ (left < ((k - 1 ) - left )) ” 
+  &&  “ (0 <= left) ” 
+  &&  “ (left <= (k ÷ 2 )) ” 
+  &&  “ (2 <= k) ” 
+  &&  “ (k <= (2 * n_pre )) ” 
+  &&  “ (2 <= n_pre) ” 
+  &&  “ (n_pre <= 50000) ” 
+  &&  “ ((Zlength (pts_l_low_level_spec)) = n_pre) ” 
+  &&  “ ((Zlength (pts_sorted)) = n_pre) ” 
+  &&  “ ((Zlength (hull_original)) = k) ” 
+  &&  “ ((Zlength (hull_cur)) = k) ” 
+  &&  “ ((Zlength (hull_out)) = k) ” 
+  &&  “ (points_in_bound pts_sorted ) ” 
+  &&  “ (point_permutation pts_l_low_level_spec pts_sorted ) ” 
+  &&  “ (point_xy_sorted pts_sorted ) ” 
+  &&  “ (hull_out = (rev (hull_original))) ” 
+  &&  “ (point_prefix_reverse_state hull_original hull_cur k left ) ” 
+  &&  “ (safeExec (equiv (hull_out)) (return (tt)) X_low_level_spec ) ”
+  &&  ((&(((hull_pre + (((k - 1 ) - left ) * sizeof( "Point" ) ) ))  # "Point" ->ₛ "y")) # Int  |-> (point_y ((Znth ((k - 1 ) - left ) (replace_Znth (left) ((point_mk ((point_x ((Znth (((k - 1 ) - left ) - 0 ) hull_cur __default_Point)))) ((point_y ((Znth (left - 0 ) hull_cur __default_Point)))))) (hull_cur)) __default_Point))))
+  **  (PointArray.missing_i hull_pre ((k - 1 ) - left ) 0 k (replace_Znth (left) ((point_mk ((point_x ((Znth (((k - 1 ) - left ) - 0 ) hull_cur __default_Point)))) ((point_y ((Znth (left - 0 ) hull_cur __default_Point)))))) (hull_cur)) )
+  **  ((&(((hull_pre + (((k - 1 ) - left ) * sizeof( "Point" ) ) ))  # "Point" ->ₛ "x")) # Int  |-> (point_x ((Znth ((k - 1 ) - left ) (replace_Znth (left) ((point_mk ((point_x ((Znth (((k - 1 ) - left ) - 0 ) hull_cur __default_Point)))) ((point_y ((Znth (left - 0 ) hull_cur __default_Point)))))) (hull_cur)) __default_Point))))
+  **  (PointArray.full pts_pre n_pre pts_sorted )
+  **  (PointArray.undef_seg hull_pre k (2 * n_pre ) )
+.
+
+Definition andrew_build_from_sorted_partial_solve_wit_32 := 
+forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list Point) -> Prop))) (pts_l_low_level_spec: (@list Point)) (hull_out: (@list Point)) (hull_cur: (@list Point)) (hull_original: (@list Point)) (pts_sorted: (@list Point)) (k: Z) (left: Z)  __default_Point (PreH1 : (left < ((k - 1 ) - left ))) (PreH2 : (0 <= left)) (PreH3 : (left <= (k ÷ 2 ))) (PreH4 : (2 <= k)) (PreH5 : (k <= (2 * n_pre ))) (PreH6 : (2 <= n_pre)) (PreH7 : (n_pre <= 50000)) (PreH8 : ((Zlength (pts_l_low_level_spec)) = n_pre)) (PreH9 : ((Zlength (pts_sorted)) = n_pre)) (PreH10 : ((Zlength (hull_original)) = k)) (PreH11 : ((Zlength (hull_cur)) = k)) (PreH12 : ((Zlength (hull_out)) = k)) (PreH13 : (points_in_bound pts_sorted )) (PreH14 : (point_permutation pts_l_low_level_spec pts_sorted )) (PreH15 : (point_xy_sorted pts_sorted )) (PreH16 : (hull_out = (rev (hull_original)))) (PreH17 : (point_prefix_reverse_state hull_original hull_cur k left )) (PreH18 : (safeExec (equiv (hull_out)) (return (tt)) X_low_level_spec )) ,
+  (PointArray.full hull_pre k (replace_Znth (left) ((point_mk ((point_x ((Znth (((k - 1 ) - left ) - 0 ) hull_cur __default_Point)))) ((point_y ((Znth (left - 0 ) hull_cur __default_Point)))))) (hull_cur)) )
+  **  (PointArray.full pts_pre n_pre pts_sorted )
+  **  (PointArray.undef_seg hull_pre k (2 * n_pre ) )
+|--
+  “ (left < ((k - 1 ) - left )) ” 
+  &&  “ (0 <= left) ” 
+  &&  “ (left <= (k ÷ 2 )) ” 
+  &&  “ (2 <= k) ” 
+  &&  “ (k <= (2 * n_pre )) ” 
+  &&  “ (2 <= n_pre) ” 
+  &&  “ (n_pre <= 50000) ” 
+  &&  “ ((Zlength (pts_l_low_level_spec)) = n_pre) ” 
+  &&  “ ((Zlength (pts_sorted)) = n_pre) ” 
+  &&  “ ((Zlength (hull_original)) = k) ” 
+  &&  “ ((Zlength (hull_cur)) = k) ” 
+  &&  “ ((Zlength (hull_out)) = k) ” 
+  &&  “ (points_in_bound pts_sorted ) ” 
+  &&  “ (point_permutation pts_l_low_level_spec pts_sorted ) ” 
+  &&  “ (point_xy_sorted pts_sorted ) ” 
+  &&  “ (hull_out = (rev (hull_original))) ” 
+  &&  “ (point_prefix_reverse_state hull_original hull_cur k left ) ” 
+  &&  “ (safeExec (equiv (hull_out)) (return (tt)) X_low_level_spec ) ”
+  &&  ((&(((hull_pre + (left * sizeof( "Point" ) ) ))  # "Point" ->ₛ "y")) # Int  |->_)
+  **  (PointArray.missing_i hull_pre left 0 k (replace_Znth (left) ((point_mk ((point_x ((Znth (((k - 1 ) - left ) - 0 ) hull_cur __default_Point)))) ((point_y ((Znth (left - 0 ) hull_cur __default_Point)))))) (hull_cur)) )
+  **  ((&(((hull_pre + (left * sizeof( "Point" ) ) ))  # "Point" ->ₛ "x")) # Int  |-> (point_x ((Znth left (replace_Znth (left) ((point_mk ((point_x ((Znth (((k - 1 ) - left ) - 0 ) hull_cur __default_Point)))) ((point_y ((Znth (left - 0 ) hull_cur __default_Point)))))) (hull_cur)) __default_Point))))
+  **  (PointArray.full pts_pre n_pre pts_sorted )
+  **  (PointArray.undef_seg hull_pre k (2 * n_pre ) )
+.
+
+Definition andrew_build_from_sorted_partial_solve_wit_33 := 
+forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list Point) -> Prop))) (pts_l_low_level_spec: (@list Point)) (hull_out: (@list Point)) (hull_cur: (@list Point)) (hull_original: (@list Point)) (pts_sorted: (@list Point)) (k: Z) (left: Z)  __default_Point (PreH1 : (left < ((k - 1 ) - left ))) (PreH2 : (0 <= left)) (PreH3 : (left <= (k ÷ 2 ))) (PreH4 : (2 <= k)) (PreH5 : (k <= (2 * n_pre ))) (PreH6 : (2 <= n_pre)) (PreH7 : (n_pre <= 50000)) (PreH8 : ((Zlength (pts_l_low_level_spec)) = n_pre)) (PreH9 : ((Zlength (pts_sorted)) = n_pre)) (PreH10 : ((Zlength (hull_original)) = k)) (PreH11 : ((Zlength (hull_cur)) = k)) (PreH12 : ((Zlength (hull_out)) = k)) (PreH13 : (points_in_bound pts_sorted )) (PreH14 : (point_permutation pts_l_low_level_spec pts_sorted )) (PreH15 : (point_xy_sorted pts_sorted )) (PreH16 : (hull_out = (rev (hull_original)))) (PreH17 : (point_prefix_reverse_state hull_original hull_cur k left )) (PreH18 : (safeExec (equiv (hull_out)) (return (tt)) X_low_level_spec )) ,
+  (PointArray.full hull_pre k (replace_Znth (left) ((point_mk ((point_x ((Znth left (replace_Znth (left) ((point_mk ((point_x ((Znth (((k - 1 ) - left ) - 0 ) hull_cur __default_Point)))) ((point_y ((Znth (left - 0 ) hull_cur __default_Point)))))) (hull_cur)) __default_Point)))) ((point_y ((Znth ((k - 1 ) - left ) (replace_Znth (left) ((point_mk ((point_x ((Znth (((k - 1 ) - left ) - 0 ) hull_cur __default_Point)))) ((point_y ((Znth (left - 0 ) hull_cur __default_Point)))))) (hull_cur)) __default_Point)))))) ((replace_Znth (left) ((point_mk ((point_x ((Znth (((k - 1 ) - left ) - 0 ) hull_cur __default_Point)))) ((point_y ((Znth (left - 0 ) hull_cur __default_Point)))))) (hull_cur)))) )
+  **  (PointArray.full pts_pre n_pre pts_sorted )
+  **  (PointArray.undef_seg hull_pre k (2 * n_pre ) )
+|--
+  “ (left < ((k - 1 ) - left )) ” 
+  &&  “ (0 <= left) ” 
+  &&  “ (left <= (k ÷ 2 )) ” 
+  &&  “ (2 <= k) ” 
+  &&  “ (k <= (2 * n_pre )) ” 
+  &&  “ (2 <= n_pre) ” 
+  &&  “ (n_pre <= 50000) ” 
+  &&  “ ((Zlength (pts_l_low_level_spec)) = n_pre) ” 
+  &&  “ ((Zlength (pts_sorted)) = n_pre) ” 
+  &&  “ ((Zlength (hull_original)) = k) ” 
+  &&  “ ((Zlength (hull_cur)) = k) ” 
+  &&  “ ((Zlength (hull_out)) = k) ” 
+  &&  “ (points_in_bound pts_sorted ) ” 
+  &&  “ (point_permutation pts_l_low_level_spec pts_sorted ) ” 
+  &&  “ (point_xy_sorted pts_sorted ) ” 
+  &&  “ (hull_out = (rev (hull_original))) ” 
+  &&  “ (point_prefix_reverse_state hull_original hull_cur k left ) ” 
+  &&  “ (safeExec (equiv (hull_out)) (return (tt)) X_low_level_spec ) ”
+  &&  ((&(((hull_pre + (((k - 1 ) - left ) * sizeof( "Point" ) ) ))  # "Point" ->ₛ "x")) # Int  |->_)
+  **  (PointArray.missing_i hull_pre ((k - 1 ) - left ) 0 k (replace_Znth (left) ((point_mk ((point_x ((Znth left (replace_Znth (left) ((point_mk ((point_x ((Znth (((k - 1 ) - left ) - 0 ) hull_cur __default_Point)))) ((point_y ((Znth (left - 0 ) hull_cur __default_Point)))))) (hull_cur)) __default_Point)))) ((point_y ((Znth ((k - 1 ) - left ) (replace_Znth (left) ((point_mk ((point_x ((Znth (((k - 1 ) - left ) - 0 ) hull_cur __default_Point)))) ((point_y ((Znth (left - 0 ) hull_cur __default_Point)))))) (hull_cur)) __default_Point)))))) ((replace_Znth (left) ((point_mk ((point_x ((Znth (((k - 1 ) - left ) - 0 ) hull_cur __default_Point)))) ((point_y ((Znth (left - 0 ) hull_cur __default_Point)))))) (hull_cur)))) )
+  **  ((&(((hull_pre + (((k - 1 ) - left ) * sizeof( "Point" ) ) ))  # "Point" ->ₛ "y")) # Int  |-> (point_y ((Znth ((k - 1 ) - left ) (replace_Znth (left) ((point_mk ((point_x ((Znth left (replace_Znth (left) ((point_mk ((point_x ((Znth (((k - 1 ) - left ) - 0 ) hull_cur __default_Point)))) ((point_y ((Znth (left - 0 ) hull_cur __default_Point)))))) (hull_cur)) __default_Point)))) ((point_y ((Znth ((k - 1 ) - left ) (replace_Znth (left) ((point_mk ((point_x ((Znth (((k - 1 ) - left ) - 0 ) hull_cur __default_Point)))) ((point_y ((Znth (left - 0 ) hull_cur __default_Point)))))) (hull_cur)) __default_Point)))))) ((replace_Znth (left) ((point_mk ((point_x ((Znth (((k - 1 ) - left ) - 0 ) hull_cur __default_Point)))) ((point_y ((Znth (left - 0 ) hull_cur __default_Point)))))) (hull_cur)))) __default_Point))))
+  **  (PointArray.full pts_pre n_pre pts_sorted )
+  **  (PointArray.undef_seg hull_pre k (2 * n_pre ) )
+.
+
+Definition andrew_build_from_sorted_partial_solve_wit_34 := 
+forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (X_low_level_spec: (unit -> ((@list Point) -> Prop))) (pts_l_low_level_spec: (@list Point)) (hull_out: (@list Point)) (hull_cur: (@list Point)) (hull_original: (@list Point)) (pts_sorted: (@list Point)) (k: Z) (left: Z)  __default_Point (PreH1 : (left < ((k - 1 ) - left ))) (PreH2 : (0 <= left)) (PreH3 : (left <= (k ÷ 2 ))) (PreH4 : (2 <= k)) (PreH5 : (k <= (2 * n_pre ))) (PreH6 : (2 <= n_pre)) (PreH7 : (n_pre <= 50000)) (PreH8 : ((Zlength (pts_l_low_level_spec)) = n_pre)) (PreH9 : ((Zlength (pts_sorted)) = n_pre)) (PreH10 : ((Zlength (hull_original)) = k)) (PreH11 : ((Zlength (hull_cur)) = k)) (PreH12 : ((Zlength (hull_out)) = k)) (PreH13 : (points_in_bound pts_sorted )) (PreH14 : (point_permutation pts_l_low_level_spec pts_sorted )) (PreH15 : (point_xy_sorted pts_sorted )) (PreH16 : (hull_out = (rev (hull_original)))) (PreH17 : (point_prefix_reverse_state hull_original hull_cur k left )) (PreH18 : (safeExec (equiv (hull_out)) (return (tt)) X_low_level_spec )) ,
+  (PointArray.full hull_pre k (replace_Znth (((k - 1 ) - left )) ((point_mk ((point_x ((Znth (left - 0 ) hull_cur __default_Point)))) ((point_y ((Znth ((k - 1 ) - left ) (replace_Znth (left) ((point_mk ((point_x ((Znth left (replace_Znth (left) ((point_mk ((point_x ((Znth (((k - 1 ) - left ) - 0 ) hull_cur __default_Point)))) ((point_y ((Znth (left - 0 ) hull_cur __default_Point)))))) (hull_cur)) __default_Point)))) ((point_y ((Znth ((k - 1 ) - left ) (replace_Znth (left) ((point_mk ((point_x ((Znth (((k - 1 ) - left ) - 0 ) hull_cur __default_Point)))) ((point_y ((Znth (left - 0 ) hull_cur __default_Point)))))) (hull_cur)) __default_Point)))))) ((replace_Znth (left) ((point_mk ((point_x ((Znth (((k - 1 ) - left ) - 0 ) hull_cur __default_Point)))) ((point_y ((Znth (left - 0 ) hull_cur __default_Point)))))) (hull_cur)))) __default_Point)))))) ((replace_Znth (left) ((point_mk ((point_x ((Znth left (replace_Znth (left) ((point_mk ((point_x ((Znth (((k - 1 ) - left ) - 0 ) hull_cur __default_Point)))) ((point_y ((Znth (left - 0 ) hull_cur __default_Point)))))) (hull_cur)) __default_Point)))) ((point_y ((Znth ((k - 1 ) - left ) (replace_Znth (left) ((point_mk ((point_x ((Znth (((k - 1 ) - left ) - 0 ) hull_cur __default_Point)))) ((point_y ((Znth (left - 0 ) hull_cur __default_Point)))))) (hull_cur)) __default_Point)))))) ((replace_Znth (left) ((point_mk ((point_x ((Znth (((k - 1 ) - left ) - 0 ) hull_cur __default_Point)))) ((point_y ((Znth (left - 0 ) hull_cur __default_Point)))))) (hull_cur)))))) )
+  **  (PointArray.full pts_pre n_pre pts_sorted )
+  **  (PointArray.undef_seg hull_pre k (2 * n_pre ) )
+|--
+  “ (left < ((k - 1 ) - left )) ” 
+  &&  “ (0 <= left) ” 
+  &&  “ (left <= (k ÷ 2 )) ” 
+  &&  “ (2 <= k) ” 
+  &&  “ (k <= (2 * n_pre )) ” 
+  &&  “ (2 <= n_pre) ” 
+  &&  “ (n_pre <= 50000) ” 
+  &&  “ ((Zlength (pts_l_low_level_spec)) = n_pre) ” 
+  &&  “ ((Zlength (pts_sorted)) = n_pre) ” 
+  &&  “ ((Zlength (hull_original)) = k) ” 
+  &&  “ ((Zlength (hull_cur)) = k) ” 
+  &&  “ ((Zlength (hull_out)) = k) ” 
+  &&  “ (points_in_bound pts_sorted ) ” 
+  &&  “ (point_permutation pts_l_low_level_spec pts_sorted ) ” 
+  &&  “ (point_xy_sorted pts_sorted ) ” 
+  &&  “ (hull_out = (rev (hull_original))) ” 
+  &&  “ (point_prefix_reverse_state hull_original hull_cur k left ) ” 
+  &&  “ (safeExec (equiv (hull_out)) (return (tt)) X_low_level_spec ) ”
+  &&  ((&(((hull_pre + (((k - 1 ) - left ) * sizeof( "Point" ) ) ))  # "Point" ->ₛ "y")) # Int  |->_)
+  **  (PointArray.missing_i hull_pre ((k - 1 ) - left ) 0 k (replace_Znth (((k - 1 ) - left )) ((point_mk ((point_x ((Znth (left - 0 ) hull_cur __default_Point)))) ((point_y ((Znth ((k - 1 ) - left ) (replace_Znth (left) ((point_mk ((point_x ((Znth left (replace_Znth (left) ((point_mk ((point_x ((Znth (((k - 1 ) - left ) - 0 ) hull_cur __default_Point)))) ((point_y ((Znth (left - 0 ) hull_cur __default_Point)))))) (hull_cur)) __default_Point)))) ((point_y ((Znth ((k - 1 ) - left ) (replace_Znth (left) ((point_mk ((point_x ((Znth (((k - 1 ) - left ) - 0 ) hull_cur __default_Point)))) ((point_y ((Znth (left - 0 ) hull_cur __default_Point)))))) (hull_cur)) __default_Point)))))) ((replace_Znth (left) ((point_mk ((point_x ((Znth (((k - 1 ) - left ) - 0 ) hull_cur __default_Point)))) ((point_y ((Znth (left - 0 ) hull_cur __default_Point)))))) (hull_cur)))) __default_Point)))))) ((replace_Znth (left) ((point_mk ((point_x ((Znth left (replace_Znth (left) ((point_mk ((point_x ((Znth (((k - 1 ) - left ) - 0 ) hull_cur __default_Point)))) ((point_y ((Znth (left - 0 ) hull_cur __default_Point)))))) (hull_cur)) __default_Point)))) ((point_y ((Znth ((k - 1 ) - left ) (replace_Znth (left) ((point_mk ((point_x ((Znth (((k - 1 ) - left ) - 0 ) hull_cur __default_Point)))) ((point_y ((Znth (left - 0 ) hull_cur __default_Point)))))) (hull_cur)) __default_Point)))))) ((replace_Znth (left) ((point_mk ((point_x ((Znth (((k - 1 ) - left ) - 0 ) hull_cur __default_Point)))) ((point_y ((Znth (left - 0 ) hull_cur __default_Point)))))) (hull_cur)))))) )
+  **  ((&(((hull_pre + (((k - 1 ) - left ) * sizeof( "Point" ) ) ))  # "Point" ->ₛ "x")) # Int  |-> (point_x ((Znth ((k - 1 ) - left ) (replace_Znth (((k - 1 ) - left )) ((point_mk ((point_x ((Znth (left - 0 ) hull_cur __default_Point)))) ((point_y ((Znth ((k - 1 ) - left ) (replace_Znth (left) ((point_mk ((point_x ((Znth left (replace_Znth (left) ((point_mk ((point_x ((Znth (((k - 1 ) - left ) - 0 ) hull_cur __default_Point)))) ((point_y ((Znth (left - 0 ) hull_cur __default_Point)))))) (hull_cur)) __default_Point)))) ((point_y ((Znth ((k - 1 ) - left ) (replace_Znth (left) ((point_mk ((point_x ((Znth (((k - 1 ) - left ) - 0 ) hull_cur __default_Point)))) ((point_y ((Znth (left - 0 ) hull_cur __default_Point)))))) (hull_cur)) __default_Point)))))) ((replace_Znth (left) ((point_mk ((point_x ((Znth (((k - 1 ) - left ) - 0 ) hull_cur __default_Point)))) ((point_y ((Znth (left - 0 ) hull_cur __default_Point)))))) (hull_cur)))) __default_Point)))))) ((replace_Znth (left) ((point_mk ((point_x ((Znth left (replace_Znth (left) ((point_mk ((point_x ((Znth (((k - 1 ) - left ) - 0 ) hull_cur __default_Point)))) ((point_y ((Znth (left - 0 ) hull_cur __default_Point)))))) (hull_cur)) __default_Point)))) ((point_y ((Znth ((k - 1 ) - left ) (replace_Znth (left) ((point_mk ((point_x ((Znth (((k - 1 ) - left ) - 0 ) hull_cur __default_Point)))) ((point_y ((Znth (left - 0 ) hull_cur __default_Point)))))) (hull_cur)) __default_Point)))))) ((replace_Znth (left) ((point_mk ((point_x ((Znth (((k - 1 ) - left ) - 0 ) hull_cur __default_Point)))) ((point_y ((Znth (left - 0 ) hull_cur __default_Point)))))) (hull_cur)))))) __default_Point))))
+  **  (PointArray.full pts_pre n_pre pts_sorted )
+  **  (PointArray.undef_seg hull_pre k (2 * n_pre ) )
+.
+
+(*----- Function andrew_monotone_chain -----*)
+
+Definition andrew_monotone_chain_safety_wit_1 := 
+forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (pts_l: (@list Point)) (PreH1 : (2 <= n_pre)) (PreH2 : (n_pre <= 50000)) (PreH3 : ((Zlength (pts_l)) = n_pre)) (PreH4 : (points_in_bound pts_l )) (PreH5 : (points_not_all_same pts_l )) ,
+  ((( &( "hull" ) )) # Ptr  |-> hull_pre)
+  **  ((( &( "n" ) )) # Int  |-> n_pre)
+  **  ((( &( "pts" ) )) # Ptr  |-> pts_pre)
+  **  (PointArray.full pts_pre n_pre pts_l )
+  **  (PointArray.undef_full hull_pre (2 * n_pre ) )
+|--
+  “ ((n_pre - 1 ) <= INT_MAX) ” 
+  &&  “ ((INT_MIN) <= (n_pre - 1 )) ”
+.
+
+Definition andrew_monotone_chain_safety_wit_2 := 
+forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (pts_l: (@list Point)) (PreH1 : (2 <= n_pre)) (PreH2 : (n_pre <= 50000)) (PreH3 : ((Zlength (pts_l)) = n_pre)) (PreH4 : (points_in_bound pts_l )) (PreH5 : (points_not_all_same pts_l )) ,
+  ((( &( "hull" ) )) # Ptr  |-> hull_pre)
+  **  ((( &( "n" ) )) # Int  |-> n_pre)
+  **  ((( &( "pts" ) )) # Ptr  |-> pts_pre)
+  **  (PointArray.full pts_pre n_pre pts_l )
+  **  (PointArray.undef_full hull_pre (2 * n_pre ) )
+|--
+  “ (0 <= INT_MAX) ” 
+  &&  “ ((INT_MIN) <= 0) ”
+.
+
+Definition andrew_monotone_chain_safety_wit_3 := 
+forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (pts_l: (@list Point)) (PreH1 : (2 <= n_pre)) (PreH2 : (n_pre <= 50000)) (PreH3 : ((Zlength (pts_l)) = n_pre)) (PreH4 : (points_in_bound pts_l )) (PreH5 : (points_not_all_same pts_l )) ,
+  ((( &( "hull" ) )) # Ptr  |-> hull_pre)
+  **  ((( &( "n" ) )) # Int  |-> n_pre)
+  **  ((( &( "pts" ) )) # Ptr  |-> pts_pre)
+  **  (PointArray.full pts_pre n_pre pts_l )
+  **  (PointArray.undef_full hull_pre (2 * n_pre ) )
+|--
+  “ (1 <= INT_MAX) ” 
+  &&  “ ((INT_MIN) <= 1) ”
+.
+
+Definition andrew_monotone_chain_entail_wit_1 := 
+(
+forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (pts_l: (@list Point)) (pts_out: (@list Point)) (PreH1 : ((Zlength (pts_out)) = n_pre)) (PreH2 : (points_in_bound pts_out )) (PreH3 : (point_permutation pts_l pts_out )) (PreH4 : (point_same_outside_range pts_l pts_out 0 (n_pre - 1 ) )) (PreH5 : (point_xy_sorted_range pts_out 0 (n_pre - 1 ) )) (PreH6 : (2 <= n_pre)) (PreH7 : (n_pre <= 50000)) (PreH8 : ((Zlength (pts_l)) = n_pre)) (PreH9 : (points_in_bound pts_l )) (PreH10 : (points_not_all_same pts_l )) ,
+  (PointArray.full pts_pre n_pre pts_out )
+  **  (PointArray.undef_full hull_pre (2 * n_pre ) )
+|--
+  EX (pts_sorted: (@list Point)) ,
+  “ (2 <= n_pre) ” 
+  &&  “ (n_pre <= 50000) ” 
+  &&  “ ((Zlength (pts_l)) = n_pre) ” 
+  &&  “ ((Zlength (pts_sorted)) = n_pre) ” 
+  &&  “ (points_in_bound pts_sorted ) ” 
+  &&  “ (points_not_all_same pts_sorted ) ” 
+  &&  “ (point_permutation pts_l pts_sorted ) ” 
+  &&  “ (point_xy_sorted pts_sorted ) ”
+  &&  (PointArray.full pts_pre n_pre pts_sorted )
+  **  (PointArray.undef_full hull_pre (2 * n_pre ) )
+) \/
+(
+forall (hull_pre: Z) (n_pre: Z) (pts_l: (@list Point)) (pts_out: (@list Point)) (PreH1 : ((Zlength (pts_out)) = n_pre)) (PreH2 : (points_in_bound pts_out )) (PreH3 : (point_permutation pts_l pts_out )) (PreH4 : (point_same_outside_range pts_l pts_out 0 (n_pre - 1 ) )) (PreH5 : (point_xy_sorted_range pts_out 0 (n_pre - 1 ) )) (PreH6 : (2 <= n_pre)) (PreH7 : (n_pre <= 50000)) (PreH8 : ((Zlength (pts_l)) = n_pre)) (PreH9 : (points_in_bound pts_l )) (PreH10 : (points_not_all_same pts_l )) ,
+  (PointArray.undef_full hull_pre (2 * n_pre ) )
+|--
+  “ (point_xy_sorted pts_out ) ” 
+  &&  “ (points_not_all_same pts_out ) ”
+  &&  (PointArray.undef_full hull_pre (2 * n_pre ) )
+).
+
+Definition andrew_monotone_chain_entail_wit_1_split_goal_1 := 
+forall (hull_pre: Z) (n_pre: Z) (pts_l: (@list Point)) (pts_out: (@list Point)) (PreH1 : ((Zlength (pts_out)) = n_pre)) (PreH2 : (points_in_bound pts_out )) (PreH3 : (point_permutation pts_l pts_out )) (PreH4 : (point_same_outside_range pts_l pts_out 0 (n_pre - 1 ) )) (PreH5 : (point_xy_sorted_range pts_out 0 (n_pre - 1 ) )) (PreH6 : (2 <= n_pre)) (PreH7 : (n_pre <= 50000)) (PreH8 : ((Zlength (pts_l)) = n_pre)) (PreH9 : (points_in_bound pts_l )) (PreH10 : (points_not_all_same pts_l )) ,
+  (PointArray.undef_full hull_pre (2 * n_pre ) )
+|--
+  “ (point_xy_sorted pts_out ) ”
+.
+
+Definition andrew_monotone_chain_entail_wit_1_split_goal_2 := 
+forall (hull_pre: Z) (n_pre: Z) (pts_l: (@list Point)) (pts_out: (@list Point)) (PreH1 : ((Zlength (pts_out)) = n_pre)) (PreH2 : (points_in_bound pts_out )) (PreH3 : (point_permutation pts_l pts_out )) (PreH4 : (point_same_outside_range pts_l pts_out 0 (n_pre - 1 ) )) (PreH5 : (point_xy_sorted_range pts_out 0 (n_pre - 1 ) )) (PreH6 : (2 <= n_pre)) (PreH7 : (n_pre <= 50000)) (PreH8 : ((Zlength (pts_l)) = n_pre)) (PreH9 : (points_in_bound pts_l )) (PreH10 : (points_not_all_same pts_l )) ,
+  (PointArray.undef_full hull_pre (2 * n_pre ) )
+|--
+  “ (points_not_all_same pts_out ) ”
+.
+
+Definition andrew_monotone_chain_entail_wit_1_split_goal_spatial := 
+forall (hull_pre: Z) (n_pre: Z) (pts_l: (@list Point)) (pts_out: (@list Point)) (PreH1 : ((Zlength (pts_out)) = n_pre)) (PreH2 : (points_in_bound pts_out )) (PreH3 : (point_permutation pts_l pts_out )) (PreH4 : (point_same_outside_range pts_l pts_out 0 (n_pre - 1 ) )) (PreH5 : (point_xy_sorted_range pts_out 0 (n_pre - 1 ) )) (PreH6 : (2 <= n_pre)) (PreH7 : (n_pre <= 50000)) (PreH8 : ((Zlength (pts_l)) = n_pre)) (PreH9 : (points_in_bound pts_l )) (PreH10 : (points_not_all_same pts_l )) ,
+  (PointArray.undef_full hull_pre (2 * n_pre ) )
+|--
+  (PointArray.undef_full hull_pre (2 * n_pre ) )
+.
+
+Definition andrew_monotone_chain_return_wit_1 := 
+(
+forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (pts_l: (@list Point)) (pts_sorted: (@list Point)) (hull_out_2: (@list Point)) (pts_out_2: (@list Point)) (retval: Z) (PreH1 : ((Zlength (pts_out_2)) = n_pre)) (PreH2 : (2 <= retval)) (PreH3 : (retval <= (2 * n_pre ))) (PreH4 : ((Zlength (hull_out_2)) = retval)) (PreH5 : (points_in_bound pts_out_2 )) (PreH6 : (point_permutation pts_sorted pts_out_2 )) (PreH7 : (point_xy_sorted pts_out_2 )) (PreH8 : (is_convex_hull pts_sorted hull_out_2 )) (PreH9 : (2 <= n_pre)) (PreH10 : (n_pre <= 50000)) (PreH11 : ((Zlength (pts_l)) = n_pre)) (PreH12 : ((Zlength (pts_sorted)) = n_pre)) (PreH13 : (points_in_bound pts_sorted )) (PreH14 : (points_not_all_same pts_sorted )) (PreH15 : (point_permutation pts_l pts_sorted )) (PreH16 : (point_xy_sorted pts_sorted )) ,
+  (PointArray.full pts_pre n_pre pts_out_2 )
+  **  (PointArray.seg hull_pre 0 retval hull_out_2 )
+  **  (PointArray.undef_seg hull_pre retval (2 * n_pre ) )
+|--
+  EX (hull_out: (@list Point))  (pts_out: (@list Point)) ,
+  “ ((Zlength (pts_out)) = n_pre) ” 
+  &&  “ (2 <= retval) ” 
+  &&  “ (retval <= (2 * n_pre )) ” 
+  &&  “ ((Zlength (hull_out)) = retval) ” 
+  &&  “ (points_in_bound pts_out ) ” 
+  &&  “ (point_permutation pts_l pts_out ) ” 
+  &&  “ (point_xy_sorted pts_out ) ” 
+  &&  “ (is_convex_hull pts_l hull_out ) ”
+  &&  (PointArray.full pts_pre n_pre pts_out )
+  **  (PointArray.seg hull_pre 0 retval hull_out )
+  **  (PointArray.undef_seg hull_pre retval (2 * n_pre ) )
+) \/
+(
+forall (hull_pre: Z) (n_pre: Z) (pts_l: (@list Point)) (pts_sorted: (@list Point)) (hull_out_2: (@list Point)) (pts_out_2: (@list Point)) (retval: Z) (PreH1 : ((Zlength (pts_out_2)) = n_pre)) (PreH2 : (2 <= retval)) (PreH3 : (retval <= (2 * n_pre ))) (PreH4 : ((Zlength (hull_out_2)) = retval)) (PreH5 : (points_in_bound pts_out_2 )) (PreH6 : (point_permutation pts_sorted pts_out_2 )) (PreH7 : (point_xy_sorted pts_out_2 )) (PreH8 : (is_convex_hull pts_sorted hull_out_2 )) (PreH9 : (2 <= n_pre)) (PreH10 : (n_pre <= 50000)) (PreH11 : ((Zlength (pts_l)) = n_pre)) (PreH12 : ((Zlength (pts_sorted)) = n_pre)) (PreH13 : (points_in_bound pts_sorted )) (PreH14 : (points_not_all_same pts_sorted )) (PreH15 : (point_permutation pts_l pts_sorted )) (PreH16 : (point_xy_sorted pts_sorted )) ,
+  (PointArray.undef_seg hull_pre retval (2 * n_pre ) )
+|--
+  “ (is_convex_hull pts_l hull_out_2 ) ” 
+  &&  “ (point_permutation pts_l pts_out_2 ) ”
+  &&  (PointArray.undef_seg hull_pre retval (2 * n_pre ) )
+).
+
+Definition andrew_monotone_chain_return_wit_1_split_goal_1 := 
+forall (hull_pre: Z) (n_pre: Z) (pts_l: (@list Point)) (pts_sorted: (@list Point)) (hull_out_2: (@list Point)) (pts_out_2: (@list Point)) (retval: Z) (PreH1 : ((Zlength (pts_out_2)) = n_pre)) (PreH2 : (2 <= retval)) (PreH3 : (retval <= (2 * n_pre ))) (PreH4 : ((Zlength (hull_out_2)) = retval)) (PreH5 : (points_in_bound pts_out_2 )) (PreH6 : (point_permutation pts_sorted pts_out_2 )) (PreH7 : (point_xy_sorted pts_out_2 )) (PreH8 : (is_convex_hull pts_sorted hull_out_2 )) (PreH9 : (2 <= n_pre)) (PreH10 : (n_pre <= 50000)) (PreH11 : ((Zlength (pts_l)) = n_pre)) (PreH12 : ((Zlength (pts_sorted)) = n_pre)) (PreH13 : (points_in_bound pts_sorted )) (PreH14 : (points_not_all_same pts_sorted )) (PreH15 : (point_permutation pts_l pts_sorted )) (PreH16 : (point_xy_sorted pts_sorted )) ,
+  (PointArray.undef_seg hull_pre retval (2 * n_pre ) )
+|--
+  “ (is_convex_hull pts_l hull_out_2 ) ”
+.
+
+Definition andrew_monotone_chain_return_wit_1_split_goal_2 := 
+forall (hull_pre: Z) (n_pre: Z) (pts_l: (@list Point)) (pts_sorted: (@list Point)) (hull_out_2: (@list Point)) (pts_out_2: (@list Point)) (retval: Z) (PreH1 : ((Zlength (pts_out_2)) = n_pre)) (PreH2 : (2 <= retval)) (PreH3 : (retval <= (2 * n_pre ))) (PreH4 : ((Zlength (hull_out_2)) = retval)) (PreH5 : (points_in_bound pts_out_2 )) (PreH6 : (point_permutation pts_sorted pts_out_2 )) (PreH7 : (point_xy_sorted pts_out_2 )) (PreH8 : (is_convex_hull pts_sorted hull_out_2 )) (PreH9 : (2 <= n_pre)) (PreH10 : (n_pre <= 50000)) (PreH11 : ((Zlength (pts_l)) = n_pre)) (PreH12 : ((Zlength (pts_sorted)) = n_pre)) (PreH13 : (points_in_bound pts_sorted )) (PreH14 : (points_not_all_same pts_sorted )) (PreH15 : (point_permutation pts_l pts_sorted )) (PreH16 : (point_xy_sorted pts_sorted )) ,
+  (PointArray.undef_seg hull_pre retval (2 * n_pre ) )
+|--
+  “ (point_permutation pts_l pts_out_2 ) ”
+.
+
+Definition andrew_monotone_chain_return_wit_1_split_goal_spatial := 
+forall (hull_pre: Z) (n_pre: Z) (pts_l: (@list Point)) (pts_sorted: (@list Point)) (hull_out_2: (@list Point)) (pts_out_2: (@list Point)) (retval: Z) (PreH1 : ((Zlength (pts_out_2)) = n_pre)) (PreH2 : (2 <= retval)) (PreH3 : (retval <= (2 * n_pre ))) (PreH4 : ((Zlength (hull_out_2)) = retval)) (PreH5 : (points_in_bound pts_out_2 )) (PreH6 : (point_permutation pts_sorted pts_out_2 )) (PreH7 : (point_xy_sorted pts_out_2 )) (PreH8 : (is_convex_hull pts_sorted hull_out_2 )) (PreH9 : (2 <= n_pre)) (PreH10 : (n_pre <= 50000)) (PreH11 : ((Zlength (pts_l)) = n_pre)) (PreH12 : ((Zlength (pts_sorted)) = n_pre)) (PreH13 : (points_in_bound pts_sorted )) (PreH14 : (points_not_all_same pts_sorted )) (PreH15 : (point_permutation pts_l pts_sorted )) (PreH16 : (point_xy_sorted pts_sorted )) ,
+  (PointArray.undef_seg hull_pre retval (2 * n_pre ) )
+|--
+  (PointArray.undef_seg hull_pre retval (2 * n_pre ) )
+.
+
+Definition andrew_monotone_chain_partial_solve_wit_1_pure := 
+forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (pts_l: (@list Point)) (PreH1 : (2 <= n_pre)) (PreH2 : (n_pre <= 50000)) (PreH3 : ((Zlength (pts_l)) = n_pre)) (PreH4 : (points_in_bound pts_l )) (PreH5 : (points_not_all_same pts_l )) ,
+  ((( &( "hull" ) )) # Ptr  |-> hull_pre)
+  **  ((( &( "n" ) )) # Int  |-> n_pre)
+  **  ((( &( "pts" ) )) # Ptr  |-> pts_pre)
+  **  (PointArray.full pts_pre n_pre pts_l )
+  **  (PointArray.undef_full hull_pre (2 * n_pre ) )
+|--
+  “ (0 <= n_pre) ” 
+  &&  “ (n_pre <= 50000) ” 
+  &&  “ (0 <= 0) ” 
+  &&  “ ((-1) <= (n_pre - 1 )) ” 
+  &&  “ ((n_pre - 1 ) < n_pre) ” 
+  &&  “ ((Zlength (pts_l)) = n_pre) ” 
+  &&  “ (points_in_bound pts_l ) ”
+.
+
+Definition andrew_monotone_chain_partial_solve_wit_1_aux := 
+forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (pts_l: (@list Point)) (PreH1 : (2 <= n_pre)) (PreH2 : (n_pre <= 50000)) (PreH3 : ((Zlength (pts_l)) = n_pre)) (PreH4 : (points_in_bound pts_l )) (PreH5 : (points_not_all_same pts_l )) ,
+  (PointArray.full pts_pre n_pre pts_l )
+  **  (PointArray.undef_full hull_pre (2 * n_pre ) )
+|--
+  “ (0 <= n_pre) ” 
+  &&  “ (n_pre <= 50000) ” 
+  &&  “ (0 <= 0) ” 
+  &&  “ ((-1) <= (n_pre - 1 )) ” 
+  &&  “ ((n_pre - 1 ) < n_pre) ” 
+  &&  “ ((Zlength (pts_l)) = n_pre) ” 
+  &&  “ (points_in_bound pts_l ) ” 
+  &&  “ (2 <= n_pre) ” 
+  &&  “ (n_pre <= 50000) ” 
+  &&  “ ((Zlength (pts_l)) = n_pre) ” 
+  &&  “ (points_in_bound pts_l ) ” 
+  &&  “ (points_not_all_same pts_l ) ”
+  &&  (PointArray.full pts_pre n_pre pts_l )
+  **  (PointArray.undef_full hull_pre (2 * n_pre ) )
+.
+
+Definition andrew_monotone_chain_partial_solve_wit_1 := andrew_monotone_chain_partial_solve_wit_1_pure -> andrew_monotone_chain_partial_solve_wit_1_aux.
+
+Definition andrew_monotone_chain_partial_solve_wit_2_pure := 
+forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (pts_l: (@list Point)) (pts_sorted: (@list Point)) (PreH1 : (2 <= n_pre)) (PreH2 : (n_pre <= 50000)) (PreH3 : ((Zlength (pts_l)) = n_pre)) (PreH4 : ((Zlength (pts_sorted)) = n_pre)) (PreH5 : (points_in_bound pts_sorted )) (PreH6 : (points_not_all_same pts_sorted )) (PreH7 : (point_permutation pts_l pts_sorted )) (PreH8 : (point_xy_sorted pts_sorted )) ,
+  ((( &( "ret" ) )) # Int  |->_)
+  **  ((( &( "pts" ) )) # Ptr  |-> pts_pre)
+  **  ((( &( "hull" ) )) # Ptr  |-> hull_pre)
+  **  ((( &( "n" ) )) # Int  |-> n_pre)
+  **  (PointArray.full pts_pre n_pre pts_sorted )
+  **  (PointArray.undef_full hull_pre (2 * n_pre ) )
+|--
+  “ (2 <= n_pre) ” 
+  &&  “ (n_pre <= 50000) ” 
+  &&  “ ((Zlength (pts_sorted)) = n_pre) ” 
+  &&  “ (points_in_bound pts_sorted ) ” 
+  &&  “ (points_not_all_same pts_sorted ) ” 
+  &&  “ (point_xy_sorted pts_sorted ) ”
+.
+
+Definition andrew_monotone_chain_partial_solve_wit_2_aux := 
+forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (pts_l: (@list Point)) (pts_sorted: (@list Point)) (PreH1 : (2 <= n_pre)) (PreH2 : (n_pre <= 50000)) (PreH3 : ((Zlength (pts_l)) = n_pre)) (PreH4 : ((Zlength (pts_sorted)) = n_pre)) (PreH5 : (points_in_bound pts_sorted )) (PreH6 : (points_not_all_same pts_sorted )) (PreH7 : (point_permutation pts_l pts_sorted )) (PreH8 : (point_xy_sorted pts_sorted )) ,
+  (PointArray.full pts_pre n_pre pts_sorted )
+  **  (PointArray.undef_full hull_pre (2 * n_pre ) )
+|--
+  “ (2 <= n_pre) ” 
+  &&  “ (n_pre <= 50000) ” 
+  &&  “ ((Zlength (pts_sorted)) = n_pre) ” 
+  &&  “ (points_in_bound pts_sorted ) ” 
+  &&  “ (points_not_all_same pts_sorted ) ” 
+  &&  “ (point_xy_sorted pts_sorted ) ” 
+  &&  “ (2 <= n_pre) ” 
+  &&  “ (n_pre <= 50000) ” 
+  &&  “ ((Zlength (pts_l)) = n_pre) ” 
+  &&  “ ((Zlength (pts_sorted)) = n_pre) ” 
+  &&  “ (points_in_bound pts_sorted ) ” 
+  &&  “ (points_not_all_same pts_sorted ) ” 
+  &&  “ (point_permutation pts_l pts_sorted ) ” 
+  &&  “ (point_xy_sorted pts_sorted ) ”
+  &&  (PointArray.full pts_pre n_pre pts_sorted )
+  **  (PointArray.undef_full hull_pre (2 * n_pre ) )
+.
+
+Definition andrew_monotone_chain_partial_solve_wit_2 := andrew_monotone_chain_partial_solve_wit_2_pure -> andrew_monotone_chain_partial_solve_wit_2_aux.
+
+Definition andrew_build_from_sorted_derive_high_level_spec_by_low_level_spec := 
 forall (hull_pre: Z) (n_pre: Z) (pts_pre: Z) (pts_l_high_level_spec: (@list Point)) ,
   “ (2 <= n_pre) ” 
   &&  “ (n_pre <= 50000) ” 
   &&  “ ((Zlength (pts_l_high_level_spec)) = n_pre) ” 
   &&  “ (points_in_bound pts_l_high_level_spec ) ” 
-  &&  “ (points_not_all_same pts_l_high_level_spec ) ”
+  &&  “ (points_not_all_same pts_l_high_level_spec ) ” 
+  &&  “ (point_xy_sorted pts_l_high_level_spec ) ”
   &&  (PointArray.full pts_pre n_pre pts_l_high_level_spec )
   **  (PointArray.undef_full hull_pre (2 * n_pre ) )
 |--
@@ -4493,6 +5190,7 @@ EX (pts_l_low_level_spec: (@list Point)) (X_low_level_spec: (unit -> ((@list Poi
   &&  “ ((Zlength (pts_l_low_level_spec)) = n_pre) ” 
   &&  “ (points_in_bound pts_l_low_level_spec ) ” 
   &&  “ (points_not_all_same pts_l_low_level_spec ) ” 
+  &&  “ (point_xy_sorted pts_l_low_level_spec ) ” 
   &&  “ (safeExec (equiv (empty_point_stack)) (andrew_monotone_chain_m (pts_l_low_level_spec)) X_low_level_spec ) ”
   &&  (PointArray.full pts_pre n_pre pts_l_low_level_spec )
   **  (PointArray.undef_full hull_pre (2 * n_pre ) ))
@@ -4505,7 +5203,6 @@ EX (pts_l_low_level_spec: (@list Point)) (X_low_level_spec: (unit -> ((@list Poi
   &&  “ (points_in_bound pts_out_2 ) ” 
   &&  “ (point_permutation pts_l_low_level_spec pts_out_2 ) ” 
   &&  “ (point_xy_sorted pts_out_2 ) ” 
-  &&  “ (andrew_complete_hull_shape pts_out_2 hull_out_2 ) ” 
   &&  “ (safeExec (equiv (hull_out_2)) (return (tt)) X_low_level_spec ) ”
   &&  (PointArray.full pts_pre n_pre pts_out_2 )
   **  (PointArray.seg hull_pre 0 retval_2 hull_out_2 )
@@ -4519,7 +5216,6 @@ EX (pts_l_low_level_spec: (@list Point)) (X_low_level_spec: (unit -> ((@list Poi
   &&  “ (points_in_bound pts_out ) ” 
   &&  “ (point_permutation pts_l_high_level_spec pts_out ) ” 
   &&  “ (point_xy_sorted pts_out ) ” 
-  &&  “ (andrew_complete_hull_shape pts_out hull_out ) ” 
   &&  “ (is_convex_hull pts_l_high_level_spec hull_out ) ”
   &&  (PointArray.full pts_pre n_pre pts_out )
   **  (PointArray.seg hull_pre 0 retval hull_out )
@@ -4611,85 +5307,109 @@ Axiom proof_of_quicksort_xy_points_partial_solve_wit_3_pure : quicksort_xy_point
 Axiom proof_of_quicksort_xy_points_partial_solve_wit_3 : quicksort_xy_points_partial_solve_wit_3.
 Axiom proof_of_quicksort_xy_points_partial_solve_wit_4_pure : quicksort_xy_points_partial_solve_wit_4_pure.
 Axiom proof_of_quicksort_xy_points_partial_solve_wit_4 : quicksort_xy_points_partial_solve_wit_4.
+Axiom proof_of_andrew_build_from_sorted_safety_wit_1 : andrew_build_from_sorted_safety_wit_1.
+Axiom proof_of_andrew_build_from_sorted_safety_wit_2 : andrew_build_from_sorted_safety_wit_2.
+Axiom proof_of_andrew_build_from_sorted_safety_wit_3 : andrew_build_from_sorted_safety_wit_3.
+Axiom proof_of_andrew_build_from_sorted_safety_wit_4 : andrew_build_from_sorted_safety_wit_4.
+Axiom proof_of_andrew_build_from_sorted_safety_wit_5 : andrew_build_from_sorted_safety_wit_5.
+Axiom proof_of_andrew_build_from_sorted_safety_wit_6 : andrew_build_from_sorted_safety_wit_6.
+Axiom proof_of_andrew_build_from_sorted_safety_wit_7 : andrew_build_from_sorted_safety_wit_7.
+Axiom proof_of_andrew_build_from_sorted_safety_wit_8 : andrew_build_from_sorted_safety_wit_8.
+Axiom proof_of_andrew_build_from_sorted_safety_wit_9 : andrew_build_from_sorted_safety_wit_9.
+Axiom proof_of_andrew_build_from_sorted_safety_wit_10 : andrew_build_from_sorted_safety_wit_10.
+Axiom proof_of_andrew_build_from_sorted_safety_wit_11 : andrew_build_from_sorted_safety_wit_11.
+Axiom proof_of_andrew_build_from_sorted_safety_wit_12 : andrew_build_from_sorted_safety_wit_12.
+Axiom proof_of_andrew_build_from_sorted_safety_wit_13 : andrew_build_from_sorted_safety_wit_13.
+Axiom proof_of_andrew_build_from_sorted_safety_wit_14 : andrew_build_from_sorted_safety_wit_14.
+Axiom proof_of_andrew_build_from_sorted_safety_wit_15 : andrew_build_from_sorted_safety_wit_15.
+Axiom proof_of_andrew_build_from_sorted_safety_wit_16 : andrew_build_from_sorted_safety_wit_16.
+Axiom proof_of_andrew_build_from_sorted_safety_wit_17 : andrew_build_from_sorted_safety_wit_17.
+Axiom proof_of_andrew_build_from_sorted_safety_wit_18 : andrew_build_from_sorted_safety_wit_18.
+Axiom proof_of_andrew_build_from_sorted_safety_wit_19 : andrew_build_from_sorted_safety_wit_19.
+Axiom proof_of_andrew_build_from_sorted_safety_wit_20 : andrew_build_from_sorted_safety_wit_20.
+Axiom proof_of_andrew_build_from_sorted_safety_wit_21 : andrew_build_from_sorted_safety_wit_21.
+Axiom proof_of_andrew_build_from_sorted_safety_wit_22 : andrew_build_from_sorted_safety_wit_22.
+Axiom proof_of_andrew_build_from_sorted_safety_wit_23 : andrew_build_from_sorted_safety_wit_23.
+Axiom proof_of_andrew_build_from_sorted_safety_wit_24 : andrew_build_from_sorted_safety_wit_24.
+Axiom proof_of_andrew_build_from_sorted_safety_wit_25 : andrew_build_from_sorted_safety_wit_25.
+Axiom proof_of_andrew_build_from_sorted_safety_wit_26 : andrew_build_from_sorted_safety_wit_26.
+Axiom proof_of_andrew_build_from_sorted_safety_wit_27 : andrew_build_from_sorted_safety_wit_27.
+Axiom proof_of_andrew_build_from_sorted_safety_wit_28 : andrew_build_from_sorted_safety_wit_28.
+Axiom proof_of_andrew_build_from_sorted_safety_wit_29 : andrew_build_from_sorted_safety_wit_29.
+Axiom proof_of_andrew_build_from_sorted_safety_wit_30 : andrew_build_from_sorted_safety_wit_30.
+Axiom proof_of_andrew_build_from_sorted_safety_wit_31 : andrew_build_from_sorted_safety_wit_31.
+Axiom proof_of_andrew_build_from_sorted_safety_wit_32 : andrew_build_from_sorted_safety_wit_32.
+Axiom proof_of_andrew_build_from_sorted_safety_wit_33 : andrew_build_from_sorted_safety_wit_33.
+Axiom proof_of_andrew_build_from_sorted_safety_wit_34 : andrew_build_from_sorted_safety_wit_34.
+Axiom proof_of_andrew_build_from_sorted_safety_wit_35 : andrew_build_from_sorted_safety_wit_35.
+Axiom proof_of_andrew_build_from_sorted_safety_wit_36 : andrew_build_from_sorted_safety_wit_36.
+Axiom proof_of_andrew_build_from_sorted_safety_wit_37 : andrew_build_from_sorted_safety_wit_37.
+Axiom proof_of_andrew_build_from_sorted_safety_wit_38 : andrew_build_from_sorted_safety_wit_38.
+Axiom proof_of_andrew_build_from_sorted_safety_wit_39 : andrew_build_from_sorted_safety_wit_39.
+Axiom proof_of_andrew_build_from_sorted_safety_wit_40 : andrew_build_from_sorted_safety_wit_40.
+Axiom proof_of_andrew_build_from_sorted_safety_wit_41 : andrew_build_from_sorted_safety_wit_41.
+Axiom proof_of_andrew_build_from_sorted_safety_wit_42 : andrew_build_from_sorted_safety_wit_42.
+Axiom proof_of_andrew_build_from_sorted_safety_wit_43 : andrew_build_from_sorted_safety_wit_43.
+Axiom proof_of_andrew_build_from_sorted_entail_wit_1 : andrew_build_from_sorted_entail_wit_1.
+Axiom proof_of_andrew_build_from_sorted_entail_wit_2 : andrew_build_from_sorted_entail_wit_2.
+Axiom proof_of_andrew_build_from_sorted_entail_wit_3 : andrew_build_from_sorted_entail_wit_3.
+Axiom proof_of_andrew_build_from_sorted_entail_wit_4_1 : andrew_build_from_sorted_entail_wit_4_1.
+Axiom proof_of_andrew_build_from_sorted_entail_wit_4_2 : andrew_build_from_sorted_entail_wit_4_2.
+Axiom proof_of_andrew_build_from_sorted_entail_wit_5 : andrew_build_from_sorted_entail_wit_5.
+Axiom proof_of_andrew_build_from_sorted_entail_wit_6 : andrew_build_from_sorted_entail_wit_6.
+Axiom proof_of_andrew_build_from_sorted_entail_wit_7 : andrew_build_from_sorted_entail_wit_7.
+Axiom proof_of_andrew_build_from_sorted_entail_wit_8_1 : andrew_build_from_sorted_entail_wit_8_1.
+Axiom proof_of_andrew_build_from_sorted_entail_wit_8_2 : andrew_build_from_sorted_entail_wit_8_2.
+Axiom proof_of_andrew_build_from_sorted_entail_wit_9 : andrew_build_from_sorted_entail_wit_9.
+Axiom proof_of_andrew_build_from_sorted_entail_wit_10 : andrew_build_from_sorted_entail_wit_10.
+Axiom proof_of_andrew_build_from_sorted_entail_wit_11 : andrew_build_from_sorted_entail_wit_11.
+Axiom proof_of_andrew_build_from_sorted_entail_wit_12 : andrew_build_from_sorted_entail_wit_12.
+Axiom proof_of_andrew_build_from_sorted_return_wit_1 : andrew_build_from_sorted_return_wit_1.
+Axiom proof_of_andrew_build_from_sorted_partial_solve_wit_1 : andrew_build_from_sorted_partial_solve_wit_1.
+Axiom proof_of_andrew_build_from_sorted_partial_solve_wit_2 : andrew_build_from_sorted_partial_solve_wit_2.
+Axiom proof_of_andrew_build_from_sorted_partial_solve_wit_3 : andrew_build_from_sorted_partial_solve_wit_3.
+Axiom proof_of_andrew_build_from_sorted_partial_solve_wit_4 : andrew_build_from_sorted_partial_solve_wit_4.
+Axiom proof_of_andrew_build_from_sorted_partial_solve_wit_5 : andrew_build_from_sorted_partial_solve_wit_5.
+Axiom proof_of_andrew_build_from_sorted_partial_solve_wit_6 : andrew_build_from_sorted_partial_solve_wit_6.
+Axiom proof_of_andrew_build_from_sorted_partial_solve_wit_7_pure : andrew_build_from_sorted_partial_solve_wit_7_pure.
+Axiom proof_of_andrew_build_from_sorted_partial_solve_wit_7 : andrew_build_from_sorted_partial_solve_wit_7.
+Axiom proof_of_andrew_build_from_sorted_partial_solve_wit_8 : andrew_build_from_sorted_partial_solve_wit_8.
+Axiom proof_of_andrew_build_from_sorted_partial_solve_wit_9 : andrew_build_from_sorted_partial_solve_wit_9.
+Axiom proof_of_andrew_build_from_sorted_partial_solve_wit_10 : andrew_build_from_sorted_partial_solve_wit_10.
+Axiom proof_of_andrew_build_from_sorted_partial_solve_wit_11 : andrew_build_from_sorted_partial_solve_wit_11.
+Axiom proof_of_andrew_build_from_sorted_partial_solve_wit_12 : andrew_build_from_sorted_partial_solve_wit_12.
+Axiom proof_of_andrew_build_from_sorted_partial_solve_wit_13 : andrew_build_from_sorted_partial_solve_wit_13.
+Axiom proof_of_andrew_build_from_sorted_partial_solve_wit_14 : andrew_build_from_sorted_partial_solve_wit_14.
+Axiom proof_of_andrew_build_from_sorted_partial_solve_wit_15 : andrew_build_from_sorted_partial_solve_wit_15.
+Axiom proof_of_andrew_build_from_sorted_partial_solve_wit_16 : andrew_build_from_sorted_partial_solve_wit_16.
+Axiom proof_of_andrew_build_from_sorted_partial_solve_wit_17 : andrew_build_from_sorted_partial_solve_wit_17.
+Axiom proof_of_andrew_build_from_sorted_partial_solve_wit_18 : andrew_build_from_sorted_partial_solve_wit_18.
+Axiom proof_of_andrew_build_from_sorted_partial_solve_wit_19 : andrew_build_from_sorted_partial_solve_wit_19.
+Axiom proof_of_andrew_build_from_sorted_partial_solve_wit_20_pure : andrew_build_from_sorted_partial_solve_wit_20_pure.
+Axiom proof_of_andrew_build_from_sorted_partial_solve_wit_20 : andrew_build_from_sorted_partial_solve_wit_20.
+Axiom proof_of_andrew_build_from_sorted_partial_solve_wit_21 : andrew_build_from_sorted_partial_solve_wit_21.
+Axiom proof_of_andrew_build_from_sorted_partial_solve_wit_22 : andrew_build_from_sorted_partial_solve_wit_22.
+Axiom proof_of_andrew_build_from_sorted_partial_solve_wit_23 : andrew_build_from_sorted_partial_solve_wit_23.
+Axiom proof_of_andrew_build_from_sorted_partial_solve_wit_24 : andrew_build_from_sorted_partial_solve_wit_24.
+Axiom proof_of_andrew_build_from_sorted_partial_solve_wit_25 : andrew_build_from_sorted_partial_solve_wit_25.
+Axiom proof_of_andrew_build_from_sorted_partial_solve_wit_26 : andrew_build_from_sorted_partial_solve_wit_26.
+Axiom proof_of_andrew_build_from_sorted_partial_solve_wit_27 : andrew_build_from_sorted_partial_solve_wit_27.
+Axiom proof_of_andrew_build_from_sorted_partial_solve_wit_28 : andrew_build_from_sorted_partial_solve_wit_28.
+Axiom proof_of_andrew_build_from_sorted_partial_solve_wit_29 : andrew_build_from_sorted_partial_solve_wit_29.
+Axiom proof_of_andrew_build_from_sorted_partial_solve_wit_30 : andrew_build_from_sorted_partial_solve_wit_30.
+Axiom proof_of_andrew_build_from_sorted_partial_solve_wit_31 : andrew_build_from_sorted_partial_solve_wit_31.
+Axiom proof_of_andrew_build_from_sorted_partial_solve_wit_32 : andrew_build_from_sorted_partial_solve_wit_32.
+Axiom proof_of_andrew_build_from_sorted_partial_solve_wit_33 : andrew_build_from_sorted_partial_solve_wit_33.
+Axiom proof_of_andrew_build_from_sorted_partial_solve_wit_34 : andrew_build_from_sorted_partial_solve_wit_34.
 Axiom proof_of_andrew_monotone_chain_safety_wit_1 : andrew_monotone_chain_safety_wit_1.
 Axiom proof_of_andrew_monotone_chain_safety_wit_2 : andrew_monotone_chain_safety_wit_2.
 Axiom proof_of_andrew_monotone_chain_safety_wit_3 : andrew_monotone_chain_safety_wit_3.
-Axiom proof_of_andrew_monotone_chain_safety_wit_4 : andrew_monotone_chain_safety_wit_4.
-Axiom proof_of_andrew_monotone_chain_safety_wit_5 : andrew_monotone_chain_safety_wit_5.
-Axiom proof_of_andrew_monotone_chain_safety_wit_6 : andrew_monotone_chain_safety_wit_6.
-Axiom proof_of_andrew_monotone_chain_safety_wit_7 : andrew_monotone_chain_safety_wit_7.
-Axiom proof_of_andrew_monotone_chain_safety_wit_8 : andrew_monotone_chain_safety_wit_8.
-Axiom proof_of_andrew_monotone_chain_safety_wit_9 : andrew_monotone_chain_safety_wit_9.
-Axiom proof_of_andrew_monotone_chain_safety_wit_10 : andrew_monotone_chain_safety_wit_10.
-Axiom proof_of_andrew_monotone_chain_safety_wit_11 : andrew_monotone_chain_safety_wit_11.
-Axiom proof_of_andrew_monotone_chain_safety_wit_12 : andrew_monotone_chain_safety_wit_12.
-Axiom proof_of_andrew_monotone_chain_safety_wit_13 : andrew_monotone_chain_safety_wit_13.
-Axiom proof_of_andrew_monotone_chain_safety_wit_14 : andrew_monotone_chain_safety_wit_14.
-Axiom proof_of_andrew_monotone_chain_safety_wit_15 : andrew_monotone_chain_safety_wit_15.
-Axiom proof_of_andrew_monotone_chain_safety_wit_16 : andrew_monotone_chain_safety_wit_16.
-Axiom proof_of_andrew_monotone_chain_safety_wit_17 : andrew_monotone_chain_safety_wit_17.
-Axiom proof_of_andrew_monotone_chain_safety_wit_18 : andrew_monotone_chain_safety_wit_18.
-Axiom proof_of_andrew_monotone_chain_safety_wit_19 : andrew_monotone_chain_safety_wit_19.
-Axiom proof_of_andrew_monotone_chain_safety_wit_20 : andrew_monotone_chain_safety_wit_20.
-Axiom proof_of_andrew_monotone_chain_safety_wit_21 : andrew_monotone_chain_safety_wit_21.
-Axiom proof_of_andrew_monotone_chain_safety_wit_22 : andrew_monotone_chain_safety_wit_22.
-Axiom proof_of_andrew_monotone_chain_safety_wit_23 : andrew_monotone_chain_safety_wit_23.
-Axiom proof_of_andrew_monotone_chain_safety_wit_24 : andrew_monotone_chain_safety_wit_24.
-Axiom proof_of_andrew_monotone_chain_safety_wit_25 : andrew_monotone_chain_safety_wit_25.
-Axiom proof_of_andrew_monotone_chain_safety_wit_26 : andrew_monotone_chain_safety_wit_26.
-Axiom proof_of_andrew_monotone_chain_safety_wit_27 : andrew_monotone_chain_safety_wit_27.
-Axiom proof_of_andrew_monotone_chain_safety_wit_28 : andrew_monotone_chain_safety_wit_28.
-Axiom proof_of_andrew_monotone_chain_safety_wit_29 : andrew_monotone_chain_safety_wit_29.
-Axiom proof_of_andrew_monotone_chain_safety_wit_30 : andrew_monotone_chain_safety_wit_30.
-Axiom proof_of_andrew_monotone_chain_safety_wit_31 : andrew_monotone_chain_safety_wit_31.
-Axiom proof_of_andrew_monotone_chain_safety_wit_32 : andrew_monotone_chain_safety_wit_32.
-Axiom proof_of_andrew_monotone_chain_safety_wit_33 : andrew_monotone_chain_safety_wit_33.
-Axiom proof_of_andrew_monotone_chain_safety_wit_34 : andrew_monotone_chain_safety_wit_34.
-Axiom proof_of_andrew_monotone_chain_safety_wit_35 : andrew_monotone_chain_safety_wit_35.
-Axiom proof_of_andrew_monotone_chain_safety_wit_36 : andrew_monotone_chain_safety_wit_36.
-Axiom proof_of_andrew_monotone_chain_safety_wit_37 : andrew_monotone_chain_safety_wit_37.
 Axiom proof_of_andrew_monotone_chain_entail_wit_1 : andrew_monotone_chain_entail_wit_1.
-Axiom proof_of_andrew_monotone_chain_entail_wit_2 : andrew_monotone_chain_entail_wit_2.
-Axiom proof_of_andrew_monotone_chain_entail_wit_3 : andrew_monotone_chain_entail_wit_3.
-Axiom proof_of_andrew_monotone_chain_entail_wit_4_1 : andrew_monotone_chain_entail_wit_4_1.
-Axiom proof_of_andrew_monotone_chain_entail_wit_4_2 : andrew_monotone_chain_entail_wit_4_2.
-Axiom proof_of_andrew_monotone_chain_entail_wit_5 : andrew_monotone_chain_entail_wit_5.
-Axiom proof_of_andrew_monotone_chain_entail_wit_6 : andrew_monotone_chain_entail_wit_6.
-Axiom proof_of_andrew_monotone_chain_entail_wit_7 : andrew_monotone_chain_entail_wit_7.
-Axiom proof_of_andrew_monotone_chain_entail_wit_8_1 : andrew_monotone_chain_entail_wit_8_1.
-Axiom proof_of_andrew_monotone_chain_entail_wit_8_2 : andrew_monotone_chain_entail_wit_8_2.
-Axiom proof_of_andrew_monotone_chain_entail_wit_9 : andrew_monotone_chain_entail_wit_9.
 Axiom proof_of_andrew_monotone_chain_return_wit_1 : andrew_monotone_chain_return_wit_1.
 Axiom proof_of_andrew_monotone_chain_partial_solve_wit_1_pure : andrew_monotone_chain_partial_solve_wit_1_pure.
 Axiom proof_of_andrew_monotone_chain_partial_solve_wit_1 : andrew_monotone_chain_partial_solve_wit_1.
+Axiom proof_of_andrew_monotone_chain_partial_solve_wit_2_pure : andrew_monotone_chain_partial_solve_wit_2_pure.
 Axiom proof_of_andrew_monotone_chain_partial_solve_wit_2 : andrew_monotone_chain_partial_solve_wit_2.
-Axiom proof_of_andrew_monotone_chain_partial_solve_wit_3 : andrew_monotone_chain_partial_solve_wit_3.
-Axiom proof_of_andrew_monotone_chain_partial_solve_wit_4 : andrew_monotone_chain_partial_solve_wit_4.
-Axiom proof_of_andrew_monotone_chain_partial_solve_wit_5 : andrew_monotone_chain_partial_solve_wit_5.
-Axiom proof_of_andrew_monotone_chain_partial_solve_wit_6 : andrew_monotone_chain_partial_solve_wit_6.
-Axiom proof_of_andrew_monotone_chain_partial_solve_wit_7 : andrew_monotone_chain_partial_solve_wit_7.
-Axiom proof_of_andrew_monotone_chain_partial_solve_wit_8_pure : andrew_monotone_chain_partial_solve_wit_8_pure.
-Axiom proof_of_andrew_monotone_chain_partial_solve_wit_8 : andrew_monotone_chain_partial_solve_wit_8.
-Axiom proof_of_andrew_monotone_chain_partial_solve_wit_9 : andrew_monotone_chain_partial_solve_wit_9.
-Axiom proof_of_andrew_monotone_chain_partial_solve_wit_10 : andrew_monotone_chain_partial_solve_wit_10.
-Axiom proof_of_andrew_monotone_chain_partial_solve_wit_11 : andrew_monotone_chain_partial_solve_wit_11.
-Axiom proof_of_andrew_monotone_chain_partial_solve_wit_12 : andrew_monotone_chain_partial_solve_wit_12.
-Axiom proof_of_andrew_monotone_chain_partial_solve_wit_13 : andrew_monotone_chain_partial_solve_wit_13.
-Axiom proof_of_andrew_monotone_chain_partial_solve_wit_14 : andrew_monotone_chain_partial_solve_wit_14.
-Axiom proof_of_andrew_monotone_chain_partial_solve_wit_15 : andrew_monotone_chain_partial_solve_wit_15.
-Axiom proof_of_andrew_monotone_chain_partial_solve_wit_16 : andrew_monotone_chain_partial_solve_wit_16.
-Axiom proof_of_andrew_monotone_chain_partial_solve_wit_17 : andrew_monotone_chain_partial_solve_wit_17.
-Axiom proof_of_andrew_monotone_chain_partial_solve_wit_18 : andrew_monotone_chain_partial_solve_wit_18.
-Axiom proof_of_andrew_monotone_chain_partial_solve_wit_19 : andrew_monotone_chain_partial_solve_wit_19.
-Axiom proof_of_andrew_monotone_chain_partial_solve_wit_20 : andrew_monotone_chain_partial_solve_wit_20.
-Axiom proof_of_andrew_monotone_chain_partial_solve_wit_21_pure : andrew_monotone_chain_partial_solve_wit_21_pure.
-Axiom proof_of_andrew_monotone_chain_partial_solve_wit_21 : andrew_monotone_chain_partial_solve_wit_21.
-Axiom proof_of_andrew_monotone_chain_partial_solve_wit_22 : andrew_monotone_chain_partial_solve_wit_22.
-Axiom proof_of_andrew_monotone_chain_partial_solve_wit_23 : andrew_monotone_chain_partial_solve_wit_23.
-Axiom proof_of_andrew_monotone_chain_partial_solve_wit_24 : andrew_monotone_chain_partial_solve_wit_24.
-Axiom proof_of_andrew_monotone_chain_partial_solve_wit_25 : andrew_monotone_chain_partial_solve_wit_25.
-Axiom proof_of_andrew_monotone_chain_partial_solve_wit_26 : andrew_monotone_chain_partial_solve_wit_26.
-Axiom proof_of_andrew_monotone_chain_partial_solve_wit_27 : andrew_monotone_chain_partial_solve_wit_27.
-Axiom proof_of_andrew_monotone_chain_derive_high_level_spec_by_low_level_spec : andrew_monotone_chain_derive_high_level_spec_by_low_level_spec.
+Axiom proof_of_andrew_build_from_sorted_derive_high_level_spec_by_low_level_spec : andrew_build_from_sorted_derive_high_level_spec_by_low_level_spec.
 
 End VC_Correct.

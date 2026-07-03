@@ -1,2 +1,0 @@
-#!/bin/sh
-exec /nix/store/qr0wqh2damb6asnyz4jkx61id5yg3qh2-python3-3.14.3/bin/python3 /home/definfo/Develop/qcp/convex-hull/.tmp/convex-hull/20260630T145856-vc-proving-r3/script_snapshot/rocq_memory_guard.py --label coqc --limit-bytes 4294967296 -- /nix/store/a7hlm1bb8k7r2qbzp19xm6cqxfav50gj-coq-8.20.1/bin/coqc "$@"

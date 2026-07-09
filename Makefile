@@ -2,6 +2,7 @@ COQMAKEFILE := CoqMakefile
 
 C_FILE := convex-hull/graham_scan.c
 ANDREW_C_FILE := convex-hull/andrew_monotone_chain.c
+DEDUP_C_FILE := convex-hull/graham_scan_dedup.c
 BASEDIR := convex-hull/ConvexHull
 COQ_DEF_FILE := $(BASEDIR)/convex_hull_lib.v
 
@@ -32,6 +33,11 @@ ANDREW_GOAL_V := $(BASEDIR)/andrew_monotone_chain_goal.v
 ANDREW_PROOF_AUTO_V := $(BASEDIR)/andrew_monotone_chain_proof_auto.v
 ANDREW_PROOF_MANUAL_V := $(BASEDIR)/andrew_monotone_chain_proof_manual.v
 ANDREW_GOAL_CHECK_V := $(ANDREW_GOAL_V:_goal.v=_goal_check.v)
+
+DEDUP_GOAL_V := $(BASEDIR)/graham_scan_dedup_goal.v
+DEDUP_PROOF_AUTO_V := $(BASEDIR)/graham_scan_dedup_proof_auto.v
+DEDUP_PROOF_MANUAL_V := $(BASEDIR)/graham_scan_dedup_proof_manual.v
+DEDUP_GOAL_CHECK_V := $(DEDUP_GOAL_V:_goal.v=_goal_check.v)
 
 STRATEGIES_GOAL_V := \
 	$(BASEDIR)/point_array_strategy_goal.v \
@@ -64,7 +70,11 @@ COQ_VFILES := \
 	$(ANDREW_GOAL_V) \
 	$(ANDREW_PROOF_AUTO_V) \
 	$(ANDREW_PROOF_MANUAL_V) \
-	$(ANDREW_GOAL_CHECK_V)
+	$(ANDREW_GOAL_CHECK_V) \
+	$(DEDUP_GOAL_V) \
+	$(DEDUP_PROOF_AUTO_V) \
+	$(DEDUP_PROOF_MANUAL_V) \
+	$(DEDUP_GOAL_CHECK_V)
 
 # Derive .vo targets from earlier path definitions
 VC_TARGETS := \
@@ -84,14 +94,20 @@ ANDREW_VC_TARGETS := \
 	$(ANDREW_PROOF_MANUAL_V:.v=.vo) \
 	$(ANDREW_GOAL_CHECK_V:.v=.vo)
 
+DEDUP_VC_TARGETS := \
+	$(DEDUP_GOAL_V:.v=.vo) \
+	$(DEDUP_PROOF_AUTO_V:.v=.vo) \
+	$(DEDUP_PROOF_MANUAL_V:.v=.vo) \
+	$(DEDUP_GOAL_CHECK_V:.v=.vo)
+
 .DEFAULT_GOAL := build
 
-.PHONY: all build quick vok-check all-vfiles clean distclean deps symexec andrew-symexec andrew-build
+.PHONY: all build quick vok-check all-vfiles clean distclean deps symexec andrew-symexec dedup-symexec andrew-build dedup-build
 
 all: build
 
-build: symexec andrew-symexec deps
-	$(MAKE) -f $(COQMAKEFILE) $(VC_TARGETS) $(ANDREW_VC_TARGETS)
+build: symexec andrew-symexec dedup-symexec deps
+	$(MAKE) -f $(COQMAKEFILE) $(VC_TARGETS) $(ANDREW_VC_TARGETS) $(DEDUP_VC_TARGETS)
 
 quick: symexec deps
 	$(MAKE) -f $(COQMAKEFILE) $(QUICK_TARGETS)
@@ -110,9 +126,10 @@ SYMEXEC_FLAGS := \
 
 SYMEXEC_OUTPUTS := $(GOAL_V) $(PROOF_AUTO_V) $(GOAL_CHECK_V)
 ANDREW_SYMEXEC_OUTPUTS := $(ANDREW_GOAL_V) $(ANDREW_PROOF_AUTO_V) $(ANDREW_GOAL_CHECK_V)
-SYMEXEC_UPDATE_MANUAL ?= 0
+DEDUP_SYMEXEC_OUTPUTS := $(DEDUP_GOAL_V) $(DEDUP_PROOF_AUTO_V) $(DEDUP_GOAL_CHECK_V)
 symexec: $(SYMEXEC_OUTPUTS)
 andrew-symexec: $(ANDREW_SYMEXEC_OUTPUTS)
+dedup-symexec: $(DEDUP_SYMEXEC_OUTPUTS)
 
 # Grouped target (&:)
 $(SYMEXEC_OUTPUTS) &: $(C_FILE)
@@ -131,10 +148,21 @@ $(ANDREW_SYMEXEC_OUTPUTS) &: $(ANDREW_C_FILE)
 	  $(SYMEXEC_FLAGS) \
 	  --input-file=$(abspath $(ANDREW_C_FILE)) \
 
+$(DEDUP_SYMEXEC_OUTPUTS) &: $(DEDUP_C_FILE)
+	$(SYMEXEC) \
+	  --goal-file=$(DEDUP_GOAL_V) \
+	  --proof-auto-file=$(DEDUP_PROOF_AUTO_V) \
+	  --proof-manual-file=$(DEDUP_PROOF_MANUAL_V) \
+	  $(SYMEXEC_FLAGS) \
+	  --input-file=$(abspath $(DEDUP_C_FILE)) \
+
+dedup-build: dedup-symexec deps
+	$(MAKE) -f $(COQMAKEFILE) $(DEDUP_VC_TARGETS)
+
 andrew-build: andrew-symexec deps
 	$(MAKE) -f $(COQMAKEFILE) $(ANDREW_VC_TARGETS)
 
-all-vfiles: symexec andrew-symexec deps
+all-vfiles: symexec andrew-symexec dedup-symexec deps
 
 clean: deps
 	$(MAKE) -f $(COQMAKEFILE) clean

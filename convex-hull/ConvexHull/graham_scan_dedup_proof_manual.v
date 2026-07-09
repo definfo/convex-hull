@@ -4179,7 +4179,7 @@ Qed.
 
 Lemma proof_of_graham_scan_dedup_entail_wit_1_split_goal_1 : graham_scan_dedup_entail_wit_1_split_goal_1.
 Proof.
-  unfold graham_scan_dedup_entail_wit_1_split_goal_1G.
+  unfold graham_scan_dedup_entail_wit_1_split_goal_1.
   intros.
   apply derivable1s_coq_prop_r.
   eapply dedup_not_all_same_unique_n_ge_2; eauto.

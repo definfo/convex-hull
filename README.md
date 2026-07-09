@@ -44,7 +44,7 @@ excluding generated `split_goal_*` sub-goals):
 The shared math / spec library is
 [`ConvexHull/convex_hull_lib.v`](ConvexHull/convex_hull_lib.v) (~5.7k lines,
 225 helper lemmas, 85 definitions) on top of the pre-existing
-[`SeparationLogic/ConvexHull/`](../SeparationLogic/ConvexHull) theory
+[`SeparationLogic/ConvexHull/`](SeparationLogic/ConvexHull) theory
 (geo predicates, point order, hull equivalence, abstract monad models —
 ~10.8k lines total).
 
@@ -107,7 +107,7 @@ Pipeline: `quicksort_xy_points` (x-then-y, via `partition_xy_points`) →
 `andrew_build_from_sorted` builds the lower and upper chains with a
 `cross_prod`-based pop-while-non-ccw stack discipline.
 
-Key proof ideas (see also [`../NOTES.md`](../NOTES.md)):
+Key proof ideas:
 
 * **Convexity** — under x-y sorting, consecutive (counter-)clockwise
   relations force a partial turn order, so any three sorted points keep a
@@ -194,7 +194,7 @@ Key proof ideas:
 
 ## How to build
 
-The driver is the top-level [`Makefile`](../Makefile). From the repo root,
+The driver is the top-level [`Makefile`](Makefile). From the repo root,
 inside the Nix flake shell (`direnv allow`):
 
 ```sh
@@ -227,14 +227,14 @@ workflow: `andrew-build`, `dedup-build`, and the plain Graham workflow that
 Coq dependency mapping (the `-I` and `-slp` flags are not interchangeable).
 
 The Coq side is built through the auto-generated `CoqMakefile` from
-[`_CoqProject`](../_CoqProject), which wires up the
+[`_CoqProject`](_CoqProject), which wires up the
 `SeparationLogic/...` library roots and the case-local
 `convex-hull/ConvexHull` → `SimpleC.EE.convex_hull` logical path.
 
 ## Verification workflow
 
 This repository follows the orchestrator + phase-subagent workflow described
-in [`../AGENTS.md`](../AGENTS.md):
+in [`AGENTS.md`](AGENTS.md):
 
 1. **intake** — record case info, formal-lib frozen prefix, file boundaries.
 2. **annotation** — annotate the C (contracts, loop invariants, `Assert`s),
@@ -251,20 +251,3 @@ in [`../AGENTS.md`](../AGENTS.md):
    `Admitted` / extra `Axiom`, confirm `*_proof_manual.v` contains only
    witness proofs, confirm no stale scratch / `.tmp` / `.aux` artifacts.
 7. **done** — all three cases are here.
-
-## Notes
-
-* Only the `QCP_demos_LLM` reference examples are used as templates; the
-  `QCP_demos_human` variants are intentionally not referenced.
-* The C sources use bare includes (`#include "convex_hull_def.h"`,
-  `#include "safeexec_def.h"`) resolved through the `-I` search path; they
-  are never rewritten to relative `../../../QCP_demos_LLM/...` paths to suit
-  a particular scratch.
-* `graham_scan_dedup.c` is the dedup-first variant of Graham's scan. It shares
-  the `Graham_Scan_M` monad model and `convex_hull_lib.v` with the plain case
-  but is tracked as a separate case (its own goal / proof files); see the
-  "Graham's scan with dedup" section above. Its proof was re-verified against
-  the current `convex_hull_lib.v`: one stale `unfold` reference in
-  `graham_scan_dedup_proof_manual.v` (a stray trailing `G` on a generated
-  `split_goal_1` name) was corrected so the `goal_check` gate compiles
-  cleanly via `make build`.

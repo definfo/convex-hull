@@ -1200,19 +1200,18 @@ Definition andrew_lower_scan_inv
   Forall (fun p => In p sorted) chain /\
   (Zlength sorted <= read -> 2 <= top).
 
+(* The upper scan's algorithmic geometry is carried by explicit [safeExec]
+   continuation clauses.  This invariant stays focused on C-side state facts
+   needed for bounds and memory reasoning. *)
 Definition andrew_upper_scan_inv
     (sorted chain : list Point) (read top lower_n : Z) : Prop :=
   0 <= read <= Zlength sorted /\
   lower_n <= top <= 2 * Zlength sorted /\
   top = Zlength chain /\
+  (read <= 0 -> lower_n < top) /\
   points_in_bound chain /\
   Forall (fun p => In p sorted) chain /\
-  point_list_not_all_same sorted /\
-  andrew_lower_finished_chain sorted (sublist 0 lower_n chain) /\
-  andrew_upper_suffix_geometry sorted chain read lower_n /\
-  andrew_upper_capacity sorted chain read lower_n /\
-  andrew_upper_append_ready sorted chain read lower_n /\
-  (read <= 0 -> andrew_closed_ccw_complete_hull_shape sorted chain).
+  andrew_upper_capacity sorted chain read lower_n.
 
 Definition point_polar_partitioned_at
     (gp : Point) (l : list Point) (low high p : Z) : Prop :=
@@ -1267,14 +1266,6 @@ Definition andrew_upper_cont
   T <- get' id ;;
   update' (fun _ => Andrew_Monotone_Chain.andrew_merge sorted lower (rev T)).
 
-Definition andrew_upper_remaining_cont
-    (sorted chain : list Point) (read lower_n : Z)
-    (X : unit -> list Point -> Prop) : Prop :=
-  exists stk,
-    stk = andrew_upper_stack_from_chain chain lower_n /\
-    safeExec (equiv stk)
-      (andrew_upper_cont sorted (sublist 0 lower_n chain) read) X.
-
 Definition andrew_lower_cont
     (sorted : list Point) (read : Z)
     : program (list Point) unit :=
@@ -1283,16 +1274,6 @@ Definition andrew_lower_cont
   let lower := rev T in
   upper <- Andrew_Monotone_Chain_M.build_upper_chain sorted ;;
   update' (fun _ => Andrew_Monotone_Chain.andrew_merge sorted lower upper).
-
-Definition andrew_lower_remaining_cont
-    (sorted chain : list Point) (read : Z)
-    (X : unit -> list Point -> Prop) : Prop :=
-  exists stk,
-    chain = rev stk /\
-    safeExec (equiv stk) (andrew_lower_cont sorted read) X /\
-    (Zlength sorted <= read ->
-       andrew_upper_remaining_cont
-         sorted chain (Zlength sorted - 1) (Zlength chain) X).
 
 Lemma pop_fun_continue_hseval : forall p t s T,
   ~ ccw s t p ->
@@ -5119,7 +5100,7 @@ Proof.
     + exact Hsafe.
 Qed.
 
-Lemma andrew_lower_remaining_cont_pop : forall sorted chain read top X,
+Lemma safeExec_andrew_lower_cont_drop_last : forall sorted chain read top X,
   point_cross (Znth (top - 2) chain default_point)
               (Znth (top - 1) chain default_point)
               (Znth read sorted default_point) <= 0 ->
@@ -5127,39 +5108,571 @@ Lemma andrew_lower_remaining_cont_pop : forall sorted chain read top X,
   0 <= read ->
   top = Zlength chain ->
   read < Zlength sorted ->
-  andrew_lower_remaining_cont sorted chain read X ->
-  andrew_lower_remaining_cont sorted (point_drop_last chain) read X.
+  safeExec (equiv (rev chain)) (andrew_lower_cont sorted read) X ->
+  safeExec (equiv (rev (point_drop_last chain)))
+           (andrew_lower_cont sorted read) X.
 Proof.
-  intros sorted chain read top X Hcross Htop_ge Hread_nonneg Htop Hread_lt Hcont.
-  unfold andrew_lower_remaining_cont in *.
-  destruct Hcont as [stk [Hchain [Hsafe Hupper]]].
-  subst chain.
-  destruct stk as [| t [| s T]].
-  - rewrite Zlength_nil in Htop. lia.
-  - simpl in Htop. rewrite Zlength_cons, Zlength_nil in Htop. lia.
-  - exists (s :: T).
-    repeat split.
-    + change (rev (t :: s :: T)) with (rev (s :: T) ++ t :: nil).
-      rewrite point_drop_last_snoc.
+  intros sorted chain read top X Hcross Htop_ge Hread_nonneg Htop Hread_lt Hsafe.
+  destruct (rev chain) as [| t [| s T]] eqn:Hrev.
+  - apply (f_equal (@rev Point)) in Hrev.
+    rewrite rev_involutive in Hrev.
+    simpl in Hrev.
+    subst chain.
+    rewrite Zlength_nil in Htop. lia.
+  - apply (f_equal (@rev Point)) in Hrev.
+    rewrite rev_involutive in Hrev.
+    simpl in Hrev.
+    subst chain.
+    rewrite Zlength_cons, Zlength_nil in Htop. lia.
+  - assert (Hchain : chain = rev (t :: s :: T)).
+    {
+      rewrite <- (rev_involutive chain).
+      rewrite Hrev.
       reflexivity.
-    + assert (Hlen_for_rev : top - 1 + 1 = Zlength (rev (t :: s :: T))) by lia.
-      assert (Hnccw : ~ ccw s t (Znth read sorted default_point)).
-      {
-        replace (Znth (top - 2) (rev (t :: s :: T)) default_point)
-          with (Znth (top - 1 - 1 - 0) (rev (t :: s :: T)) default_point)
-          in Hcross by (f_equal; lia).
-        replace (Znth (top - 1) (rev (t :: s :: T)) default_point)
-          with (Znth (top - 1 - 0) (rev (t :: s :: T)) default_point)
-          in Hcross by (f_equal; lia).
-        rewrite (Znth_rev_stack_prev default_point t s T (top - 1)) in Hcross
-          by exact Hlen_for_rev.
-        rewrite (Znth_rev_stack_top default_point t s T (top - 1)) in Hcross
-          by exact Hlen_for_rev.
-        apply point_cross_le_0_not_ccw_local.
-        exact Hcross.
-      }
-      eapply safeExec_andrew_lower_cont_pop; eauto.
-    + intros Hdone. lia.
+    }
+    subst chain.
+    change (point_drop_last (rev (t :: s :: T))) with
+      (point_drop_last (rev (s :: T) ++ t :: nil)).
+    rewrite point_drop_last_snoc.
+    rewrite rev_involutive.
+    assert (Hlen_for_rev : top - 1 + 1 = Zlength (rev (t :: s :: T))) by lia.
+    assert (Hnccw : ~ ccw s t (Znth read sorted default_point)).
+    {
+      replace (Znth (top - 2) (rev (t :: s :: T)) default_point)
+        with (Znth (top - 1 - 1 - 0) (rev (t :: s :: T)) default_point)
+        in Hcross by (f_equal; lia).
+      replace (Znth (top - 1) (rev (t :: s :: T)) default_point)
+        with (Znth (top - 1 - 0) (rev (t :: s :: T)) default_point)
+        in Hcross by (f_equal; lia).
+      rewrite (Znth_rev_stack_prev default_point t s T (top - 1)) in Hcross
+        by exact Hlen_for_rev.
+      rewrite (Znth_rev_stack_top default_point t s T (top - 1)) in Hcross
+        by exact Hlen_for_rev.
+      apply point_cross_le_0_not_ccw_local.
+      exact Hcross.
+    }
+    eapply safeExec_andrew_lower_cont_pop; eauto.
+Qed.
+
+Lemma safeExec_andrew_lower_cont_short_push :
+  forall sorted chain read top X,
+    top = Zlength chain ->
+    top < 2 ->
+    0 <= read ->
+    read < Zlength sorted ->
+    safeExec (equiv (rev chain)) (andrew_lower_cont sorted read) X ->
+    safeExec
+      (equiv (rev (chain ++ Znth read sorted default_point :: nil)))
+      (andrew_lower_cont sorted (read + 1)) X.
+Proof.
+  intros sorted chain read top X Htop Htop_lt Hread_nonneg Hread_lt Hsafe.
+  unfold andrew_lower_cont in *.
+  unfold build_hull_c_iter in Hsafe at 1.
+  rewrite (sublist_split read (Zlength sorted) (read + 1) sorted) in Hsafe
+    by (pose proof (Zlength_nonneg sorted); lia).
+  rewrite (sublist_single default_point read sorted) in Hsafe by lia.
+  simpl in Hsafe.
+  unfold Graham_Scan_M.step_p at 1 in Hsafe.
+  eapply safeExec_bind_assoc_forward in Hsafe.
+  unfold build_hull_c_iter.
+  destruct chain as [| t [| s T]]; simpl in *.
+  - eapply (highstepbind_derive
+              (Graham_Scan_M.step_fun (Znth read sorted default_point))
+              (fun b0 : unit =>
+                 iter step_p (sublist (read + 1) (Zlength sorted) sorted) b0 ;;
+                 T <- get' id ;;
+                 upper <- Andrew_Monotone_Chain_M.build_upper_chain sorted ;;
+                 update'
+                   (fun _ : list Point =>
+                      Andrew_Monotone_Chain.andrew_merge sorted (rev T) upper))
+              (equiv nil) tt
+              (equiv (Znth read sorted default_point :: nil))).
+    + apply step_fun_nil_push_hseval.
+    + exact Hsafe.
+  - eapply (highstepbind_derive
+              (Graham_Scan_M.step_fun (Znth read sorted default_point))
+              (fun b0 : unit =>
+                 iter step_p (sublist (read + 1) (Zlength sorted) sorted) b0 ;;
+                 T <- get' id ;;
+                 upper <- Andrew_Monotone_Chain_M.build_upper_chain sorted ;;
+                 update'
+                   (fun _ : list Point =>
+                      Andrew_Monotone_Chain.andrew_merge sorted (rev T) upper))
+              (equiv (t :: nil)) tt
+              (equiv (Znth read sorted default_point :: t :: nil))).
+    + apply step_fun_single_push_hseval.
+    + exact Hsafe.
+  - pose proof (Zlength_nonneg T).
+    rewrite Zlength_cons, Zlength_cons in Htop.
+    lia.
+Qed.
+
+Lemma safeExec_andrew_lower_cont_ccw_push :
+  forall sorted chain read top X,
+    top = Zlength chain ->
+    2 <= top ->
+    0 <= read ->
+    read < Zlength sorted ->
+    point_cross (Znth (top - 2) chain default_point)
+                (Znth (top - 1) chain default_point)
+                (Znth read sorted default_point) > 0 ->
+    safeExec (equiv (rev chain)) (andrew_lower_cont sorted read) X ->
+    safeExec
+      (equiv (rev (chain ++ Znth read sorted default_point :: nil)))
+      (andrew_lower_cont sorted (read + 1)) X.
+Proof.
+  intros sorted chain read top X Htop Htop_ge Hread_nonneg Hread_lt
+         Hcross Hsafe.
+  unfold andrew_lower_cont in *.
+  unfold build_hull_c_iter in Hsafe at 1.
+  rewrite (sublist_split read (Zlength sorted) (read + 1) sorted) in Hsafe
+    by (pose proof (Zlength_nonneg sorted); lia).
+  rewrite (sublist_single default_point read sorted) in Hsafe by lia.
+  simpl in Hsafe.
+  unfold Graham_Scan_M.step_p at 1 in Hsafe.
+  eapply safeExec_bind_assoc_forward in Hsafe.
+  unfold build_hull_c_iter.
+  destruct (rev chain) as [| t [| s T]] eqn:Hrev.
+  - apply (f_equal (@rev Point)) in Hrev.
+    rewrite rev_involutive in Hrev.
+    simpl in Hrev.
+    subst chain.
+    rewrite Zlength_nil in Htop. lia.
+  - apply (f_equal (@rev Point)) in Hrev.
+    rewrite rev_involutive in Hrev.
+    simpl in Hrev.
+    subst chain.
+    rewrite Zlength_cons, Zlength_nil in Htop. lia.
+  - assert (Hchain : chain = rev (t :: s :: T)).
+    {
+      rewrite <- (rev_involutive chain).
+      rewrite Hrev.
+      reflexivity.
+    }
+    subst chain.
+    rewrite rev_app_distr.
+    simpl.
+    rewrite rev_app_distr.
+    simpl.
+    rewrite rev_app_distr.
+    simpl.
+    rewrite rev_involutive.
+    assert (Hlen_for_rev : top - 1 + 1 = Zlength (rev (t :: s :: T))) by lia.
+    assert (Hccw : ccw s t (Znth read sorted default_point)).
+    {
+      replace (Znth (top - 2) (rev (t :: s :: T)) default_point)
+        with (Znth (top - 1 - 1 - 0) (rev (t :: s :: T)) default_point)
+        in Hcross by (f_equal; lia).
+      replace (Znth (top - 1) (rev (t :: s :: T)) default_point)
+        with (Znth (top - 1 - 0) (rev (t :: s :: T)) default_point)
+        in Hcross by (f_equal; lia).
+      rewrite (Znth_rev_stack_prev default_point t s T (top - 1)) in Hcross
+        by exact Hlen_for_rev.
+      rewrite (Znth_rev_stack_top default_point t s T (top - 1)) in Hcross
+        by exact Hlen_for_rev.
+      apply point_cross_gt_0_ccw_local.
+      exact Hcross.
+    }
+    eapply (highstepbind_derive
+              (Graham_Scan_M.step_fun (Znth read sorted default_point))
+              (fun b0 : unit =>
+                 iter step_p (sublist (read + 1) (Zlength sorted) sorted) b0 ;;
+                 T0 <- get' id ;;
+                 upper <- Andrew_Monotone_Chain_M.build_upper_chain sorted ;;
+                 update'
+                   (fun _ : list Point =>
+                      Andrew_Monotone_Chain.andrew_merge sorted (rev T0) upper))
+              (equiv (t :: s :: T)) tt
+              (equiv (Znth read sorted default_point :: t :: s :: T))).
+    + apply step_fun_ccw_push_hseval.
+      exact Hccw.
+    + exact Hsafe.
+Qed.
+
+Lemma safeExec_andrew_lower_cont_done_snoc_to_upper :
+  forall sorted prefix read X,
+    read + 1 = Zlength sorted ->
+    0 <= read ->
+    safeExec
+      (equiv (rev (prefix ++ Znth read sorted default_point :: nil)))
+      (andrew_lower_cont sorted (read + 1)) X ->
+    safeExec
+      (equiv (Znth read sorted default_point :: nil))
+      (andrew_upper_cont sorted
+        (prefix ++ Znth read sorted default_point :: nil)
+        (Zlength sorted - 1)) X.
+Proof.
+  intros sorted prefix read X Hread_end Hread_nonneg Hsafe.
+  set (p := Znth read sorted default_point).
+  set (lower := prefix ++ p :: nil).
+  assert (Hread_lt : read < Zlength sorted) by lia.
+  assert (Hsorted_split : sorted = sublist 0 read sorted ++ p :: nil).
+  {
+    subst p.
+    rewrite <- (sublist_self sorted (Zlength sorted)) at 1 by reflexivity.
+    rewrite (sublist_split 0 (Zlength sorted) read sorted) by lia.
+    replace (Zlength sorted) with (read + 1) by lia.
+    rewrite (sublist_single default_point read sorted) by lia.
+    reflexivity.
+  }
+  unfold andrew_lower_cont in Hsafe.
+  unfold build_hull_c_iter in Hsafe at 1.
+  replace (read + 1) with (Zlength sorted) in Hsafe by lia.
+  rewrite Zsublist_nil in Hsafe by lia.
+  simpl in Hsafe.
+  prog_nf in Hsafe.
+  eapply (safeExec_bind_reta (ret tt) _ _ _ tt) in Hsafe.
+  2:{
+    intros X0 Hret.
+    exact Hret.
+  }
+  eapply (safeExec_bind_reta _ _ _ _ (rev lower)) in Hsafe.
+  2:{
+    intros X0 Hget.
+    eapply safeExec_get'; [| exact Hget].
+    intros s Hs.
+    hnf in Hs.
+    exact Hs.
+  }
+  rewrite rev_involutive in Hsafe.
+  unfold Andrew_Monotone_Chain_M.build_upper_chain in Hsafe.
+  unfold Andrew_Monotone_Chain_M.build_chain in Hsafe.
+  prog_nf in Hsafe.
+  eapply safeExec_update'_bind in Hsafe.
+  eapply (safeExec_conseq (equiv nil)) in Hsafe.
+  2:{
+    intros s [s0 [Hs _]].
+    subst s.
+    reflexivity.
+  }
+  rewrite Hsorted_split in Hsafe.
+  rewrite rev_app_distr in Hsafe.
+  simpl in Hsafe.
+  unfold Graham_Scan_M.step_p in Hsafe at 1.
+  prog_nf in Hsafe.
+  eapply (highstepbind_derive
+            (Graham_Scan_M.step_fun p)
+            (fun x : unit =>
+               iter step_p (rev (sublist 0 read sorted)) x ;;
+               upper <- (T <- get' id ;; ret (rev T)) ;;
+               update'
+                 (fun _ : list Point =>
+                    Andrew_Monotone_Chain.andrew_merge
+                      (sublist 0 read sorted ++ p :: nil) lower upper))
+            (equiv nil) tt (equiv (p :: nil))) in Hsafe.
+  2:{
+    apply step_fun_nil_push_hseval.
+  }
+  prog_nf in Hsafe.
+  rewrite <- Hsorted_split in Hsafe.
+  subst lower p.
+  unfold andrew_upper_cont, andrew_upper_remaining_points.
+  replace (Zlength sorted - 1) with read by lia.
+  eapply (@safeExec_proequiv (list Point) unit
+      (iter step_p (rev (sublist 0 read sorted)) tt ;;
+       upper <- (T <- get' id ;; ret (rev T)) ;;
+       update'
+         (fun _ : list Point =>
+            Andrew_Monotone_Chain.andrew_merge sorted
+              (prefix ++ Znth read sorted default_point :: nil) upper))
+      (iter step_p (rev (sublist 0 read sorted)) tt ;;
+       T <- get' id ;;
+       update'
+         (fun _ : list Point =>
+            Andrew_Monotone_Chain.andrew_merge sorted
+              (prefix ++ Znth read sorted default_point :: nil) (rev T)))
+      (equiv (Znth read sorted default_point :: nil)) X).
+  - apply common_step_equiv; intros [].
+    etransitivity.
+    + apply bind_assoc.
+    + apply common_step_equiv; intro T.
+      apply (@bind_ret_left (list Point) (list Point) unit (rev T)
+        (fun upper =>
+           update'
+             (fun _ : list Point =>
+                Andrew_Monotone_Chain.andrew_merge sorted
+                  (prefix ++ Znth read sorted default_point :: nil) upper))).
+  - exact Hsafe.
+Qed.
+
+Lemma safeExec_andrew_upper_cont_pop : forall sorted lower read t s T X,
+  1 <= read ->
+  read <= Zlength sorted ->
+  ~ ccw s t (Znth (read - 1) sorted default_point) ->
+  safeExec (equiv (t :: s :: T)) (andrew_upper_cont sorted lower read) X ->
+  safeExec (equiv (s :: T)) (andrew_upper_cont sorted lower read) X.
+Proof.
+  intros sorted lower read t s T X Hread_pos Hread_le Hnccw Hsafe.
+  unfold andrew_upper_cont, andrew_upper_remaining_points in *.
+  rewrite (sublist_split 0 read (read - 1) sorted) in Hsafe by lia.
+  replace (sublist (read - 1) read sorted)
+    with (sublist (read - 1) (read - 1 + 1) sorted) in Hsafe
+    by (f_equal; lia).
+  rewrite (sublist_single default_point (read - 1) sorted) in Hsafe by lia.
+  rewrite rev_app_distr in Hsafe.
+  simpl in Hsafe.
+  unfold Graham_Scan_M.step_p at 1 in Hsafe.
+  rewrite (sublist_split 0 read (read - 1) sorted) by lia.
+  replace (sublist (read - 1) read sorted)
+    with (sublist (read - 1) (read - 1 + 1) sorted)
+    by (f_equal; lia).
+  rewrite (sublist_single default_point (read - 1) sorted) by lia.
+  rewrite rev_app_distr.
+  simpl.
+  unfold Graham_Scan_M.step_p at 1.
+  unfold Graham_Scan_M.step_fun in Hsafe at 1.
+  prog_nf in Hsafe.
+  unfold_loop in Hsafe.
+  prog_nf in Hsafe.
+  unfold Graham_Scan_M.step_fun at 1.
+  prog_nf.
+  unfold_loop.
+  prog_nf.
+  eapply (@safeExec_proequiv (list Point) unit
+    (repeat_break
+       (fun _ : unit => pop_fun (Znth (read - 1) sorted default_point)) tt ;;
+     x0 <- (T0 <- get' id ;;
+            update'
+              (fun _ : list Point =>
+                 Znth (read - 1) sorted default_point :: T0)) ;;
+     iter step_p (rev (sublist 0 (read - 1) sorted)) x0 ;;
+     T0 <- get' id ;;
+     update'
+       (fun _ : list Point =>
+          Andrew_Monotone_Chain.andrew_merge sorted lower (rev T0)))
+    _ (equiv (s :: T)) X).
+  - unfold_loop. prog_nf. hnf; intros; split; intros; assumption.
+  - eapply (highstepbind_derive
+            (pop_fun (Znth (read - 1) sorted default_point))
+            (fun x =>
+               match x with
+               | by_continue a0 =>
+                   repeat_break
+                     (fun _ : unit =>
+                        pop_fun (Znth (read - 1) sorted default_point)) a0
+               | by_break b0 => return b0
+               end ;;
+               x0 <- (T0 <- get' id ;;
+                      update'
+                        (fun _ : list Point =>
+                           Znth (read - 1) sorted default_point :: T0)) ;;
+               iter step_p (rev (sublist 0 (read - 1) sorted)) x0 ;;
+               T0 <- get' id ;;
+               update'
+                 (fun _ : list Point =>
+                    Andrew_Monotone_Chain.andrew_merge sorted lower (rev T0)))
+            (equiv (t :: s :: T)) (by_continue tt) (equiv (s :: T))).
+    + apply pop_fun_continue_hseval.
+      exact Hnccw.
+    + exact Hsafe.
+Qed.
+
+Lemma safeExec_andrew_upper_cont_single_push :
+  forall sorted lower read t X,
+    1 <= read ->
+    read <= Zlength sorted ->
+    safeExec (equiv (t :: nil)) (andrew_upper_cont sorted lower read) X ->
+    safeExec (equiv (Znth (read - 1) sorted default_point :: t :: nil))
+      (andrew_upper_cont sorted lower (read - 1)) X.
+Proof.
+  intros sorted lower read t X Hread_pos Hread_le Hsafe.
+  unfold andrew_upper_cont, andrew_upper_remaining_points in *.
+  rewrite (sublist_split 0 read (read - 1) sorted) in Hsafe by lia.
+  replace (sublist (read - 1) read sorted)
+    with (sublist (read - 1) (read - 1 + 1) sorted) in Hsafe
+    by (f_equal; lia).
+  rewrite (sublist_single default_point (read - 1) sorted) in Hsafe by lia.
+  rewrite rev_app_distr in Hsafe.
+  simpl in Hsafe.
+  unfold Graham_Scan_M.step_p at 1 in Hsafe.
+  eapply safeExec_bind_assoc_forward in Hsafe.
+  eapply (highstepbind_derive
+            (Graham_Scan_M.step_fun (Znth (read - 1) sorted default_point))
+            (fun b0 : unit =>
+               iter step_p (rev (sublist 0 (read - 1) sorted)) b0 ;;
+               T0 <- get' id ;;
+               update'
+                 (fun _ : list Point =>
+                    Andrew_Monotone_Chain.andrew_merge sorted lower (rev T0)))
+            (equiv (t :: nil)) tt
+            (equiv (Znth (read - 1) sorted default_point :: t :: nil))).
+  - apply step_fun_single_push_hseval.
+  - exact Hsafe.
+Qed.
+
+Lemma safeExec_andrew_upper_cont_ccw_push :
+  forall sorted lower chain read top X,
+    top = Zlength chain ->
+    2 <= top ->
+    1 <= read ->
+    read <= Zlength sorted ->
+    point_cross (Znth (top - 2) chain default_point)
+                (Znth (top - 1) chain default_point)
+                (Znth (read - 1) sorted default_point) > 0 ->
+    safeExec (equiv (rev chain)) (andrew_upper_cont sorted lower read) X ->
+    safeExec
+      (equiv (rev (chain ++ Znth (read - 1) sorted default_point :: nil)))
+      (andrew_upper_cont sorted lower (read - 1)) X.
+Proof.
+  intros sorted lower chain read top X Htop Htop_ge Hread_pos Hread_le
+         Hcross Hsafe.
+  unfold andrew_upper_cont, andrew_upper_remaining_points in *.
+  rewrite (sublist_split 0 read (read - 1) sorted) in Hsafe by lia.
+  replace (sublist (read - 1) read sorted)
+    with (sublist (read - 1) (read - 1 + 1) sorted) in Hsafe
+    by (f_equal; lia).
+  rewrite (sublist_single default_point (read - 1) sorted) in Hsafe by lia.
+  rewrite rev_app_distr in Hsafe.
+  simpl in Hsafe.
+  unfold Graham_Scan_M.step_p at 1 in Hsafe.
+  eapply safeExec_bind_assoc_forward in Hsafe.
+  destruct (rev chain) as [| t [| s T]] eqn:Hrev.
+  - apply (f_equal (@rev Point)) in Hrev.
+    rewrite rev_involutive in Hrev.
+    simpl in Hrev.
+    subst chain.
+    rewrite Zlength_nil in Htop. lia.
+  - apply (f_equal (@rev Point)) in Hrev.
+    rewrite rev_involutive in Hrev.
+    simpl in Hrev.
+    subst chain.
+    rewrite Zlength_cons, Zlength_nil in Htop. lia.
+  - assert (Hchain : chain = rev (t :: s :: T)).
+    {
+      rewrite <- (rev_involutive chain).
+      rewrite Hrev.
+      reflexivity.
+    }
+    subst chain.
+    rewrite rev_app_distr.
+    simpl.
+    rewrite rev_app_distr.
+    simpl.
+    rewrite rev_app_distr.
+    simpl.
+    rewrite rev_involutive.
+    assert (Hlen_for_rev : top - 1 + 1 = Zlength (rev (t :: s :: T))) by lia.
+    assert (Hccw : ccw s t (Znth (read - 1) sorted default_point)).
+    {
+      replace (Znth (top - 2) (rev (t :: s :: T)) default_point)
+        with (Znth (top - 1 - 1 - 0) (rev (t :: s :: T)) default_point)
+        in Hcross by (f_equal; lia).
+      replace (Znth (top - 1) (rev (t :: s :: T)) default_point)
+        with (Znth (top - 1 - 0) (rev (t :: s :: T)) default_point)
+        in Hcross by (f_equal; lia).
+      rewrite (Znth_rev_stack_prev default_point t s T (top - 1)) in Hcross
+        by exact Hlen_for_rev.
+      rewrite (Znth_rev_stack_top default_point t s T (top - 1)) in Hcross
+        by exact Hlen_for_rev.
+      apply point_cross_gt_0_ccw_local.
+      exact Hcross.
+    }
+    eapply (highstepbind_derive
+              (Graham_Scan_M.step_fun (Znth (read - 1) sorted default_point))
+              (fun b0 : unit =>
+                 iter step_p (rev (sublist 0 (read - 1) sorted)) b0 ;;
+                 T0 <- get' id ;;
+                 update'
+                   (fun _ : list Point =>
+                      Andrew_Monotone_Chain.andrew_merge sorted lower (rev T0)))
+              (equiv (t :: s :: T)) tt
+              (equiv (Znth (read - 1) sorted default_point :: t :: s :: T))).
+    + apply step_fun_ccw_push_hseval.
+      exact Hccw.
+    + exact Hsafe.
+Qed.
+
+Lemma andrew_merge_upper_done_point_drop_last :
+  forall sorted chain lower_n,
+    2 <= Zlength sorted ->
+    2 <= lower_n ->
+    lower_n < Zlength chain ->
+    Andrew_Monotone_Chain.andrew_merge sorted
+      (sublist 0 lower_n chain)
+      (sublist (lower_n - 1) (Zlength chain) chain) =
+    rev (point_drop_last chain).
+Proof.
+  intros sorted chain lower_n Hsorted_len Hlower_len Hlower_lt.
+  unfold Andrew_Monotone_Chain.andrew_merge.
+  unfold Andrew_Monotone_Chain.andrew_ccw_merge.
+  destruct sorted as [| a sorted_tail].
+  { rewrite Zlength_nil in Hsorted_len. lia. }
+  destruct sorted_tail as [| b sorted_tail].
+  { rewrite Zlength_cons, Zlength_nil in Hsorted_len. lia. }
+  simpl.
+  assert (Hlower :
+    sublist 0 lower_n chain =
+    sublist 0 (lower_n - 1) chain ++
+    Znth (lower_n - 1) chain default_point :: nil).
+  {
+    rewrite (sublist_split 0 lower_n (lower_n - 1) chain) by lia.
+    replace (sublist (lower_n - 1) lower_n chain)
+      with (sublist (lower_n - 1) ((lower_n - 1) + 1) chain)
+      by (f_equal; lia).
+    rewrite (sublist_single default_point (lower_n - 1) chain) by lia.
+    reflexivity.
+  }
+  assert (Hupper :
+    sublist (lower_n - 1) (Zlength chain) chain =
+    sublist (lower_n - 1) (Zlength chain - 1) chain ++
+    Znth (Zlength chain - 1) chain default_point :: nil).
+  {
+    rewrite (sublist_split (lower_n - 1) (Zlength chain)
+              (Zlength chain - 1) chain) by lia.
+    replace (sublist (Zlength chain - 1) (Zlength chain) chain)
+      with (sublist (Zlength chain - 1) ((Zlength chain - 1) + 1) chain)
+      by (f_equal; lia).
+    rewrite (sublist_single default_point (Zlength chain - 1) chain) by lia.
+    reflexivity.
+  }
+  rewrite Hlower, Hupper.
+  rewrite !Andrew_Monotone_Chain.removelast_snoc.
+  unfold point_drop_last.
+  rewrite <- (sublist_split 0 (Zlength chain - 1) (lower_n - 1) chain)
+    by lia.
+  reflexivity.
+Qed.
+
+Lemma safeExec_andrew_upper_cont_done_point_drop_last :
+  forall sorted chain lower_n X,
+    2 <= Zlength sorted ->
+    2 <= lower_n ->
+    lower_n < Zlength chain ->
+    safeExec
+      (equiv (rev (sublist (lower_n - 1) (Zlength chain) chain)))
+      (andrew_upper_cont sorted (sublist 0 lower_n chain) 0) X ->
+    safeExec (equiv (rev (point_drop_last chain))) (return tt) X.
+Proof.
+  intros sorted chain lower_n X Hsorted_len Hlower_len Hlower_lt Hsafe.
+  unfold andrew_upper_cont, andrew_upper_remaining_points in Hsafe.
+  replace (sublist 0 0 sorted) with (@nil Point) in Hsafe
+    by (rewrite Zsublist_nil by lia; reflexivity).
+  simpl in Hsafe.
+  prog_nf in Hsafe.
+  eapply (safeExec_bind_reta (ret tt) _ _ _ tt) in Hsafe.
+  2:{
+    intros X0 Hret.
+    exact Hret.
+  }
+  eapply (safeExec_bind_reta _ _ _ _
+            (rev (sublist (lower_n - 1) (Zlength chain) chain))) in Hsafe.
+  2:{
+    intros X0 Hget.
+    eapply safeExec_get'; [| exact Hget].
+    intros s Hs.
+    hnf in Hs.
+    exact Hs.
+  }
+  eapply safeExec_update' in Hsafe.
+  eapply safeExec_conseq.
+  - exact Hsafe.
+  - intros s [s0 [Hs Heq]].
+    hnf in Heq.
+    subst s0 s.
+    hnf.
+    rewrite rev_involutive.
+    rewrite andrew_merge_upper_done_point_drop_last by lia.
+    reflexivity.
 Qed.
 
 Lemma point_xy_sorted_leftdown_Znth : forall l i j,

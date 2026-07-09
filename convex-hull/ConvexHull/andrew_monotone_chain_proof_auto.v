@@ -75,57 +75,6 @@ Proof. Admitted.
 Lemma proof_of_swap_points_partial_solve_wit_8 : swap_points_partial_solve_wit_8.
 Proof. Admitted. 
 
-Lemma proof_of_reverse_points_safety_wit_1 : reverse_points_safety_wit_1.
-Proof. Admitted. 
-
-Lemma proof_of_reverse_points_safety_wit_2 : reverse_points_safety_wit_2.
-Proof. Admitted. 
-
-Lemma proof_of_reverse_points_safety_wit_3 : reverse_points_safety_wit_3.
-Proof. Admitted. 
-
-Lemma proof_of_reverse_points_safety_wit_4 : reverse_points_safety_wit_4.
-Proof. Admitted. 
-
-Lemma proof_of_reverse_points_safety_wit_5 : reverse_points_safety_wit_5.
-Proof. Admitted. 
-
-Lemma proof_of_reverse_points_safety_wit_6 : reverse_points_safety_wit_6.
-Proof. Admitted. 
-
-Lemma proof_of_reverse_points_safety_wit_7 : reverse_points_safety_wit_7.
-Proof. Admitted. 
-
-Lemma proof_of_reverse_points_safety_wit_8 : reverse_points_safety_wit_8.
-Proof. Admitted. 
-
-Lemma proof_of_reverse_points_return_wit_1 : reverse_points_return_wit_1.
-Proof. Admitted. 
-
-Lemma proof_of_reverse_points_partial_solve_wit_1 : reverse_points_partial_solve_wit_1.
-Proof. Admitted. 
-
-Lemma proof_of_reverse_points_partial_solve_wit_2 : reverse_points_partial_solve_wit_2.
-Proof. Admitted. 
-
-Lemma proof_of_reverse_points_partial_solve_wit_3 : reverse_points_partial_solve_wit_3.
-Proof. Admitted. 
-
-Lemma proof_of_reverse_points_partial_solve_wit_4 : reverse_points_partial_solve_wit_4.
-Proof. Admitted. 
-
-Lemma proof_of_reverse_points_partial_solve_wit_5 : reverse_points_partial_solve_wit_5.
-Proof. Admitted. 
-
-Lemma proof_of_reverse_points_partial_solve_wit_6 : reverse_points_partial_solve_wit_6.
-Proof. Admitted. 
-
-Lemma proof_of_reverse_points_partial_solve_wit_7 : reverse_points_partial_solve_wit_7.
-Proof. Admitted. 
-
-Lemma proof_of_reverse_points_partial_solve_wit_8 : reverse_points_partial_solve_wit_8.
-Proof. Admitted. 
-
 Lemma proof_of_partition_xy_points_safety_wit_1 : partition_xy_points_safety_wit_1.
 Proof. Admitted. 
 
@@ -148,27 +97,6 @@ Lemma proof_of_partition_xy_points_safety_wit_7 : partition_xy_points_safety_wit
 Proof. Admitted. 
 
 Lemma proof_of_partition_xy_points_safety_wit_8 : partition_xy_points_safety_wit_8.
-Proof. Admitted. 
-
-Lemma proof_of_partition_xy_points_safety_wit_9 : partition_xy_points_safety_wit_9.
-Proof. Admitted. 
-
-Lemma proof_of_partition_xy_points_safety_wit_10 : partition_xy_points_safety_wit_10.
-Proof. Admitted. 
-
-Lemma proof_of_partition_xy_points_safety_wit_11 : partition_xy_points_safety_wit_11.
-Proof. Admitted. 
-
-Lemma proof_of_partition_xy_points_safety_wit_12 : partition_xy_points_safety_wit_12.
-Proof. Admitted. 
-
-Lemma proof_of_partition_xy_points_safety_wit_13 : partition_xy_points_safety_wit_13.
-Proof. Admitted. 
-
-Lemma proof_of_partition_xy_points_safety_wit_14 : partition_xy_points_safety_wit_14.
-Proof. Admitted. 
-
-Lemma proof_of_partition_xy_points_safety_wit_15 : partition_xy_points_safety_wit_15.
 Proof. Admitted. 
 
 Lemma proof_of_partition_xy_points_partial_solve_wit_1 : partition_xy_points_partial_solve_wit_1.
@@ -427,12 +355,6 @@ Lemma proof_of_andrew_build_from_sorted_partial_solve_wit_25 : andrew_build_from
 Proof. Admitted. 
 
 Lemma proof_of_andrew_build_from_sorted_partial_solve_wit_26 : andrew_build_from_sorted_partial_solve_wit_26.
-Proof. Admitted. 
-
-Lemma proof_of_andrew_build_from_sorted_partial_solve_wit_27_pure : andrew_build_from_sorted_partial_solve_wit_27_pure.
-Proof. Admitted. 
-
-Lemma proof_of_andrew_build_from_sorted_partial_solve_wit_27 : andrew_build_from_sorted_partial_solve_wit_27.
 Proof. Admitted. 
 
 Lemma proof_of_andrew_monotone_chain_safety_wit_1 : andrew_monotone_chain_safety_wit_1.

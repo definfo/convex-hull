@@ -41,6 +41,32 @@ Definition andrew_monotone_chain
     (sorted : list point) : program (list point) unit :=
   build_andrew_hull sorted.
 
+Lemma graham_scan_inc_pop_nonleft : forall p t s T,
+  ~ ccw s t p ->
+  graham_scan_inc p (t :: s :: T) = graham_scan_inc p (s :: T).
+Proof.
+  intros p t s T Hnccw.
+  simpl.
+  destruct (ccw_dec s t p) as [Hccw | _].
+  - contradiction.
+  - reflexivity.
+Qed.
+
+Lemma fold_left_graham_scan_inc_pop_nonleft : forall p rest t s T,
+  ~ ccw s t p ->
+  fold_left (fun T p => graham_scan_inc p T) (p :: rest) (t :: s :: T) =
+  fold_left (fun T p => graham_scan_inc p T) (p :: rest) (s :: T).
+Proof.
+  intros p rest t s T Hnccw.
+  change
+    (fold_left (fun T p => graham_scan_inc p T) rest
+       (graham_scan_inc p (t :: s :: T)) =
+     fold_left (fun T p => graham_scan_inc p T) rest
+       (graham_scan_inc p (s :: T))).
+  rewrite (graham_scan_inc_pop_nonleft p t s T Hnccw).
+  reflexivity.
+Qed.
+
 Lemma build_chain_stack_correct : forall l,
   Hoare
     (fun _ : list point => True)

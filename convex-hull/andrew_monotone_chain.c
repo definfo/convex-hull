@@ -100,6 +100,56 @@ static void swap_points(struct Point *pts, int n, int i, int j)
   pts[j].y = tmp_y;
 }
 
+static void reverse_points(struct Point *pts, int n)
+/*@ With (pts_l : list Point)
+    Require
+      0 <= n && n <= 100000 &&
+      Zlength(pts_l) == n &&
+      PointArray::seg(pts, 0, n, pts_l)
+    Ensure
+      pts == pts@pre &&
+      n == n@pre &&
+      Zlength(pts_l) == n &&
+      PointArray::seg(pts, 0, n, rev(pts_l))
+*/
+{
+  int left = 0;
+  /*@ Inv Assert
+      exists pts_cur pts_out,
+        0 <= left && left <= n / 2 &&
+        pts == pts@pre &&
+        n == n@pre &&
+        0 <= n && n <= 100000 &&
+        Zlength(pts_l) == n &&
+        Zlength(pts_cur) == n &&
+        Zlength(pts_out) == n &&
+        pts_out == rev(pts_l) &&
+        point_prefix_reverse_state(pts_l, pts_cur, n, left) &&
+        PointArray::seg(pts, 0, n, pts_cur)
+  */
+  while (left < n - 1 - left) {
+    int right = n - 1 - left;
+    int tmp_x = pts[left].x;
+    int tmp_y = pts[left].y;
+    pts[left].x = pts[right].x;
+    pts[left].y = pts[right].y;
+    pts[right].x = tmp_x;
+    pts[right].y = tmp_y;
+    left++;
+  }
+  /*@ Assert
+      exists pts_out,
+        pts == pts@pre &&
+        n == n@pre &&
+        0 <= n && n <= 100000 &&
+        Zlength(pts_l) == n &&
+        Zlength(pts_out) == n &&
+        pts_out == rev(pts_l) &&
+        store(&left, left) *
+        PointArray::seg(pts, 0, n, pts_out)
+  */
+}
+
 static int partition_xy_points(struct Point *pts, int n, int low, int high)
 /*@ With (pts_l : list Point)
     Require
@@ -371,41 +421,7 @@ static int andrew_build_from_sorted(struct Point *pts, int n, struct Point *hull
         PointArray::seg(hull, 0, k, hull_original) *
         PointArray::undef_seg(hull, k, 2 * n)
   */
-  int left = 0;
-  /*@ Inv Assert
-      exists pts_sorted hull_original hull_cur hull_out,
-        0 <= left && left <= k / 2 &&
-        2 <= k && k <= 2 * n &&
-        pts == pts@pre &&
-        hull == hull@pre &&
-        n == n@pre &&
-        2 <= n && n <= 50000 &&
-        Zlength(pts_l) == n &&
-        Zlength(pts_sorted) == n &&
-        Zlength(hull_original) == k &&
-        Zlength(hull_cur) == k &&
-        Zlength(hull_out) == k &&
-        points_in_bound(pts_sorted) &&
-        point_permutation(pts_l, pts_sorted) &&
-        point_xy_sorted(pts_sorted) &&
-        hull_out == rev(hull_original) &&
-        point_prefix_reverse_state(hull_original, hull_cur, k, left) &&
-        safeExec(equiv(hull_out), return(tt), X) &&
-        store(&lower_n, lower_n) *
-        PointArray::full(pts, n, pts_sorted) *
-        PointArray::seg(hull, 0, k, hull_cur) *
-        PointArray::undef_seg(hull, k, 2 * n)
-  */
-  while (left < k - 1 - left) {
-    int right = k - 1 - left;
-    int tmp_x = hull[left].x;
-    int tmp_y = hull[left].y;
-    hull[left].x = hull[right].x;
-    hull[left].y = hull[right].y;
-    hull[right].x = tmp_x;
-    hull[right].y = tmp_y;
-    left++;
-  }
+  reverse_points(hull, k);
 
   /*@ Assert
       exists pts_sorted hull_out,
@@ -421,7 +437,6 @@ static int andrew_build_from_sorted(struct Point *pts, int n, struct Point *hull
         point_xy_sorted(pts_sorted) &&
         safeExec(equiv(hull_out), return(tt), X) &&
         store(&lower_n, lower_n) *
-        store(&left, left) *
         PointArray::full(pts, n, pts_sorted) *
         PointArray::seg(hull, 0, k, hull_out) *
         PointArray::undef_seg(hull, k, 2 * n)

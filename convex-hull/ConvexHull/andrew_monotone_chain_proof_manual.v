@@ -153,7 +153,7 @@ Proof.
   intros.
   split_pures; dump_pre_spatial;
     unfold point_bound, Point_Order.point_bound in *; nia.
-Qed. 
+Qed.
 
 Lemma proof_of_cross_prod_safety_wit_2_split_goal_1 : cross_prod_safety_wit_2_split_goal_1.
 Proof.
@@ -178,7 +178,7 @@ Proof.
   intros.
   split_pures; dump_pre_spatial;
     unfold point_bound, Point_Order.point_bound in *; nia.
-Qed. 
+Qed.
 
 Lemma proof_of_cross_prod_safety_wit_3_split_goal_1 : cross_prod_safety_wit_3_split_goal_1.
 Proof.
@@ -369,6 +369,15 @@ Proof.
       by (apply point_eq_by_xy; reflexivity).
     reflexivity.
 Qed.
+
+Lemma proof_of_reverse_points_entail_wit_1 : reverse_points_entail_wit_1.
+Proof. Admitted.
+
+Lemma proof_of_reverse_points_entail_wit_2 : reverse_points_entail_wit_2.
+Proof. Admitted.
+
+Lemma proof_of_reverse_points_entail_wit_3 : reverse_points_entail_wit_3.
+Proof. Admitted.
 
 Lemma proof_of_partition_xy_points_entail_wit_1_split_goal_1 : partition_xy_points_entail_wit_1_split_goal_1.
 Proof.
@@ -965,7 +974,104 @@ Proof.
 Qed.
 
 Lemma proof_of_andrew_build_from_sorted_entail_wit_3 : andrew_build_from_sorted_entail_wit_3.
-Proof. Admitted. 
+Proof.
+  right.
+  pre_process.
+  Exists (point_drop_last lower_2).
+  assert (Htop_for_cross : k = Zlength lower_2).
+  {
+    pose proof PreH17 as Hinv0.
+    unfold andrew_lower_scan_inv in Hinv0.
+    tauto.
+  }
+  assert (Hcross_gen :
+    point_cross
+      (Znth (k - 2 - 0) lower_2 __default_Point)
+      (Znth (k - 1 - 0) lower_2 __default_Point)
+      (Znth i pts_sorted_2 __default_Point) <= 0).
+  {
+    rewrite point_cross_unfold.
+    unfold point_cross_by_value in PreH2.
+    simpl in *.
+    rewrite PreH2 in PreH1.
+    exact PreH1.
+  }
+  assert (Hcross :
+    point_cross
+      (Znth (k - 2) lower_2 default_point)
+      (Znth (k - 1) lower_2 default_point)
+      (Znth i pts_sorted_2 default_point) <= 0).
+  {
+    replace (Znth (k - 2) lower_2 default_point)
+      with (Znth (k - 2 - 0) lower_2 __default_Point)
+      by (rewrite (Znth_indep lower_2 (k - 2) default_point __default_Point) by lia;
+          f_equal; lia).
+    replace (Znth (k - 1) lower_2 default_point)
+      with (Znth (k - 1 - 0) lower_2 __default_Point)
+      by (rewrite (Znth_indep lower_2 (k - 1) default_point __default_Point) by lia;
+          f_equal; lia).
+    replace (Znth i pts_sorted_2 default_point)
+      with (Znth i pts_sorted_2 __default_Point)
+      by (apply Znth_indep; rewrite PreH12; lia).
+    exact Hcross_gen.
+	  }
+	  assert (Hinv_pop : andrew_lower_scan_inv pts_sorted_2 (point_drop_last lower_2) i (k - 1)).
+  {
+    unfold andrew_lower_scan_inv in PreH17.
+    destruct PreH17 as
+      [Hread [Htop [Htop_bounds [Hbound [Hin Hexit_len]]]]].
+    unfold andrew_lower_scan_inv.
+    split; [exact Hread |].
+    split; [rewrite point_drop_last_Zlength by lia; lia |].
+    split; [lia |].
+    split; [apply points_in_bound_drop_last; [lia | exact Hbound] |].
+    split; [apply Forall_point_drop_last; [lia | exact Hin] |].
+    intro Hdone.
+    lia.
+  }
+  assert (Hcont_pop :
+    andrew_lower_remaining_cont pts_sorted_2 (point_drop_last lower_2) i X_low_level_spec).
+  {
+    eapply andrew_lower_remaining_cont_pop with (top := k);
+      [exact Hcross | lia | lia | exact Htop_for_cross | rewrite PreH12; exact PreH5 | exact PreH18].
+  }
+  split_pure_spatial.
+  - destruct (point_drop_last_decompose lower_2) as [prefix [last [Hlower Hdrop]]].
+    { unfold andrew_lower_scan_inv in PreH17.
+      destruct PreH17 as [_ [Htop _]].
+      lia. }
+    rewrite Hlower at 1.
+    rewrite Hdrop.
+    sep_apply_l_atomic (point_array_seg_pop_tail_at_k hull_pre k (2 * n_pre) prefix last).
+    + dump_pre_spatial.
+      rewrite <- Hdrop.
+      rewrite point_drop_last_Zlength.
+      * unfold andrew_lower_scan_inv in PreH17.
+        destruct PreH17 as [_ [Htop _]].
+        lia.
+      * unfold andrew_lower_scan_inv in PreH17.
+        destruct PreH17 as [_ [Htop _]].
+        lia.
+    + dump_pre_spatial.
+      lia.
+    + cancel.
+  - split_pures.
+    + dump_pre_spatial. lia.
+    + dump_pre_spatial. lia.
+    + dump_pre_spatial. lia.
+    + dump_pre_spatial. lia.
+    + dump_pre_spatial. lia.
+    + dump_pre_spatial. lia.
+    + dump_pre_spatial. lia.
+    + dump_pre_spatial. exact PreH11.
+    + dump_pre_spatial. exact PreH12.
+    + dump_pre_spatial. exact PreH13.
+    + dump_pre_spatial. exact PreH14.
+    + dump_pre_spatial. exact PreH15.
+    + dump_pre_spatial. exact PreH16.
+    + dump_pre_spatial. exact Hinv_pop.
+    + dump_pre_spatial. exact Hcont_pop.
+Qed.
 
 Lemma proof_of_andrew_build_from_sorted_entail_wit_4_1 : andrew_build_from_sorted_entail_wit_4_1.
 Proof. Admitted. 
@@ -977,11 +1083,17 @@ Lemma proof_of_andrew_build_from_sorted_entail_wit_5_split_goal_1 : andrew_build
 Proof.
   pre_process.
   dump_pre_spatial.
-  unfold andrew_lower_remaining_cont in PreH14.
-  destruct PreH14 as [stk [Hchain [Hsafe Hupper]]].
-  unfold andrew_lower_scan_inv in PreH13.
-  destruct PreH13 as [_ [Htop [_ [_ [_ [_ [_ [_ Hfinished]]]]]]]].
-  specialize (Hupper ltac:(rewrite PreH9; lia)).
+  match goal with
+	  | Hcont : andrew_lower_remaining_cont _ _ _ _ |- _ =>
+	      unfold andrew_lower_remaining_cont in Hcont;
+	      destruct Hcont as [stk [Hchain [Hsafe Hupper]]]
+	  end.
+  match goal with
+  | Hinv : andrew_lower_scan_inv _ _ _ _ |- _ =>
+      unfold andrew_lower_scan_inv in Hinv;
+      destruct Hinv as [_ [Htop _]]
+  end.
+  specialize (Hupper ltac:(rewrite PreH10; lia)).
   replace (n_pre - 2 + 1) with (Zlength pts_sorted_2 - 1) by lia.
   replace k with (Zlength lower) by lia.
   exact Hupper.
@@ -992,13 +1104,15 @@ Proof. Abort.
 
 Lemma proof_of_andrew_build_from_sorted_entail_wit_5_split_goal_3 : andrew_build_from_sorted_entail_wit_5_split_goal_3.
 Proof.
-  pre_process.
-  dump_pre_spatial.
-  unfold andrew_lower_scan_inv in PreH13.
-  destruct PreH13 as [_ [Htop [_ [_ [_ [_ [_ [_ Hfinished]]]]]]]].
-  specialize (Hfinished ltac:(rewrite PreH9; lia)).
-  unfold andrew_lower_finished_chain in Hfinished.
-  destruct Hfinished as [_ [_ [_ [_ [_ [_ [_ [_ Hk]]]]]]]].
+	  pre_process.
+	  dump_pre_spatial.
+  match goal with
+  | Hinv : andrew_lower_scan_inv _ _ _ _ |- _ =>
+      unfold andrew_lower_scan_inv in Hinv;
+      destruct Hinv as [_ [_ [_ [_ [_ Hexit_len]]]]]
+  end.
+  apply Hexit_len.
+  rewrite PreH10.
   lia.
 Qed.
 
@@ -1061,22 +1175,19 @@ Proof. Admitted.
 Lemma proof_of_andrew_build_from_sorted_entail_wit_10 : andrew_build_from_sorted_entail_wit_10.
 Proof. Admitted.
 
-Lemma proof_of_andrew_build_from_sorted_entail_wit_11 : andrew_build_from_sorted_entail_wit_11.
-Proof. Admitted.
-
-Lemma proof_of_andrew_build_from_sorted_entail_wit_12 : andrew_build_from_sorted_entail_wit_12.
-Proof. Admitted.
-
 Lemma proof_of_andrew_build_from_sorted_partial_solve_wit_7_pure_split_goal_1 : andrew_build_from_sorted_partial_solve_wit_7_pure_split_goal_1.
 Proof.
   pre_process.
   dump_pre_spatial.
   match goal with
   | |- context [Znth ?idx ?xs ?d] =>
-      unfold andrew_lower_scan_inv in PreH20;
-      destruct PreH20 as [_ [Hlen [_ [Hbound _]]]];
+      match goal with
+      | Hinv : andrew_lower_scan_inv _ _ _ _ |- _ =>
+          unfold andrew_lower_scan_inv in Hinv;
+          destruct Hinv as [_ [Hlen [_ [Hbound _]]]]
+      end;
       pose proof (points_in_bound_Znth xs idx d Hbound) as Hpt;
-      assert (0 <= idx < Zlength lower) by lia;
+      assert (0 <= idx < Zlength xs) by lia;
       specialize (Hpt H);
       unfold point_in_bound, Point_Order.point_in_bound in Hpt;
       unfold point_bound, Point_Order.point_bound;
@@ -1091,10 +1202,13 @@ Proof.
   dump_pre_spatial.
   match goal with
   | |- context [Znth ?idx ?xs ?d] =>
-      unfold andrew_lower_scan_inv in PreH20;
-      destruct PreH20 as [_ [Hlen [_ [Hbound _]]]];
+      match goal with
+      | Hinv : andrew_lower_scan_inv _ _ _ _ |- _ =>
+          unfold andrew_lower_scan_inv in Hinv;
+          destruct Hinv as [_ [Hlen [_ [Hbound _]]]]
+      end;
       pose proof (points_in_bound_Znth xs idx d Hbound) as Hpt;
-      assert (0 <= idx < Zlength lower) by lia;
+      assert (0 <= idx < Zlength xs) by lia;
       specialize (Hpt H);
       unfold point_in_bound, Point_Order.point_in_bound in Hpt;
       unfold point_bound, Point_Order.point_bound;
@@ -1109,10 +1223,13 @@ Proof.
   dump_pre_spatial.
   match goal with
   | |- context [Znth ?idx ?xs ?d] =>
-      unfold andrew_lower_scan_inv in PreH20;
-      destruct PreH20 as [_ [Hlen [_ [Hbound _]]]];
+      match goal with
+      | Hinv : andrew_lower_scan_inv _ _ _ _ |- _ =>
+          unfold andrew_lower_scan_inv in Hinv;
+          destruct Hinv as [_ [Hlen [_ [Hbound _]]]]
+      end;
       pose proof (points_in_bound_Znth xs idx d Hbound) as Hpt;
-      assert (0 <= idx < Zlength lower) by lia;
+      assert (0 <= idx < Zlength xs) by lia;
       specialize (Hpt H);
       unfold point_in_bound, Point_Order.point_in_bound in Hpt;
       unfold point_bound, Point_Order.point_bound;
@@ -1127,10 +1244,13 @@ Proof.
   dump_pre_spatial.
   match goal with
   | |- context [Znth ?idx ?xs ?d] =>
-      unfold andrew_lower_scan_inv in PreH20;
-      destruct PreH20 as [_ [Hlen [_ [Hbound _]]]];
+      match goal with
+      | Hinv : andrew_lower_scan_inv _ _ _ _ |- _ =>
+          unfold andrew_lower_scan_inv in Hinv;
+          destruct Hinv as [_ [Hlen [_ [Hbound _]]]]
+      end;
       pose proof (points_in_bound_Znth xs idx d Hbound) as Hpt;
-      assert (0 <= idx < Zlength lower) by lia;
+      assert (0 <= idx < Zlength xs) by lia;
       specialize (Hpt H);
       unfold point_in_bound, Point_Order.point_in_bound in Hpt;
       unfold point_bound, Point_Order.point_bound;
@@ -1145,10 +1265,13 @@ Proof.
   dump_pre_spatial.
   match goal with
   | |- context [Znth ?idx ?xs ?d] =>
-      unfold andrew_lower_scan_inv in PreH20;
-      destruct PreH20 as [_ [Hlen [_ [Hbound _]]]];
+      match goal with
+      | Hinv : andrew_lower_scan_inv _ _ _ _ |- _ =>
+          unfold andrew_lower_scan_inv in Hinv;
+          destruct Hinv as [_ [Hlen [_ [Hbound _]]]]
+      end;
       pose proof (points_in_bound_Znth xs idx d Hbound) as Hpt;
-      assert (0 <= idx < Zlength lower) by lia;
+      assert (0 <= idx < Zlength xs) by lia;
       specialize (Hpt H);
       unfold point_in_bound, Point_Order.point_in_bound in Hpt;
       unfold point_bound, Point_Order.point_bound;
@@ -1163,10 +1286,13 @@ Proof.
   dump_pre_spatial.
   match goal with
   | |- context [Znth ?idx ?xs ?d] =>
-      unfold andrew_lower_scan_inv in PreH20;
-      destruct PreH20 as [_ [Hlen [_ [Hbound _]]]];
+      match goal with
+      | Hinv : andrew_lower_scan_inv _ _ _ _ |- _ =>
+          unfold andrew_lower_scan_inv in Hinv;
+          destruct Hinv as [_ [Hlen [_ [Hbound _]]]]
+      end;
       pose proof (points_in_bound_Znth xs idx d Hbound) as Hpt;
-      assert (0 <= idx < Zlength lower) by lia;
+      assert (0 <= idx < Zlength xs) by lia;
       specialize (Hpt H);
       unfold point_in_bound, Point_Order.point_in_bound in Hpt;
       unfold point_bound, Point_Order.point_bound;
@@ -1181,10 +1307,13 @@ Proof.
   dump_pre_spatial.
   match goal with
   | |- context [Znth ?idx ?xs ?d] =>
-      unfold andrew_lower_scan_inv in PreH20;
-      destruct PreH20 as [_ [Hlen [_ [Hbound _]]]];
+      match goal with
+      | Hinv : andrew_lower_scan_inv _ _ _ _ |- _ =>
+          unfold andrew_lower_scan_inv in Hinv;
+          destruct Hinv as [_ [Hlen [_ [Hbound _]]]]
+      end;
       pose proof (points_in_bound_Znth xs idx d Hbound) as Hpt;
-      assert (0 <= idx < Zlength lower) by lia;
+      assert (0 <= idx < Zlength xs) by lia;
       specialize (Hpt H);
       unfold point_in_bound, Point_Order.point_in_bound in Hpt;
       unfold point_bound, Point_Order.point_bound;
@@ -1199,10 +1328,13 @@ Proof.
   dump_pre_spatial.
   match goal with
   | |- context [Znth ?idx ?xs ?d] =>
-      unfold andrew_lower_scan_inv in PreH20;
-      destruct PreH20 as [_ [Hlen [_ [Hbound _]]]];
+      match goal with
+      | Hinv : andrew_lower_scan_inv _ _ _ _ |- _ =>
+          unfold andrew_lower_scan_inv in Hinv;
+          destruct Hinv as [_ [Hlen [_ [Hbound _]]]]
+      end;
       pose proof (points_in_bound_Znth xs idx d Hbound) as Hpt;
-      assert (0 <= idx < Zlength lower) by lia;
+      assert (0 <= idx < Zlength xs) by lia;
       specialize (Hpt H);
       unfold point_in_bound, Point_Order.point_in_bound in Hpt;
       unfold point_bound, Point_Order.point_bound;
@@ -1215,9 +1347,13 @@ Lemma proof_of_andrew_build_from_sorted_partial_solve_wit_7_pure_split_goal_9 : 
 Proof.
   pre_process.
   dump_pre_spatial.
-  unfold point_in_bound, Point_Order.point_in_bound in PreH19.
+  match goal with
+  | Hpt : point_in_bound _ |- _ =>
+      unfold point_in_bound, Point_Order.point_in_bound in Hpt;
+      unfold point_bound, Point_Order.point_bound in Hpt;
+      destruct Hpt as [[Hxlo Hxhi] [Hylo Hyhi]]
+  end.
   unfold point_bound, Point_Order.point_bound.
-  destruct PreH19 as [[Hxlo Hxhi] [Hylo Hyhi]].
   try exact Hxlo; try exact Hxhi; try exact Hylo; try exact Hyhi.
 Qed.
 
@@ -1225,9 +1361,13 @@ Lemma proof_of_andrew_build_from_sorted_partial_solve_wit_7_pure_split_goal_10 :
 Proof.
   pre_process.
   dump_pre_spatial.
-  unfold point_in_bound, Point_Order.point_in_bound in PreH19.
+  match goal with
+  | Hpt : point_in_bound _ |- _ =>
+      unfold point_in_bound, Point_Order.point_in_bound in Hpt;
+      unfold point_bound, Point_Order.point_bound in Hpt;
+      destruct Hpt as [[Hxlo Hxhi] [Hylo Hyhi]]
+  end.
   unfold point_bound, Point_Order.point_bound.
-  destruct PreH19 as [[Hxlo Hxhi] [Hylo Hyhi]].
   try exact Hxlo; try exact Hxhi; try exact Hylo; try exact Hyhi.
 Qed.
 
@@ -1235,9 +1375,13 @@ Lemma proof_of_andrew_build_from_sorted_partial_solve_wit_7_pure_split_goal_11 :
 Proof.
   pre_process.
   dump_pre_spatial.
-  unfold point_in_bound, Point_Order.point_in_bound in PreH19.
+  match goal with
+  | Hpt : point_in_bound _ |- _ =>
+      unfold point_in_bound, Point_Order.point_in_bound in Hpt;
+      unfold point_bound, Point_Order.point_bound in Hpt;
+      destruct Hpt as [[Hxlo Hxhi] [Hylo Hyhi]]
+  end.
   unfold point_bound, Point_Order.point_bound.
-  destruct PreH19 as [[Hxlo Hxhi] [Hylo Hyhi]].
   try exact Hxlo; try exact Hxhi; try exact Hylo; try exact Hyhi.
 Qed.
 
@@ -1245,9 +1389,13 @@ Lemma proof_of_andrew_build_from_sorted_partial_solve_wit_7_pure_split_goal_12 :
 Proof.
   pre_process.
   dump_pre_spatial.
-  unfold point_in_bound, Point_Order.point_in_bound in PreH19.
+  match goal with
+  | Hpt : point_in_bound _ |- _ =>
+      unfold point_in_bound, Point_Order.point_in_bound in Hpt;
+      unfold point_bound, Point_Order.point_bound in Hpt;
+      destruct Hpt as [[Hxlo Hxhi] [Hylo Hyhi]]
+  end.
   unfold point_bound, Point_Order.point_bound.
-  destruct PreH19 as [[Hxlo Hxhi] [Hylo Hyhi]].
   try exact Hxlo; try exact Hxhi; try exact Hylo; try exact Hyhi.
 Qed.
 
@@ -1261,10 +1409,13 @@ Proof.
     try (dump_pre_spatial;
          match goal with
          | |- context [Znth ?idx ?xs ?d] =>
-             unfold andrew_lower_scan_inv in PreH20;
-             destruct PreH20 as [_ [Hlen [_ [Hbound _]]]];
+             match goal with
+             | Hinv : andrew_lower_scan_inv _ _ _ _ |- _ =>
+                 unfold andrew_lower_scan_inv in Hinv;
+                 destruct Hinv as [_ [Hlen [_ [Hbound _]]]]
+             end;
              pose proof (points_in_bound_Znth xs idx d Hbound) as Hpt;
-             assert (0 <= idx < Zlength lower) by lia;
+             assert (0 <= idx < Zlength xs) by lia;
              specialize (Hpt H);
              unfold point_in_bound, Point_Order.point_in_bound in Hpt;
              unfold point_bound, Point_Order.point_bound;
@@ -1273,9 +1424,13 @@ Proof.
          end).
   all:
     dump_pre_spatial;
-    unfold point_in_bound, Point_Order.point_in_bound in PreH19;
+    match goal with
+    | Hpt : point_in_bound _ |- _ =>
+        unfold point_in_bound, Point_Order.point_in_bound in Hpt;
+        unfold point_bound, Point_Order.point_bound in Hpt;
+        destruct Hpt as [[Hxlo Hxhi] [Hylo Hyhi]]
+    end;
     unfold point_bound, Point_Order.point_bound;
-    destruct PreH19 as [[Hxlo Hxhi] [Hylo Hyhi]];
     try exact Hxlo; try exact Hxhi; try exact Hylo; try exact Hyhi.
 Qed.
 
@@ -1567,16 +1722,15 @@ Proof.
       * dump_pre_spatial. exact H6.
       * dump_pre_spatial. exact H7.
       * dump_pre_spatial. exact H8.
-      * dump_pre_spatial. exact H9.
-      * dump_pre_spatial. exact H10.
-      * dump_pre_spatial. exact H11.
-      * dump_pre_spatial. exact H12.
-      * dump_pre_spatial.
-        change (result_state (equiv empty_point_stack)
-          (andrew_monotone_chain_m pts_l_high_level_spec))
-          with (fun _ : unit => result_state (equiv empty_point_stack)
-            (andrew_monotone_chain_m pts_l_high_level_spec) tt) in H13.
-        destruct (safeExec_ret_tt _ _ H13) as [s [Heq Hres]].
+	      * dump_pre_spatial. exact H9.
+	      * dump_pre_spatial. exact H10.
+	      * dump_pre_spatial. exact H11.
+	      * dump_pre_spatial.
+	        change (result_state (equiv empty_point_stack)
+	          (andrew_monotone_chain_m pts_l_high_level_spec))
+	          with (fun _ : unit => result_state (equiv empty_point_stack)
+	            (andrew_monotone_chain_m pts_l_high_level_spec) tt) in H12.
+	        destruct (safeExec_ret_tt _ _ H12) as [s [Heq Hres]].
         change (hull_out_2 = s) in Heq.
         subst s.
         pose proof (Hoare_result_state

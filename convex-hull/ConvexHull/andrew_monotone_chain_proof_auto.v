@@ -75,6 +75,57 @@ Proof. Admitted.
 Lemma proof_of_swap_points_partial_solve_wit_8 : swap_points_partial_solve_wit_8.
 Proof. Admitted. 
 
+Lemma proof_of_reverse_points_safety_wit_1 : reverse_points_safety_wit_1.
+Proof. Admitted. 
+
+Lemma proof_of_reverse_points_safety_wit_2 : reverse_points_safety_wit_2.
+Proof. Admitted. 
+
+Lemma proof_of_reverse_points_safety_wit_3 : reverse_points_safety_wit_3.
+Proof. Admitted. 
+
+Lemma proof_of_reverse_points_safety_wit_4 : reverse_points_safety_wit_4.
+Proof. Admitted. 
+
+Lemma proof_of_reverse_points_safety_wit_5 : reverse_points_safety_wit_5.
+Proof. Admitted. 
+
+Lemma proof_of_reverse_points_safety_wit_6 : reverse_points_safety_wit_6.
+Proof. Admitted. 
+
+Lemma proof_of_reverse_points_safety_wit_7 : reverse_points_safety_wit_7.
+Proof. Admitted. 
+
+Lemma proof_of_reverse_points_safety_wit_8 : reverse_points_safety_wit_8.
+Proof. Admitted. 
+
+Lemma proof_of_reverse_points_return_wit_1 : reverse_points_return_wit_1.
+Proof. Admitted. 
+
+Lemma proof_of_reverse_points_partial_solve_wit_1 : reverse_points_partial_solve_wit_1.
+Proof. Admitted. 
+
+Lemma proof_of_reverse_points_partial_solve_wit_2 : reverse_points_partial_solve_wit_2.
+Proof. Admitted. 
+
+Lemma proof_of_reverse_points_partial_solve_wit_3 : reverse_points_partial_solve_wit_3.
+Proof. Admitted. 
+
+Lemma proof_of_reverse_points_partial_solve_wit_4 : reverse_points_partial_solve_wit_4.
+Proof. Admitted. 
+
+Lemma proof_of_reverse_points_partial_solve_wit_5 : reverse_points_partial_solve_wit_5.
+Proof. Admitted. 
+
+Lemma proof_of_reverse_points_partial_solve_wit_6 : reverse_points_partial_solve_wit_6.
+Proof. Admitted. 
+
+Lemma proof_of_reverse_points_partial_solve_wit_7 : reverse_points_partial_solve_wit_7.
+Proof. Admitted. 
+
+Lemma proof_of_reverse_points_partial_solve_wit_8 : reverse_points_partial_solve_wit_8.
+Proof. Admitted. 
+
 Lemma proof_of_partition_xy_points_safety_wit_1 : partition_xy_points_safety_wit_1.
 Proof. Admitted. 
 
@@ -297,30 +348,6 @@ Proof. Admitted.
 Lemma proof_of_andrew_build_from_sorted_safety_wit_35 : andrew_build_from_sorted_safety_wit_35.
 Proof. Admitted. 
 
-Lemma proof_of_andrew_build_from_sorted_safety_wit_36 : andrew_build_from_sorted_safety_wit_36.
-Proof. Admitted. 
-
-Lemma proof_of_andrew_build_from_sorted_safety_wit_37 : andrew_build_from_sorted_safety_wit_37.
-Proof. Admitted. 
-
-Lemma proof_of_andrew_build_from_sorted_safety_wit_38 : andrew_build_from_sorted_safety_wit_38.
-Proof. Admitted. 
-
-Lemma proof_of_andrew_build_from_sorted_safety_wit_39 : andrew_build_from_sorted_safety_wit_39.
-Proof. Admitted. 
-
-Lemma proof_of_andrew_build_from_sorted_safety_wit_40 : andrew_build_from_sorted_safety_wit_40.
-Proof. Admitted. 
-
-Lemma proof_of_andrew_build_from_sorted_safety_wit_41 : andrew_build_from_sorted_safety_wit_41.
-Proof. Admitted. 
-
-Lemma proof_of_andrew_build_from_sorted_safety_wit_42 : andrew_build_from_sorted_safety_wit_42.
-Proof. Admitted. 
-
-Lemma proof_of_andrew_build_from_sorted_safety_wit_43 : andrew_build_from_sorted_safety_wit_43.
-Proof. Admitted. 
-
 Lemma proof_of_andrew_build_from_sorted_return_wit_1 : andrew_build_from_sorted_return_wit_1.
 Proof. Admitted. 
 
@@ -402,28 +429,10 @@ Proof. Admitted.
 Lemma proof_of_andrew_build_from_sorted_partial_solve_wit_26 : andrew_build_from_sorted_partial_solve_wit_26.
 Proof. Admitted. 
 
+Lemma proof_of_andrew_build_from_sorted_partial_solve_wit_27_pure : andrew_build_from_sorted_partial_solve_wit_27_pure.
+Proof. Admitted. 
+
 Lemma proof_of_andrew_build_from_sorted_partial_solve_wit_27 : andrew_build_from_sorted_partial_solve_wit_27.
-Proof. Admitted. 
-
-Lemma proof_of_andrew_build_from_sorted_partial_solve_wit_28 : andrew_build_from_sorted_partial_solve_wit_28.
-Proof. Admitted. 
-
-Lemma proof_of_andrew_build_from_sorted_partial_solve_wit_29 : andrew_build_from_sorted_partial_solve_wit_29.
-Proof. Admitted. 
-
-Lemma proof_of_andrew_build_from_sorted_partial_solve_wit_30 : andrew_build_from_sorted_partial_solve_wit_30.
-Proof. Admitted. 
-
-Lemma proof_of_andrew_build_from_sorted_partial_solve_wit_31 : andrew_build_from_sorted_partial_solve_wit_31.
-Proof. Admitted. 
-
-Lemma proof_of_andrew_build_from_sorted_partial_solve_wit_32 : andrew_build_from_sorted_partial_solve_wit_32.
-Proof. Admitted. 
-
-Lemma proof_of_andrew_build_from_sorted_partial_solve_wit_33 : andrew_build_from_sorted_partial_solve_wit_33.
-Proof. Admitted. 
-
-Lemma proof_of_andrew_build_from_sorted_partial_solve_wit_34 : andrew_build_from_sorted_partial_solve_wit_34.
 Proof. Admitted. 
 
 Lemma proof_of_andrew_monotone_chain_safety_wit_1 : andrew_monotone_chain_safety_wit_1.

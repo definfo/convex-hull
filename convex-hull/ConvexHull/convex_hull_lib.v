@@ -1091,6 +1091,49 @@ Definition andrew_complete_hull_shape
 Definition point_drop_last (l : list Point) : list Point :=
   sublist 0 (Zlength l - 1) l.
 
+Lemma point_drop_last_snoc : forall prefix last,
+  point_drop_last (prefix ++ last :: nil) = prefix.
+Proof.
+  intros prefix last.
+  unfold point_drop_last.
+  replace (Zlength (prefix ++ last :: nil) - 1) with (Zlength prefix).
+  - apply sublist_app_exact1.
+  - rewrite Zlength_app, Zlength_cons, Zlength_nil.
+    pose proof (Zlength_nonneg prefix). lia.
+Qed.
+
+Lemma point_drop_last_decompose : forall l,
+  0 < Zlength l ->
+  exists prefix last, l = prefix ++ last :: nil /\ point_drop_last l = prefix.
+Proof.
+  intros l Hlen.
+  destruct (list_snoc_destruct l) as [Hnil | [last [prefix Hsnoc]]].
+  - subst l. rewrite Zlength_nil in Hlen. lia.
+  - subst l. exists prefix, last. split; [reflexivity |].
+    apply point_drop_last_snoc.
+Qed.
+
+Lemma point_drop_last_Zlength : forall l,
+  0 < Zlength l ->
+  Zlength (point_drop_last l) = Zlength l - 1.
+Proof.
+  intros l Hlen.
+  unfold point_drop_last.
+  rewrite Zlength_sublist by lia.
+  lia.
+Qed.
+
+Lemma point_drop_last_Znth : forall l idx d,
+  0 <= idx < Zlength l - 1 ->
+  Znth idx (point_drop_last l) d = Znth idx l d.
+Proof.
+  intros l idx d Hidx.
+  unfold point_drop_last.
+  rewrite Znth_sublist by lia.
+  replace (idx + 0) with idx by lia.
+  reflexivity.
+Qed.
+
 Definition andrew_ccw_complete_hull_shape
     (sorted chain : list Point) : Prop :=
   andrew_complete_hull_shape sorted (rev chain).
@@ -1155,10 +1198,7 @@ Definition andrew_lower_scan_inv
   0 <= top <= read /\
   points_in_bound chain /\
   Forall (fun p => In p sorted) chain /\
-  point_list_not_all_same sorted /\
-  andrew_lower_chain_geometry sorted chain read /\
-  andrew_lower_append_ready sorted chain read /\
-  (Zlength sorted <= read -> andrew_lower_finished_chain sorted chain).
+  (Zlength sorted <= read -> 2 <= top).
 
 Definition andrew_upper_scan_inv
     (sorted chain : list Point) (read top lower_n : Z) : Prop :=
@@ -1233,9 +1273,7 @@ Definition andrew_upper_remaining_cont
   exists stk,
     stk = andrew_upper_stack_from_chain chain lower_n /\
     safeExec (equiv stk)
-      (andrew_upper_cont sorted (sublist 0 lower_n chain) read) X /\
-    (read <= 0 ->
-       safeExec (equiv (rev (point_drop_last chain))) (return tt) X).
+      (andrew_upper_cont sorted (sublist 0 lower_n chain) read) X.
 
 Definition andrew_lower_cont
     (sorted : list Point) (read : Z)
@@ -4774,43 +4812,6 @@ Proof.
   intros sorted Hlen Hbound Hnas.
   unfold andrew_lower_scan_inv.
   repeat split; try lia; try constructor.
-  - apply points_not_all_same_to_point_list_not_all_same; exact Hnas.
-  - unfold point_chain_strictly_uses_range, point_chain_indexed_by_range,
-      point_indices_strict_increasing.
-    exists nil. split.
-    + split.
-      * rewrite Zlength_nil. reflexivity.
-      * intros pos Hpos. rewrite Zlength_nil in Hpos. lia.
-    + intros a b Ha Hab Hb. rewrite Zlength_nil in Hb. lia.
-  - unfold point_chain_starts_at; intros Hz.
-    rewrite Zlength_nil in Hz. lia.
-  - unfold point_chain_left_turns; intros idx Hidx Hlt.
-    rewrite Zlength_nil in Hlt. lia.
-  - unfold point_chain_left_envelope; intros edge_idx point_idx Hedge HedgeLen Hpoint.
-    rewrite Zlength_nil in HedgeLen. lia.
-  - unfold point_from_sorted_range. exists 0. split; [lia | reflexivity].
-  - constructor.
-  - change (nil ++ Znth 0 sorted default_point :: nil) with
-      (Znth 0 sorted default_point :: nil).
-    unfold point_chain_strictly_uses_range, point_chain_indexed_by_range,
-      point_indices_strict_increasing.
-    exists (0 :: nil). split.
-    + split.
-      * repeat rewrite Zlength_cons. rewrite Zlength_nil. reflexivity.
-      * intros pos Hpos.
-        rewrite Zlength_cons in Hpos. rewrite Zlength_nil in Hpos.
-        assert (pos = 0) by lia. subst pos.
-        repeat rewrite Znth0_cons. split; [lia | reflexivity].
-    + intros a b Ha Hab Hb.
-      rewrite Zlength_cons in Hb. rewrite Zlength_nil in Hb. lia.
-  - change (nil ++ Znth 0 sorted default_point :: nil) with
-      (Znth 0 sorted default_point :: nil).
-    unfold point_chain_left_turns; intros idx Hidx Hlt.
-    rewrite Zlength_cons in Hlt. rewrite Zlength_nil in Hlt. lia.
-  - change (nil ++ Znth 0 sorted default_point :: nil) with
-      (Znth 0 sorted default_point :: nil).
-    unfold point_chain_left_envelope; intros edge_idx point_idx Hedge HedgeLen Hpoint.
-    rewrite Zlength_cons in HedgeLen. rewrite Zlength_nil in HedgeLen. lia.
 Qed.
 
 Lemma sublist_cons_z :
@@ -4916,4 +4917,259 @@ Proof.
     replace (i + 1 - 1) with i in Hcmp by lia.
     replace (j + 1 - 1) with j in Hcmp by lia.
     exact Hcmp.
+Qed.
+
+Lemma point_chain_uses_range_drop_last : forall sorted chain lo hi,
+  0 < Zlength chain ->
+  point_chain_uses_range sorted chain lo hi ->
+  point_chain_uses_range sorted (point_drop_last chain) lo hi.
+Proof.
+  intros sorted chain lo hi Hlen Huse.
+  unfold point_chain_uses_range in *.
+  destruct Huse as [Hlo [Hlohi [Hhi Hforall]]].
+  repeat split; try assumption.
+  apply Forall_Znth_intro with (d := default_point).
+  intros idx Hidx.
+  rewrite point_drop_last_Zlength in Hidx by lia.
+  rewrite point_drop_last_Znth by lia.
+  eapply Forall_Znth_point; eauto.
+  lia.
+Qed.
+
+Lemma Forall_point_drop_last : forall (P : Point -> Prop) chain,
+  0 < Zlength chain ->
+  Forall P chain ->
+  Forall P (point_drop_last chain).
+Proof.
+  intros P chain Hlen Hforall.
+  apply Forall_Znth_intro with (d := default_point).
+  intros idx Hidx.
+  rewrite point_drop_last_Zlength in Hidx by lia.
+  rewrite point_drop_last_Znth by lia.
+  eapply Forall_Znth_point; eauto.
+  lia.
+Qed.
+
+Lemma points_in_bound_drop_last : forall chain,
+  0 < Zlength chain ->
+  points_in_bound chain ->
+  points_in_bound (point_drop_last chain).
+Proof.
+  intros chain Hlen Hbound.
+  unfold points_in_bound in *.
+  apply Forall_point_drop_last; assumption.
+Qed.
+
+Lemma point_chain_strictly_uses_range_drop_last : forall sorted chain lo hi,
+  0 < Zlength chain ->
+  point_chain_strictly_uses_range sorted chain lo hi ->
+  point_chain_strictly_uses_range sorted (point_drop_last chain) lo hi.
+Proof.
+  intros sorted chain lo hi Hlen Hstrict.
+  unfold point_chain_strictly_uses_range in *.
+  destruct Hstrict as [idxs [Hindexed Hinc]].
+  unfold point_chain_indexed_by_range in Hindexed.
+  destruct Hindexed as [Hidx_len Hlookup].
+  exists (sublist 0 (Zlength idxs - 1) idxs).
+  split.
+  - unfold point_chain_indexed_by_range.
+    split.
+    + rewrite point_drop_last_Zlength by lia.
+      rewrite Zlength_sublist by lia.
+      lia.
+    + intros pos Hpos.
+      rewrite point_drop_last_Zlength in Hpos by lia.
+      specialize (Hlookup pos ltac:(lia)) as [Hrange Hpoint].
+      split; [|].
+      * rewrite Znth_sublist by lia.
+        replace (pos + 0) with pos by lia.
+        exact Hrange.
+      * rewrite point_drop_last_Znth by lia.
+        rewrite Znth_sublist by lia.
+        replace (pos + 0) with pos by lia.
+        exact Hpoint.
+  - unfold point_indices_strict_increasing in *.
+    intros a b Ha Hab Hb.
+    rewrite Zlength_sublist in Hb by lia.
+    rewrite !Znth_sublist by lia.
+    replace (a + 0) with a by lia.
+    replace (b + 0) with b by lia.
+    apply Hinc; lia.
+Qed.
+
+Lemma point_chain_starts_at_drop_last : forall sorted chain idx,
+  1 < Zlength chain ->
+  point_chain_starts_at sorted chain idx ->
+  point_chain_starts_at sorted (point_drop_last chain) idx.
+Proof.
+  intros sorted chain idx Hlen Hstart.
+  unfold point_chain_starts_at in *.
+  intros Hdrop_nonempty.
+  rewrite point_drop_last_Znth by lia.
+  apply Hstart.
+  lia.
+Qed.
+
+Lemma point_chain_left_turns_drop_last : forall chain,
+  0 < Zlength chain ->
+  point_chain_left_turns chain ->
+  point_chain_left_turns (point_drop_last chain).
+Proof.
+  intros chain Hlen Hturn.
+  unfold point_chain_left_turns in *.
+  intros idx Hidx Hidx_len.
+  rewrite point_drop_last_Zlength in Hidx_len by lia.
+  rewrite !point_drop_last_Znth by lia.
+  apply Hturn; lia.
+Qed.
+
+Lemma point_chain_left_envelope_drop_last : forall sorted chain lo hi,
+  0 < Zlength chain ->
+  point_chain_left_envelope sorted chain lo hi ->
+  point_chain_left_envelope sorted (point_drop_last chain) lo hi.
+Proof.
+  intros sorted chain lo hi Hlen Henv.
+  unfold point_chain_left_envelope in *.
+  intros edge_idx point_idx Hedge HedgeLen Hpoint.
+  rewrite point_drop_last_Zlength in HedgeLen by lia.
+  rewrite !point_drop_last_Znth by lia.
+  apply Henv; lia.
+Qed.
+
+Lemma andrew_lower_chain_geometry_drop_last : forall sorted chain read,
+  1 < Zlength chain ->
+  andrew_lower_chain_geometry sorted chain read ->
+  andrew_lower_chain_geometry sorted (point_drop_last chain) read.
+Proof.
+  intros sorted chain read Hlen Hgeom.
+  unfold andrew_lower_chain_geometry in *.
+  destruct Hgeom as [Huse [Hstrict [Hstart [Hturn Henv]]]].
+  split; [apply point_chain_uses_range_drop_last; try lia; exact Huse |].
+  split; [apply point_chain_strictly_uses_range_drop_last; try lia; exact Hstrict |].
+  split; [apply point_chain_starts_at_drop_last; try lia; exact Hstart |].
+  split; [apply point_chain_left_turns_drop_last; try lia; exact Hturn |].
+  apply point_chain_left_envelope_drop_last; try lia; exact Henv.
+Qed.
+
+Lemma safeExec_andrew_lower_cont_pop : forall sorted read t s T X,
+  0 <= read ->
+  read < Zlength sorted ->
+  ~ ccw s t (Znth read sorted default_point) ->
+  safeExec (equiv (t :: s :: T)) (andrew_lower_cont sorted read) X ->
+  safeExec (equiv (s :: T)) (andrew_lower_cont sorted read) X.
+Proof.
+  intros sorted read t s T X Hread_nonneg Hread_lt Hnccw Hsafe.
+  unfold andrew_lower_cont in *.
+  unfold build_hull_c_iter in Hsafe at 1.
+  rewrite (sublist_split read (Zlength sorted) (read + 1) sorted) in Hsafe
+    by (pose proof (Zlength_nonneg sorted); lia).
+  rewrite (sublist_single default_point read sorted) in Hsafe by lia.
+  simpl in Hsafe.
+  unfold Graham_Scan_M.step_p at 1 in Hsafe.
+  unfold build_hull_c_iter.
+  rewrite (sublist_split read (Zlength sorted) (read + 1) sorted)
+    by (pose proof (Zlength_nonneg sorted); lia).
+  rewrite (sublist_single default_point read sorted) by lia.
+  simpl.
+  unfold Graham_Scan_M.step_p at 1.
+  unfold Graham_Scan_M.step_fun in Hsafe at 1.
+  prog_nf in Hsafe.
+  unfold_loop in Hsafe.
+  prog_nf in Hsafe.
+  unfold Graham_Scan_M.step_fun at 1.
+  prog_nf.
+  unfold_loop.
+  prog_nf.
+  eapply (@safeExec_proequiv (list Point) unit
+    (repeat_break
+       (fun _ : unit => pop_fun (Znth read sorted default_point)) tt ;;
+     x0 <- (T0 <- get' id ;;
+            update'
+              (fun _ : list Point => Znth read sorted default_point :: T0)) ;;
+     iter step_p (sublist (read + 1) (Zlength sorted) sorted) x0 ;;
+     T0 <- get' id ;;
+     upper <- Andrew_Monotone_Chain_M.build_upper_chain sorted ;;
+     update'
+       (fun _ : list Point =>
+          Andrew_Monotone_Chain.andrew_merge sorted (rev T0) upper))
+    _ (equiv (s :: T)) X).
+  - unfold_loop. prog_nf. hnf; intros; split; intros; assumption.
+  - eapply (highstepbind_derive
+            (pop_fun (Znth read sorted default_point))
+            (fun x =>
+               match x with
+               | by_continue a0 =>
+                   repeat_break
+                     (fun _ : unit => pop_fun (Znth read sorted default_point)) a0
+               | by_break b0 => return b0
+               end ;;
+               x0 <- (T0 <- get' id ;;
+                      update'
+                        (fun _ : list Point =>
+                           Znth read sorted default_point :: T0)) ;;
+               iter step_p (sublist (read + 1) (Zlength sorted) sorted) x0 ;;
+               T0 <- get' id ;;
+               upper <- Andrew_Monotone_Chain_M.build_upper_chain sorted ;;
+               update'
+                 (fun _ : list Point =>
+                    Andrew_Monotone_Chain.andrew_merge sorted (rev T0) upper))
+            (equiv (t :: s :: T)) (by_continue tt) (equiv (s :: T))).
+    + apply pop_fun_continue_hseval.
+      exact Hnccw.
+    + exact Hsafe.
+Qed.
+
+Lemma andrew_lower_remaining_cont_pop : forall sorted chain read top X,
+  point_cross (Znth (top - 2) chain default_point)
+              (Znth (top - 1) chain default_point)
+              (Znth read sorted default_point) <= 0 ->
+  2 <= top ->
+  0 <= read ->
+  top = Zlength chain ->
+  read < Zlength sorted ->
+  andrew_lower_remaining_cont sorted chain read X ->
+  andrew_lower_remaining_cont sorted (point_drop_last chain) read X.
+Proof.
+  intros sorted chain read top X Hcross Htop_ge Hread_nonneg Htop Hread_lt Hcont.
+  unfold andrew_lower_remaining_cont in *.
+  destruct Hcont as [stk [Hchain [Hsafe Hupper]]].
+  subst chain.
+  destruct stk as [| t [| s T]].
+  - rewrite Zlength_nil in Htop. lia.
+  - simpl in Htop. rewrite Zlength_cons, Zlength_nil in Htop. lia.
+  - exists (s :: T).
+    repeat split.
+    + change (rev (t :: s :: T)) with (rev (s :: T) ++ t :: nil).
+      rewrite point_drop_last_snoc.
+      reflexivity.
+    + assert (Hlen_for_rev : top - 1 + 1 = Zlength (rev (t :: s :: T))) by lia.
+      assert (Hnccw : ~ ccw s t (Znth read sorted default_point)).
+      {
+        replace (Znth (top - 2) (rev (t :: s :: T)) default_point)
+          with (Znth (top - 1 - 1 - 0) (rev (t :: s :: T)) default_point)
+          in Hcross by (f_equal; lia).
+        replace (Znth (top - 1) (rev (t :: s :: T)) default_point)
+          with (Znth (top - 1 - 0) (rev (t :: s :: T)) default_point)
+          in Hcross by (f_equal; lia).
+        rewrite (Znth_rev_stack_prev default_point t s T (top - 1)) in Hcross
+          by exact Hlen_for_rev.
+        rewrite (Znth_rev_stack_top default_point t s T (top - 1)) in Hcross
+          by exact Hlen_for_rev.
+        apply point_cross_le_0_not_ccw_local.
+        exact Hcross.
+      }
+      eapply safeExec_andrew_lower_cont_pop; eauto.
+    + intros Hdone. lia.
+Qed.
+
+Lemma point_xy_sorted_leftdown_Znth : forall l i j,
+  point_xy_sorted l ->
+  0 <= i <= j ->
+  j < Zlength l ->
+  point_leftdown (Znth i l default_point) (Znth j l default_point).
+Proof.
+  intros l i j Hsorted Hij Hj.
+  apply point_cmp_leftdown_le_point_leftdown.
+  unfold point_xy_sorted, point_xy_sorted_range in Hsorted.
+  apply Hsorted; lia.
 Qed.

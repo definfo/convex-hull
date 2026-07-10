@@ -113,6 +113,9 @@ Sets_FILES = \
 Unify_FILES = \
    Interface.v 
 
+Unify_Lib_FILES = \
+   PTree.v
+
 FIXPOINT_FILES = \
   Coqlib.v LiftConstructors.v  PartialOrder_Setoid.v  KnasterTarski.v  BourbakiWitt.v AllFramework.v SetsFixedpoints.v
 
@@ -349,6 +352,7 @@ EXAMPLE = \
 	$(ConvexHull_FILES:%.v=ConvexHull/%.v) \
 	$(GraphLib_FILES:%.v=GraphLib/%.v) \
 	$(Sets_FILES:%.v=sets/%.v) \
+	$(Unify_Lib_FILES:%.v=unifysl/lib/%.v) \
 	$(Unify_FILES:%.v=unifysl/LogicGenerator/demo932/%.v) \
 	$(Examples_FILES:%.v=examples/%.v) \
 	$(StrategyProof_FILES:%.v=examples/%.v) \
@@ -366,6 +370,7 @@ CORE_EXAMPLE = \
 	$(ConvexHull_FILES:%.v=ConvexHull/%.v) \
 	$(GraphLib_FILES:%.v=GraphLib/%.v) \
 	$(Sets_FILES:%.v=sets/%.v) \
+	$(Unify_Lib_FILES:%.v=unifysl/lib/%.v) \
 	$(Unify_FILES:%.v=unifysl/LogicGenerator/demo932/%.v) \
 	$(Compcertlib_FILES:%.v=compcert_lib/%.v) \
 	$(Auxlibs_FILES:%.v=auxlibs/%.v) \

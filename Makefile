@@ -102,14 +102,14 @@ DEDUP_VC_TARGETS := \
 
 .DEFAULT_GOAL := build
 
-.PHONY: all build quick vok-check all-vfiles clean distclean deps symexec andrew-symexec dedup-symexec andrew-build dedup-build
+.PHONY: all build quick vok-check all-vfiles clean distclean deps sl-core symexec andrew-symexec dedup-symexec andrew-build dedup-build
 
 all: build
 
-build: symexec andrew-symexec dedup-symexec deps
+build: symexec andrew-symexec dedup-symexec sl-core deps
 	$(MAKE) -f $(COQMAKEFILE) $(VC_TARGETS) $(ANDREW_VC_TARGETS) $(DEDUP_VC_TARGETS)
 
-quick: symexec deps
+quick: symexec sl-core deps
 	$(MAKE) -f $(COQMAKEFILE) $(QUICK_TARGETS)
 
 vok-check: symexec deps quick
@@ -156,10 +156,10 @@ $(DEDUP_SYMEXEC_OUTPUTS) &: $(DEDUP_C_FILE)
 	  $(SYMEXEC_FLAGS) \
 	  --input-file=$(abspath $(DEDUP_C_FILE)) \
 
-dedup-build: dedup-symexec deps
+dedup-build: dedup-symexec sl-core deps
 	$(MAKE) -f $(COQMAKEFILE) $(DEDUP_VC_TARGETS)
 
-andrew-build: andrew-symexec deps
+andrew-build: andrew-symexec sl-core deps
 	$(MAKE) -f $(COQMAKEFILE) $(ANDREW_VC_TARGETS)
 
 all-vfiles: symexec andrew-symexec dedup-symexec deps
@@ -173,6 +173,14 @@ distclean:
 	$(RM) **.{vo,vos,vok,glob,aux}
 
 deps: $(COQMAKEFILE)
+
+sl-core:
+	$(MAKE) -C SeparationLogic/unifysl
+	$(MAKE) -C SeparationLogic core
+	$(MAKE) -C SeparationLogic \
+		examples/QCP_demos_LLM/safeexec_strategy_goal.vo \
+		examples/QCP_demos_LLM/safeexec_strategy_proof.vo \
+		examples/QCP_demos_LLM/sll_merge_rel_lib.vo
 
 $(COQMAKEFILE): _CoqProject
 	coq_makefile -f _CoqProject -o $(COQMAKEFILE)
